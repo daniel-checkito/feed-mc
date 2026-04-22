@@ -754,7 +754,7 @@ export default function McAngebotsfeed() {
                                 So verbessern Sie Ihren Feed
                             </div>
                             <div style={{ fontSize: 11, color: '#374151', lineHeight: '17px' }}>
-                                1. Fehlerliste herunterladen
+                                1. Fehlerbericht herunterladen
                                 <br />
                                 2. Fehler in Ihrer Datei korrigieren
                                 <br />
@@ -1318,62 +1318,6 @@ export default function McAngebotsfeed() {
                                                 ? 'Die technische Prüfung wurde bestanden. Ihre Artikel werden angelegt.'
                                                 : 'Bitte beheben Sie die Fehler und laden Sie den Feed erneut hoch.'}
                                         </div>
-                                    </div>
-
-                                    {/* Sektion-Label + Status-Pille */}
-                                    <div
-                                        style={{
-                                            padding: '14px 18px 8px',
-                                            display: 'flex',
-                                            gap: 10,
-                                            alignItems: 'center',
-                                        }}
-                                    >
-                                        <div
-                                            style={{
-                                                fontSize: 10,
-                                                fontWeight: 700,
-                                                color: MC_BLUE,
-                                                letterSpacing: '0.06em',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: 10,
-                                                flex: 1,
-                                                minWidth: 0,
-                                            }}
-                                        >
-                                            <span style={{ whiteSpace: 'nowrap' }}>STUFE 1 — TECHNISCHE PRÜFUNG</span>
-                                            <span style={{ flex: 1, height: 1, background: '#E5E7EB' }} />
-                                        </div>
-                                        {stufe1Passed ? (
-                                            <span
-                                                style={{
-                                                    fontSize: 11,
-                                                    fontWeight: 700,
-                                                    padding: '3px 10px',
-                                                    borderRadius: 4,
-                                                    background: '#DCFCE7',
-                                                    color: '#16A34A',
-                                                    whiteSpace: 'nowrap',
-                                                }}
-                                            >
-                                                ✓ Bestanden
-                                            </span>
-                                        ) : (
-                                            <span
-                                                style={{
-                                                    fontSize: 11,
-                                                    fontWeight: 700,
-                                                    padding: '3px 10px',
-                                                    borderRadius: 4,
-                                                    background: '#FEE2E2',
-                                                    color: '#DC2626',
-                                                    whiteSpace: 'nowrap',
-                                                }}
-                                            >
-                                                ✗ Nicht bestanden
-                                            </span>
-                                        )}
                                     </div>
 
                                     {/* Titel */}
