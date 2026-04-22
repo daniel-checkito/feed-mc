@@ -4591,6 +4591,8 @@ function Sparkline({ values, color = '#1553B6' }) {
 }
 
 function McAngebotsfeed() {
+    const showQualityScore = false; // not public yet — re-enable when ready
+
     const [file, setFile] = useState(null);
     const [dragging, setDragging] = useState(false);
     const [rows, setRows] = useState([]);
@@ -5986,560 +5988,581 @@ function McAngebotsfeed() {
                                     </button>
                                 </div>
 
-                                {/* ── STUFE 2 – FEED-QUALITÄTSSCORE (Soft Score) ── */}
-                                <div
-                                    style={{
-                                        background: '#FFF',
-                                        border: '1px solid #E5E7EB',
-                                        borderRadius: 8,
-                                        overflow: 'hidden',
-                                        position: 'relative',
-                                    }}
-                                >
-                                    <div style={{ opacity: stufe1Passed ? 1 : 0.55 }}>
-                                        {/* Sektion-Label */}
-                                        <div
-                                            style={{
-                                                padding: '14px 18px 8px',
-                                                display: 'flex',
-                                                gap: 10,
-                                                alignItems: 'center',
-                                            }}
-                                        >
+                                {/* ── STUFE 2 – FEED-QUALITÄTSSCORE (Soft Score) — hidden until public release ── */}
+                                {showQualityScore && (
+                                    <div
+                                        style={{
+                                            background: '#FFF',
+                                            border: '1px solid #E5E7EB',
+                                            borderRadius: 8,
+                                            overflow: 'hidden',
+                                            position: 'relative',
+                                        }}
+                                    >
+                                        <div style={{ opacity: stufe1Passed ? 1 : 0.55 }}>
+                                            {/* Sektion-Label */}
                                             <div
                                                 style={{
-                                                    fontSize: 10,
-                                                    fontWeight: 700,
-                                                    color: MC_BLUE,
-                                                    letterSpacing: '0.06em',
+                                                    padding: '14px 18px 8px',
                                                     display: 'flex',
-                                                    alignItems: 'center',
                                                     gap: 10,
-                                                    flex: 1,
-                                                    minWidth: 0,
+                                                    alignItems: 'center',
                                                 }}
                                             >
-                                                <span style={{ whiteSpace: 'nowrap' }}>
-                                                    STUFE 2 — FEED-QUALITÄTSSCORE
-                                                </span>
-                                                <span style={{ flex: 1, height: 1, background: '#E5E7EB' }} />
-                                            </div>
-                                            {score >= 70 ? (
-                                                <span
-                                                    style={{
-                                                        fontSize: 11,
-                                                        fontWeight: 700,
-                                                        padding: '3px 10px',
-                                                        borderRadius: 4,
-                                                        background: '#DCFCE7',
-                                                        color: '#16A34A',
-                                                        whiteSpace: 'nowrap',
-                                                    }}
-                                                >
-                                                    ✓ Zielwert erreicht
-                                                </span>
-                                            ) : (
-                                                <span
-                                                    style={{
-                                                        fontSize: 11,
-                                                        fontWeight: 700,
-                                                        padding: '3px 10px',
-                                                        borderRadius: 4,
-                                                        background: '#FEE2E2',
-                                                        color: '#DC2626',
-                                                        whiteSpace: 'nowrap',
-                                                    }}
-                                                >
-                                                    ✗ Zielwert nicht erreicht
-                                                </span>
-                                            )}
-                                        </div>
-
-                                        {/* Score */}
-                                        <div
-                                            style={{
-                                                padding: '0 18px 10px',
-                                                display: 'flex',
-                                                justifyContent: 'flex-start',
-                                                alignItems: 'flex-end',
-                                            }}
-                                        >
-                                            <div
-                                                style={{
-                                                    fontSize: 20,
-                                                    fontWeight: 800,
-                                                    color: campaignEligible ? '#16A34A' : '#111827',
-                                                    lineHeight: 1,
-                                                }}
-                                            >
-                                                {score}
-                                                <span style={{ fontWeight: 600, color: '#9CA3AF' }}>/100</span>
-                                            </div>
-                                        </div>
-
-                                        {/* Fortschrittsbalken mit 70-Marker */}
-                                        <div style={{ padding: '0 18px 4px' }}>
-                                            <div style={{ position: 'relative', paddingTop: 34 }}>
-                                                {/* 70-Marker Pille */}
-                                                <div
-                                                    style={{
-                                                        position: 'absolute',
-                                                        top: 0,
-                                                        left: '70%',
-                                                        transform: 'translateX(-50%)',
-                                                        display: 'flex',
-                                                        flexDirection: 'column',
-                                                        alignItems: 'center',
-                                                    }}
-                                                >
-                                                    <div
-                                                        style={{
-                                                            fontSize: 8,
-                                                            fontWeight: 700,
-                                                            color: campaignEligible ? '#166534' : '#4B5563',
-                                                            whiteSpace: 'nowrap',
-                                                            padding: '1px 5px',
-                                                            borderRadius: 3,
-                                                            background: campaignEligible ? '#DCFCE7' : '#F3F4F6',
-                                                            border: `1px solid ${campaignEligible ? '#86EFAC' : '#E5E7EB'}`,
-                                                        }}
-                                                    >
-                                                        Zielwert erreicht
-                                                    </div>
-                                                    <div
-                                                        style={{
-                                                            width: 1,
-                                                            height: 14,
-                                                            background: campaignEligible ? '#16A34A' : '#9CA3AF',
-                                                        }}
-                                                    />
-                                                </div>
-                                                {/* Balken */}
-                                                <div
-                                                    style={{
-                                                        height: 16,
-                                                        borderRadius: 8,
-                                                        background: '#E5E7EB',
-                                                        overflow: 'hidden',
-                                                    }}
-                                                >
-                                                    <div
-                                                        style={{
-                                                            height: '100%',
-                                                            width: `${score}%`,
-                                                            background: campaignEligible
-                                                                ? '#16A34A'
-                                                                : score >= 50
-                                                                  ? '#D97706'
-                                                                  : '#DC2626',
-                                                            transition: 'width 0.4s',
-                                                        }}
-                                                    />
-                                                </div>
-                                                {/* Notch an 70% */}
-                                                <div
-                                                    style={{
-                                                        position: 'absolute',
-                                                        top: 34,
-                                                        left: '70%',
-                                                        transform: 'translateX(-50%)',
-                                                        width: 2,
-                                                        height: 16,
-                                                        background: campaignEligible ? '#16A34A' : '#6B7280',
-                                                        pointerEvents: 'none',
-                                                    }}
-                                                />
-                                                <div
-                                                    style={{
-                                                        display: 'flex',
-                                                        fontSize: 9,
-                                                        color: '#9CA3AF',
-                                                        marginTop: 3,
-                                                        position: 'relative',
-                                                    }}
-                                                >
-                                                    <span>0</span>
-                                                    <span
-                                                        style={{
-                                                            position: 'absolute',
-                                                            left: '50%',
-                                                            transform: 'translateX(-50%)',
-                                                        }}
-                                                    >
-                                                        50
-                                                    </span>
-                                                    <span
-                                                        style={{
-                                                            position: 'absolute',
-                                                            left: '70%',
-                                                            transform: 'translateX(-50%)',
-                                                            color: campaignEligible ? '#16A34A' : '#4B5563',
-                                                            fontWeight: 700,
-                                                        }}
-                                                    >
-                                                        70
-                                                    </span>
-                                                    <span style={{ marginLeft: 'auto' }}>100</span>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* Scoring-Logik – als Dropdown, geschlossen (direkt unter Progress-Bar) */}
-                                        <details style={{ padding: '0 18px', marginTop: 8 }}>
-                                            <summary
-                                                style={{
-                                                    cursor: 'pointer',
-                                                    fontSize: 11,
-                                                    color: '#4B5563',
-                                                    fontWeight: 600,
-                                                    userSelect: 'none',
-                                                    padding: '6px 0',
-                                                }}
-                                            >
-                                                Scoring-Logik anzeigen
-                                            </summary>
-
-                                            <div
-                                                style={{
-                                                    marginTop: 4,
-                                                    padding: '7px 12px',
-                                                    borderRadius: 6,
-                                                    background: '#F9FAFB',
-                                                    border: '1px solid #E5E7EB',
-                                                    fontSize: 11,
-                                                    fontFamily: 'monospace',
-                                                    color: '#374151',
-                                                    marginBottom: 10,
-                                                }}
-                                            >
-                                                Score = Pflichtfelder-Score + Empfohlene-Felder-Score
-                                            </div>
-
-                                            {/* Pflichtfelder-Score */}
-                                            <div
-                                                style={{
-                                                    padding: '10px 12px',
-                                                    borderRadius: 6,
-                                                    borderLeft: '3px solid #3B82F6',
-                                                    background: '#EFF6FF',
-                                                    marginBottom: 8,
-                                                }}
-                                            >
-                                                <div
-                                                    style={{
-                                                        fontSize: 12,
-                                                        fontWeight: 700,
-                                                        color: '#111827',
-                                                        marginBottom: 4,
-                                                    }}
-                                                >
-                                                    Pflichtfelder-Score (max. 70 Pkt.)
-                                                </div>
-                                                <div style={{ fontSize: 11, color: '#374151', marginBottom: 4 }}>
-                                                    {issues.pflichtOkCount.toLocaleString('de-DE')} von{' '}
-                                                    {issues.totalRows.toLocaleString('de-DE')} Artikeln mit
-                                                    vollständigen Pflichtattributen.
-                                                </div>
-                                                <div style={{ fontSize: 11, color: '#111827', fontWeight: 600 }}>
-                                                    →{' '}
-                                                    <strong>
-                                                        {issues.pflichtOkCount.toLocaleString('de-DE')}/
-                                                        {issues.totalRows.toLocaleString('de-DE')} × 70 ={' '}
-                                                        {issues.pflichtScore}/70 Punkte
-                                                    </strong>
-                                                </div>
-                                            </div>
-
-                                            {/* Empfohlene Felder */}
-                                            <div
-                                                style={{
-                                                    padding: '10px 12px',
-                                                    borderRadius: 6,
-                                                    borderLeft: '3px solid #EAB308',
-                                                    background: '#FEFCE8',
-                                                    marginBottom: 10,
-                                                }}
-                                            >
-                                                <div
-                                                    style={{
-                                                        fontSize: 12,
-                                                        fontWeight: 700,
-                                                        color: '#111827',
-                                                        marginBottom: 4,
-                                                    }}
-                                                >
-                                                    Empfohlene Felder (max. 30 Pkt.)
-                                                </div>
-                                                <div style={{ fontSize: 11, color: '#374151', marginBottom: 4 }}>
-                                                    Durchschnittlich {fillPct}% der empfohlenen Felder je Artikel
-                                                    befüllt.
-                                                </div>
-                                                <div
-                                                    style={{
-                                                        fontSize: 11,
-                                                        color: '#111827',
-                                                        fontWeight: 600,
-                                                        marginBottom: 8,
-                                                    }}
-                                                >
-                                                    →{' '}
-                                                    <strong>
-                                                        {issues.optionalFillRatio.toFixed(2)} × 30 ={' '}
-                                                        {issues.optionalScore}/30 Punkte
-                                                    </strong>
-                                                </div>
-                                                <div style={{ fontSize: 10, color: '#6B7280', lineHeight: '1.6' }}>
-                                                    <div>
-                                                        <strong style={{ color: '#374151' }}>Produktinfos:</strong>{' '}
-                                                        Deeplink · Modellbezeichnung
-                                                    </div>
-                                                    <div>
-                                                        <strong style={{ color: '#374151' }}>Produktmerkmale:</strong>{' '}
-                                                        Stil · Gewicht · Belastbarkeit · Sitzhöhe · Liegefläche ·
-                                                        Ausrichtung · Härtegrad
-                                                    </div>
-                                                    <div>
-                                                        <strong style={{ color: '#374151' }}>Bilder & Medien:</strong>{' '}
-                                                        Zusatzbilder (2–10) · Youtube-Video · 3D-Ansicht (GLB/USDZ) ·
-                                                        Montageanleitung
-                                                    </div>
-                                                    <div>
-                                                        <strong style={{ color: '#374151' }}>Ausstattung:</strong>{' '}
-                                                        Set-Inhalt · Leuchtmittel inklusive · Matratze inklusive ·
-                                                        Lattenrost inklusive · LED verbaut · Beleuchtung inklusive ·
-                                                        Steckdose/Anschluss
-                                                    </div>
-                                                    <div>
-                                                        <strong style={{ color: '#374151' }}>Textilien:</strong>{' '}
-                                                        Pflegehinweise · Füllung · Bezug abnehmbar · Allergikergeeignet
-                                                    </div>
-                                                    <div>
-                                                        <strong style={{ color: '#374151' }}>Nachweise:</strong>{' '}
-                                                        Energieeffizienzklasse · Produktdatenblatt
-                                                    </div>
-                                                    <div>
-                                                        <strong style={{ color: '#374151' }}>Hersteller:</strong>{' '}
-                                                        Telefonnummer
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* Gesamt */}
-                                            <div
-                                                style={{
-                                                    padding: '10px 14px',
-                                                    borderRadius: 6,
-                                                    border: `1px solid ${campaignEligible ? '#86EFAC' : '#E5E7EB'}`,
-                                                    background: campaignEligible ? '#F0FDF4' : '#F9FAFB',
-                                                    textAlign: 'center',
-                                                    fontSize: 12,
-                                                    fontWeight: 700,
-                                                    color: '#111827',
-                                                    marginBottom: 10,
-                                                }}
-                                            >
-                                                Gesamt: {issues.pflichtScore} + {issues.optionalScore} = {score}/100 →{' '}
-                                                {campaignEligible
-                                                    ? 'Kampagnen-berechtigt ✓'
-                                                    : 'Nicht kampagnen-berechtigt'}
-                                            </div>
-                                        </details>
-
-                                        {/* Kampagnen-Karte */}
-                                        <div
-                                            style={{
-                                                margin: '10px 18px 0',
-                                                borderRadius: 8,
-                                                border: `1px solid ${campaignEligible ? '#86EFAC' : '#FECACA'}`,
-                                                background: campaignEligible ? '#F0FDF4' : '#FEF2F2',
-                                                padding: '12px 14px',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: 12,
-                                            }}
-                                        >
-                                            <div style={{ flex: 1, minWidth: 0 }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                                    <div
-                                                        style={{
-                                                            width: 18,
-                                                            height: 18,
-                                                            borderRadius: '50%',
-                                                            background: campaignEligible ? '#16A34A' : '#DC2626',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            color: '#FFF',
-                                                            fontSize: 10,
-                                                            fontWeight: 800,
-                                                            flexShrink: 0,
-                                                        }}
-                                                    >
-                                                        {campaignEligible ? '✓' : '!'}
-                                                    </div>
-                                                    <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>
-                                                        Kampagnen-Teilnahme
-                                                    </div>
-                                                </div>
-                                                <details style={{ marginTop: 5 }}>
-                                                    <summary
-                                                        style={{
-                                                            cursor: 'pointer',
-                                                            fontSize: 10,
-                                                            color: '#4B5563',
-                                                            fontWeight: 600,
-                                                            userSelect: 'none',
-                                                        }}
-                                                    >
-                                                        Alle Kampagnen-Kriterien anzeigen
-                                                    </summary>
-                                                    <div style={{ fontSize: 10, color: '#374151', marginTop: 4 }}>
-                                                        Ab <strong>70/100</strong> ist Ihr Feed für Kampagnen
-                                                        freigeschaltet. Zusätzlich müssen auch die weiteren Shop-KPIs
-                                                        erfüllt sein:
-                                                    </div>
-                                                    <ul
-                                                        style={{
-                                                            margin: '3px 0 0 0',
-                                                            paddingLeft: 16,
-                                                            fontSize: 10,
-                                                            color: '#374151',
-                                                            lineHeight: '1.6',
-                                                            listStyleType: 'disc',
-                                                            listStylePosition: 'outside',
-                                                        }}
-                                                    >
-                                                        <li style={{ display: 'list-item' }}>Stornoquote ≤ 2,5 %</li>
-                                                        <li style={{ display: 'list-item' }}>
-                                                            Liefertermintreue ≥ 94 %
-                                                        </li>
-                                                        <li style={{ display: 'list-item' }}>Trackingquote ≥ 92 %</li>
-                                                        <li style={{ display: 'list-item' }}>Preisparität ≥ 95 %</li>
-                                                    </ul>
-                                                </details>
-                                            </div>
-                                            <a
-                                                href={
-                                                    campaignEligible
-                                                        ? 'http://mc.moebel.check24.de/campaigns'
-                                                        : undefined
-                                                }
-                                                target={campaignEligible ? '_blank' : undefined}
-                                                rel={campaignEligible ? 'noopener noreferrer' : undefined}
-                                                onClick={(e) => {
-                                                    if (!campaignEligible) e.preventDefault();
-                                                }}
-                                                aria-disabled={!campaignEligible}
-                                                style={{
-                                                    padding: '10px 18px',
-                                                    borderRadius: 6,
-                                                    border: 'none',
-                                                    background: campaignEligible ? '#16A34A' : '#D1D5DB',
-                                                    color: '#FFF',
-                                                    fontSize: 13,
-                                                    fontWeight: 700,
-                                                    cursor: campaignEligible ? 'pointer' : 'not-allowed',
-                                                    whiteSpace: 'nowrap',
-                                                    textDecoration: 'none',
-                                                    flexShrink: 0,
-                                                    opacity: campaignEligible ? 1 : 0.7,
-                                                }}
-                                            >
-                                                Zum Deal-Tool →
-                                            </a>
-                                        </div>
-
-                                        {/* APA-Karte */}
-                                        <div
-                                            style={{
-                                                margin: '10px 18px 14px',
-                                                borderRadius: 8,
-                                                border: `1px solid ${stufe1Passed ? '#86EFAC' : '#FECACA'}`,
-                                                background: stufe1Passed ? '#F0FDF4' : '#FEF2F2',
-                                                padding: '12px 14px',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: 12,
-                                            }}
-                                        >
-                                            <div style={{ flex: 1, minWidth: 0 }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                                    <div
-                                                        style={{
-                                                            width: 18,
-                                                            height: 18,
-                                                            borderRadius: '50%',
-                                                            background: stufe1Passed ? '#16A34A' : '#DC2626',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            color: '#FFF',
-                                                            fontSize: 10,
-                                                            fontWeight: 800,
-                                                            flexShrink: 0,
-                                                        }}
-                                                    >
-                                                        {stufe1Passed ? '✓' : '!'}
-                                                    </div>
-                                                    <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>
-                                                        APA (Automatische Produktanlage)
-                                                    </div>
-                                                </div>
-                                                <div style={{ fontSize: 10, color: '#374151', marginTop: 4 }}>
-                                                    {stufe1Passed ? '✓' : '✗'}{' '}
-                                                    {stufe1Passed ? 'Berechtigt für APA' : 'Nicht berechtigt für APA'} ·
-                                                    Fehlerquote: {errorRate.toFixed(1).replace('.', ',')}% (Max. 5%)
-                                                </div>
                                                 <div
                                                     style={{
                                                         fontSize: 10,
-                                                        color: stufe1Passed ? '#166534' : '#991B1B',
-                                                        fontWeight: 600,
-                                                        marginTop: 2,
+                                                        fontWeight: 700,
+                                                        color: MC_BLUE,
+                                                        letterSpacing: '0.06em',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: 10,
+                                                        flex: 1,
+                                                        minWidth: 0,
                                                     }}
                                                 >
-                                                    {stufe1Passed
-                                                        ? 'Ihre Artikel werden automatisch innerhalb von 2–3 Tagen angelegt.'
-                                                        : 'Ohne APA werden Artikel manuell angelegt. Das kann 1–3 Wochen dauern.'}
+                                                    <span style={{ whiteSpace: 'nowrap' }}>
+                                                        STUFE 2 — FEED-QUALITÄTSSCORE
+                                                    </span>
+                                                    <span style={{ flex: 1, height: 1, background: '#E5E7EB' }} />
                                                 </div>
+                                                {score >= 70 ? (
+                                                    <span
+                                                        style={{
+                                                            fontSize: 11,
+                                                            fontWeight: 700,
+                                                            padding: '3px 10px',
+                                                            borderRadius: 4,
+                                                            background: '#DCFCE7',
+                                                            color: '#16A34A',
+                                                            whiteSpace: 'nowrap',
+                                                        }}
+                                                    >
+                                                        ✓ Zielwert erreicht
+                                                    </span>
+                                                ) : (
+                                                    <span
+                                                        style={{
+                                                            fontSize: 11,
+                                                            fontWeight: 700,
+                                                            padding: '3px 10px',
+                                                            borderRadius: 4,
+                                                            background: '#FEE2E2',
+                                                            color: '#DC2626',
+                                                            whiteSpace: 'nowrap',
+                                                        }}
+                                                    >
+                                                        ✗ Zielwert nicht erreicht
+                                                    </span>
+                                                )}
                                             </div>
-                                            <a
-                                                href={
-                                                    stufe1Passed
-                                                        ? 'mailto:partnerbetreuung@check24.de?subject=' +
-                                                          encodeURIComponent('APA-Freischaltung anfordern') +
-                                                          '&body=' +
-                                                          encodeURIComponent(
-                                                              'Hallo CHECK24-Team,\n\nwir möchten die automatische Produktanlage (APA) für unseren Shop aktivieren. Unsere aktuelle Fehlerquote liegt bei ' +
-                                                                  errorRate.toFixed(1).replace('.', ',') +
-                                                                  '% und damit innerhalb des Grenzwerts von 5%.\n\nBitte schalten Sie uns für APA frei.\n\nVielen Dank\nIhr Partner',
-                                                          )
-                                                        : undefined
-                                                }
-                                                onClick={(e) => {
-                                                    if (!stufe1Passed) e.preventDefault();
-                                                }}
-                                                aria-disabled={!stufe1Passed}
+
+                                            {/* Score */}
+                                            <div
                                                 style={{
-                                                    padding: '10px 18px',
-                                                    borderRadius: 6,
-                                                    border: 'none',
-                                                    background: stufe1Passed ? '#16A34A' : '#D1D5DB',
-                                                    color: '#FFF',
-                                                    fontSize: 13,
-                                                    fontWeight: 700,
-                                                    cursor: stufe1Passed ? 'pointer' : 'not-allowed',
-                                                    whiteSpace: 'nowrap',
-                                                    textDecoration: 'none',
-                                                    flexShrink: 0,
-                                                    opacity: stufe1Passed ? 1 : 0.7,
+                                                    padding: '0 18px 10px',
+                                                    display: 'flex',
+                                                    justifyContent: 'flex-start',
+                                                    alignItems: 'flex-end',
                                                 }}
                                             >
-                                                APA-Zugang per E-Mail anfordern
-                                            </a>
+                                                <div
+                                                    style={{
+                                                        fontSize: 20,
+                                                        fontWeight: 800,
+                                                        color: campaignEligible ? '#16A34A' : '#111827',
+                                                        lineHeight: 1,
+                                                    }}
+                                                >
+                                                    {score}
+                                                    <span style={{ fontWeight: 600, color: '#9CA3AF' }}>/100</span>
+                                                </div>
+                                            </div>
+
+                                            {/* Fortschrittsbalken mit 70-Marker */}
+                                            <div style={{ padding: '0 18px 4px' }}>
+                                                <div style={{ position: 'relative', paddingTop: 34 }}>
+                                                    {/* 70-Marker Pille */}
+                                                    <div
+                                                        style={{
+                                                            position: 'absolute',
+                                                            top: 0,
+                                                            left: '70%',
+                                                            transform: 'translateX(-50%)',
+                                                            display: 'flex',
+                                                            flexDirection: 'column',
+                                                            alignItems: 'center',
+                                                        }}
+                                                    >
+                                                        <div
+                                                            style={{
+                                                                fontSize: 8,
+                                                                fontWeight: 700,
+                                                                color: campaignEligible ? '#166534' : '#4B5563',
+                                                                whiteSpace: 'nowrap',
+                                                                padding: '1px 5px',
+                                                                borderRadius: 3,
+                                                                background: campaignEligible ? '#DCFCE7' : '#F3F4F6',
+                                                                border: `1px solid ${campaignEligible ? '#86EFAC' : '#E5E7EB'}`,
+                                                            }}
+                                                        >
+                                                            Zielwert erreicht
+                                                        </div>
+                                                        <div
+                                                            style={{
+                                                                width: 1,
+                                                                height: 14,
+                                                                background: campaignEligible ? '#16A34A' : '#9CA3AF',
+                                                            }}
+                                                        />
+                                                    </div>
+                                                    {/* Balken */}
+                                                    <div
+                                                        style={{
+                                                            height: 16,
+                                                            borderRadius: 8,
+                                                            background: '#E5E7EB',
+                                                            overflow: 'hidden',
+                                                        }}
+                                                    >
+                                                        <div
+                                                            style={{
+                                                                height: '100%',
+                                                                width: `${score}%`,
+                                                                background: campaignEligible
+                                                                    ? '#16A34A'
+                                                                    : score >= 50
+                                                                      ? '#D97706'
+                                                                      : '#DC2626',
+                                                                transition: 'width 0.4s',
+                                                            }}
+                                                        />
+                                                    </div>
+                                                    {/* Notch an 70% */}
+                                                    <div
+                                                        style={{
+                                                            position: 'absolute',
+                                                            top: 34,
+                                                            left: '70%',
+                                                            transform: 'translateX(-50%)',
+                                                            width: 2,
+                                                            height: 16,
+                                                            background: campaignEligible ? '#16A34A' : '#6B7280',
+                                                            pointerEvents: 'none',
+                                                        }}
+                                                    />
+                                                    <div
+                                                        style={{
+                                                            display: 'flex',
+                                                            fontSize: 9,
+                                                            color: '#9CA3AF',
+                                                            marginTop: 3,
+                                                            position: 'relative',
+                                                        }}
+                                                    >
+                                                        <span>0</span>
+                                                        <span
+                                                            style={{
+                                                                position: 'absolute',
+                                                                left: '50%',
+                                                                transform: 'translateX(-50%)',
+                                                            }}
+                                                        >
+                                                            50
+                                                        </span>
+                                                        <span
+                                                            style={{
+                                                                position: 'absolute',
+                                                                left: '70%',
+                                                                transform: 'translateX(-50%)',
+                                                                color: campaignEligible ? '#16A34A' : '#4B5563',
+                                                                fontWeight: 700,
+                                                            }}
+                                                        >
+                                                            70
+                                                        </span>
+                                                        <span style={{ marginLeft: 'auto' }}>100</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Scoring-Logik – als Dropdown, geschlossen (direkt unter Progress-Bar) */}
+                                            <details style={{ padding: '0 18px', marginTop: 8 }}>
+                                                <summary
+                                                    style={{
+                                                        cursor: 'pointer',
+                                                        fontSize: 11,
+                                                        color: '#4B5563',
+                                                        fontWeight: 600,
+                                                        userSelect: 'none',
+                                                        padding: '6px 0',
+                                                    }}
+                                                >
+                                                    Scoring-Logik anzeigen
+                                                </summary>
+
+                                                <div
+                                                    style={{
+                                                        marginTop: 4,
+                                                        padding: '7px 12px',
+                                                        borderRadius: 6,
+                                                        background: '#F9FAFB',
+                                                        border: '1px solid #E5E7EB',
+                                                        fontSize: 11,
+                                                        fontFamily: 'monospace',
+                                                        color: '#374151',
+                                                        marginBottom: 10,
+                                                    }}
+                                                >
+                                                    Score = Pflichtfelder-Score + Empfohlene-Felder-Score
+                                                </div>
+
+                                                {/* Pflichtfelder-Score */}
+                                                <div
+                                                    style={{
+                                                        padding: '10px 12px',
+                                                        borderRadius: 6,
+                                                        borderLeft: '3px solid #3B82F6',
+                                                        background: '#EFF6FF',
+                                                        marginBottom: 8,
+                                                    }}
+                                                >
+                                                    <div
+                                                        style={{
+                                                            fontSize: 12,
+                                                            fontWeight: 700,
+                                                            color: '#111827',
+                                                            marginBottom: 4,
+                                                        }}
+                                                    >
+                                                        Pflichtfelder-Score (max. 70 Pkt.)
+                                                    </div>
+                                                    <div style={{ fontSize: 11, color: '#374151', marginBottom: 4 }}>
+                                                        {issues.pflichtOkCount.toLocaleString('de-DE')} von{' '}
+                                                        {issues.totalRows.toLocaleString('de-DE')} Artikeln mit
+                                                        vollständigen Pflichtattributen.
+                                                    </div>
+                                                    <div style={{ fontSize: 11, color: '#111827', fontWeight: 600 }}>
+                                                        →{' '}
+                                                        <strong>
+                                                            {issues.pflichtOkCount.toLocaleString('de-DE')}/
+                                                            {issues.totalRows.toLocaleString('de-DE')} × 70 ={' '}
+                                                            {issues.pflichtScore}/70 Punkte
+                                                        </strong>
+                                                    </div>
+                                                </div>
+
+                                                {/* Empfohlene Felder */}
+                                                <div
+                                                    style={{
+                                                        padding: '10px 12px',
+                                                        borderRadius: 6,
+                                                        borderLeft: '3px solid #EAB308',
+                                                        background: '#FEFCE8',
+                                                        marginBottom: 10,
+                                                    }}
+                                                >
+                                                    <div
+                                                        style={{
+                                                            fontSize: 12,
+                                                            fontWeight: 700,
+                                                            color: '#111827',
+                                                            marginBottom: 4,
+                                                        }}
+                                                    >
+                                                        Empfohlene Felder (max. 30 Pkt.)
+                                                    </div>
+                                                    <div style={{ fontSize: 11, color: '#374151', marginBottom: 4 }}>
+                                                        Durchschnittlich {fillPct}% der empfohlenen Felder je Artikel
+                                                        befüllt.
+                                                    </div>
+                                                    <div
+                                                        style={{
+                                                            fontSize: 11,
+                                                            color: '#111827',
+                                                            fontWeight: 600,
+                                                            marginBottom: 8,
+                                                        }}
+                                                    >
+                                                        →{' '}
+                                                        <strong>
+                                                            {issues.optionalFillRatio.toFixed(2)} × 30 ={' '}
+                                                            {issues.optionalScore}/30 Punkte
+                                                        </strong>
+                                                    </div>
+                                                    <div style={{ fontSize: 10, color: '#6B7280', lineHeight: '1.6' }}>
+                                                        <div>
+                                                            <strong style={{ color: '#374151' }}>Produktinfos:</strong>{' '}
+                                                            Deeplink · Modellbezeichnung
+                                                        </div>
+                                                        <div>
+                                                            <strong style={{ color: '#374151' }}>
+                                                                Produktmerkmale:
+                                                            </strong>{' '}
+                                                            Stil · Gewicht · Belastbarkeit · Sitzhöhe · Liegefläche ·
+                                                            Ausrichtung · Härtegrad
+                                                        </div>
+                                                        <div>
+                                                            <strong style={{ color: '#374151' }}>
+                                                                Bilder & Medien:
+                                                            </strong>{' '}
+                                                            Zusatzbilder (2–10) · Youtube-Video · 3D-Ansicht (GLB/USDZ)
+                                                            · Montageanleitung
+                                                        </div>
+                                                        <div>
+                                                            <strong style={{ color: '#374151' }}>Ausstattung:</strong>{' '}
+                                                            Set-Inhalt · Leuchtmittel inklusive · Matratze inklusive ·
+                                                            Lattenrost inklusive · LED verbaut · Beleuchtung inklusive ·
+                                                            Steckdose/Anschluss
+                                                        </div>
+                                                        <div>
+                                                            <strong style={{ color: '#374151' }}>Textilien:</strong>{' '}
+                                                            Pflegehinweise · Füllung · Bezug abnehmbar ·
+                                                            Allergikergeeignet
+                                                        </div>
+                                                        <div>
+                                                            <strong style={{ color: '#374151' }}>Nachweise:</strong>{' '}
+                                                            Energieeffizienzklasse · Produktdatenblatt
+                                                        </div>
+                                                        <div>
+                                                            <strong style={{ color: '#374151' }}>Hersteller:</strong>{' '}
+                                                            Telefonnummer
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Gesamt */}
+                                                <div
+                                                    style={{
+                                                        padding: '10px 14px',
+                                                        borderRadius: 6,
+                                                        border: `1px solid ${campaignEligible ? '#86EFAC' : '#E5E7EB'}`,
+                                                        background: campaignEligible ? '#F0FDF4' : '#F9FAFB',
+                                                        textAlign: 'center',
+                                                        fontSize: 12,
+                                                        fontWeight: 700,
+                                                        color: '#111827',
+                                                        marginBottom: 10,
+                                                    }}
+                                                >
+                                                    Gesamt: {issues.pflichtScore} + {issues.optionalScore} = {score}/100
+                                                    →{' '}
+                                                    {campaignEligible
+                                                        ? 'Kampagnen-berechtigt ✓'
+                                                        : 'Nicht kampagnen-berechtigt'}
+                                                </div>
+                                            </details>
+
+                                            {/* Kampagnen-Karte */}
+                                            <div
+                                                style={{
+                                                    margin: '10px 18px 0',
+                                                    borderRadius: 8,
+                                                    border: `1px solid ${campaignEligible ? '#86EFAC' : '#FECACA'}`,
+                                                    background: campaignEligible ? '#F0FDF4' : '#FEF2F2',
+                                                    padding: '12px 14px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: 12,
+                                                }}
+                                            >
+                                                <div style={{ flex: 1, minWidth: 0 }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                                        <div
+                                                            style={{
+                                                                width: 18,
+                                                                height: 18,
+                                                                borderRadius: '50%',
+                                                                background: campaignEligible ? '#16A34A' : '#DC2626',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                color: '#FFF',
+                                                                fontSize: 10,
+                                                                fontWeight: 800,
+                                                                flexShrink: 0,
+                                                            }}
+                                                        >
+                                                            {campaignEligible ? '✓' : '!'}
+                                                        </div>
+                                                        <div
+                                                            style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}
+                                                        >
+                                                            Kampagnen-Teilnahme
+                                                        </div>
+                                                    </div>
+                                                    <details style={{ marginTop: 5 }}>
+                                                        <summary
+                                                            style={{
+                                                                cursor: 'pointer',
+                                                                fontSize: 10,
+                                                                color: '#4B5563',
+                                                                fontWeight: 600,
+                                                                userSelect: 'none',
+                                                            }}
+                                                        >
+                                                            Alle Kampagnen-Kriterien anzeigen
+                                                        </summary>
+                                                        <div style={{ fontSize: 10, color: '#374151', marginTop: 4 }}>
+                                                            Ab <strong>70/100</strong> ist Ihr Feed für Kampagnen
+                                                            freigeschaltet. Zusätzlich müssen auch die weiteren
+                                                            Shop-KPIs erfüllt sein:
+                                                        </div>
+                                                        <ul
+                                                            style={{
+                                                                margin: '3px 0 0 0',
+                                                                paddingLeft: 16,
+                                                                fontSize: 10,
+                                                                color: '#374151',
+                                                                lineHeight: '1.6',
+                                                                listStyleType: 'disc',
+                                                                listStylePosition: 'outside',
+                                                            }}
+                                                        >
+                                                            <li style={{ display: 'list-item' }}>
+                                                                Stornoquote ≤ 2,5 %
+                                                            </li>
+                                                            <li style={{ display: 'list-item' }}>
+                                                                Liefertermintreue ≥ 94 %
+                                                            </li>
+                                                            <li style={{ display: 'list-item' }}>
+                                                                Trackingquote ≥ 92 %
+                                                            </li>
+                                                            <li style={{ display: 'list-item' }}>
+                                                                Preisparität ≥ 95 %
+                                                            </li>
+                                                        </ul>
+                                                    </details>
+                                                </div>
+                                                <a
+                                                    href={
+                                                        campaignEligible
+                                                            ? 'http://mc.moebel.check24.de/campaigns'
+                                                            : undefined
+                                                    }
+                                                    target={campaignEligible ? '_blank' : undefined}
+                                                    rel={campaignEligible ? 'noopener noreferrer' : undefined}
+                                                    onClick={(e) => {
+                                                        if (!campaignEligible) e.preventDefault();
+                                                    }}
+                                                    aria-disabled={!campaignEligible}
+                                                    style={{
+                                                        padding: '10px 18px',
+                                                        borderRadius: 6,
+                                                        border: 'none',
+                                                        background: campaignEligible ? '#16A34A' : '#D1D5DB',
+                                                        color: '#FFF',
+                                                        fontSize: 13,
+                                                        fontWeight: 700,
+                                                        cursor: campaignEligible ? 'pointer' : 'not-allowed',
+                                                        whiteSpace: 'nowrap',
+                                                        textDecoration: 'none',
+                                                        flexShrink: 0,
+                                                        opacity: campaignEligible ? 1 : 0.7,
+                                                    }}
+                                                >
+                                                    Zum Deal-Tool →
+                                                </a>
+                                            </div>
+
+                                            {/* APA-Karte */}
+                                            <div
+                                                style={{
+                                                    margin: '10px 18px 14px',
+                                                    borderRadius: 8,
+                                                    border: `1px solid ${stufe1Passed ? '#86EFAC' : '#FECACA'}`,
+                                                    background: stufe1Passed ? '#F0FDF4' : '#FEF2F2',
+                                                    padding: '12px 14px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: 12,
+                                                }}
+                                            >
+                                                <div style={{ flex: 1, minWidth: 0 }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                                        <div
+                                                            style={{
+                                                                width: 18,
+                                                                height: 18,
+                                                                borderRadius: '50%',
+                                                                background: stufe1Passed ? '#16A34A' : '#DC2626',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                color: '#FFF',
+                                                                fontSize: 10,
+                                                                fontWeight: 800,
+                                                                flexShrink: 0,
+                                                            }}
+                                                        >
+                                                            {stufe1Passed ? '✓' : '!'}
+                                                        </div>
+                                                        <div
+                                                            style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}
+                                                        >
+                                                            APA (Automatische Produktanlage)
+                                                        </div>
+                                                    </div>
+                                                    <div style={{ fontSize: 10, color: '#374151', marginTop: 4 }}>
+                                                        {stufe1Passed ? '✓' : '✗'}{' '}
+                                                        {stufe1Passed
+                                                            ? 'Berechtigt für APA'
+                                                            : 'Nicht berechtigt für APA'}{' '}
+                                                        · Fehlerquote: {errorRate.toFixed(1).replace('.', ',')}% (Max.
+                                                        5%)
+                                                    </div>
+                                                    <div
+                                                        style={{
+                                                            fontSize: 10,
+                                                            color: stufe1Passed ? '#166534' : '#991B1B',
+                                                            fontWeight: 600,
+                                                            marginTop: 2,
+                                                        }}
+                                                    >
+                                                        {stufe1Passed
+                                                            ? 'Ihre Artikel werden automatisch innerhalb von 2–3 Tagen angelegt.'
+                                                            : 'Ohne APA werden Artikel manuell angelegt. Das kann 1–3 Wochen dauern.'}
+                                                    </div>
+                                                </div>
+                                                <a
+                                                    href={
+                                                        stufe1Passed
+                                                            ? 'mailto:partnerbetreuung@check24.de?subject=' +
+                                                              encodeURIComponent('APA-Freischaltung anfordern') +
+                                                              '&body=' +
+                                                              encodeURIComponent(
+                                                                  'Hallo CHECK24-Team,\n\nwir möchten die automatische Produktanlage (APA) für unseren Shop aktivieren. Unsere aktuelle Fehlerquote liegt bei ' +
+                                                                      errorRate.toFixed(1).replace('.', ',') +
+                                                                      '% und damit innerhalb des Grenzwerts von 5%.\n\nBitte schalten Sie uns für APA frei.\n\nVielen Dank\nIhr Partner',
+                                                              )
+                                                            : undefined
+                                                    }
+                                                    onClick={(e) => {
+                                                        if (!stufe1Passed) e.preventDefault();
+                                                    }}
+                                                    aria-disabled={!stufe1Passed}
+                                                    style={{
+                                                        padding: '10px 18px',
+                                                        borderRadius: 6,
+                                                        border: 'none',
+                                                        background: stufe1Passed ? '#16A34A' : '#D1D5DB',
+                                                        color: '#FFF',
+                                                        fontSize: 13,
+                                                        fontWeight: 700,
+                                                        cursor: stufe1Passed ? 'pointer' : 'not-allowed',
+                                                        whiteSpace: 'nowrap',
+                                                        textDecoration: 'none',
+                                                        flexShrink: 0,
+                                                        opacity: stufe1Passed ? 1 : 0.7,
+                                                    }}
+                                                >
+                                                    APA-Zugang per E-Mail anfordern
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                )}
                             </div>
                         );
                     })()}
