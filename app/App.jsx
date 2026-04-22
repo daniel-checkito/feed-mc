@@ -4354,27 +4354,6 @@ function McDashboard() {
   );
 }
 
-function CheckerMCPage() {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", minHeight: "100%", fontFamily: "ui-sans-serif, system-ui, sans-serif", background: "#F5F6FA" }}>
-
-        {/* MAIN CONTENT */}
-        <div style={{ flex: 1, padding: "28px 36px", overflowY: "auto" }}>
-          <McAngebotsfeed />
-        </div>
-
-      {/* FOOTER */}
-      <div style={{ background: "#FFFFFF", borderTop: "1px solid #E5E7EB", padding: "14px 32px", display: "flex", justifyContent: "center", flexDirection: "column", alignItems: "center", gap: 6 }}>
-        <div style={{ display: "flex", gap: 20, flexWrap: "wrap", justifyContent: "center" }}>
-          {["News", "Karriere", "Presse", "Marktplatzpartner", "Affiliate-Programm", "Gutscheine", "Unternehmen", "Kontakt", "AGB", "Datenschutz", "Impressum"].map((l) => (
-            <span key={l} style={{ fontSize: 12, color: MC_BLUE, cursor: "pointer" }}>{l}</span>
-          ))}
-        </div>
-        <div style={{ fontSize: 11, color: "#9CA3AF" }}>© 2026 CHECK24 Vergleichsportal Möbel GmbH.</div>
-      </div>
-    </div>
-  );
-}
 
 function McIssueCard({ title, severity, description, items, more, fixInstruction, compactList }) {
   const [expanded, setExpanded] = useState(false);
@@ -8161,13 +8140,7 @@ export default function App() {
   }
 
   if (route === "checker-mc") {
-    return (
-      <div style={{ background: "#F2F4F7", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
-        <div style={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
-          <CheckerMCPage />
-        </div>
-      </div>
-    );
+    return <McAngebotsfeed />;
   }
 
   return (
