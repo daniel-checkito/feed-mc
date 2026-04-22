@@ -4355,135 +4355,13 @@ function McDashboard() {
 }
 
 function CheckerMCPage() {
-  const [mcActiveNav, setMcActiveNav] = useState("angebotsfeed");
-  const [mcOpenGroups, setMcOpenGroups] = useState(new Set(["einstellungen"]));
-  const toggleGroup = (id) => setMcOpenGroups((prev) => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next; });
-
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100%", fontFamily: "ui-sans-serif, system-ui, sans-serif", background: "#F5F6FA" }}>
 
-      {/* MC mock sub-header — matches the screenshot exactly */}
-      <div style={{ background: "#1B3461", height: 56, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 28px", flexShrink: 0 }}>
-        {/* Logo */}
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <span style={{ color: "#FFFFFF", fontWeight: 900, fontSize: 20, letterSpacing: "-0.5px", fontFamily: "Arial, sans-serif" }}>CHECK24</span>
-          <span style={{ color: "#8AAFD4", fontSize: 14, fontWeight: 400 }}>Partnerportal</span>
-        </div>
-        {/* Right items */}
-        <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 6, color: "#FFFFFF", fontSize: 13, cursor: "pointer" }}>
-            <span style={{ fontSize: 16 }}>🇩🇪</span>
-            <span>Deutsch</span>
-            <span style={{ fontSize: 10, color: "#8AAFD4" }}>▾</span>
-          </div>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8AAFD4" strokeWidth="2" style={{ cursor: "pointer" }}>
-            <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/>
-          </svg>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#FFFFFF", borderLeft: "1px solid rgba(255,255,255,0.15)", paddingLeft: 28 }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8AAFD4" strokeWidth="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 01.22 1.18 2 2 0 012.22 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.18 6.18l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
-            <div style={{ lineHeight: 1.3 }}>
-              <div style={{ fontWeight: 700, fontSize: 13 }}>089 - 2424 1158 300</div>
-              <div style={{ color: "#8AAFD4", fontSize: 11 }}>Haben Sie Fragen?</div>
-            </div>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 7, color: "#FFFFFF", borderLeft: "1px solid rgba(255,255,255,0.15)", paddingLeft: 28, cursor: "pointer" }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8AAFD4" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            <span style={{ fontSize: 13, fontWeight: 500 }}>Termin buchen</span>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 7, color: "#FFFFFF", borderLeft: "1px solid rgba(255,255,255,0.15)", paddingLeft: 28, cursor: "pointer" }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8AAFD4" strokeWidth="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            <span style={{ fontSize: 13, fontWeight: 500 }}>Daniel Haag</span>
-          </div>
-        </div>
-      </div>
-
-      <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
-
-        {/* LEFT SIDEBAR — matches screenshot */}
-        <div style={{ width: 200, background: "#FFFFFF", borderRight: "1px solid #E5E7EB", flexShrink: 0, paddingTop: 6, overflowY: "auto" }}>
-          {MC_NAV_ITEMS.map((item) => {
-            const isGroupOpen = item.children && mcOpenGroups.has(item.id);
-            const isParentActive = item.children && item.children.some((c) => c.id === mcActiveNav);
-            const isItemActive = !item.children && mcActiveNav === item.id;
-            return (
-              <div key={item.id}>
-                <div
-                  onClick={() => {
-                    if (item.children) {
-                      toggleGroup(item.id);
-                    } else {
-                      setMcActiveNav(item.id);
-                    }
-                  }}
-                  style={{
-                    display: "flex", alignItems: "center", gap: 11,
-                    padding: "11px 18px",
-                    cursor: "pointer",
-                    fontSize: 14,
-                    color: (isItemActive || isParentActive) ? MC_BLUE : "#374151",
-                    fontWeight: (isItemActive || isParentActive) ? 600 : 400,
-                    userSelect: "none",
-                  }}
-                >
-                  <McIcon name={item.icon} active={isItemActive || isParentActive} />
-                  <span style={{ flex: 1 }}>{item.label}</span>
-                  {item.children ? (
-                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#9CA3AF" strokeWidth="1.8"
-                      style={{ transform: isGroupOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}>
-                      <path d="M2 4l4 4 4-4"/>
-                    </svg>
-                  ) : null}
-                </div>
-                {item.children && isGroupOpen ? (
-                  <div style={{ background: "#F9FAFB", borderTop: "1px solid #F3F4F6", borderBottom: "1px solid #F3F4F6" }}>
-                    {item.children.map((child) => {
-                      const childActive = mcActiveNav === child.id;
-                      return (
-                        <div
-                          key={child.id}
-                          onClick={() => setMcActiveNav(child.id)}
-                          style={{
-                            padding: "9px 18px 9px 47px",
-                            fontSize: 13,
-                            cursor: "pointer",
-                            color: childActive ? MC_BLUE : "#4B5563",
-                            fontWeight: childActive ? 600 : 400,
-                            borderLeft: childActive ? `3px solid ${MC_BLUE}` : "3px solid transparent",
-                            background: childActive ? "#EEF3FC" : "transparent",
-                          }}
-                        >
-                          {child.label}
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : null}
-              </div>
-            );
-          })}
-        </div>
-
         {/* MAIN CONTENT */}
         <div style={{ flex: 1, padding: "28px 36px", overflowY: "auto" }}>
-
-          {/* ── DASHBOARD ── */}
-          {mcActiveNav === "dashboard" ? (
-            <McDashboard />
-          ) : null}
-
-          {/* ── ANGEBOTSFEED ── */}
-          {mcActiveNav === "angebotsfeed" ? (
-            <McAngebotsfeed />
-          ) : null}
-
-          {/* ── OTHER PAGES placeholder ── */}
-          {mcActiveNav !== "dashboard" && mcActiveNav !== "angebotsfeed" ? (
-            <div style={{ color: "#6B7280", fontSize: 14, marginTop: 40, textAlign: "center" }}>
-              Diese Seite ist noch nicht verfügbar.
-            </div>
-          ) : null}
+          <McAngebotsfeed />
         </div>
-      </div>
 
       {/* FOOTER */}
       <div style={{ background: "#FFFFFF", borderTop: "1px solid #E5E7EB", padding: "14px 32px", display: "flex", justifyContent: "center", flexDirection: "column", alignItems: "center", gap: 6 }}>
