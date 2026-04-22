@@ -4570,19 +4570,7 @@ export default function App() {
         }
       }
 
-  const [route, setRoute] = useState(() => {
-    if (typeof window === "undefined") return "feed-analyse";
-    const hash = window.location.hash;
-    if (hash === "#/rules") return "rules";
-    if (hash === "#/feed-analyse" || hash === "#/qs" || hash === "#/feed-checker" || hash === "#/checker") return "feed-analyse";
-    if (hash === "#/produkt-optimierung") return "produkt-optimierung";
-    if (hash === "#/mapping") return "mapping";
-    if (hash === "#/analytics") return "analytics";
-    if (hash === "#/shop-performance") return "shop-performance";
-    if (hash === "#/onboarding") return "onboarding";
-    if (hash === "#/checker-mc") return "checker-mc";
-    return "feed-analyse";
-  });
+  const [route, setRoute] = useState(() => "checker-mc");
   const supabase = useMemo(() => getSupabaseClient(), []);
 
   const [rules, setRules] = useState(DEFAULT_RULES);
@@ -4592,23 +4580,7 @@ export default function App() {
   const [rulesSaveError, setRulesSaveError] = useState("");
   const [rulesSavedAt, setRulesSavedAt] = useState("");
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const onHash = () => {
-      const hash = window.location.hash;
-      if (hash === "#/rules") setRoute("rules");
-      else if (hash === "#/feed-analyse" || hash === "#/qs" || hash === "#/feed-checker" || hash === "#/checker") setRoute("feed-analyse");
-      else if (hash === "#/produkt-optimierung") setRoute("produkt-optimierung");
-      else if (hash === "#/mapping") setRoute("mapping");
-      else if (hash === "#/analytics") setRoute("analytics");
-      else if (hash === "#/shop-performance") setRoute("shop-performance");
-      else if (hash === "#/onboarding") setRoute("onboarding");
-      else if (hash === "#/checker-mc") setRoute("checker-mc");
-      else setRoute("feed-analyse");
-    };
-    window.addEventListener("hashchange", onHash);
-    return () => window.removeEventListener("hashchange", onHash);
-  }, []);
+  useEffect(() => {}, []);
 
   useEffect(() => {
     let alive = true;
@@ -8313,7 +8285,6 @@ export default function App() {
   if (route === "checker-mc") {
     return (
       <div style={{ background: "#F2F4F7", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
-        {topNav}
         <div style={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
           <CheckerMCPage />
         </div>
