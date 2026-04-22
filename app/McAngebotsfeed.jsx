@@ -1089,46 +1089,6 @@ export default function McAngebotsfeed() {
                             );
                         })()}
 
-                    {/* Content Tips */}
-                    <details style={{ background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 8 }}>
-                        <summary
-                            style={{
-                                padding: '12px 16px',
-                                cursor: 'pointer',
-                                fontSize: 13,
-                                fontWeight: 600,
-                                color: '#111827',
-                            }}
-                        >
-                            Tipps für besseren Content
-                        </summary>
-                        <div style={{ padding: '0 16px 16px', display: 'grid', gap: 8 }}>
-                            {[
-                                { title: 'Produkttitel', desc: 'Mind. 40 Zeichen. Marke + Produkttyp + Merkmal.' },
-                                {
-                                    title: 'Beschreibung',
-                                    desc: 'Mind. 80 Zeichen. Vorteile, Material, Einsatzbereich. Keine externen Links.',
-                                },
-                                {
-                                    title: 'Bilder',
-                                    desc: 'Mind. 3 pro Produkt. Erstes Bild als Freisteller, dazu Milieu-Bilder.',
-                                },
-                                {
-                                    title: 'Lieferumfang',
-                                    desc: 'Format: 1x Tisch, 4x Stuhl. Versandart nicht vergessen.',
-                                },
-                            ].map((t) => (
-                                <div
-                                    key={t.title}
-                                    style={{ padding: '6px 0', borderBottom: '1px solid #F3F4F6' }}
-                                >
-                                    <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>{t.title}</div>
-                                    <div style={{ fontSize: 11, color: '#6B7280', marginTop: 2 }}>{t.desc}</div>
-                                </div>
-                            ))}
-                        </div>
-                    </details>
-
                     {/* Downloads */}
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                         <button
