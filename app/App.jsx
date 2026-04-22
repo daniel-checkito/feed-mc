@@ -1,6 +1,6 @@
 'use client';
 
-import McAngebotsfeed from './FeedChecker';
+import McAngebotsfeed from './McAngebotsfeed';
 
 export default function App() {
     return <McAngebotsfeed />;
