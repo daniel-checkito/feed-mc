@@ -944,7 +944,7 @@ export default function McAngebotsfeed() {
         <div style={{ background: '#F3F4F6', minHeight: '100vh' }}>
             {/* ── HEADER ── */}
             <header style={{ background: MC_BLUE, padding: '10px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
-                <span style={{ color: '#FFF', fontWeight: 900, fontSize: 18, letterSpacing: '-0.5px', fontStyle: 'italic', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                <span style={{ color: '#FFF', fontWeight: 900, fontSize: 22, letterSpacing: '-0.5px', fontStyle: 'italic', whiteSpace: 'nowrap', flexShrink: 0 }}>
                     FEED CHECKER
                 </span>
 
@@ -1296,50 +1296,113 @@ export default function McAngebotsfeed() {
                 STEP 3 — Ergebnis
             ══════════════════════════════════════════ */}
             {step === 3 && issues && (() => {
-                // Per-field coverage for table
                 const totalPflichtFields = PFLICHT_TABLE_FIELDS.length;
                 const vollstaendigFields = PFLICHT_TABLE_FIELDS.filter(({ key }) => {
                     const isMapped = key === 'availability'
                         ? (mcMapping.availability || mcMapping.stock_amount)
                         : key === 'image_url' ? mcImageColumns.length > 0
                         : mcMapping[key];
-                    const errs = fieldErrorRows[key]?.size || 0;
-                    return isMapped && errs === 0;
+                    return isMapped && (fieldErrorRows[key]?.size || 0) === 0;
                 }).length;
+
+                // Build top error groups (used in sidebar)
+                const rowsByGroup = { desc: new Set(), size: new Set(), mfr: new Set(), img: new Set(), price: new Set(), name: new Set(), brand: new Set(), ean: new Set(), hs_code: new Set() };
+                issues.pflichtErrors.forEach((e) => {
+                    if (e.field === 'description') rowsByGroup.desc.add(e.row);
+                    else if (['size','size_height','size_depth','size_diameter'].includes(e.field)) rowsByGroup.size.add(e.row);
+                    else if (e.field.startsWith('manufacturer_')) rowsByGroup.mfr.add(e.row);
+                    else if (e.field === 'image_url') rowsByGroup.img.add(e.row);
+                    else if (['price','availability','stock_amount','delivery_time','delivery_includes','shipping_mode'].includes(e.field)) rowsByGroup.price.add(e.row);
+                    else if (e.field === 'name') rowsByGroup.name.add(e.row);
+                    else if (e.field === 'brand') rowsByGroup.brand.add(e.row);
+                    else if (e.field === 'ean') rowsByGroup.ean.add(e.row);
+                    else if (e.field === 'hs_code') rowsByGroup.hs_code.add(e.row);
+                });
+                issues.eanDupRows.forEach((rn) => rowsByGroup.ean.add(rn));
+                issues.nameDupRows.forEach((rn) => rowsByGroup.name.add(rn));
+                const topGroups = T.errGroups
+                    .map((g) => ({ ...g, count: rowsByGroup[g.key]?.size || 0 }))
+                    .filter((g) => g.count > 0)
+                    .sort((a, b) => b.count - a.count)
+                    .slice(0, 4);
+
+                const csvOnClick = () => {
+                    const pflichtByRow = {}, optionalByRow = {};
+                    const errorMsg = (e) => {
+                        const label = T.csvFieldLabels[e.field] || e.field;
+                        if (e.type === 'missing') return T.csvErrMissing(label);
+                        if (e.type === 'placeholder') return T.csvErrPlaceholder(label);
+                        if (e.type === 'too_short') return T.csvErrTooShort(label);
+                        if (e.type === 'one_word') return T.csvErrOneWord(label);
+                        if (e.type === 'bware') return T.csvErrBware(label);
+                        if (e.type === 'wrong_length') return T.csvErrLength(label);
+                        if (e.type === 'invalid') return T.csvErrInvalid(label);
+                        return T.csvErrFallback(label);
+                    };
+                    issues.pflichtErrors.forEach((e) => { if (!pflichtByRow[e.row]) pflichtByRow[e.row] = []; pflichtByRow[e.row].push(errorMsg(e)); });
+                    issues.eanDupRows.forEach((rn) => { if (!pflichtByRow[rn]) pflichtByRow[rn] = []; pflichtByRow[rn].push(T.csvEanDup); });
+                    issues.nameDupRows.forEach((rn) => { if (!pflichtByRow[rn]) pflichtByRow[rn] = []; pflichtByRow[rn].push(T.csvNameDup); });
+                    issues.optionalHints.forEach((e) => { if (!optionalByRow[e.row]) optionalByRow[e.row] = []; optionalByRow[e.row].push(T.csvErrMissing(e.field)); });
+                    const esc = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+                    const sep = ';';
+                    const headerRow = [T.csvColPflicht, T.csvColOptional, ...headers].map(esc).join(sep);
+                    const lines = rows.map((r, i) => {
+                        const rn = i + 1;
+                        const p = pflichtByRow[rn] ? [...new Set(pflichtByRow[rn])].join('; ') : '';
+                        const o = optionalByRow[rn] ? [...new Set(optionalByRow[rn])].join('; ') : '';
+                        return [esc(p), esc(o), ...headers.map((h) => esc(r[h]))].join(sep);
+                    });
+                    const csv = [headerRow, ...lines].join('\n');
+                    const blob = new Blob([`﻿${csv}`], { type: 'text/csv;charset=utf-8' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `feed-fehlerliste-${new Date().toISOString().slice(0, 10)}.csv`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                };
 
                 return (
                     <div style={{ width: '100%', maxWidth: 820 }}>
-                        {/* Top nav */}
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-                            <button type="button" onClick={resetToStart}
-                                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: '#6B7280', fontWeight: 600, padding: 0, display: 'flex', alignItems: 'center', gap: 6 }}>
-                                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                {T.newFeed}
-                            </button>
-                            {file && <span style={{ fontSize: 11, color: '#9CA3AF' }}>{file.name}</span>}
-                        </div>
 
-                        {/* Status banner */}
-                        <div style={{ padding: '14px 20px', borderRadius: 12, background: stufe1Passed ? '#F0FDF4' : '#FEF2F2', border: `1px solid ${stufe1Passed ? '#BBF7D0' : '#FECACA'}`, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
-                            <div style={{ width: 32, height: 32, borderRadius: '50%', background: stufe1Passed ? '#DCFCE7' : '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        {/* 1 — Status banner */}
+                        <div style={{ padding: '16px 20px', borderRadius: 12, background: stufe1Passed ? '#F0FDF4' : '#FEF2F2', border: `1px solid ${stufe1Passed ? '#BBF7D0' : '#FECACA'}`, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 14 }}>
+                            <div style={{ width: 36, height: 36, borderRadius: '50%', background: stufe1Passed ? '#DCFCE7' : '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                                 {stufe1Passed
-                                    ? <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4 6-6" stroke="#16A34A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                    : <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2L1 14h14L8 2z" stroke="#DC2626" strokeWidth="1.5" strokeLinejoin="round"/><path d="M8 7v3" stroke="#DC2626" strokeWidth="1.5" strokeLinecap="round"/><circle cx="8" cy="12" r=".6" fill="#DC2626"/></svg>}
+                                    ? <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4 6-6" stroke="#16A34A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                    : <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2L1 14h14L8 2z" stroke="#DC2626" strokeWidth="1.5" strokeLinejoin="round"/><path d="M8 7v3" stroke="#DC2626" strokeWidth="1.5" strokeLinecap="round"/><circle cx="8" cy="12" r=".6" fill="#DC2626"/></svg>}
                             </div>
-                            <div>
-                                <div style={{ fontSize: 14, fontWeight: 700, color: stufe1Passed ? '#166534' : '#991B1B' }}>
+                            <div style={{ flex: 1 }}>
+                                <div style={{ fontSize: 15, fontWeight: 700, color: stufe1Passed ? '#166534' : '#991B1B' }}>
                                     {stufe1Passed ? T.statusOk : T.statusErr}
                                 </div>
                                 <div style={{ fontSize: 12, color: stufe1Passed ? '#4B7A5A' : '#B91C1C', marginTop: 2 }}>
                                     {T.errorRateFmt(errorRate.toFixed(1))}
                                 </div>
                             </div>
+                            {file && <span style={{ fontSize: 11, color: '#9CA3AF', flexShrink: 0 }}>{file.name}</span>}
                         </div>
 
-                        {/* Two-column grid */}
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 16, alignItems: 'start' }}>
+                        {/* 2 — Stats row (full width, prominent) */}
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 16 }}>
+                            {[
+                                { val: issues.livefaehigCount, label: T.statComplete, color: '#16A34A', bg: '#F0FDF4', border: '#BBF7D0', tip: T.tipComplete },
+                                { val: issues.blockiertCount, label: T.statErrors, color: '#DC2626', bg: '#FEF2F2', border: '#FECACA', tip: T.tipErrors },
+                                { val: issues.totalRows, label: T.statTotal, color: '#111827', bg: '#FFF', border: '#E5E7EB', tip: T.tipTotal },
+                            ].map(({ val, label, color, bg, border, tip }) => (
+                                <Tooltip key={label} text={tip}>
+                                    <div style={{ background: bg, borderRadius: 12, padding: '16px 20px', border: `1px solid ${border}`, cursor: 'help', display: 'flex', alignItems: 'center', gap: 14 }}>
+                                        <div style={{ fontSize: 32, fontWeight: 900, color, lineHeight: 1 }}>{val.toLocaleString(numLocale)}</div>
+                                        <div style={{ fontSize: 12, color: '#6B7280', lineHeight: 1.3 }}>{label}</div>
+                                    </div>
+                                </Tooltip>
+                            ))}
+                        </div>
 
-                            {/* Left: Pflichtfeldanalyse table */}
+                        {/* 3 — Detail: table left, actions right */}
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 16, alignItems: 'start', marginBottom: 16 }}>
+
+                            {/* Pflichtfeldanalyse table */}
                             <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'hidden' }}>
                                 <div style={{ padding: '14px 20px', borderBottom: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
                                     <div style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>{T.analysisTitle}</div>
@@ -1347,13 +1410,11 @@ export default function McAngebotsfeed() {
                                         {T.analysisSummary(totalPflichtFields, vollstaendigFields, totalPflichtFields - vollstaendigFields)}
                                     </div>
                                 </div>
-                                {/* Table header */}
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 130px 120px', padding: '8px 20px', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB' }}>
                                     <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.05em' }}>{T.colField}</div>
                                     <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.05em', textAlign: 'right' }}>{T.colStatus}</div>
                                     <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.05em', paddingLeft: 16 }}>{T.colCoverage}</div>
                                 </div>
-                                {/* Table rows */}
                                 {PFLICHT_TABLE_FIELDS.map(({ key, label }) => {
                                     const isMapped = key === 'availability'
                                         ? !!(mcMapping.availability || mcMapping.stock_amount)
@@ -1366,15 +1427,9 @@ export default function McAngebotsfeed() {
                                         <div key={key} style={{ display: 'grid', gridTemplateColumns: '1fr 130px 120px', padding: '10px 20px', borderBottom: '1px solid #F9FAFB', alignItems: 'center' }}>
                                             <div style={{ fontSize: 12, color: '#374151', fontWeight: 500 }}>{label}</div>
                                             <div style={{ textAlign: 'right', fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap' }}>
-                                                {pct === null ? (
-                                                    <span style={{ color: '#9CA3AF' }}>{T.notInFeed}</span>
-                                                ) : errs === 0 ? (
-                                                    <span style={{ color: '#16A34A' }}>{T.complete}</span>
-                                                ) : (
-                                                    <span style={{ color: pct < 30 ? '#DC2626' : '#D97706' }}>
-                                                        {T.missingCount(errs.toLocaleString(numLocale))}
-                                                    </span>
-                                                )}
+                                                {pct === null ? <span style={{ color: '#9CA3AF' }}>{T.notInFeed}</span>
+                                                    : errs === 0 ? <span style={{ color: '#16A34A' }}>{T.complete}</span>
+                                                    : <span style={{ color: pct < 30 ? '#DC2626' : '#D97706' }}>{T.missingCount(errs.toLocaleString(numLocale))}</span>}
                                             </div>
                                             <div style={{ paddingLeft: 16, display: 'flex', alignItems: 'center', gap: 6 }}>
                                                 {pct !== null ? (
@@ -1384,120 +1439,50 @@ export default function McAngebotsfeed() {
                                                         </div>
                                                         <span style={{ fontSize: 10, color: '#9CA3AF', width: 26, textAlign: 'right', flexShrink: 0 }}>{pct}%</span>
                                                     </>
-                                                ) : (
-                                                    <span style={{ fontSize: 10, color: '#D1D5DB' }}>—</span>
-                                                )}
+                                                ) : <span style={{ fontSize: 10, color: '#D1D5DB' }}>—</span>}
                                             </div>
                                         </div>
                                     );
                                 })}
                             </div>
 
-                            {/* Right: Stats + CSV + errors */}
+                            {/* Right sidebar: CSV + top errors */}
                             <div style={{ display: 'grid', gap: 12 }}>
-                                {/* 3 stats */}
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
-                                    {[
-                                        { val: issues.livefaehigCount, label: T.statComplete, color: '#16A34A', tip: T.tipComplete },
-                                        { val: issues.blockiertCount, label: T.statErrors, color: '#DC2626', tip: T.tipErrors },
-                                        { val: issues.totalRows, label: T.statTotal, color: '#111827', tip: T.tipTotal },
-                                    ].map(({ val, label, color, tip }) => (
-                                        <Tooltip key={label} text={tip}>
-                                            <div style={{ background: '#FFF', borderRadius: 10, padding: '12px 8px', textAlign: 'center', border: '1px solid #E5E7EB', cursor: 'help', width: '100%' }}>
-                                                <div style={{ fontSize: 22, fontWeight: 800, color, lineHeight: 1.1 }}>{val.toLocaleString(numLocale)}</div>
-                                                <div style={{ fontSize: 10, color: '#6B7280', marginTop: 3 }}>{label}</div>
-                                            </div>
-                                        </Tooltip>
-                                    ))}
-                                </div>
-
-                                {/* CSV download */}
                                 <div style={{ background: '#EEF4FF', borderRadius: 12, border: `2px solid ${MC_BLUE}`, padding: '16px' }}>
                                     <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', marginBottom: 4 }}>{T.csvTitle}</div>
                                     <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 12, lineHeight: 1.5 }}>{T.csvDesc}</div>
-                                    <button type="button"
-                                        onClick={() => {
-                                            const pflichtByRow = {}, optionalByRow = {};
-                                            const errorMsg = (e) => {
-                                                const label = T.csvFieldLabels[e.field] || e.field;
-                                                if (e.type === 'missing') return T.csvErrMissing(label);
-                                                if (e.type === 'placeholder') return T.csvErrPlaceholder(label);
-                                                if (e.type === 'too_short') return T.csvErrTooShort(label);
-                                                if (e.type === 'one_word') return T.csvErrOneWord(label);
-                                                if (e.type === 'bware') return T.csvErrBware(label);
-                                                if (e.type === 'wrong_length') return T.csvErrLength(label);
-                                                if (e.type === 'invalid') return T.csvErrInvalid(label);
-                                                return T.csvErrFallback(label);
-                                            };
-                                            issues.pflichtErrors.forEach((e) => { if (!pflichtByRow[e.row]) pflichtByRow[e.row] = []; pflichtByRow[e.row].push(errorMsg(e)); });
-                                            issues.eanDupRows.forEach((rn) => { if (!pflichtByRow[rn]) pflichtByRow[rn] = []; pflichtByRow[rn].push(T.csvEanDup); });
-                                            issues.nameDupRows.forEach((rn) => { if (!pflichtByRow[rn]) pflichtByRow[rn] = []; pflichtByRow[rn].push(T.csvNameDup); });
-                                            issues.optionalHints.forEach((e) => { if (!optionalByRow[e.row]) optionalByRow[e.row] = []; optionalByRow[e.row].push(T.csvErrMissing(e.field)); });
-                                            const esc = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
-                                            const sep = ';';
-                                            const headerRow = [T.csvColPflicht, T.csvColOptional, ...headers].map(esc).join(sep);
-                                            const lines = rows.map((r, i) => {
-                                                const rn = i + 1;
-                                                const p = pflichtByRow[rn] ? [...new Set(pflichtByRow[rn])].join('; ') : '';
-                                                const o = optionalByRow[rn] ? [...new Set(optionalByRow[rn])].join('; ') : '';
-                                                return [esc(p), esc(o), ...headers.map((h) => esc(r[h]))].join(sep);
-                                            });
-                                            const csv = [headerRow, ...lines].join('\n');
-                                            const blob = new Blob([`﻿${csv}`], { type: 'text/csv;charset=utf-8' });
-                                            const url = URL.createObjectURL(blob);
-                                            const a = document.createElement('a');
-                                            a.href = url;
-                                            a.download = `feed-fehlerliste-${new Date().toISOString().slice(0, 10)}.csv`;
-                                            a.click();
-                                            URL.revokeObjectURL(url);
-                                        }}
+                                    <button type="button" onClick={csvOnClick}
                                         style={{ width: '100%', padding: '11px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
                                         {T.csvBtn}
                                     </button>
                                 </div>
 
-                                {/* Top error groups */}
-                                {!stufe1Passed && (() => {
-                                    const rowsByGroup2 = { desc: new Set(), size: new Set(), mfr: new Set(), img: new Set(), price: new Set(), name: new Set(), brand: new Set(), ean: new Set(), hs_code: new Set() };
-                                    issues.pflichtErrors.forEach((e) => {
-                                        if (e.field === 'description') rowsByGroup2.desc.add(e.row);
-                                        else if (['size','size_height','size_depth','size_diameter'].includes(e.field)) rowsByGroup2.size.add(e.row);
-                                        else if (e.field.startsWith('manufacturer_')) rowsByGroup2.mfr.add(e.row);
-                                        else if (e.field === 'image_url') rowsByGroup2.img.add(e.row);
-                                        else if (['price','availability','stock_amount','delivery_time','delivery_includes','shipping_mode'].includes(e.field)) rowsByGroup2.price.add(e.row);
-                                        else if (e.field === 'name') rowsByGroup2.name.add(e.row);
-                                        else if (e.field === 'brand') rowsByGroup2.brand.add(e.row);
-                                        else if (e.field === 'ean') rowsByGroup2.ean.add(e.row);
-                                        else if (e.field === 'hs_code') rowsByGroup2.hs_code.add(e.row);
-                                    });
-                                    issues.eanDupRows.forEach((rn) => rowsByGroup2.ean.add(rn));
-                                    issues.nameDupRows.forEach((rn) => rowsByGroup2.name.add(rn));
-                                    const topGroups2 = T.errGroups
-                                     .map((g) => ({ ...g, count: rowsByGroup2[g.key]?.size || 0 }))
-                                     .filter((g) => g.count > 0)
-                                     .sort((a, b) => b.count - a.count)
-                                     .slice(0, 4);
-
-                                    if (!topGroups2.length) return null;
-                                    return (
-                                        <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '14px 16px' }}>
-                                            <div style={{ fontSize: 12, fontWeight: 700, color: '#111827', marginBottom: 10 }}>{T.topErrorsTitle}</div>
-                                            <div style={{ display: 'grid', gap: 8 }}>
-                                                {topGroups2.map((g) => (
-                                                    <div key={g.key}>
-                                                        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 2 }}>
-                                                            <span style={{ fontSize: 11, fontWeight: 600, color: '#111827' }}>{g.label}</span>
-                                                            <span style={{ fontSize: 10, fontWeight: 700, color: '#DC2626' }}>{T.articles(g.count.toLocaleString(numLocale))}</span>
-                                                        </div>
-                                                        <div style={{ fontSize: 10, color: '#6B7280' }}>{g.hint}</div>
+                                {topGroups.length > 0 && (
+                                    <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '14px 16px' }}>
+                                        <div style={{ fontSize: 12, fontWeight: 700, color: '#111827', marginBottom: 10 }}>{T.topErrorsTitle}</div>
+                                        <div style={{ display: 'grid', gap: 8 }}>
+                                            {topGroups.map((g) => (
+                                                <div key={g.key}>
+                                                    <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 2 }}>
+                                                        <span style={{ fontSize: 11, fontWeight: 600, color: '#111827' }}>{g.label}</span>
+                                                        <span style={{ fontSize: 10, fontWeight: 700, color: '#DC2626' }}>{T.articles(g.count.toLocaleString(numLocale))}</span>
                                                     </div>
-                                                ))}
-                                            </div>
+                                                    <div style={{ fontSize: 10, color: '#6B7280' }}>{g.hint}</div>
+                                                </div>
+                                            ))}
                                         </div>
-                                    );
-                                })()}
+                                    </div>
+                                )}
                             </div>
                         </div>
+
+                        {/* 4 — Bottom CTA */}
+                        <button type="button" onClick={resetToStart}
+                            style={{ width: '100%', padding: '14px', background: '#FFF', color: '#374151', border: '1px solid #D1D5DB', borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                            <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2 7.5h11M7 2.5l-5 5 5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                            {lang === 'de' ? 'Neuen Feed hochladen' : 'Upload New Feed'}
+                        </button>
+
                     </div>
                 );
             })()}
