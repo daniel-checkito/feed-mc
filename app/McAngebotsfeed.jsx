@@ -659,32 +659,29 @@ export default function McAngebotsfeed() {
                                 />
                             </div>
                         </div>
-                    </div>
-
-                    {/* Workflow hint */}
-                    {issues && (
-                        <div
-                            style={{
-                                background: '#EEF4FF',
-                                borderLeft: `3px solid ${MC_BLUE}`,
-                                borderRadius: 6,
-                                padding: '10px 14px',
-                            }}
-                        >
-                            <div style={{ fontSize: 12, fontWeight: 600, color: MC_BLUE, marginBottom: 4 }}>
-                                So verbessern Sie Ihren Feed
-                            </div>
-                            <div style={{ fontSize: 11, color: '#374151', lineHeight: '17px' }}>
-                                1. Fehlerliste herunterladen
-                                <br />
-                                2. Fehler in Ihrer Datei korrigieren
-                                <br />
-                                3. Korrigierte Datei neu hochladen
-                                <br />
-                                4. Erneut prüfen lassen
-                            </div>
+                        <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid #F3F4F6', display: 'flex', gap: 16, alignItems: 'center' }}>
+                            <span style={{ fontSize: 11, color: '#9CA3AF' }}>Ressourcen:</span>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    const a = document.createElement('a');
+                                    a.href = 'http://media-partner.moebel.check24.de/feedvorlagen/Feedleitfaden_Anhang_2026/CHECK24_Feedvorlage_V2025.xlsx';
+                                    a.download = 'CHECK24_Feedvorlage_V2025.xlsx';
+                                    a.click();
+                                }}
+                                style={{ fontSize: 11, color: MC_BLUE, background: 'none', border: 'none', padding: 0, cursor: 'pointer', textDecoration: 'underline' }}
+                            >
+                                ⬇ Feedvorlage (XLSX)
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setShowLeitfaden(true)}
+                                style={{ fontSize: 11, color: MC_BLUE, background: 'none', border: 'none', padding: 0, cursor: 'pointer', textDecoration: 'underline' }}
+                            >
+                                📄 Feedleitfaden (PDF)
+                            </button>
                         </div>
-                    )}
+                    </div>
 
 
                     {/* Spalten-Zuordnung */}
@@ -926,109 +923,6 @@ export default function McAngebotsfeed() {
                             );
                         })()}
 
-                    {/* Content Tips */}
-                    <details style={{ background: '#FFF', borderRadius: 12, boxShadow: '0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04)' }}>
-                        <summary
-                            style={{
-                                padding: '12px 16px',
-                                cursor: 'pointer',
-                                fontSize: 13,
-                                fontWeight: 600,
-                                color: '#111827',
-                            }}
-                        >
-                            Tipps für besseren Content
-                        </summary>
-                        <div style={{ padding: '0 16px 16px', display: 'grid', gap: 8 }}>
-                            {[
-                                {
-                                    title: 'Produkttitel',
-                                    desc: 'Mind. 40 Zeichen. Aufbau: Marke + Produkttyp + wichtigstes Merkmal (z. B. Farbe, Material, Größe). Keine Sonderzeichen oder Werbebegriffe.',
-                                },
-                                {
-                                    title: 'Beschreibung',
-                                    desc: 'Mind. 80 Zeichen. Vorteile, Material, Einsatzbereich, Maße. Keine externen Links, keine HTML-Tags, keine Wiederholung des Titels.',
-                                },
-                                {
-                                    title: 'Bilder',
-                                    desc: 'Mind. 3 Bilder pro Produkt. Erstes Bild als Freisteller auf weißem Hintergrund, weitere als Milieu- oder Detailbilder. Mind. 800×800 px.',
-                                },
-                                {
-                                    title: 'Kategoriepfad',
-                                    desc: 'Vollständig und korrekt befüllen – beeinflusst direkt die Sichtbarkeit. Format: Oberkategorie > Unterkategorie > Produkttyp.',
-                                },
-                                {
-                                    title: 'Lieferumfang',
-                                    desc: 'Klar und vollständig: z. B. „1x Tisch, 4x Stühle". Versandart (Paket / Spedition) immer angeben.',
-                                },
-                                {
-                                    title: 'Preis & Verfügbarkeit',
-                                    desc: 'Preise täglich aktuell halten. Verfügbarkeit (availability) ist nur nötig, wenn kein Lagerbestand (stock_amount) übermittelt wird - eines von beiden muss vorhanden sein.',
-                                },
-                            ].map((t) => (
-                                <div
-                                    key={t.title}
-                                    style={{ padding: '6px 0', borderBottom: '1px solid #F3F4F6' }}
-                                >
-                                    <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>{t.title}</div>
-                                    <div style={{ fontSize: 11, color: '#6B7280', marginTop: 2 }}>{t.desc}</div>
-                                </div>
-                            ))}
-                        </div>
-                    </details>
-
-                    {/* Downloads */}
-                    <div style={{ background: '#FFF', borderRadius: 12, padding: '16px 20px', boxShadow: '0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04)' }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                        <button
-                            type="button"
-                            onClick={() => {
-                                const a = document.createElement('a');
-                                a.href = 'http://media-partner.moebel.check24.de/feedvorlagen/Feedleitfaden_Anhang_2026/CHECK24_Feedvorlage_V2025.xlsx';
-                                a.download = 'CHECK24_Feedvorlage_V2025.xlsx';
-                                a.click();
-                            }}
-                            style={{
-                                padding: '10px 12px',
-                                borderRadius: 6,
-                                border: '1px solid #E5E7EB',
-                                background: '#F9FAFB',
-                                cursor: 'pointer',
-                                textAlign: 'left',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 10,
-                            }}
-                        >
-                            <span style={{ fontSize: 16, flexShrink: 0 }}>⬇</span>
-                            <div>
-                                <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>Feedvorlage</div>
-                                <div style={{ fontSize: 10, color: '#6B7280', marginTop: 1 }}>XLSX · sofort herunterladen</div>
-                            </div>
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setShowLeitfaden(true)}
-                            style={{
-                                padding: '10px 12px',
-                                borderRadius: 6,
-                                border: '1px solid #E5E7EB',
-                                background: '#F9FAFB',
-                                cursor: 'pointer',
-                                textAlign: 'left',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 10,
-                            }}
-                        >
-                            <span style={{ fontSize: 16, flexShrink: 0 }}>📄</span>
-                            <div>
-                                <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>Feedleitfaden</div>
-                                <div style={{ fontSize: 10, color: '#6B7280', marginTop: 1 }}>PDF · Vorschau & Download</div>
-                            </div>
-                        </button>
-                    </div>
-                    </div>
                 </div>
 
                 {/* ── RIGHT: Analysis Results ── */}
