@@ -659,8 +659,12 @@ export default function McAngebotsfeed() {
                                 />
                             </div>
                         </div>
-                        <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid #F3F4F6', display: 'flex', gap: 16, alignItems: 'center' }}>
-                            <span style={{ fontSize: 11, color: '#9CA3AF' }}>Ressourcen:</span>
+                    </div>
+
+                    {/* Downloads */}
+                    <div style={{ background: '#FFF', borderRadius: 12, padding: '16px 20px', boxShadow: '0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04)' }}>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 10 }}>Vorlagen & Dokumentation</div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                             <button
                                 type="button"
                                 onClick={() => {
@@ -669,17 +673,48 @@ export default function McAngebotsfeed() {
                                     a.download = 'CHECK24_Feedvorlage_V2025.xlsx';
                                     a.click();
                                 }}
-                                style={{ fontSize: 11, color: MC_BLUE, background: 'none', border: 'none', padding: 0, cursor: 'pointer', textDecoration: 'underline' }}
+                                style={{ padding: '10px 12px', borderRadius: 6, border: '1px solid #E5E7EB', background: '#F9FAFB', cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 10 }}
                             >
-                                ⬇ Feedvorlage (XLSX)
+                                <span style={{ fontSize: 16, flexShrink: 0 }}>⬇</span>
+                                <div>
+                                    <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>Feedvorlage</div>
+                                    <div style={{ fontSize: 10, color: '#6B7280', marginTop: 1 }}>XLSX · sofort herunterladen</div>
+                                </div>
                             </button>
                             <button
                                 type="button"
                                 onClick={() => setShowLeitfaden(true)}
-                                style={{ fontSize: 11, color: MC_BLUE, background: 'none', border: 'none', padding: 0, cursor: 'pointer', textDecoration: 'underline' }}
+                                style={{ padding: '10px 12px', borderRadius: 6, border: '1px solid #E5E7EB', background: '#F9FAFB', cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 10 }}
                             >
-                                📄 Feedleitfaden (PDF)
+                                <span style={{ fontSize: 16, flexShrink: 0 }}>📄</span>
+                                <div>
+                                    <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>Feedleitfaden</div>
+                                    <div style={{ fontSize: 10, color: '#6B7280', marginTop: 1 }}>PDF · Vorschau & Download</div>
+                                </div>
                             </button>
+                        </div>
+                    </div>
+
+                    {/* So funktioniert es */}
+                    <div style={{ background: '#FFF', borderRadius: 12, padding: '16px 20px', boxShadow: '0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04)' }}>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 12 }}>So funktioniert der Feed Checker</div>
+                        <div style={{ display: 'grid', gap: 10 }}>
+                            {[
+                                { step: '1', title: 'Feed hochladen', desc: 'Laden Sie Ihren Angebotsfeed als CSV-Datei hoch.' },
+                                { step: '2', title: 'Fehler prüfen', desc: 'Der Tool prüft alle Pflichtfelder und zeigt Ihnen genau, welche Artikel fehlerhaft sind und warum.' },
+                                { step: '3', title: 'Fehler beheben', desc: 'Laden Sie den Fehlerbericht herunter, korrigieren Sie Ihre Datei und laden Sie sie erneut hoch.' },
+                                { step: '4', title: 'Produkte live schalten', desc: 'Ein fehlerfreier Feed bedeutet schnelleres Listing und mehr Sichtbarkeit auf CHECK24.' },
+                            ].map((s) => (
+                                <div key={s.step} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+                                    <div style={{ width: 22, height: 22, borderRadius: '50%', background: MC_BLUE, color: '#FFF', fontSize: 11, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
+                                        {s.step}
+                                    </div>
+                                    <div>
+                                        <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>{s.title}</div>
+                                        <div style={{ fontSize: 11, color: '#6B7280', marginTop: 2, lineHeight: '1.5' }}>{s.desc}</div>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
 
