@@ -603,7 +603,10 @@ export default function McAngebotsfeed() {
                             padding: '16px 20px',
                         }}
                     >
-                        <div style={{ marginTop: 12 }}>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 10 }}>
+                            Datei hochladen
+                        </div>
+                        <div style={{ marginTop: 0 }}>
                             {file && (
                                 <div
                                     style={{
