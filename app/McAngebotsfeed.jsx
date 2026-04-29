@@ -1328,26 +1328,28 @@ export default function McAngebotsfeed() {
                     return isMapped && (fieldErrorRows[key]?.size || 0) === 0;
                 }).length;
 
-                // Build top error groups (used in sidebar)
-                const rowsByGroup = { desc: new Set(), size: new Set(), mfr: new Set(), img: new Set(), price: new Set(), name: new Set(), brand: new Set(), ean: new Set(), hs_code: new Set() };
+                // Build per-type error breakdown for sidebar
+                const errorsByType = {};
                 issues.pflichtErrors.forEach((e) => {
-                    if (e.field === 'description') rowsByGroup.desc.add(e.row);
-                    else if (['size','size_height','size_depth','size_diameter'].includes(e.field)) rowsByGroup.size.add(e.row);
-                    else if (e.field.startsWith('manufacturer_')) rowsByGroup.mfr.add(e.row);
-                    else if (e.field === 'image_url') rowsByGroup.img.add(e.row);
-                    else if (['price','availability','stock_amount','delivery_time','delivery_includes','shipping_mode'].includes(e.field)) rowsByGroup.price.add(e.row);
-                    else if (e.field === 'name') rowsByGroup.name.add(e.row);
-                    else if (e.field === 'brand') rowsByGroup.brand.add(e.row);
-                    else if (e.field === 'ean') rowsByGroup.ean.add(e.row);
-                    else if (e.field === 'hs_code') rowsByGroup.hs_code.add(e.row);
+                    const fieldLabel = T.csvFieldLabels[e.field] || e.field;
+                    let label;
+                    if (e.type === 'missing') label = T.csvErrMissing(fieldLabel);
+                    else if (e.type === 'placeholder') label = T.csvErrPlaceholder(fieldLabel);
+                    else if (e.type === 'too_short') label = T.csvErrTooShort(fieldLabel);
+                    else if (e.type === 'one_word') label = T.csvErrOneWord(fieldLabel);
+                    else if (e.type === 'bware') label = T.csvErrBware(fieldLabel);
+                    else if (e.type === 'wrong_length') label = T.csvErrLength(fieldLabel);
+                    else if (e.type === 'invalid') label = T.csvErrInvalid(fieldLabel);
+                    else label = T.csvErrFallback(fieldLabel);
+                    const key = `${e.field}::${e.type}`;
+                    if (!errorsByType[key]) errorsByType[key] = { label, count: 0 };
+                    errorsByType[key].count++;
                 });
-                issues.eanDupRows.forEach((rn) => rowsByGroup.ean.add(rn));
-                issues.nameDupRows.forEach((rn) => rowsByGroup.name.add(rn));
-                const topGroups = T.errGroups
-                    .map((g) => ({ ...g, count: rowsByGroup[g.key]?.size || 0 }))
-                    .filter((g) => g.count > 0)
+                if (issues.eanDupRows.size > 0) errorsByType['ean::dup'] = { label: T.csvEanDup, count: issues.eanDupRows.size };
+                if (issues.nameDupRows.size > 0) errorsByType['name::dup'] = { label: T.csvNameDup, count: issues.nameDupRows.size };
+                const detailedErrors = Object.values(errorsByType)
                     .sort((a, b) => b.count - a.count)
-                    .slice(0, 4);
+                    .slice(0, 7);
 
                 const csvOnClick = () => {
                     const pflichtByRow = {}, optionalByRow = {};
@@ -1480,17 +1482,16 @@ export default function McAngebotsfeed() {
                                     </button>
                                 </div>
 
-                                {topGroups.length > 0 && (
+                                {detailedErrors.length > 0 && (
                                     <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '14px 16px' }}>
                                         <div style={{ fontSize: 12, fontWeight: 700, color: '#111827', marginBottom: 10 }}>{T.topErrorsTitle}</div>
-                                        <div style={{ display: 'grid', gap: 8 }}>
-                                            {topGroups.map((g) => (
-                                                <div key={g.key}>
-                                                    <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 2 }}>
-                                                        <span style={{ fontSize: 11, fontWeight: 600, color: '#111827' }}>{g.label}</span>
-                                                        <span style={{ fontSize: 10, fontWeight: 700, color: '#DC2626' }}>{T.articles(g.count.toLocaleString(numLocale))}</span>
-                                                    </div>
-                                                    <div style={{ fontSize: 10, color: '#6B7280' }}>{g.hint}</div>
+                                        <div style={{ display: 'grid', gap: 7 }}>
+                                            {detailedErrors.map((e, i) => (
+                                                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                                    <span style={{ fontSize: 11, fontWeight: 800, color: '#DC2626', minWidth: 30, textAlign: 'right', flexShrink: 0 }}>
+                                                        {e.count.toLocaleString(numLocale)}
+                                                    </span>
+                                                    <span style={{ fontSize: 11, color: '#374151', lineHeight: 1.3 }}>{e.label}</span>
                                                 </div>
                                             ))}
                                         </div>
