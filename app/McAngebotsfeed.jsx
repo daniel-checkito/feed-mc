@@ -541,6 +541,7 @@ export default function McAngebotsfeed() {
     const [manualMapping, setManualMapping] = useState({});
     const [mappingExpanded, setMappingExpanded] = useState(false);
     const [lang, setLang] = useState('de');
+    const [langOpen, setLangOpen] = useState(false);
     const fileRef = useRef(null);
 
     function parseFile(f) {
@@ -949,13 +950,32 @@ export default function McAngebotsfeed() {
                 </span>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-                    {/* Language toggle */}
-                    <button type="button" onClick={() => setLang(lang === 'de' ? 'en' : 'de')}
-                        style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: 8, padding: '6px 12px', cursor: 'pointer', color: '#FFF', fontSize: 13, fontWeight: 600, transition: 'background 0.15s' }}>
-                        <span style={{ fontSize: 16, lineHeight: 1 }}>{lang === 'de' ? '🇩🇪' : '🇬🇧'}</span>
-                        <span>{lang === 'de' ? 'Deutsch' : 'English'}</span>
-                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style={{ opacity: 0.8 }}><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                    </button>
+                    {/* Language dropdown */}
+                    <div style={{ position: 'relative' }}>
+                        <button type="button" onClick={() => setLangOpen((v) => !v)}
+                            style={{ display: 'flex', alignItems: 'center', gap: 7, background: langOpen ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: langOpen ? '8px 8px 0 0' : 8, padding: '6px 12px', cursor: 'pointer', color: '#FFF', fontSize: 13, fontWeight: 600, transition: 'background 0.15s' }}>
+                            <span style={{ fontSize: 16, lineHeight: 1 }}>{lang === 'de' ? '🇩🇪' : '🇬🇧'}</span>
+                            <span>{lang === 'de' ? 'Deutsch' : 'English'}</span>
+                            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style={{ opacity: 0.8, transform: langOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }}><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                        </button>
+                        {langOpen && (
+                            <>
+                                {/* Click-outside backdrop */}
+                                <div style={{ position: 'fixed', inset: 0, zIndex: 99 }} onClick={() => setLangOpen(false)} />
+                                <div style={{ position: 'absolute', top: '100%', right: 0, background: '#FFF', borderRadius: '0 0 8px 8px', border: '1px solid rgba(255,255,255,0.25)', boxShadow: '0 8px 24px rgba(0,0,0,0.18)', overflow: 'hidden', zIndex: 100, minWidth: '100%' }}>
+                                    {[{ value: 'de', flag: '🇩🇪', label: 'Deutsch' }, { value: 'en', flag: '🇬🇧', label: 'English' }].map((opt) => (
+                                        <button key={opt.value} type="button"
+                                            onClick={() => { setLang(opt.value); setLangOpen(false); }}
+                                            style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8, padding: '9px 14px', background: lang === opt.value ? '#EEF4FF' : '#FFF', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: lang === opt.value ? 700 : 400, color: lang === opt.value ? MC_BLUE : '#374151', whiteSpace: 'nowrap' }}>
+                                            <span style={{ fontSize: 16 }}>{opt.flag}</span>
+                                            {opt.label}
+                                            {lang === opt.value && <svg width="11" height="11" viewBox="0 0 11 11" fill="none" style={{ marginLeft: 'auto' }}><path d="M2 5.5l2.5 2.5 4.5-4.5" stroke={MC_BLUE} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                                        </button>
+                                    ))}
+                                </div>
+                            </>
+                        )}
+                    </div>
                     <a
                         href="mailto:contentmanagement.moebel@check24.de?subject=Feed%20Checker%20-%20Hilfe"
                         style={{ border: '1px solid rgba(255,255,255,0.3)', background: 'transparent', color: '#FFFFFF', fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}
