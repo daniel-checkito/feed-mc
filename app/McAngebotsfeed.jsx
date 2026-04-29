@@ -602,7 +602,8 @@ export default function McAngebotsfeed() {
                             boxShadow: '0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04)',
                         }}
                     >
-                        <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 10 }}>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#D1D5DB', flexShrink: 0, display: 'inline-block' }} />
                             Datei hochladen
                         </div>
                         <div style={{ marginTop: 0 }}>
@@ -660,7 +661,10 @@ export default function McAngebotsfeed() {
 
                     {/* Downloads */}
                     <div style={{ background: '#FFF', borderRadius: 12, padding: '16px 20px', boxShadow: '0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04)' }}>
-                        <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 10 }}>Vorlagen & Dokumentation</div>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#D1D5DB', flexShrink: 0, display: 'inline-block' }} />
+                            Vorlagen & Dokumentation
+                        </div>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                             <button
                                 type="button"
@@ -694,7 +698,10 @@ export default function McAngebotsfeed() {
 
                     {/* So funktioniert es */}
                     <div style={{ background: '#FFF', borderRadius: 12, padding: '16px 20px', boxShadow: '0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04)' }}>
-                        <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 12 }}>So funktioniert der Feed Checker</div>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#D1D5DB', flexShrink: 0, display: 'inline-block' }} />
+                            So funktioniert der Feed Checker
+                        </div>
                         <div style={{ display: 'grid', gap: 10 }}>
                             {[
                                 { step: '1', title: 'Feed hochladen', desc: 'Laden Sie Ihren Angebotsfeed als CSV-Datei hoch.' },
