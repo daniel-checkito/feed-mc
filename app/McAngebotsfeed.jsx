@@ -1024,15 +1024,15 @@ export default function McAngebotsfeed() {
                 STEP 1 — Upload
             ══════════════════════════════════════════ */}
             {step === 1 && (
-                <div style={{ width: '100%', maxWidth: 520 }}>
+                <div style={{ width: '100%', maxWidth: 860, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 28, alignItems: 'start' }}>
 
-                    {/* How it works explainer */}
-                    <div style={{ marginBottom: 20, textAlign: 'center' }}>
+                    {/* Left: How it works */}
+                    <div>
                         <div style={{ fontSize: 20, fontWeight: 800, color: '#111827', marginBottom: 6 }}>{T.howTitle}</div>
-                        <div style={{ fontSize: 13, color: '#6B7280', lineHeight: 1.6, marginBottom: 20 }}>{T.howSummary}</div>
+                        <div style={{ fontSize: 13, color: '#6B7280', lineHeight: 1.6, marginBottom: 16 }}>{T.howSummary}</div>
                         <div style={{ display: 'grid', gap: 8 }}>
                             {T.howSteps.map((s) => (
-                                <div key={s.n} style={{ background: '#FFF', borderRadius: 10, padding: '12px 14px', border: '1px solid #E5E7EB', textAlign: 'left', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                                <div key={s.n} style={{ background: '#FFF', borderRadius: 10, padding: '12px 14px', border: '1px solid #E5E7EB', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
                                     <div style={{ width: 22, height: 22, borderRadius: '50%', background: MC_BLUE, color: '#FFF', fontSize: 10, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>{s.n}</div>
                                     <div>
                                         <div style={{ fontSize: 12, fontWeight: 700, color: '#111827', marginBottom: 2 }}>{s.title}</div>
@@ -1043,13 +1043,9 @@ export default function McAngebotsfeed() {
                         </div>
                     </div>
 
-                    <div style={{ background: '#FFF', borderRadius: 16, padding: '36px 40px', boxShadow: '0 2px 16px rgba(0,0,0,0.08)' }}>
-                        {/* Heading */}
-                        <div style={{ marginBottom: 28, textAlign: 'center' }}>
-                            <div style={{ fontSize: 22, fontWeight: 800, color: '#111827', marginBottom: 8 }}>{T.s1Heading}</div>
-                            <div style={{ fontSize: 13, color: '#6B7280', lineHeight: 1.6 }}>{T.s1Sub}</div>
-                        </div>
-
+                    {/* Right: Upload card + downloads */}
+                    <div>
+                        <div style={{ background: '#FFF', borderRadius: 16, padding: '28px', boxShadow: '0 2px 16px rgba(0,0,0,0.08)', marginBottom: 10 }}>
                         {/* Drop zone */}
                         {file ? (
                             <div style={{ borderRadius: 10, border: '2px solid #BBF7D0', background: '#F0FDF4', padding: '18px 20px', display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -1094,7 +1090,7 @@ export default function McAngebotsfeed() {
                         >
                             {rows.length > 0 ? T.continueBtn(rows.length.toLocaleString(numLocale)) : T.uploadPrompt}
                         </button>
-                    </div>
+                        </div>{/* end white card */}
 
                     {/* Downloads below card */}
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 12 }}>
@@ -1115,7 +1111,8 @@ export default function McAngebotsfeed() {
                             </div>
                         </button>
                     </div>
-                </div>
+                    </div>{/* end right column */}
+                </div>{/* end grid */}
             )}
 
             {/* ══════════════════════════════════════════
@@ -1433,8 +1430,11 @@ export default function McAngebotsfeed() {
                             </div>
                         </div>
 
-                        {/* 3 — Pflichtfeldanalyse table (full width) */}
-                        <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'hidden', marginBottom: 16 }}>
+                        {/* 3 — Two-column: table left, sidebar right */}
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 16, alignItems: 'start' }}>
+
+                        {/* Table */}
+                        <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'hidden' }}>
                             <div style={{ padding: '14px 20px', borderBottom: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
                                 <div style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>{T.analysisTitle}</div>
                                 <div style={{ fontSize: 11, color: '#6B7280' }}>
@@ -1475,43 +1475,47 @@ export default function McAngebotsfeed() {
                                     </div>
                                 );
                             })}
-                        </div>
+                        </div>{/* end table */}
 
-                        {/* 4 — Häufigste Fehler (full width, if any) */}
-                        {detailedErrors.length > 0 && (
-                            <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '14px 20px', marginBottom: 16 }}>
-                                <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', marginBottom: 10 }}>{T.topErrorsTitle}</div>
-                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 24px' }}>
-                                    {detailedErrors.map((e, i) => (
-                                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                                            <span style={{ fontSize: 12, fontWeight: 800, color: '#DC2626', minWidth: 28, textAlign: 'right', flexShrink: 0 }}>
-                                                {e.count.toLocaleString(numLocale)}
-                                            </span>
-                                            <span style={{ fontSize: 12, color: '#374151' }}>{e.label}</span>
-                                        </div>
-                                    ))}
+                        {/* Sidebar */}
+                        <div style={{ display: 'grid', gap: 12 }}>
+
+                            {/* Häufigste Fehler */}
+                            {detailedErrors.length > 0 && (
+                                <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '14px 16px' }}>
+                                    <div style={{ fontSize: 12, fontWeight: 700, color: '#111827', marginBottom: 10 }}>{T.topErrorsTitle}</div>
+                                    <div style={{ display: 'grid', gap: 7 }}>
+                                        {detailedErrors.map((e, i) => (
+                                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                                <span style={{ fontSize: 11, fontWeight: 800, color: '#DC2626', minWidth: 28, textAlign: 'right', flexShrink: 0 }}>
+                                                    {e.count.toLocaleString(numLocale)}
+                                                </span>
+                                                <span style={{ fontSize: 11, color: '#374151', lineHeight: 1.3 }}>{e.label}</span>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-                        )}
+                            )}
 
-                        {/* 5 — Download card */}
-                        <div style={{ background: '#EEF4FF', borderRadius: 12, border: `2px solid ${MC_BLUE}`, padding: '16px 20px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 20 }}>
-                            <div style={{ flex: 1 }}>
-                                <div style={{ fontSize: 14, fontWeight: 700, color: '#111827', marginBottom: 3 }}>{T.csvTitle}</div>
-                                <div style={{ fontSize: 12, color: '#6B7280', lineHeight: 1.5 }}>{T.csvDesc}</div>
+                            {/* Download card */}
+                            <div style={{ background: '#EEF4FF', borderRadius: 12, border: `2px solid ${MC_BLUE}`, padding: '16px' }}>
+                                <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', marginBottom: 4 }}>{T.csvTitle}</div>
+                                <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 12, lineHeight: 1.5 }}>{T.csvDesc}</div>
+                                <button type="button" onClick={csvOnClick}
+                                    style={{ width: '100%', padding: '11px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
+                                    {T.csvBtn}
+                                </button>
                             </div>
-                            <button type="button" onClick={csvOnClick}
-                                style={{ flexShrink: 0, padding: '11px 24px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}>
-                                {T.csvBtn}
+
+                            {/* Reset */}
+                            <button type="button" onClick={resetToStart}
+                                style={{ width: '100%', padding: '11px', background: '#FFF', color: '#374151', border: '1px solid #D1D5DB', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                                <svg width="13" height="13" viewBox="0 0 15 15" fill="none"><path d="M2 7.5h11M7 2.5l-5 5 5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                {lang === 'de' ? 'Neuen Feed hochladen' : 'Upload New Feed'}
                             </button>
-                        </div>
 
-                        {/* 6 — Bottom CTA */}
-                        <button type="button" onClick={resetToStart}
-                            style={{ width: '100%', padding: '14px', background: '#FFF', color: '#374151', border: '1px solid #D1D5DB', borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                            <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2 7.5h11M7 2.5l-5 5 5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                            {lang === 'de' ? 'Neuen Feed hochladen' : 'Upload New Feed'}
-                        </button>
+                        </div>{/* end sidebar */}
+                        </div>{/* end grid */}
 
                     </div>
                 );
