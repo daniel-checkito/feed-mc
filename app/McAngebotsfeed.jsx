@@ -295,7 +295,7 @@ const MC_OPTIONAL_ALIASES = {
 };
 
 export default function McAngebotsfeed() {
-    const showQualityScore = false; // not public yet — re-enable when ready
+    const showQualityScore = false; // not public yet - re-enable when ready
 
     const [file, setFile] = useState(null);
     const [dragging, setDragging] = useState(false);
@@ -379,7 +379,7 @@ export default function McAngebotsfeed() {
         [headers],
     );
 
-    // Reactive analysis — re-runs whenever mapping or rows change
+    // Reactive analysis - re-runs whenever mapping or rows change
     // Implements Zwei-Stufen-Modell: Stufe 1 (Hard Gate) + Stufe 2 (Soft Score)
     const issues = useMemo(() => {
         if (!rows.length || !headers.length) return null;
@@ -1330,7 +1330,7 @@ export default function McAngebotsfeed() {
                                                             {g.label}
                                                         </span>
                                                         <span style={{ color: '#6B7280', fontStyle: 'italic' }}>
-                                                            — {g.hint}
+                                                            {g.hint}
                                                         </span>
                                                     </div>
                                                 ))}
@@ -1550,7 +1550,7 @@ export default function McAngebotsfeed() {
                                     </button>
                                 </div>
 
-                                {/* ── STUFE 2 – FEED-QUALITÄTSSCORE (Soft Score) — hidden until public release ── */}
+                                {/* ── STUFE 2 – FEED-QUALITÄTSSCORE (Soft Score) - hidden until public release ── */}
                                 {showQualityScore && (
                                     <div
                                         style={{
@@ -1585,7 +1585,7 @@ export default function McAngebotsfeed() {
                                                     }}
                                                 >
                                                     <span style={{ whiteSpace: 'nowrap' }}>
-                                                        STUFE 2 — FEED-QUALITÄTSSCORE
+                                                        STUFE 2 - FEED-QUALITÄTSSCORE
                                                     </span>
                                                     <span style={{ flex: 1, height: 1, background: '#E5E7EB' }} />
                                                 </div>
