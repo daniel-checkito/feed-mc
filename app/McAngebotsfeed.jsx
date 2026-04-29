@@ -579,7 +579,7 @@ export default function McAngebotsfeed() {
 
     return (
         <div style={{ background: '#F3F4F6', minHeight: '100vh' }}>
-            <header style={{ background: MC_BLUE, padding: '16px 48px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <header style={{ background: MC_BLUE, padding: '16px 48px', display: 'flex', alignItems: 'center' }}>
                 <button
                     type="button"
                     onClick={() => { window.location.hash = "#/checker"; }}
@@ -588,9 +588,6 @@ export default function McAngebotsfeed() {
                 >
                     <span style={{ color: "#FFFFFF", fontWeight: 900, fontSize: 20, letterSpacing: "-0.5px", fontFamily: "ui-sans-serif, system-ui", fontStyle: "italic" }}>FEED CHECKER</span>
                 </button>
-                <span style={{ color: '#A8C4E0', fontSize: 12, fontWeight: 400, maxWidth: 420, textAlign: 'right', lineHeight: '1.5' }}>
-                    Feed hochladen, Fehler erkennen und beheben - für mehr Reichweite auf CHECK24
-                </span>
             </header>
         <div style={{ maxWidth: 1500, margin: '0 auto', padding: '24px 48px' }}>
             <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start' }}>
