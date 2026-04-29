@@ -151,39 +151,37 @@ function detectFieldByContent(unmappedFields, headers, rows, sampleSize = 10) {
 const MC_BLUE = '#1553B6';
 
 const MC_PFLICHT_COLS = [
-    // Kern-Identifikation (am wichtigsten)
     'name',
-    'description',
-    'brand',
-    'category_path',
-    'seller_offer_id',
-    'ean',
-    // Preis & Verfügbarkeit
     'price',
+    'seller_offer_id',
+    'brand',
+    'description',
+    'delivery_time',
+    'shipping_mode',
+    'ean',
+    // one of availability OR stock_amount is required (handled as OR in validation)
     'availability',
     'stock_amount',
-    'delivery_time',
-    'delivery_includes',
-    'shipping_mode',
     // Hauptbild
     'image_url',
-    // Produktmerkmale
+];
+// Stufe 2: Feed-Qualitätsscore – empfohlene Attribute (Score-relevant, 27 + Bildlink_2–10)
+const MC_OPTIONAL_COLS = [
+    // Frühere Pflichtfelder, jetzt empfohlen
+    'category_path',
+    'delivery_includes',
     'color',
     'material',
     'size',
     'size_height',
     'size_depth',
     'size_diameter',
-    // Herstellerangaben
     'manufacturer_name',
     'manufacturer_street',
     'manufacturer_postcode',
     'manufacturer_city',
     'manufacturer_country',
     'manufacturer_email',
-];
-// Stufe 2: Feed-Qualitätsscore – empfohlene Attribute (Score-relevant, 27 + Bildlink_2–10)
-const MC_OPTIONAL_COLS = [
     // Informationen (2)
     'deeplink',
     'model',
@@ -387,6 +385,8 @@ export default function McAngebotsfeed() {
 
         const missingPflichtCols = MC_PFLICHT_COLS.filter((c) => {
             if (c === 'image_url') return mcImageColumns.length === 0;
+            if (c === 'stock_amount') return false; // handled together with availability
+            if (c === 'availability') return !mcMapping['availability'] && !mcMapping['stock_amount'];
             return !mcMapping[c];
         });
         const missingOptionalCols = MC_OPTIONAL_COLS.filter((c) => !mcMapping[c]);
@@ -411,6 +411,20 @@ export default function McAngebotsfeed() {
 
             for (const key of MC_PFLICHT_COLS) {
                 if (key === 'image_url') continue;
+                if (key === 'stock_amount') continue; // handled with availability below
+                if (key === 'availability') {
+                    const avVal = mcMapping.availability ? String(row[mcMapping.availability] ?? '').trim() : '';
+                    const stVal = mcMapping.stock_amount ? String(row[mcMapping.stock_amount] ?? '').trim() : '';
+                    if (!avVal && !stVal) {
+                        pflichtErrors.push({ row: rn, ean, field: 'availability', type: 'missing' });
+                        pflichtOk = false;
+                    }
+                    if (stVal && !/^\d+$/.test(stVal)) {
+                        pflichtErrors.push({ row: rn, ean, field: 'stock_amount', type: 'invalid', value: stVal });
+                        pflichtOk = false;
+                    }
+                    continue;
+                }
                 const col = mcMapping[key];
                 if (!col) continue;
                 const val = String(row[col] ?? '').trim();
@@ -425,10 +439,6 @@ export default function McAngebotsfeed() {
                         pflichtErrors.push({ row: rn, ean, field: key, type: 'invalid', value: val });
                         pflichtOk = false;
                     }
-                }
-                if (key === 'stock_amount' && !/^\d+$/.test(val)) {
-                    pflichtErrors.push({ row: rn, ean, field: key, type: 'invalid', value: val });
-                    pflichtOk = false;
                 }
                 if (key === 'shipping_mode' && val.toLowerCase() !== 'paket' && val.toLowerCase() !== 'spedition') {
                     pflichtErrors.push({ row: rn, ean, field: key, type: 'invalid', value: val });
@@ -1230,7 +1240,7 @@ export default function McAngebotsfeed() {
                                         <div
                                             style={{ fontSize: 12, fontWeight: 700, color: '#111827', marginBottom: 4 }}
                                         >
-                                            Pflichtattribute (25 Attribute)
+                                            Pflichtattribute (10 Felder)
                                         </div>
 
                                         {/* Top 3 Fehlergruppen – nur wenn nicht bestanden */}
