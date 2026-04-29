@@ -1077,31 +1077,31 @@ export default function McAngebotsfeed() {
                             {
                                 key: 'desc',
                                 label: 'Beschreibung',
-                                hint: 'Fehlt oder leer',
+                                hint: 'Fehlt oder unter 80 Zeichen',
                                 count: rowsByGroup.desc.size,
                             },
                             {
                                 key: 'size',
-                                label: 'Maße / Höhe / Tiefe',
-                                hint: 'Fehler',
+                                label: 'Maße',
+                                hint: 'Breite, Höhe oder Tiefe fehlen oder sind kein gültiger Zahlenwert',
                                 count: rowsByGroup.size.size,
                             },
                             {
                                 key: 'mfr',
                                 label: 'Herstellerangaben',
-                                hint: 'Name, Adresse oder E-Mail fehlt',
+                                hint: 'Name, PLZ, Ort oder E-Mail fehlt',
                                 count: rowsByGroup.mfr.size,
                             },
                             {
                                 key: 'img',
                                 label: 'Hauptbild',
-                                hint: 'Fehlt oder nicht erreichbar',
+                                hint: 'Bild-URL fehlt oder ist nicht erreichbar',
                                 count: rowsByGroup.img.size,
                             },
                             {
                                 key: 'price',
-                                label: 'Preis & Verfügbarkeit',
-                                hint: 'Fehler',
+                                label: 'Preis / Lieferung',
+                                hint: 'Preis, Lieferzeit, Versandart oder Bestand fehlt',
                                 count: rowsByGroup.price.size,
                             },
                             {
@@ -1119,7 +1119,7 @@ export default function McAngebotsfeed() {
                             {
                                 key: 'ean',
                                 label: 'EAN',
-                                hint: 'Fehlt oder ungültig',
+                                hint: 'Fehlt, falsche Länge oder kein gültiger GTIN',
                                 count: rowsByGroup.ean.size,
                             },
                         ]
@@ -1241,32 +1241,32 @@ export default function McAngebotsfeed() {
                                                     <div
                                                         key={g.key}
                                                         style={{
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            gap: 8,
+                                                            display: 'grid',
+                                                            gridTemplateColumns: 'auto 1fr',
+                                                            gap: '3px 8px',
+                                                            alignItems: 'baseline',
                                                             fontSize: 11,
-                                                            color: '#374151',
                                                         }}
                                                     >
                                                         <span
                                                             style={{
-                                                                width: 44,
-                                                                padding: '2px 0',
+                                                                padding: '1px 6px',
                                                                 borderRadius: 4,
                                                                 background: '#DC2626',
                                                                 color: '#FFF',
                                                                 fontWeight: 700,
-                                                                textAlign: 'center',
                                                                 fontSize: 10,
                                                                 flexShrink: 0,
+                                                                whiteSpace: 'nowrap',
                                                             }}
                                                         >
-                                                            {g.count}
+                                                            {g.count} Artikel
                                                         </span>
                                                         <span style={{ fontWeight: 700, color: '#111827' }}>
                                                             {g.label}
                                                         </span>
-                                                        <span style={{ color: '#6B7280', fontStyle: 'italic' }}>
+                                                        <span />
+                                                        <span style={{ color: '#6B7280', fontSize: 10 }}>
                                                             {g.hint}
                                                         </span>
                                                     </div>
