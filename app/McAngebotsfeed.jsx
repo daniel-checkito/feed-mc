@@ -939,18 +939,29 @@ export default function McAngebotsfeed() {
                         </summary>
                         <div style={{ padding: '0 16px 16px', display: 'grid', gap: 8 }}>
                             {[
-                                { title: 'Produkttitel', desc: 'Mind. 40 Zeichen. Marke + Produkttyp + Merkmal.' },
+                                {
+                                    title: 'Produkttitel',
+                                    desc: 'Mind. 40 Zeichen. Aufbau: Marke + Produkttyp + wichtigstes Merkmal (z. B. Farbe, Material, Größe). Keine Sonderzeichen oder Werbebegriffe.',
+                                },
                                 {
                                     title: 'Beschreibung',
-                                    desc: 'Mind. 80 Zeichen. Vorteile, Material, Einsatzbereich. Keine externen Links.',
+                                    desc: 'Mind. 80 Zeichen. Vorteile, Material, Einsatzbereich, Maße. Keine externen Links, keine HTML-Tags, keine Wiederholung des Titels.',
                                 },
                                 {
                                     title: 'Bilder',
-                                    desc: 'Mind. 3 pro Produkt. Erstes Bild als Freisteller, dazu Milieu-Bilder.',
+                                    desc: 'Mind. 3 Bilder pro Produkt. Erstes Bild als Freisteller auf weißem Hintergrund, weitere als Milieu- oder Detailbilder. Mind. 800×800 px.',
+                                },
+                                {
+                                    title: 'Kategoriepfad',
+                                    desc: 'Vollständig und korrekt befüllen – beeinflusst direkt die Sichtbarkeit. Format: Oberkategorie > Unterkategorie > Produkttyp.',
                                 },
                                 {
                                     title: 'Lieferumfang',
-                                    desc: 'Format: 1x Tisch, 4x Stuhl. Versandart nicht vergessen.',
+                                    desc: 'Klar und vollständig: z. B. „1x Tisch, 4x Stühle". Versandart (Paket / Spedition) immer angeben.',
+                                },
+                                {
+                                    title: 'Preis & Verfügbarkeit',
+                                    desc: 'Preise täglich aktuell halten. Ausverkaufte Produkte deaktivieren statt mit falscher Verfügbarkeit senden.',
                                 },
                             ].map((t) => (
                                 <div
