@@ -401,6 +401,7 @@ export default function McAngebotsfeed() {
         const pflichtErrors = [];
         const optionalHints = [];
         const duplicateEans = {};
+        const duplicateNames = {};
         const duplicateNameEans = {};
         let pflichtOkCount = 0;
         let totalOptionalFieldsPresent = 0;
@@ -408,6 +409,10 @@ export default function McAngebotsfeed() {
         const optionalFieldCount = MC_OPTIONAL_COLS.length + 9;
 
         const pflichtErrorRowNums = new Set();
+
+        // Placeholder patterns: common filler values that are not real data
+        const PLACEHOLDER_RE = /^(n\/?a|tbd|test|xxx+|leer|placeholder|example|musterwert|beispiel|0{4,}|null|undefined|-)$/i;
+        const isPlaceholder = (v) => PLACEHOLDER_RE.test(v);
 
         rows.forEach((row, i) => {
             const rn = i + 1;
@@ -425,10 +430,15 @@ export default function McAngebotsfeed() {
                     if (!avVal && !stVal) {
                         pflichtErrors.push({ row: rn, ean, field: 'availability', type: 'missing' });
                         pflichtOk = false;
-                    }
-                    if (stVal && !/^\d+$/.test(stVal)) {
-                        pflichtErrors.push({ row: rn, ean, field: 'stock_amount', type: 'invalid', value: stVal });
-                        pflichtOk = false;
+                    } else {
+                        if (avVal && isPlaceholder(avVal)) {
+                            pflichtErrors.push({ row: rn, ean, field: 'availability', type: 'placeholder', value: avVal });
+                            pflichtOk = false;
+                        }
+                        if (stVal && !/^\d+$/.test(stVal)) {
+                            pflichtErrors.push({ row: rn, ean, field: 'stock_amount', type: 'invalid', value: stVal });
+                            pflichtOk = false;
+                        }
                     }
                     continue;
                 }
@@ -440,6 +450,33 @@ export default function McAngebotsfeed() {
                     pflichtOk = false;
                     continue;
                 }
+                if (isPlaceholder(val)) {
+                    pflichtErrors.push({ row: rn, ean, field: key, type: 'placeholder', value: val });
+                    pflichtOk = false;
+                    continue;
+                }
+                if (key === 'name') {
+                    if (val.length < 10) {
+                        pflichtErrors.push({ row: rn, ean, field: 'name', type: 'too_short', value: val });
+                        pflichtOk = false;
+                    } else if (val.trim().split(/\s+/).length < 2) {
+                        pflichtErrors.push({ row: rn, ean, field: 'name', type: 'one_word', value: val });
+                        pflichtOk = false;
+                    }
+                }
+                if (key === 'brand' && val.length < 2) {
+                    pflichtErrors.push({ row: rn, ean, field: 'brand', type: 'too_short', value: val });
+                    pflichtOk = false;
+                }
+                if (key === 'description') {
+                    if (val.length < 20) {
+                        pflichtErrors.push({ row: rn, ean, field: 'description', type: 'too_short', value: val });
+                        pflichtOk = false;
+                    } else if (/b-?ware/i.test(val)) {
+                        pflichtErrors.push({ row: rn, ean, field: 'description', type: 'bware', value: val });
+                        pflichtOk = false;
+                    }
+                }
                 if (key === 'price') {
                     const n = parseFloat(val.replace(',', '.'));
                     if (Number.isNaN(n) || n <= 0) {
@@ -450,6 +487,12 @@ export default function McAngebotsfeed() {
                 if (key === 'shipping_mode' && val.toLowerCase() !== 'paket' && val.toLowerCase() !== 'spedition') {
                     pflichtErrors.push({ row: rn, ean, field: key, type: 'invalid', value: val });
                     pflichtOk = false;
+                }
+                if (key === 'ean') {
+                    if (val.length !== 14) {
+                        pflichtErrors.push({ row: rn, ean, field: 'ean', type: 'wrong_length', value: val });
+                        pflichtOk = false;
+                    }
                 }
             }
             if (mcImageColumns.length > 0) {
@@ -463,6 +506,9 @@ export default function McAngebotsfeed() {
                 const hsVal = String(row[mcMapping['hs_code']] ?? '').trim();
                 if (!hsVal) {
                     pflichtErrors.push({ row: rn, ean, field: 'hs_code', type: 'missing' });
+                    pflichtOk = false;
+                } else if (isPlaceholder(hsVal)) {
+                    pflichtErrors.push({ row: rn, ean, field: 'hs_code', type: 'placeholder', value: hsVal });
                     pflichtOk = false;
                 }
             }
@@ -485,6 +531,11 @@ export default function McAngebotsfeed() {
             if (ean) {
                 if (!duplicateEans[ean]) duplicateEans[ean] = [];
                 duplicateEans[ean].push(rn);
+            }
+            // Name dedup tracking (Stufe 1: duplicate names = hard error)
+            if (name) {
+                if (!duplicateNames[name]) duplicateNames[name] = [];
+                duplicateNames[name].push(rn);
             }
             // Name+EAN tracking (Stufe 2: identical name+EAN = malus)
             if (name && ean) {
@@ -510,8 +561,17 @@ export default function McAngebotsfeed() {
                 .filter((r) => r.length > 1)
                 .flat(),
         );
-        // Stufe 1: live-fähig = no pflicht errors AND no EAN duplicate
-        const livefaehigCount = rows.filter((_, i) => !pflichtErrorRowNums.has(i + 1) && !eanDupRows.has(i + 1)).length;
+        // Stufe 1: Name duplicates are a hard gate error
+        const dupNameCount = Object.values(duplicateNames)
+            .filter((r) => r.length > 1)
+            .reduce((s, r) => s + r.length, 0);
+        const nameDupRows = new Set(
+            Object.values(duplicateNames)
+                .filter((r) => r.length > 1)
+                .flat(),
+        );
+        // Stufe 1: live-fähig = no pflicht errors AND no EAN/Name duplicate
+        const livefaehigCount = rows.filter((_, i) => !pflichtErrorRowNums.has(i + 1) && !eanDupRows.has(i + 1) && !nameDupRows.has(i + 1)).length;
 
         // Stufe 2: name+EAN duplicate malus (same product listed twice)
         const dupNameEanCount = Object.values(duplicateNameEans)
@@ -559,6 +619,7 @@ export default function McAngebotsfeed() {
             if (c) catRows[c].add(e.row);
         });
         eanDupRows.forEach((rn) => catRows.informationen.add(rn));
+        nameDupRows.forEach((rn) => catRows.informationen.add(rn));
         const pflichtCategoryErrors = Object.fromEntries(Object.entries(catRows).map(([k, s]) => [k, s.size]));
 
         // Scoring (Stufe 2) – Pflichtfelder-Score (max. 70) + Empfohlene-Felder-Score (max. 30)
@@ -589,7 +650,10 @@ export default function McAngebotsfeed() {
             totalOptionalFieldsPresent,
             optionalFieldCount,
             dupEanCount,
+            dupNameCount,
             dupNameEanCount,
+            eanDupRows,
+            nameDupRows,
             pflichtCategoryErrors,
             pflichtScore,
             optionalScore,
@@ -1142,11 +1206,13 @@ export default function McAngebotsfeed() {
                             else if (e.field === 'ean') rowsByGroup.ean.add(e.row);
                             else if (e.field === 'hs_code') rowsByGroup.hs_code.add(e.row);
                         });
+                        issues.eanDupRows.forEach((rn) => rowsByGroup.ean.add(rn));
+                        issues.nameDupRows.forEach((rn) => rowsByGroup.name.add(rn));
                         const topGroups = [
                             {
                                 key: 'desc',
                                 label: 'Beschreibung',
-                                hint: 'Fehlt oder unter 80 Zeichen',
+                                hint: 'Fehlt, unter 20 Zeichen oder enthält "B-Ware"',
                                 count: rowsByGroup.desc.size,
                             },
                             {
@@ -1164,31 +1230,31 @@ export default function McAngebotsfeed() {
                             {
                                 key: 'img',
                                 label: 'Hauptbild',
-                                hint: 'Bild-URL fehlt oder ist nicht erreichbar',
+                                hint: 'Bild-URL fehlt',
                                 count: rowsByGroup.img.size,
                             },
                             {
                                 key: 'price',
                                 label: 'Preis / Lieferung',
-                                hint: 'Preis, Lieferzeit, Versandart oder Bestand fehlt',
+                                hint: 'Preis, Lieferzeit, Versandart oder Bestand fehlt oder ungültig',
                                 count: rowsByGroup.price.size,
                             },
                             {
                                 key: 'name',
                                 label: 'Artikelname',
-                                hint: 'Fehlt oder leer',
+                                hint: 'Fehlt, unter 10 Zeichen, nur ein Wort, Platzhalter oder doppelt vorhanden',
                                 count: rowsByGroup.name.size,
                             },
                             {
                                 key: 'brand',
                                 label: 'Marke',
-                                hint: 'Fehlt oder leer',
+                                hint: 'Fehlt, unter 2 Zeichen oder Platzhalter',
                                 count: rowsByGroup.brand.size,
                             },
                             {
                                 key: 'ean',
                                 label: 'EAN',
-                                hint: 'Fehlt, falsche Länge oder kein gültiger GTIN',
+                                hint: 'Fehlt, nicht genau 14 Zeichen oder doppelt vorhanden',
                                 count: rowsByGroup.ean.size,
                             },
                             {
@@ -1306,7 +1372,7 @@ export default function McAngebotsfeed() {
                                         <div
                                             style={{ fontSize: 12, fontWeight: 700, color: '#111827', marginBottom: 4 }}
                                         >
-                                            Pflichtattribute (10 Felder)
+                                            Pflichtattribute ({storeLocation === 'outside_germany' ? 11 : 10} Felder)
                                         </div>
 
                                         {/* Top 3 Fehlergruppen – nur wenn nicht bestanden */}
@@ -1386,10 +1452,10 @@ export default function McAngebotsfeed() {
                                                     wordBreak: 'break-word',
                                                 }}
                                             >
-                                                {MC_PFLICHT_COLS.map((f, i) => (
+                                                {[...MC_PFLICHT_COLS, ...(storeLocation === 'outside_germany' ? ['hs_code'] : [])].map((f, i) => (
                                                     <React.Fragment key={f}>
                                                         {i > 0 && <span style={{ margin: '0 4px' }}>·</span>}
-                                                        {FL[f]}
+                                                        {FL[f] || 'HS-Code'}
                                                     </React.Fragment>
                                                 ))}
                                             </div>
@@ -1410,7 +1476,7 @@ export default function McAngebotsfeed() {
                                                 val: issues.pflichtOkCount,
                                                 label: 'Vollständig',
                                                 color: '#16A34A',
-                                                tip: 'Artikel, bei denen alle 25 Pflichtattribute befüllt und gültig sind. Diese Artikel werden bei CHECK24 angelegt.',
+                                                tip: 'Artikel, bei denen alle Pflichtattribute befüllt und gültig sind. Diese Artikel werden bei CHECK24 angelegt.',
                                             },
                                             {
                                                 val: issues.blockiertCount,
@@ -1507,11 +1573,30 @@ export default function McAngebotsfeed() {
                                         onClick={() => {
                                             const pflichtByRow = {};
                                             const optionalByRow = {};
+                                            const errorMsg = (e) => {
+                                                const labels = { name: 'Artikelname', brand: 'Marke', description: 'Beschreibung', ean: 'EAN', price: 'Preis', availability: 'Verfügbarkeit', stock_amount: 'Bestand', shipping_mode: 'Versandart', delivery_time: 'Lieferzeit', image_url: 'Bild', hs_code: 'HS-Code', seller_offer_id: 'Seller-ID' };
+                                                const label = labels[e.field] || e.field;
+                                                if (e.type === 'missing') return `${label} fehlt`;
+                                                if (e.type === 'placeholder') return `${label}: Platzhalter-Wert`;
+                                                if (e.type === 'too_short') return `${label}: zu kurz`;
+                                                if (e.type === 'one_word') return `${label}: mindestens zwei Wörter erforderlich`;
+                                                if (e.type === 'bware') return `${label}: enthält "B-Ware"`;
+                                                if (e.type === 'wrong_length') return `${label}: muss genau 14 Zeichen haben`;
+                                                if (e.type === 'invalid') return `${label}: ungültiger Wert`;
+                                                return `${label} fehlerhaft`;
+                                            };
                                             issues.pflichtErrors.forEach((e) => {
                                                 if (!pflichtByRow[e.row]) pflichtByRow[e.row] = [];
-                                                pflichtByRow[e.row].push(
-                                                    e.field + (e.type === 'invalid' ? ` ungültig` : ' fehlt'),
-                                                );
+                                                pflichtByRow[e.row].push(errorMsg(e));
+                                            });
+                                            // Also add dup EAN/name rows
+                                            issues.eanDupRows.forEach((rn) => {
+                                                if (!pflichtByRow[rn]) pflichtByRow[rn] = [];
+                                                pflichtByRow[rn].push('EAN: doppelt vorhanden');
+                                            });
+                                            issues.nameDupRows.forEach((rn) => {
+                                                if (!pflichtByRow[rn]) pflichtByRow[rn] = [];
+                                                pflichtByRow[rn].push('Artikelname: doppelt vorhanden');
                                             });
                                             issues.optionalHints.forEach((e) => {
                                                 if (!optionalByRow[e.row]) optionalByRow[e.row] = [];
