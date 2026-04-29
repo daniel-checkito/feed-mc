@@ -1030,7 +1030,7 @@ export default function McAngebotsfeed() {
                     <div style={{ marginBottom: 20, textAlign: 'center' }}>
                         <div style={{ fontSize: 20, fontWeight: 800, color: '#111827', marginBottom: 6 }}>{T.howTitle}</div>
                         <div style={{ fontSize: 13, color: '#6B7280', lineHeight: 1.6, marginBottom: 20 }}>{T.howSummary}</div>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                        <div style={{ display: 'grid', gap: 8 }}>
                             {T.howSteps.map((s) => (
                                 <div key={s.n} style={{ background: '#FFF', borderRadius: 10, padding: '12px 14px', border: '1px solid #E5E7EB', textAlign: 'left', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
                                     <div style={{ width: 22, height: 22, borderRadius: '50%', background: MC_BLUE, color: '#FFF', fontSize: 10, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>{s.n}</div>
