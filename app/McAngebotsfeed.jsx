@@ -586,7 +586,6 @@ export default function McAngebotsfeed() {
                     aria-label="Feed Checker Startseite"
                 >
                     <span style={{ color: "#FFFFFF", fontWeight: 900, fontSize: 20, letterSpacing: "-0.5px", fontFamily: "ui-sans-serif, system-ui", fontStyle: "italic" }}>FEED CHECKER</span>
-                    <span style={{ color: "#A8C4E0", fontSize: 10, fontWeight: 400, marginLeft: 6 }}>v1.0.1</span>
                 </button>
             </header>
         <div style={{ maxWidth: 1500, margin: '0 auto', padding: '24px 48px' }}>
@@ -1244,10 +1243,6 @@ export default function McAngebotsfeed() {
                                     >
                                         <div
                                             style={{
-                                                fontSize: 10,
-                                                fontWeight: 700,
-                                                color: MC_BLUE,
-                                                letterSpacing: '0.06em',
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 gap: 10,
@@ -1255,7 +1250,7 @@ export default function McAngebotsfeed() {
                                                 minWidth: 0,
                                             }}
                                         >
-                                            <span style={{ whiteSpace: 'nowrap' }}>TECHNISCHE PRÜFUNG</span>
+                                            <span style={{ whiteSpace: 'nowrap', fontSize: 18, fontWeight: 700, color: '#111827' }}>Datenvalidierung</span>
                                             <span style={{ flex: 1, height: 1, background: '#E5E7EB' }} />
                                         </div>
                                         {stufe1Passed ? (
@@ -1287,13 +1282,6 @@ export default function McAngebotsfeed() {
                                                 ✗ Nicht bestanden
                                             </span>
                                         )}
-                                    </div>
-
-                                    {/* Titel */}
-                                    <div style={{ padding: '0 18px 14px' }}>
-                                        <div style={{ fontSize: 18, fontWeight: 700, color: '#111827' }}>
-                                            Datenvalidierung
-                                        </div>
                                     </div>
 
                                     {/* Pflichtattribute-Block */}
