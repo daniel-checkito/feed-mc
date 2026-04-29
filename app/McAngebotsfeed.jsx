@@ -1144,14 +1144,9 @@ export default function McAngebotsfeed() {
                                             alignItems: 'flex-start',
                                         }}
                                     >
-                                        <div style={{ fontSize: 12, color: '#111827', lineHeight: '1.5' }}>
-                                            <strong style={{ color: stufe1Passed ? '#166534' : '#991B1B' }}>
-                                                {stufe1Passed
-                                                    ? 'Account freigeschaltet.'
-                                                    : 'Account nicht aktivierbar.'}
-                                            </strong>{' '}
+                                        <div style={{ fontSize: 12, color: stufe1Passed ? '#166534' : '#991B1B', lineHeight: '1.5', fontWeight: 600 }}>
                                             {stufe1Passed
-                                                ? 'Die technische Prüfung wurde bestanden. Ihre Artikel werden angelegt.'
+                                                ? 'Ihr Feed ist fehlerfrei. Die Artikel können gelistet werden.'
                                                 : 'Bitte beheben Sie die Fehler und laden Sie den Feed erneut hoch.'}
                                         </div>
                                     </div>
