@@ -577,7 +577,7 @@ export default function McAngebotsfeed() {
         rows.length > 0 && Object.values(mcMapping).filter(Boolean).length === 0 && mcImageColumns.length === 0;
 
     return (
-        <div style={{ background: '#FFFFFF', minHeight: '100vh' }}>
+        <div style={{ background: '#F3F4F6', minHeight: '100vh' }}>
             <header style={{ background: MC_BLUE, padding: '12px 24px', display: 'flex', alignItems: 'center' }}>
                 <button
                     type="button"
@@ -598,9 +598,9 @@ export default function McAngebotsfeed() {
                     <div
                         style={{
                             background: '#FFF',
-                            border: '1px solid #E5E7EB',
-                            borderRadius: 8,
+                            borderRadius: 12,
                             padding: '16px 20px',
+                            boxShadow: '0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04)',
                         }}
                     >
                         <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 10 }}>
@@ -753,7 +753,7 @@ export default function McAngebotsfeed() {
                             const hasMissing = issues.missingPflichtCols.length > 0;
                             return (
                                 <details
-                                    style={{ background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 8 }}
+                                    style={{ background: '#FFF', borderRadius: 12, boxShadow: '0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04)' }}
                                     open={mappingExpanded}
                                     onToggle={(e) => setMappingExpanded(e.currentTarget.open)}
                                 >
@@ -925,7 +925,7 @@ export default function McAngebotsfeed() {
                         })()}
 
                     {/* Content Tips */}
-                    <details style={{ background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 8 }}>
+                    <details style={{ background: '#FFF', borderRadius: 12, boxShadow: '0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04)' }}>
                         <summary
                             style={{
                                 padding: '12px 16px',
@@ -965,6 +965,7 @@ export default function McAngebotsfeed() {
                     </details>
 
                     {/* Downloads */}
+                    <div style={{ background: '#FFF', borderRadius: 12, padding: '16px 20px', boxShadow: '0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04)' }}>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                         <button
                             type="button"
@@ -1018,6 +1019,7 @@ export default function McAngebotsfeed() {
                                 <div style={{ fontSize: 10, color: '#6B7280', marginTop: 1 }}>PDF · sofort herunterladen</div>
                             </div>
                         </button>
+                    </div>
                     </div>
                 </div>
 
