@@ -977,14 +977,20 @@ export default function McAngebotsfeed() {
                             style={{
                                 padding: '10px 12px',
                                 borderRadius: 6,
-                                border: '1px solid #A7F3D0',
-                                background: '#ECFDF5',
+                                border: '1px solid #E5E7EB',
+                                background: '#F9FAFB',
                                 cursor: 'pointer',
                                 textAlign: 'left',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 10,
                             }}
                         >
-                            <div style={{ fontSize: 12, fontWeight: 600, color: '#065F46' }}>Feedvorlage</div>
-                            <div style={{ fontSize: 10, color: '#059669', marginTop: 2 }}>Excel-Vorlage</div>
+                            <span style={{ fontSize: 16, flexShrink: 0 }}>⬇</span>
+                            <div>
+                                <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>Feedvorlage</div>
+                                <div style={{ fontSize: 10, color: '#6B7280', marginTop: 1 }}>XLSX · sofort herunterladen</div>
+                            </div>
                         </button>
                         <button
                             type="button"
@@ -997,14 +1003,20 @@ export default function McAngebotsfeed() {
                             style={{
                                 padding: '10px 12px',
                                 borderRadius: 6,
-                                border: '1px solid #BFDBFE',
-                                background: '#EFF6FF',
+                                border: '1px solid #E5E7EB',
+                                background: '#F9FAFB',
                                 cursor: 'pointer',
                                 textAlign: 'left',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 10,
                             }}
                         >
-                            <div style={{ fontSize: 12, fontWeight: 600, color: '#1E3A8A' }}>Feedleitfaden</div>
-                            <div style={{ fontSize: 10, color: '#2563EB', marginTop: 2 }}>PDF-Anleitung</div>
+                            <span style={{ fontSize: 16, flexShrink: 0 }}>⬇</span>
+                            <div>
+                                <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>Feedleitfaden</div>
+                                <div style={{ fontSize: 10, color: '#6B7280', marginTop: 1 }}>PDF · sofort herunterladen</div>
+                            </div>
                         </button>
                     </div>
                 </div>
