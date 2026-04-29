@@ -395,6 +395,15 @@ const DE_T = {
         energy_efficiency_category: 'Energieeffizienzklasse', product_data_sheet: 'Produktdatenblatt',
         manufacturer_phone_number: 'Herstellertelefonnummer',
     },
+    // How it works
+    howTitle: 'So funktioniert es',
+    howSummary: 'Laden Sie Ihren Angebotsfeed hoch – wir prüfen alle Pflichtfelder und zeigen genau, welche Artikel Fehler haben.',
+    howSteps: [
+        { n: 1, title: 'Feed hochladen', desc: 'CSV-Datei per Drag & Drop oder Klick hochladen' },
+        { n: 2, title: 'Zuordnung prüfen', desc: 'Spalten werden automatisch erkannt und zugeordnet' },
+        { n: 3, title: 'Analyse starten', desc: 'Alle Pflichtfelder werden auf Fehler geprüft' },
+        { n: 4, title: 'Fehler beheben', desc: 'Fehlerbericht als CSV herunterladen und korrigieren' },
+    ],
     // Pflicht table field labels
     pflichtFields: [
         { key: 'name', label: 'Artikelname' }, { key: 'price', label: 'Preis' },
@@ -508,6 +517,15 @@ const EN_T = {
         { key: 'description', label: 'Description' }, { key: 'image_url', label: 'Main Image' },
     ],
     hsField: { key: 'hs_code', label: 'HS Code' },
+    // How it works
+    howTitle: 'How it works',
+    howSummary: 'Upload your product feed – we check all required fields and show exactly which items have errors.',
+    howSteps: [
+        { n: 1, title: 'Upload feed', desc: 'Drop your CSV file or click to browse' },
+        { n: 2, title: 'Review mapping', desc: 'Columns are detected and matched automatically' },
+        { n: 3, title: 'Run analysis', desc: 'All required fields are checked for errors' },
+        { n: 4, title: 'Fix errors', desc: 'Download the error report as CSV and correct' },
+    ],
 };
 
 export default function McAngebotsfeed() {
@@ -987,6 +1005,24 @@ export default function McAngebotsfeed() {
             ══════════════════════════════════════════ */}
             {step === 1 && (
                 <div style={{ width: '100%', maxWidth: 520 }}>
+
+                    {/* How it works explainer */}
+                    <div style={{ marginBottom: 20, textAlign: 'center' }}>
+                        <div style={{ fontSize: 20, fontWeight: 800, color: '#111827', marginBottom: 6 }}>{T.howTitle}</div>
+                        <div style={{ fontSize: 13, color: '#6B7280', lineHeight: 1.6, marginBottom: 20 }}>{T.howSummary}</div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                            {T.howSteps.map((s) => (
+                                <div key={s.n} style={{ background: '#FFF', borderRadius: 10, padding: '12px 14px', border: '1px solid #E5E7EB', textAlign: 'left', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                                    <div style={{ width: 22, height: 22, borderRadius: '50%', background: MC_BLUE, color: '#FFF', fontSize: 10, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>{s.n}</div>
+                                    <div>
+                                        <div style={{ fontSize: 12, fontWeight: 700, color: '#111827', marginBottom: 2 }}>{s.title}</div>
+                                        <div style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.4 }}>{s.desc}</div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
                     <div style={{ background: '#FFF', borderRadius: 16, padding: '36px 40px', boxShadow: '0 2px 16px rgba(0,0,0,0.08)' }}>
                         {/* Heading */}
                         <div style={{ marginBottom: 28, textAlign: 'center' }}>
@@ -1025,22 +1061,6 @@ export default function McAngebotsfeed() {
                                 <input ref={fileRef} type="file" accept=".csv,text/csv" style={{ display: 'none' }} onChange={(e) => parseFile(e.target.files?.[0] || null)} />
                             </div>
                         )}
-
-                        {/* Lagerstandort toggle */}
-                        <div style={{ marginTop: 24 }}>
-                            <div style={{ fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 8 }}>{T.warehouseLabel}</div>
-                            <div style={{ display: 'flex', background: '#F3F4F6', borderRadius: 8, padding: 3, gap: 3 }}>
-                                {[{ value: 'germany', label: T.warehouseDE }, { value: 'outside_germany', label: T.warehouseNonDE }].map((opt) => (
-                                    <button key={opt.value} type="button" onClick={() => setStoreLocation(opt.value)}
-                                        style={{ flex: 1, padding: '8px 10px', borderRadius: 6, border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: storeLocation === opt.value ? 600 : 400, background: storeLocation === opt.value ? '#FFF' : 'transparent', color: storeLocation === opt.value ? MC_BLUE : '#6B7280', boxShadow: storeLocation === opt.value ? '0 1px 3px rgba(0,0,0,0.10)' : 'none', transition: 'all 0.15s' }}>
-                                        {opt.label}
-                                    </button>
-                                ))}
-                            </div>
-                            {outsideGermany && (
-                                <div style={{ marginTop: 6, fontSize: 11, color: '#6B7280' }}>{T.hsNote}</div>
-                            )}
-                        </div>
 
                         {/* Primary CTA */}
                         <button
