@@ -1190,6 +1190,20 @@ export default function McAngebotsfeed() {
                             {T.back}
                         </button>
 
+                        {/* Resources */}
+                        <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+                            <button type="button" onClick={() => setShowLeitfaden(true)}
+                                style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 12px', borderRadius: 7, border: '1px solid #E5E7EB', background: '#FFF', cursor: 'pointer', fontSize: 11, color: '#374151', fontWeight: 600 }}>
+                                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ color: MC_BLUE }}><path d="M2.5 1.5h8.5l3 3v10h-11.5v-13z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M11 1.5v3h3" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M5 8h6M5 10.5h6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                                {T.feedGuide}
+                            </button>
+                            <button type="button" onClick={() => { const a = document.createElement('a'); a.href = 'http://media-partner.moebel.check24.de/feedvorlagen/Feedleitfaden_Anhang_2026/CHECK24_Feedvorlage_V2025.xlsx'; a.download = 'CHECK24_Feedvorlage_V2025.xlsx'; a.click(); }}
+                                style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 12px', borderRadius: 7, border: '1px solid #E5E7EB', background: '#FFF', cursor: 'pointer', fontSize: 11, color: '#374151', fontWeight: 600 }}>
+                                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ color: MC_BLUE }}><path d="M8 2v8M5 7l3 3 3-3M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                {T.feedTemplate}
+                            </button>
+                        </div>
+
                         {mcIsWrongFile ? (
                             <div style={{ padding: '20px', borderRadius: 12, border: '1px solid #FECACA', background: '#FEF2F2', display: 'flex', gap: 12 }}>
                                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ flexShrink: 0, color: '#DC2626' }}><path d="M10 3L2 17h16L10 3z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/><path d="M10 9v3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/><circle cx="10" cy="14.5" r="0.75" fill="currentColor"/></svg>
@@ -1543,6 +1557,20 @@ export default function McAngebotsfeed() {
                                 <svg width="13" height="13" viewBox="0 0 15 15" fill="none"><path d="M2 7.5h11M7 2.5l-5 5 5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
                                 {lang === 'de' ? 'Neuen Feed hochladen' : 'Upload New Feed'}
                             </button>
+
+                            {/* Resources */}
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+                                <button type="button" onClick={() => setShowLeitfaden(true)}
+                                    style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 10px', borderRadius: 7, border: '1px solid #E5E7EB', background: '#FFF', cursor: 'pointer', fontSize: 10, color: '#374151', fontWeight: 600 }}>
+                                    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style={{ color: MC_BLUE, flexShrink: 0 }}><path d="M2.5 1.5h8.5l3 3v10h-11.5v-13z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M11 1.5v3h3" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M5 8h6M5 10.5h6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                                    {T.feedGuide}
+                                </button>
+                                <button type="button" onClick={() => { const a = document.createElement('a'); a.href = 'http://media-partner.moebel.check24.de/feedvorlagen/Feedleitfaden_Anhang_2026/CHECK24_Feedvorlage_V2025.xlsx'; a.download = 'CHECK24_Feedvorlage_V2025.xlsx'; a.click(); }}
+                                    style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 10px', borderRadius: 7, border: '1px solid #E5E7EB', background: '#FFF', cursor: 'pointer', fontSize: 10, color: '#374151', fontWeight: 600 }}>
+                                    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style={{ color: MC_BLUE, flexShrink: 0 }}><path d="M8 2v8M5 7l3 3 3-3M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                    {T.feedTemplate}
+                                </button>
+                            </div>
 
                         </div>{/* end sidebar */}
                         </div>{/* end grid */}
