@@ -1071,13 +1071,16 @@ export default function McAngebotsfeed() {
                                 onDragLeave={() => setDragging(false)}
                                 onDrop={(e) => { e.preventDefault(); setDragging(false); const f = e.dataTransfer.files?.[0]; if (f) parseFile(f); }}
                                 onClick={() => fileRef.current?.click()}
-                                style={{ border: `2px dashed ${dragging ? MC_BLUE : '#D1D5DB'}`, background: dragging ? '#EEF4FF' : '#F9FAFB', borderRadius: 10, padding: '36px 20px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.15s' }}
+                                style={{ border: `2px dashed ${dragging ? MC_BLUE : '#D1D5DB'}`, background: dragging ? '#EEF4FF' : '#F9FAFB', borderRadius: 10, padding: '32px 20px', cursor: 'pointer', transition: 'all 0.15s', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}
                             >
-                                <div style={{ marginBottom: 10 }}>
-                                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" style={{ color: dragging ? MC_BLUE : '#9CA3AF' }}><rect x="4" y="6" width="18" height="22" rx="2" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/><path d="M22 6l6 6v16a2 2 0 01-2 2H10" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/><path d="M22 6v6h6" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/><path d="M10 20l3 3 6-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" style={{ color: dragging ? MC_BLUE : '#9CA3AF' }}>
+                                    <path d="M12 16V8M9 11l3-3 3 3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                                    <path d="M4 16.5A3.5 3.5 0 007.5 20h9a3.5 3.5 0 000-7h-.2A6 6 0 104 16.5z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round"/>
+                                </svg>
+                                <div>
+                                    <div style={{ fontSize: 14, fontWeight: 700, color: '#111827', marginBottom: 3, textAlign: 'center' }}>{T.dropHeading}</div>
+                                    <div style={{ fontSize: 12, color: '#9CA3AF', textAlign: 'center' }}>{T.dropSub}</div>
                                 </div>
-                                <div style={{ fontSize: 14, fontWeight: 700, color: '#111827', marginBottom: 4 }}>{T.dropHeading}</div>
-                                <div style={{ fontSize: 12, color: '#6B7280' }}>{T.dropSub}</div>
                                 <input ref={fileRef} type="file" accept=".csv,text/csv" style={{ display: 'none' }} onChange={(e) => parseFile(e.target.files?.[0] || null)} />
                             </div>
                         )}
