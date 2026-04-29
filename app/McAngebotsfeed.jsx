@@ -1397,38 +1397,40 @@ export default function McAngebotsfeed() {
                             {T.back}
                         </button>
 
-                        {/* 1 — Status banner */}
-                        <div style={{ padding: '16px 20px', borderRadius: 12, background: stufe1Passed ? '#F0FDF4' : '#FEF2F2', border: `1px solid ${stufe1Passed ? '#BBF7D0' : '#FECACA'}`, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 14 }}>
-                            <div style={{ width: 36, height: 36, borderRadius: '50%', background: stufe1Passed ? '#DCFCE7' : '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                {stufe1Passed
-                                    ? <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4 6-6" stroke="#16A34A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                    : <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2L1 14h14L8 2z" stroke="#DC2626" strokeWidth="1.5" strokeLinejoin="round"/><path d="M8 7v3" stroke="#DC2626" strokeWidth="1.5" strokeLinecap="round"/><circle cx="8" cy="12" r=".6" fill="#DC2626"/></svg>}
-                            </div>
-                            <div style={{ flex: 1 }}>
-                                <div style={{ fontSize: 15, fontWeight: 700, color: stufe1Passed ? '#166534' : '#991B1B' }}>
-                                    {stufe1Passed ? T.statusOk : T.statusErr}
+                        {/* 1 — Combined header card: status + stats */}
+                        <div style={{ borderRadius: 12, background: '#FFF', border: '1px solid #E5E7EB', marginBottom: 16, overflow: 'hidden' }}>
+                            {/* Status row */}
+                            <div style={{ padding: '14px 20px', background: stufe1Passed ? '#F0FDF4' : '#FEF2F2', borderBottom: `1px solid ${stufe1Passed ? '#BBF7D0' : '#FECACA'}`, display: 'flex', alignItems: 'center', gap: 12 }}>
+                                <div style={{ width: 30, height: 30, borderRadius: '50%', background: stufe1Passed ? '#DCFCE7' : '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                    {stufe1Passed
+                                        ? <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4 6-6" stroke="#16A34A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                        : <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 2L1 14h14L8 2z" stroke="#DC2626" strokeWidth="1.5" strokeLinejoin="round"/><path d="M8 7v3" stroke="#DC2626" strokeWidth="1.5" strokeLinecap="round"/><circle cx="8" cy="12" r=".6" fill="#DC2626"/></svg>}
                                 </div>
-                                <div style={{ fontSize: 12, color: stufe1Passed ? '#4B7A5A' : '#B91C1C', marginTop: 2 }}>
-                                    {T.errorRateFmt(errorRate.toFixed(1))}
+                                <div style={{ flex: 1 }}>
+                                    <span style={{ fontSize: 14, fontWeight: 700, color: stufe1Passed ? '#166534' : '#991B1B' }}>
+                                        {stufe1Passed ? T.statusOk : T.statusErr}
+                                    </span>
+                                    <span style={{ fontSize: 12, color: stufe1Passed ? '#4B7A5A' : '#B91C1C', marginLeft: 10 }}>
+                                        {T.errorRateFmt(errorRate.toFixed(1))}
+                                    </span>
                                 </div>
+                                {file && <span style={{ fontSize: 11, color: '#9CA3AF', flexShrink: 0 }}>{file.name}</span>}
                             </div>
-                            {file && <span style={{ fontSize: 11, color: '#9CA3AF', flexShrink: 0 }}>{file.name}</span>}
-                        </div>
-
-                        {/* 2 — Stats row (full width, prominent) */}
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 16 }}>
-                            {[
-                                { val: issues.livefaehigCount, label: T.statComplete, color: '#16A34A', bg: '#F0FDF4', border: '#BBF7D0', tip: T.tipComplete },
-                                { val: issues.blockiertCount, label: T.statErrors, color: '#DC2626', bg: '#FEF2F2', border: '#FECACA', tip: T.tipErrors },
-                                { val: issues.totalRows, label: T.statTotal, color: '#111827', bg: '#FFF', border: '#E5E7EB', tip: T.tipTotal },
-                            ].map(({ val, label, color, bg, border, tip }) => (
-                                <Tooltip key={label} text={tip}>
-                                    <div style={{ background: bg, borderRadius: 12, padding: '16px 20px', border: `1px solid ${border}`, cursor: 'help', display: 'flex', alignItems: 'center', gap: 14 }}>
-                                        <div style={{ fontSize: 32, fontWeight: 900, color, lineHeight: 1 }}>{val.toLocaleString(numLocale)}</div>
-                                        <div style={{ fontSize: 12, color: '#6B7280', lineHeight: 1.3 }}>{label}</div>
-                                    </div>
-                                </Tooltip>
-                            ))}
+                            {/* Stats strip */}
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr' }}>
+                                {[
+                                    { val: issues.livefaehigCount, label: T.statComplete, color: '#16A34A', tip: T.tipComplete },
+                                    { val: issues.blockiertCount, label: T.statErrors, color: '#DC2626', tip: T.tipErrors },
+                                    { val: issues.totalRows, label: T.statTotal, color: '#111827', tip: T.tipTotal },
+                                ].map(({ val, label, color, tip }, i) => (
+                                    <Tooltip key={label} text={tip}>
+                                        <div style={{ padding: '14px 20px', borderRight: i < 2 ? '1px solid #F3F4F6' : 'none', cursor: 'help' }}>
+                                            <div style={{ fontSize: 26, fontWeight: 900, color, lineHeight: 1, marginBottom: 2 }}>{val.toLocaleString(numLocale)}</div>
+                                            <div style={{ fontSize: 11, color: '#6B7280' }}>{label}</div>
+                                        </div>
+                                    </Tooltip>
+                                ))}
+                            </div>
                         </div>
 
                         {/* 3 — Detail: table left, actions right */}
