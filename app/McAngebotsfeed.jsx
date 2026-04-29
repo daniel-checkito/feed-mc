@@ -961,7 +961,7 @@ export default function McAngebotsfeed() {
                                 },
                                 {
                                     title: 'Preis & Verfügbarkeit',
-                                    desc: 'Preise täglich aktuell halten. Ausverkaufte Produkte deaktivieren statt mit falscher Verfügbarkeit senden.',
+                                    desc: 'Preise täglich aktuell halten. Verfügbarkeit (availability) ist nur nötig, wenn kein Lagerbestand (stock_amount) übermittelt wird - eines von beiden muss vorhanden sein.',
                                 },
                             ].map((t) => (
                                 <div
@@ -1110,7 +1110,9 @@ export default function McAngebotsfeed() {
                             mfr: new Set(),
                             img: new Set(),
                             price: new Set(),
-                            ids: new Set(),
+                            name: new Set(),
+                            brand: new Set(),
+                            ean: new Set(),
                         };
                         issues.pflichtErrors.forEach((e) => {
                             if (e.field === 'description') rowsByGroup.desc.add(e.row);
@@ -1129,8 +1131,9 @@ export default function McAngebotsfeed() {
                                 ].includes(e.field)
                             )
                                 rowsByGroup.price.add(e.row);
-                            else if (['name', 'brand', 'category_path', 'seller_offer_id', 'ean'].includes(e.field))
-                                rowsByGroup.ids.add(e.row);
+                            else if (e.field === 'name') rowsByGroup.name.add(e.row);
+                            else if (e.field === 'brand') rowsByGroup.brand.add(e.row);
+                            else if (e.field === 'ean') rowsByGroup.ean.add(e.row);
                         });
                         const topGroups = [
                             {
@@ -1164,10 +1167,22 @@ export default function McAngebotsfeed() {
                                 count: rowsByGroup.price.size,
                             },
                             {
-                                key: 'ids',
-                                label: 'Identifikation',
-                                hint: 'Name, Marke oder EAN fehlen',
-                                count: rowsByGroup.ids.size,
+                                key: 'name',
+                                label: 'Artikelname',
+                                hint: 'Fehlt oder leer',
+                                count: rowsByGroup.name.size,
+                            },
+                            {
+                                key: 'brand',
+                                label: 'Marke',
+                                hint: 'Fehlt oder leer',
+                                count: rowsByGroup.brand.size,
+                            },
+                            {
+                                key: 'ean',
+                                label: 'EAN',
+                                hint: 'Fehlt oder ungültig',
+                                count: rowsByGroup.ean.size,
                             },
                         ]
                             .filter((g) => g.count > 0)
