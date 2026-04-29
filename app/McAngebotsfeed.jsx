@@ -986,13 +986,12 @@ export default function McAngebotsfeed() {
                         </button>
                         <button
                             type="button"
-                            onClick={() =>
-                                window.open(
-                                    'http://media-partner.moebel.check24.de/feedvorlagen/Feedleitfaden_Anhang_2026/CHECK24_Feedleitfaden_2025.pdf',
-                                    '_blank',
-                                    'noopener,noreferrer',
-                                )
-                            }
+                            onClick={() => {
+                                const a = document.createElement('a');
+                                a.href = 'https://w9cedwr8emsi29qt.public.blob.vercel-storage.com/CHECK24_Feedleitfaden_V2026.pdf';
+                                a.download = 'CHECK24_Feedleitfaden_V2026.pdf';
+                                a.click();
+                            }}
                             style={{
                                 padding: '10px 12px',
                                 borderRadius: 6,
