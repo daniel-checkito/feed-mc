@@ -1433,83 +1433,80 @@ export default function McAngebotsfeed() {
                             </div>
                         </div>
 
-                        {/* 3 — Detail: table left, actions right */}
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 16, alignItems: 'start', marginBottom: 16 }}>
-
-                            {/* Pflichtfeldanalyse table */}
-                            <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'hidden' }}>
-                                <div style={{ padding: '14px 20px', borderBottom: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                                    <div style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>{T.analysisTitle}</div>
-                                    <div style={{ fontSize: 11, color: '#6B7280' }}>
-                                        {T.analysisSummary(totalPflichtFields, vollstaendigFields, totalPflichtFields - vollstaendigFields)}
-                                    </div>
+                        {/* 3 — Pflichtfeldanalyse table (full width) */}
+                        <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'hidden', marginBottom: 16 }}>
+                            <div style={{ padding: '14px 20px', borderBottom: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                                <div style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>{T.analysisTitle}</div>
+                                <div style={{ fontSize: 11, color: '#6B7280' }}>
+                                    {T.analysisSummary(totalPflichtFields, vollstaendigFields, totalPflichtFields - vollstaendigFields)}
                                 </div>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 130px 120px', padding: '8px 20px', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB' }}>
-                                    <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.05em' }}>{T.colField}</div>
-                                    <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.05em', textAlign: 'right' }}>{T.colStatus}</div>
-                                    <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.05em', paddingLeft: 16 }}>{T.colCoverage}</div>
-                                </div>
-                                {PFLICHT_TABLE_FIELDS.map(({ key, label }) => {
-                                    const isMapped = key === 'availability'
-                                        ? !!(mcMapping.availability || mcMapping.stock_amount)
-                                        : key === 'image_url' ? mcImageColumns.length > 0
-                                        : !!mcMapping[key];
-                                    const errs = fieldErrorRows[key]?.size || 0;
-                                    const pct = isMapped ? Math.max(0, Math.round((1 - errs / issues.totalRows) * 100)) : null;
-                                    const barColor = pct === null ? '#E5E7EB' : pct === 100 ? '#16A34A' : pct >= 70 ? '#D97706' : '#DC2626';
-                                    return (
-                                        <div key={key} style={{ display: 'grid', gridTemplateColumns: '1fr 130px 120px', padding: '10px 20px', borderBottom: '1px solid #F9FAFB', alignItems: 'center' }}>
-                                            <div style={{ fontSize: 12, color: '#374151', fontWeight: 500 }}>{label}</div>
-                                            <div style={{ textAlign: 'right', fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap' }}>
-                                                {pct === null ? <span style={{ color: '#9CA3AF' }}>{T.notInFeed}</span>
-                                                    : errs === 0 ? <span style={{ color: '#16A34A' }}>{T.complete}</span>
-                                                    : <span style={{ color: pct < 30 ? '#DC2626' : '#D97706' }}>{T.missingCount(errs.toLocaleString(numLocale))}</span>}
-                                            </div>
-                                            <div style={{ paddingLeft: 16, display: 'flex', alignItems: 'center', gap: 6 }}>
-                                                {pct !== null ? (
-                                                    <>
-                                                        <div style={{ flex: 1, height: 6, background: '#F3F4F6', borderRadius: 3, overflow: 'hidden' }}>
-                                                            <div style={{ height: '100%', width: `${pct}%`, background: barColor, borderRadius: 3, transition: 'width 0.4s' }} />
-                                                        </div>
-                                                        <span style={{ fontSize: 10, color: '#9CA3AF', width: 26, textAlign: 'right', flexShrink: 0 }}>{pct}%</span>
-                                                    </>
-                                                ) : <span style={{ fontSize: 10, color: '#D1D5DB' }}>—</span>}
-                                            </div>
-                                        </div>
-                                    );
-                                })}
                             </div>
-
-                            {/* Right sidebar: CSV + top errors */}
-                            <div style={{ display: 'grid', gap: 12 }}>
-                                <div style={{ background: '#EEF4FF', borderRadius: 12, border: `2px solid ${MC_BLUE}`, padding: '16px' }}>
-                                    <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', marginBottom: 4 }}>{T.csvTitle}</div>
-                                    <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 12, lineHeight: 1.5 }}>{T.csvDesc}</div>
-                                    <button type="button" onClick={csvOnClick}
-                                        style={{ width: '100%', padding: '11px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
-                                        {T.csvBtn}
-                                    </button>
-                                </div>
-
-                                {detailedErrors.length > 0 && (
-                                    <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '14px 16px' }}>
-                                        <div style={{ fontSize: 12, fontWeight: 700, color: '#111827', marginBottom: 10 }}>{T.topErrorsTitle}</div>
-                                        <div style={{ display: 'grid', gap: 7 }}>
-                                            {detailedErrors.map((e, i) => (
-                                                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                                    <span style={{ fontSize: 11, fontWeight: 800, color: '#DC2626', minWidth: 30, textAlign: 'right', flexShrink: 0 }}>
-                                                        {e.count.toLocaleString(numLocale)}
-                                                    </span>
-                                                    <span style={{ fontSize: 11, color: '#374151', lineHeight: 1.3 }}>{e.label}</span>
-                                                </div>
-                                            ))}
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 130px 160px', padding: '8px 20px', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB' }}>
+                                <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.05em' }}>{T.colField}</div>
+                                <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.05em', textAlign: 'right' }}>{T.colStatus}</div>
+                                <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.05em', paddingLeft: 16 }}>{T.colCoverage}</div>
+                            </div>
+                            {PFLICHT_TABLE_FIELDS.map(({ key, label }) => {
+                                const isMapped = key === 'availability'
+                                    ? !!(mcMapping.availability || mcMapping.stock_amount)
+                                    : key === 'image_url' ? mcImageColumns.length > 0
+                                    : !!mcMapping[key];
+                                const errs = fieldErrorRows[key]?.size || 0;
+                                const pct = isMapped ? Math.max(0, Math.round((1 - errs / issues.totalRows) * 100)) : null;
+                                const barColor = pct === null ? '#E5E7EB' : pct === 100 ? '#16A34A' : pct >= 70 ? '#D97706' : '#DC2626';
+                                return (
+                                    <div key={key} style={{ display: 'grid', gridTemplateColumns: '1fr 130px 160px', padding: '10px 20px', borderBottom: '1px solid #F9FAFB', alignItems: 'center' }}>
+                                        <div style={{ fontSize: 12, color: '#374151', fontWeight: 500 }}>{label}</div>
+                                        <div style={{ textAlign: 'right', fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap' }}>
+                                            {pct === null ? <span style={{ color: '#9CA3AF' }}>{T.notInFeed}</span>
+                                                : errs === 0 ? <span style={{ color: '#16A34A' }}>{T.complete}</span>
+                                                : <span style={{ color: pct < 30 ? '#DC2626' : '#D97706' }}>{T.missingCount(errs.toLocaleString(numLocale))}</span>}
+                                        </div>
+                                        <div style={{ paddingLeft: 16, display: 'flex', alignItems: 'center', gap: 6 }}>
+                                            {pct !== null ? (
+                                                <>
+                                                    <div style={{ flex: 1, height: 6, background: '#F3F4F6', borderRadius: 3, overflow: 'hidden' }}>
+                                                        <div style={{ height: '100%', width: `${pct}%`, background: barColor, borderRadius: 3, transition: 'width 0.4s' }} />
+                                                    </div>
+                                                    <span style={{ fontSize: 10, color: '#9CA3AF', width: 26, textAlign: 'right', flexShrink: 0 }}>{pct}%</span>
+                                                </>
+                                            ) : <span style={{ fontSize: 10, color: '#D1D5DB' }}>—</span>}
                                         </div>
                                     </div>
-                                )}
-                            </div>
+                                );
+                            })}
                         </div>
 
-                        {/* 4 — Bottom CTA */}
+                        {/* 4 — Häufigste Fehler (full width, if any) */}
+                        {detailedErrors.length > 0 && (
+                            <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '14px 20px', marginBottom: 16 }}>
+                                <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', marginBottom: 10 }}>{T.topErrorsTitle}</div>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 24px' }}>
+                                    {detailedErrors.map((e, i) => (
+                                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                                            <span style={{ fontSize: 12, fontWeight: 800, color: '#DC2626', minWidth: 28, textAlign: 'right', flexShrink: 0 }}>
+                                                {e.count.toLocaleString(numLocale)}
+                                            </span>
+                                            <span style={{ fontSize: 12, color: '#374151' }}>{e.label}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* 5 — Download card */}
+                        <div style={{ background: '#EEF4FF', borderRadius: 12, border: `2px solid ${MC_BLUE}`, padding: '16px 20px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 20 }}>
+                            <div style={{ flex: 1 }}>
+                                <div style={{ fontSize: 14, fontWeight: 700, color: '#111827', marginBottom: 3 }}>{T.csvTitle}</div>
+                                <div style={{ fontSize: 12, color: '#6B7280', lineHeight: 1.5 }}>{T.csvDesc}</div>
+                            </div>
+                            <button type="button" onClick={csvOnClick}
+                                style={{ flexShrink: 0, padding: '11px 24px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                                {T.csvBtn}
+                            </button>
+                        </div>
+
+                        {/* 6 — Bottom CTA */}
                         <button type="button" onClick={resetToStart}
                             style={{ width: '100%', padding: '14px', background: '#FFF', color: '#374151', border: '1px solid #D1D5DB', borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
                             <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2 7.5h11M7 2.5l-5 5 5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
