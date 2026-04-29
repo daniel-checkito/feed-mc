@@ -965,13 +965,12 @@ export default function McAngebotsfeed() {
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                         <button
                             type="button"
-                            onClick={() =>
-                                window.open(
-                                    'http://media-partner.moebel.check24.de/feedvorlagen/Feedleitfaden_Anhang_2026/CHECK24_Feedvorlage_V2025.xlsx',
-                                    '_blank',
-                                    'noopener,noreferrer',
-                                )
-                            }
+                            onClick={() => {
+                                const a = document.createElement('a');
+                                a.href = 'http://media-partner.moebel.check24.de/feedvorlagen/Feedleitfaden_Anhang_2026/CHECK24_Feedvorlage_V2025.xlsx';
+                                a.download = 'CHECK24_Feedvorlage_V2025.xlsx';
+                                a.click();
+                            }}
                             style={{
                                 padding: '10px 12px',
                                 borderRadius: 6,
