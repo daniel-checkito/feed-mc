@@ -593,8 +593,8 @@ export default function McAngebotsfeed() {
                     onClick={() => setShowLeitfaden(true)}
                     style={{ border: '1px solid rgba(255,255,255,0.3)', background: 'transparent', color: '#FFFFFF', fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
                 >
-                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" style={{ flexShrink: 0 }}><path d="M2 1h7l3 3v8H2V1z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M9 1v3h3" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M4 6.5h5M4 8.5h5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
-                    Feedleitfaden
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" style={{ flexShrink: 0 }}><ellipse cx="6.5" cy="6.5" rx="5.5" ry="3.5" stroke="currentColor" strokeWidth="1.3"/><circle cx="6.5" cy="6.5" r="1.5" fill="currentColor"/></svg>
+                    Feedleitfaden ansehen
                 </button>
             </header>
         <div style={{ maxWidth: 1500, margin: '0 auto', padding: '24px 48px' }}>
@@ -693,12 +693,12 @@ export default function McAngebotsfeed() {
                             <button
                                 type="button"
                                 onClick={() => setShowLeitfaden(true)}
-                                style={{ padding: '10px 12px', borderRadius: 6, border: '1px solid #E5E7EB', background: '#F9FAFB', cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 10 }}
+                                style={{ padding: '10px 12px', borderRadius: 6, border: `1px solid ${MC_BLUE}30`, background: '#EEF4FF', cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 10 }}
                             >
-                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: MC_BLUE }}><path d="M2.5 1.5h8.5l3 3v10h-11.5v-13z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M11 1.5v3h3" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M5 8h6M5 10.5h6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: MC_BLUE }}><ellipse cx="8" cy="8" rx="7" ry="4.5" stroke="currentColor" strokeWidth="1.4"/><circle cx="8" cy="8" r="2" fill="currentColor"/></svg>
                                 <div>
-                                    <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>Feedleitfaden</div>
-                                    <div style={{ fontSize: 10, color: '#6B7280', marginTop: 1 }}>PDF · Vorschau & Download</div>
+                                    <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>Feedleitfaden ansehen</div>
+                                    <div style={{ fontSize: 10, color: MC_BLUE, marginTop: 1 }}>Öffnet Vorschau · kein Download nötig</div>
                                 </div>
                             </button>
                         </div>
