@@ -579,7 +579,7 @@ export default function McAngebotsfeed() {
 
     return (
         <div style={{ background: '#F3F4F6', minHeight: '100vh' }}>
-            <header style={{ background: MC_BLUE, padding: '16px 48px', display: 'flex', alignItems: 'center' }}>
+            <header style={{ background: MC_BLUE, padding: '16px 48px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <button
                     type="button"
                     onClick={() => { window.location.hash = "#/checker"; }}
@@ -587,6 +587,13 @@ export default function McAngebotsfeed() {
                     aria-label="Feed Checker Startseite"
                 >
                     <span style={{ color: "#FFFFFF", fontWeight: 900, fontSize: 20, letterSpacing: "-0.5px", fontFamily: "ui-sans-serif, system-ui", fontStyle: "italic" }}>FEED CHECKER</span>
+                </button>
+                <button
+                    type="button"
+                    onClick={() => setShowLeitfaden(true)}
+                    style={{ border: '1px solid rgba(255,255,255,0.3)', background: 'transparent', color: '#FFFFFF', fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
+                >
+                    📄 Feedleitfaden
                 </button>
             </header>
         <div style={{ maxWidth: 1500, margin: '0 auto', padding: '24px 48px' }}>
@@ -700,7 +707,7 @@ export default function McAngebotsfeed() {
                     <div style={{ background: '#FFF', borderRadius: 12, padding: '16px 20px', boxShadow: '0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04)' }}>
                         <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
                             <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#D1D5DB', flexShrink: 0, display: 'inline-block' }} />
-                            So funktioniert der Feed Checker
+                            So funktioniert es
                         </div>
                         <div style={{ display: 'grid', gap: 10 }}>
                             {[
