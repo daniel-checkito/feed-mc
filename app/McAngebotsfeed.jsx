@@ -292,6 +292,224 @@ const MC_OPTIONAL_ALIASES = {
     manufacturer_phone_number: ['manufacturer_phone_number', 'hersteller_telefon'],
 };
 
+// ── Translations ──────────────────────────────────────────────────────────────
+const DE_T = {
+    // Header
+    stepUpload: 'Hochladen', stepMapping: 'Zuordnung', stepResults: 'Ergebnis',
+    helpContact: 'Hilfe & Kontakt',
+    // Step 1
+    s1Heading: 'Feed hochladen',
+    s1Sub: 'Laden Sie Ihren Angebotsfeed als CSV hoch. Wir prüfen alle Pflichtfelder und zeigen genau, welche Artikel Fehler haben.',
+    fileReading: 'Wird gelesen…',
+    fileLoaded: (n) => `${n} Artikel erkannt`,
+    fileChange: 'Ändern',
+    dropHeading: 'CSV-Datei hochladen',
+    dropSub: 'Hierher ziehen oder klicken · max. 64 MB',
+    warehouseLabel: 'Lagerstandort des Händlers',
+    warehouseDE: 'Deutschland', warehouseNonDE: 'Außerhalb Deutschland',
+    hsNote: 'HS-Code wird als Pflichtfeld geprüft.',
+    continueBtn: (n) => `Weiter · ${n} Artikel geladen →`,
+    uploadPrompt: 'Bitte Datei hochladen',
+    feedGuide: 'Feedleitfaden', feedGuideSub: 'PDF · Vorschau & Download',
+    feedTemplate: 'Feedvorlage', feedTemplateSub: 'XLSX · sofort herunterladen',
+    // Step 2
+    back: 'Zurück',
+    wrongFileTitle: 'Diese Datei sieht nicht wie ein gültiger Produkt-Feed aus.',
+    wrongFileDesc: 'Es konnten keine bekannten Spalten erkannt werden. Erwartete Spalten: ean, name, price, shipping_mode o. ä.',
+    mappingTitle: 'Spalten-Zuordnung prüfen',
+    mappingFound: (f, t) => `${f} von ${t} Feldern automatisch erkannt.`,
+    mappingMissing: (n) => ` ${n} Pflichtfeld${n > 1 ? 'er' : ''} nicht gefunden.`,
+    mappingWarning: 'Bitte ordnen Sie die rot markierten Pflichtfelder manuell zu, bevor Sie fortfahren.',
+    notAssigned: '-- Nicht zugeordnet --',
+    mainImageLabel: 'Hauptbild (+ Zusatzb.)',
+    notDetected: '– nicht erkannt –',
+    hiddenFields: (n) => `${n} weitere optionale Felder nicht im Feed erkannt`,
+    startAnalysis: 'Analyse starten →',
+    // Step 3
+    newFeed: 'Neuen Feed prüfen',
+    statusOk: 'Feed fehlerfrei — alle Artikel können gelistet werden.',
+    statusErr: 'Fehler gefunden — bitte beheben und Feed erneut hochladen.',
+    errorRateFmt: (r) => `Fehlerquote: ${r.replace('.', ',')}% (Grenzwert: 5% für APA)`,
+    analysisTitle: 'Pflichtfeldanalyse',
+    analysisSummary: (t, v, e) => `${t} Felder · ${v} vollständig · ${e} fehlerhaft`,
+    colField: 'FELD', colStatus: 'STATUS', colCoverage: 'ABDECKUNG',
+    notInFeed: 'Nicht im Feed', complete: '✓ Vollständig',
+    missingCount: (n) => `${n} fehlend`,
+    statComplete: 'Vollständig', statErrors: 'Fehler', statTotal: 'Gesamt',
+    tipComplete: 'Artikel ohne Fehler in Pflichtfeldern',
+    tipErrors: 'Artikel mit mindestens einem Pflichtfeld-Fehler',
+    tipTotal: 'Gesamtzahl Artikel im Feed',
+    csvTitle: 'Fehlerbericht herunterladen',
+    csvDesc: 'CSV mit allen Fehlern pro Zeile. Importieren Sie die Datei in Excel, um die Fehler zu beheben.',
+    csvBtn: 'CSV herunterladen',
+    topErrorsTitle: 'Häufigste Fehler',
+    articles: (n) => `${n} Artikel`,
+    // PDF modal
+    pdfTitle: 'Feedleitfaden 2026', pdfDownload: 'Herunterladen',
+    // CSV error messages
+    csvFieldLabels: { name: 'Artikelname', brand: 'Marke', description: 'Beschreibung', ean: 'EAN', price: 'Preis', availability: 'Verfügbarkeit', stock_amount: 'Bestand', shipping_mode: 'Versandart', delivery_time: 'Lieferzeit', image_url: 'Bild', hs_code: 'HS-Code', seller_offer_id: 'Seller-ID' },
+    csvErrMissing: (l) => `${l} fehlt`,
+    csvErrPlaceholder: (l) => `${l}: Platzhalter-Wert`,
+    csvErrTooShort: (l) => `${l}: zu kurz`,
+    csvErrOneWord: (l) => `${l}: mind. 2 Wörter`,
+    csvErrBware: (l) => `${l}: enthält "B-Ware"`,
+    csvErrLength: (l) => `${l}: muss 14 Zeichen haben`,
+    csvErrInvalid: (l) => `${l}: ungültiger Wert`,
+    csvErrFallback: (l) => `${l} fehlerhaft`,
+    csvEanDup: 'EAN: doppelt vorhanden',
+    csvNameDup: 'Artikelname: doppelt vorhanden',
+    csvColPflicht: 'Fehler Pflichtfelder',
+    csvColOptional: 'Fehler Optionale Felder',
+    // Error group hints
+    errGroups: [
+        { key: 'name', label: 'Artikelname', hint: 'Fehlt, zu kurz, ein Wort oder doppelt' },
+        { key: 'ean', label: 'EAN', hint: 'Nicht 14 Zeichen oder doppelt' },
+        { key: 'desc', label: 'Beschreibung', hint: 'Fehlt, unter 20 Zeichen oder B-Ware' },
+        { key: 'img', label: 'Hauptbild', hint: 'Bild-URL fehlt' },
+        { key: 'price', label: 'Preis / Lieferung', hint: 'Fehlt oder ungültig' },
+        { key: 'brand', label: 'Marke', hint: 'Fehlt oder unter 2 Zeichen' },
+        { key: 'mfr', label: 'Herstellerangaben', hint: 'Name, PLZ, Ort oder E-Mail fehlt' },
+        { key: 'size', label: 'Maße', hint: 'Ungültiger Zahlenwert' },
+        { key: 'hs_code', label: 'HS-Code', hint: 'Pflicht bei Lager außerhalb DE' },
+    ],
+    // Field labels
+    fields: {
+        name: 'Artikelname', price: 'Preis', seller_offer_id: 'Eigene Artikel-ID',
+        brand: 'Marke', ean: 'EAN (GTIN14)', delivery_time: 'Lieferzeit',
+        shipping_mode: 'Versandart', availability: 'Bestand / Verfügbarkeit',
+        stock_amount: 'Bestand', image_url: 'Hauptbild', description: 'Beschreibung',
+        hs_code: 'HS-Code', category_path: 'Kategoriepfad', delivery_includes: 'Lieferumfang',
+        color: 'Farbe', material: 'Material', size: 'Maße (Gesamt)', size_height: 'Höhe',
+        size_depth: 'Tiefe', size_diameter: 'Durchmesser', manufacturer_name: 'Herstellername',
+        manufacturer_street: 'Herstellerstraße', manufacturer_postcode: 'Herstellerpostleitzahl',
+        manufacturer_city: 'Herstellerstadt', manufacturer_country: 'Herstellerland',
+        manufacturer_email: 'Hersteller-E-Mail', deeplink: 'Deeplink', model: 'Modellbezeichnung',
+        size_lying_surface: 'Liegefläche', size_seat_height: 'Sitzhöhe', ausrichtung: 'Ausrichtung',
+        style: 'Stil', temper: 'Härtegrad', weight: 'Gewicht', weight_capacity: 'Belastbarkeit',
+        youtube_link: 'Youtube-Video', bild_3d_glb: '3D-Ansicht (GLB)', bild_3d_usdz: '3D-Ansicht (USDZ)',
+        assembly_instructions: 'Montageanleitung', illuminant_included: 'Leuchtmittel inklusive',
+        incl_mattress: 'Matratze inklusive', incl_slatted_frame: 'Lattenrost inklusive',
+        led_verbaut: 'LED verbaut', lighting_included: 'Beleuchtung inklusive', set_includes: 'Set-Inhalt',
+        socket: 'Steckdose/Anschluss', care_instructions: 'Pflegehinweise', filling: 'Füllung',
+        removable_cover: 'Bezug abnehmbar', suitable_for_allergic: 'Allergikergeeignet',
+        energy_efficiency_category: 'Energieeffizienzklasse', product_data_sheet: 'Produktdatenblatt',
+        manufacturer_phone_number: 'Herstellertelefonnummer',
+    },
+    // Pflicht table field labels
+    pflichtFields: [
+        { key: 'name', label: 'Artikelname' }, { key: 'price', label: 'Preis' },
+        { key: 'seller_offer_id', label: 'Eigene Artikel-ID' }, { key: 'brand', label: 'Marke' },
+        { key: 'ean', label: 'EAN (GTIN14)' }, { key: 'delivery_time', label: 'Lieferzeit' },
+        { key: 'shipping_mode', label: 'Versandart' }, { key: 'availability', label: 'Bestand / Verfügbarkeit' },
+        { key: 'description', label: 'Beschreibung' }, { key: 'image_url', label: 'Hauptbild' },
+    ],
+    hsField: { key: 'hs_code', label: 'HS-Code' },
+};
+
+const EN_T = {
+    stepUpload: 'Upload', stepMapping: 'Mapping', stepResults: 'Results',
+    helpContact: 'Help & Contact',
+    s1Heading: 'Upload Feed',
+    s1Sub: 'Upload your product feed as a CSV file. We check all required fields and show exactly which items have errors.',
+    fileReading: 'Reading…',
+    fileLoaded: (n) => `${n} items detected`,
+    fileChange: 'Change',
+    dropHeading: 'Upload CSV file',
+    dropSub: 'Drag here or click · max. 64 MB',
+    warehouseLabel: 'Warehouse Location',
+    warehouseDE: 'Germany', warehouseNonDE: 'Outside Germany',
+    hsNote: 'HS Code will be validated as a required field.',
+    continueBtn: (n) => `Continue · ${n} items loaded →`,
+    uploadPrompt: 'Please upload a file',
+    feedGuide: 'Feed Guide', feedGuideSub: 'PDF · Preview & Download',
+    feedTemplate: 'Feed Template', feedTemplateSub: 'XLSX · download instantly',
+    back: 'Back',
+    wrongFileTitle: 'This file does not look like a valid product feed.',
+    wrongFileDesc: 'No known columns could be detected. Expected columns: ean, name, price, shipping_mode etc.',
+    mappingTitle: 'Review Column Mapping',
+    mappingFound: (f, t) => `${f} of ${t} fields automatically detected.`,
+    mappingMissing: (n) => ` ${n} required field${n > 1 ? 's' : ''} not found.`,
+    mappingWarning: 'Please manually assign the red-highlighted required fields before continuing.',
+    notAssigned: '-- Not assigned --',
+    mainImageLabel: 'Main Image (+ Add.)',
+    notDetected: '– not detected –',
+    hiddenFields: (n) => `${n} more optional fields not detected in feed`,
+    startAnalysis: 'Start Analysis →',
+    newFeed: 'Check New Feed',
+    statusOk: 'Feed is error-free — all items can be listed.',
+    statusErr: 'Errors found — please fix and re-upload the feed.',
+    errorRateFmt: (r) => `Error rate: ${r}% (threshold: 5% for APA)`,
+    analysisTitle: 'Required Field Analysis',
+    analysisSummary: (t, v, e) => `${t} fields · ${v} complete · ${e} with errors`,
+    colField: 'FIELD', colStatus: 'STATUS', colCoverage: 'COVERAGE',
+    notInFeed: 'Not in feed', complete: '✓ Complete',
+    missingCount: (n) => `${n} missing`,
+    statComplete: 'Complete', statErrors: 'Errors', statTotal: 'Total',
+    tipComplete: 'Items with no errors in required fields',
+    tipErrors: 'Items with at least one required field error',
+    tipTotal: 'Total number of items in feed',
+    csvTitle: 'Download Error Report',
+    csvDesc: 'CSV with all errors per row. Import the file into Excel to fix the errors.',
+    csvBtn: 'Download CSV',
+    topErrorsTitle: 'Most Common Errors',
+    articles: (n) => `${n} items`,
+    pdfTitle: 'Feed Guide 2026', pdfDownload: 'Download',
+    csvFieldLabels: { name: 'Item Name', brand: 'Brand', description: 'Description', ean: 'EAN', price: 'Price', availability: 'Availability', stock_amount: 'Stock', shipping_mode: 'Shipping Mode', delivery_time: 'Delivery Time', image_url: 'Image', hs_code: 'HS Code', seller_offer_id: 'Seller ID' },
+    csvErrMissing: (l) => `${l} missing`,
+    csvErrPlaceholder: (l) => `${l}: placeholder value`,
+    csvErrTooShort: (l) => `${l}: too short`,
+    csvErrOneWord: (l) => `${l}: at least 2 words required`,
+    csvErrBware: (l) => `${l}: contains "used goods" label`,
+    csvErrLength: (l) => `${l}: must be exactly 14 characters`,
+    csvErrInvalid: (l) => `${l}: invalid value`,
+    csvErrFallback: (l) => `${l} error`,
+    csvEanDup: 'EAN: duplicate',
+    csvNameDup: 'Item Name: duplicate',
+    csvColPflicht: 'Required Field Errors',
+    csvColOptional: 'Optional Field Hints',
+    errGroups: [
+        { key: 'name', label: 'Item Name', hint: 'Missing, too short, one word, or duplicate' },
+        { key: 'ean', label: 'EAN', hint: 'Not 14 characters or duplicate' },
+        { key: 'desc', label: 'Description', hint: 'Missing, under 20 chars, or contains used-goods label' },
+        { key: 'img', label: 'Main Image', hint: 'Image URL missing' },
+        { key: 'price', label: 'Price / Delivery', hint: 'Missing or invalid' },
+        { key: 'brand', label: 'Brand', hint: 'Missing or under 2 characters' },
+        { key: 'mfr', label: 'Manufacturer Info', hint: 'Name, postcode, city, or email missing' },
+        { key: 'size', label: 'Dimensions', hint: 'Invalid numeric value' },
+        { key: 'hs_code', label: 'HS Code', hint: 'Required for warehouses outside Germany' },
+    ],
+    fields: {
+        name: 'Item Name', price: 'Price', seller_offer_id: 'Own Item ID',
+        brand: 'Brand', ean: 'EAN (GTIN14)', delivery_time: 'Delivery Time',
+        shipping_mode: 'Shipping Mode', availability: 'Stock / Availability',
+        stock_amount: 'Stock', image_url: 'Main Image', description: 'Description',
+        hs_code: 'HS Code', category_path: 'Category Path', delivery_includes: 'Delivery Includes',
+        color: 'Color', material: 'Material', size: 'Dimensions (Total)', size_height: 'Height',
+        size_depth: 'Depth', size_diameter: 'Diameter', manufacturer_name: 'Manufacturer Name',
+        manufacturer_street: 'Manufacturer Street', manufacturer_postcode: 'Manufacturer Postcode',
+        manufacturer_city: 'Manufacturer City', manufacturer_country: 'Manufacturer Country',
+        manufacturer_email: 'Manufacturer Email', deeplink: 'Deeplink', model: 'Model Name',
+        size_lying_surface: 'Lying Surface', size_seat_height: 'Seat Height', ausrichtung: 'Orientation',
+        style: 'Style', temper: 'Firmness', weight: 'Weight', weight_capacity: 'Load Capacity',
+        youtube_link: 'YouTube Video', bild_3d_glb: '3D View (GLB)', bild_3d_usdz: '3D View (USDZ)',
+        assembly_instructions: 'Assembly Instructions', illuminant_included: 'Bulb Included',
+        incl_mattress: 'Mattress Included', incl_slatted_frame: 'Slatted Frame Included',
+        led_verbaut: 'LED Built-in', lighting_included: 'Lighting Included', set_includes: 'Set Contents',
+        socket: 'Socket/Connection', care_instructions: 'Care Instructions', filling: 'Filling',
+        removable_cover: 'Removable Cover', suitable_for_allergic: 'Allergy-Friendly',
+        energy_efficiency_category: 'Energy Efficiency Class', product_data_sheet: 'Product Data Sheet',
+        manufacturer_phone_number: 'Manufacturer Phone Number',
+    },
+    pflichtFields: [
+        { key: 'name', label: 'Item Name' }, { key: 'price', label: 'Price' },
+        { key: 'seller_offer_id', label: 'Own Item ID' }, { key: 'brand', label: 'Brand' },
+        { key: 'ean', label: 'EAN (GTIN14)' }, { key: 'delivery_time', label: 'Delivery Time' },
+        { key: 'shipping_mode', label: 'Shipping Mode' }, { key: 'availability', label: 'Stock / Availability' },
+        { key: 'description', label: 'Description' }, { key: 'image_url', label: 'Main Image' },
+    ],
+    hsField: { key: 'hs_code', label: 'HS Code' },
+};
+
 export default function McAngebotsfeed() {
     const showQualityScore = false; // not public yet - re-enable when ready
 
@@ -304,6 +522,7 @@ export default function McAngebotsfeed() {
     const [headers, setHeaders] = useState([]);
     const [manualMapping, setManualMapping] = useState({});
     const [mappingExpanded, setMappingExpanded] = useState(false);
+    const [lang, setLang] = useState('de');
     const fileRef = useRef(null);
 
     function parseFile(f) {
@@ -676,44 +895,8 @@ export default function McAngebotsfeed() {
         setStep(1);
     }
 
-    // ── Field labels (shared across steps) ──
-    const FIELD_LABELS = {
-        name: 'Artikelname', price: 'Preis', seller_offer_id: 'Eigene Artikel-ID',
-        brand: 'Marke', ean: 'EAN (GTIN14)', delivery_time: 'Lieferzeit',
-        shipping_mode: 'Versandart', availability: 'Bestand / Verfügbarkeit',
-        stock_amount: 'Bestand', image_url: 'Hauptbild', description: 'Beschreibung',
-        hs_code: 'HS-Code', category_path: 'Kategoriepfad', delivery_includes: 'Lieferumfang',
-        color: 'Farbe', material: 'Material', size: 'Maße (Gesamt)', size_height: 'Höhe',
-        size_depth: 'Tiefe', size_diameter: 'Durchmesser', manufacturer_name: 'Herstellername',
-        manufacturer_street: 'Herstellerstraße', manufacturer_postcode: 'Herstellerpostleitzahl',
-        manufacturer_city: 'Herstellerstadt', manufacturer_country: 'Herstellerland',
-        manufacturer_email: 'Hersteller-E-Mail', deeplink: 'Deeplink', model: 'Modellbezeichnung',
-        size_lying_surface: 'Liegefläche', size_seat_height: 'Sitzhöhe', ausrichtung: 'Ausrichtung',
-        style: 'Stil', temper: 'Härtegrad', weight: 'Gewicht', weight_capacity: 'Belastbarkeit',
-        youtube_link: 'Youtube-Video', bild_3d_glb: '3D-Ansicht (GLB)', bild_3d_usdz: '3D-Ansicht (USDZ)',
-        assembly_instructions: 'Montageanleitung', illuminant_included: 'Leuchtmittel inklusive',
-        incl_mattress: 'Matratze inklusive', incl_slatted_frame: 'Lattenrost inklusive',
-        led_verbaut: 'LED verbaut', lighting_included: 'Beleuchtung inklusive', set_includes: 'Set-Inhalt',
-        socket: 'Steckdose/Anschluss', care_instructions: 'Pflegehinweise', filling: 'Füllung',
-        removable_cover: 'Bezug abnehmbar', suitable_for_allergic: 'Allergikergeeignet',
-        energy_efficiency_category: 'Energieeffizienzklasse', product_data_sheet: 'Produktdatenblatt',
-        manufacturer_phone_number: 'Herstellertelefonnummer',
-    };
-
-    // ── Pflicht fields for step-3 table (ordered, availability combined) ──
-    const PFLICHT_TABLE_FIELDS = [
-        { key: 'name', label: 'Artikelname' },
-        { key: 'price', label: 'Preis' },
-        { key: 'seller_offer_id', label: 'Eigene Artikel-ID' },
-        { key: 'brand', label: 'Marke' },
-        { key: 'ean', label: 'EAN (GTIN14)' },
-        { key: 'delivery_time', label: 'Lieferzeit' },
-        { key: 'shipping_mode', label: 'Versandart' },
-        { key: 'availability', label: 'Bestand / Verfügbarkeit' },
-        { key: 'description', label: 'Beschreibung' },
-        { key: 'image_url', label: 'Hauptbild' },
-        ...(outsideGermany ? [{ key: 'hs_code', label: 'HS-Code' }] : []),
-    ];
+    const FIELD_LABELS = T.fields;
+    const PFLICHT_TABLE_FIELDS = [...T.pflichtFields, ...(outsideGermany ? [T.hsField] : [])];
 
     // ── Per-field error rows (for step 3 table) ──
     const fieldErrorRows = {};
@@ -736,6 +919,9 @@ export default function McAngebotsfeed() {
     const errorRate = issues ? (issues.blockiertCount / issues.totalRows) * 100 : 0;
     const stufe1Passed = issues ? errorRate <= 5 : false;
 
+    const T = lang === 'de' ? DE_T : EN_T;
+    const numLocale = lang === 'de' ? 'de-DE' : 'en-US';
+
     return (
         <div style={{ background: '#F3F4F6', minHeight: '100vh' }}>
             {/* ── HEADER ── */}
@@ -747,9 +933,9 @@ export default function McAngebotsfeed() {
                 {/* Step indicator */}
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                     {[
-                        { n: 1, label: 'Hochladen' },
-                        { n: 2, label: 'Zuordnung' },
-                        { n: 3, label: 'Ergebnis' },
+                        { n: 1, label: T.stepUpload },
+                        { n: 2, label: T.stepMapping },
+                        { n: 3, label: T.stepResults },
                     ].map((s, i) => (
                         <React.Fragment key={s.n}>
                             {i > 0 && (
@@ -774,13 +960,24 @@ export default function McAngebotsfeed() {
                     ))}
                 </div>
 
-                <a
-                    href="mailto:contentmanagement.moebel@check24.de?subject=Feed%20Checker%20-%20Hilfe"
-                    style={{ border: '1px solid rgba(255,255,255,0.3)', background: 'transparent', color: '#FFFFFF', fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none', flexShrink: 0 }}
-                >
-                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" style={{ flexShrink: 0 }}><rect x="1" y="2.5" width="11" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.3"/><path d="M1 4l5.5 3.5L12 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>
-                    Hilfe & Kontakt
-                </a>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+                    {/* Language toggle */}
+                    <div style={{ display: 'flex', background: 'rgba(255,255,255,0.12)', borderRadius: 6, padding: 2, gap: 2 }}>
+                        {['de', 'en'].map((l) => (
+                            <button key={l} type="button" onClick={() => setLang(l)}
+                                style={{ padding: '4px 9px', borderRadius: 4, border: 'none', cursor: 'pointer', fontSize: 11, fontWeight: 700, background: lang === l ? '#FFF' : 'transparent', color: lang === l ? MC_BLUE : 'rgba(255,255,255,0.75)', transition: 'all 0.15s', textTransform: 'uppercase' }}>
+                                {l}
+                            </button>
+                        ))}
+                    </div>
+                    <a
+                        href="mailto:contentmanagement.moebel@check24.de?subject=Feed%20Checker%20-%20Hilfe"
+                        style={{ border: '1px solid rgba(255,255,255,0.3)', background: 'transparent', color: '#FFFFFF', fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}
+                    >
+                        <svg width="13" height="13" viewBox="0 0 13 13" fill="none" style={{ flexShrink: 0 }}><rect x="1" y="2.5" width="11" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.3"/><path d="M1 4l5.5 3.5L12 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>
+                        {T.helpContact}
+                    </a>
+                </div>
             </header>
         {/* ── FUNNEL BODY ── */}
         <div style={{ display: 'flex', justifyContent: 'center', padding: '40px 24px', minHeight: 'calc(100vh - 58px)', alignItems: step === 1 ? 'center' : 'flex-start' }}>
@@ -794,10 +991,8 @@ export default function McAngebotsfeed() {
                     <div style={{ background: '#FFF', borderRadius: 16, padding: '36px 40px', boxShadow: '0 2px 16px rgba(0,0,0,0.08)' }}>
                         {/* Heading */}
                         <div style={{ marginBottom: 28, textAlign: 'center' }}>
-                            <div style={{ fontSize: 22, fontWeight: 800, color: '#111827', marginBottom: 8 }}>Feed hochladen</div>
-                            <div style={{ fontSize: 13, color: '#6B7280', lineHeight: 1.6 }}>
-                                Laden Sie Ihren Angebotsfeed als CSV hoch. Wir prüfen alle Pflichtfelder und zeigen genau, welche Artikel Fehler haben.
-                            </div>
+                            <div style={{ fontSize: 22, fontWeight: 800, color: '#111827', marginBottom: 8 }}>{T.s1Heading}</div>
+                            <div style={{ fontSize: 13, color: '#6B7280', lineHeight: 1.6 }}>{T.s1Sub}</div>
                         </div>
 
                         {/* Drop zone */}
@@ -808,11 +1003,11 @@ export default function McAngebotsfeed() {
                                 </div>
                                 <div style={{ flex: 1, minWidth: 0 }}>
                                     <div style={{ fontSize: 13, fontWeight: 600, color: '#166534', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{file.name}</div>
-                                    <div style={{ fontSize: 11, color: '#4B7A5A', marginTop: 2 }}>{(file.size / 1024).toFixed(1)} KB · {rows.length > 0 ? `${rows.length.toLocaleString('de-DE')} Artikel erkannt` : 'Wird gelesen…'}</div>
+                                    <div style={{ fontSize: 11, color: '#4B7A5A', marginTop: 2 }}>{(file.size / 1024).toFixed(1)} KB · {rows.length > 0 ? T.fileLoaded(rows.length.toLocaleString(numLocale)) : T.fileReading}</div>
                                 </div>
                                 <button type="button" onClick={() => { setFile(null); setRows([]); setHeaders([]); setManualMapping({}); }}
                                     style={{ fontSize: 11, color: '#6B7280', background: 'none', border: '1px solid #D1D5DB', borderRadius: 5, padding: '4px 10px', cursor: 'pointer' }}>
-                                    Ändern
+                                    {T.fileChange}
                                 </button>
                             </div>
                         ) : (
@@ -826,17 +1021,17 @@ export default function McAngebotsfeed() {
                                 <div style={{ marginBottom: 10 }}>
                                     <svg width="32" height="32" viewBox="0 0 32 32" fill="none" style={{ color: dragging ? MC_BLUE : '#9CA3AF' }}><rect x="4" y="6" width="18" height="22" rx="2" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/><path d="M22 6l6 6v16a2 2 0 01-2 2H10" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/><path d="M22 6v6h6" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/><path d="M10 20l3 3 6-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
                                 </div>
-                                <div style={{ fontSize: 14, fontWeight: 700, color: '#111827', marginBottom: 4 }}>CSV-Datei hochladen</div>
-                                <div style={{ fontSize: 12, color: '#6B7280' }}>Hierher ziehen oder klicken · max. 64 MB</div>
+                                <div style={{ fontSize: 14, fontWeight: 700, color: '#111827', marginBottom: 4 }}>{T.dropHeading}</div>
+                                <div style={{ fontSize: 12, color: '#6B7280' }}>{T.dropSub}</div>
                                 <input ref={fileRef} type="file" accept=".csv,text/csv" style={{ display: 'none' }} onChange={(e) => parseFile(e.target.files?.[0] || null)} />
                             </div>
                         )}
 
                         {/* Lagerstandort toggle */}
                         <div style={{ marginTop: 24 }}>
-                            <div style={{ fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 8 }}>Lagerstandort des Händlers</div>
+                            <div style={{ fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 8 }}>{T.warehouseLabel}</div>
                             <div style={{ display: 'flex', background: '#F3F4F6', borderRadius: 8, padding: 3, gap: 3 }}>
-                                {[{ value: 'germany', label: 'Deutschland' }, { value: 'outside_germany', label: 'Außerhalb Deutschland' }].map((opt) => (
+                                {[{ value: 'germany', label: T.warehouseDE }, { value: 'outside_germany', label: T.warehouseNonDE }].map((opt) => (
                                     <button key={opt.value} type="button" onClick={() => setStoreLocation(opt.value)}
                                         style={{ flex: 1, padding: '8px 10px', borderRadius: 6, border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: storeLocation === opt.value ? 600 : 400, background: storeLocation === opt.value ? '#FFF' : 'transparent', color: storeLocation === opt.value ? MC_BLUE : '#6B7280', boxShadow: storeLocation === opt.value ? '0 1px 3px rgba(0,0,0,0.10)' : 'none', transition: 'all 0.15s' }}>
                                         {opt.label}
@@ -844,7 +1039,7 @@ export default function McAngebotsfeed() {
                                 ))}
                             </div>
                             {outsideGermany && (
-                                <div style={{ marginTop: 6, fontSize: 11, color: '#6B7280' }}>HS-Code wird als Pflichtfeld geprüft.</div>
+                                <div style={{ marginTop: 6, fontSize: 11, color: '#6B7280' }}>{T.hsNote}</div>
                             )}
                         </div>
 
@@ -855,7 +1050,7 @@ export default function McAngebotsfeed() {
                             disabled={rows.length === 0}
                             style={{ width: '100%', marginTop: 28, padding: '14px', background: rows.length > 0 ? MC_BLUE : '#D1D5DB', color: '#FFF', border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 700, cursor: rows.length > 0 ? 'pointer' : 'default', transition: 'background 0.2s' }}
                         >
-                            {rows.length > 0 ? `Weiter · ${rows.length.toLocaleString('de-DE')} Artikel geladen →` : 'Bitte Datei hochladen'}
+                            {rows.length > 0 ? T.continueBtn(rows.length.toLocaleString(numLocale)) : T.uploadPrompt}
                         </button>
                     </div>
 
@@ -865,16 +1060,16 @@ export default function McAngebotsfeed() {
                             style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #E5E7EB', background: '#FFF', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
                             <svg width="15" height="15" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: MC_BLUE }}><path d="M2.5 1.5h8.5l3 3v10h-11.5v-13z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M11 1.5v3h3" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M5 8h6M5 10.5h6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
                             <div style={{ textAlign: 'left' }}>
-                                <div style={{ fontSize: 11, fontWeight: 600, color: '#111827' }}>Feedleitfaden</div>
-                                <div style={{ fontSize: 10, color: '#6B7280' }}>PDF · Vorschau & Download</div>
+                                <div style={{ fontSize: 11, fontWeight: 600, color: '#111827' }}>{T.feedGuide}</div>
+                                <div style={{ fontSize: 10, color: '#6B7280' }}>{T.feedGuideSub}</div>
                             </div>
                         </button>
                         <button type="button" onClick={() => { const a = document.createElement('a'); a.href = 'http://media-partner.moebel.check24.de/feedvorlagen/Feedleitfaden_Anhang_2026/CHECK24_Feedvorlage_V2025.xlsx'; a.download = 'CHECK24_Feedvorlage_V2025.xlsx'; a.click(); }}
                             style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #E5E7EB', background: '#FFF', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
                             <svg width="15" height="15" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: MC_BLUE }}><path d="M8 2v8M5 7l3 3 3-3M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                             <div style={{ textAlign: 'left' }}>
-                                <div style={{ fontSize: 11, fontWeight: 600, color: '#111827' }}>Feedvorlage</div>
-                                <div style={{ fontSize: 10, color: '#6B7280' }}>XLSX · sofort herunterladen</div>
+                                <div style={{ fontSize: 11, fontWeight: 600, color: '#111827' }}>{T.feedTemplate}</div>
+                                <div style={{ fontSize: 10, color: '#6B7280' }}>{T.feedTemplateSub}</div>
                             </div>
                         </button>
                     </div>
@@ -907,25 +1102,25 @@ export default function McAngebotsfeed() {
                         <button type="button" onClick={() => setStep(1)}
                             style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: '#6B7280', fontWeight: 600, padding: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: 6 }}>
                             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                            Zurück
+                            {T.back}
                         </button>
 
                         {mcIsWrongFile ? (
                             <div style={{ padding: '20px', borderRadius: 12, border: '1px solid #FECACA', background: '#FEF2F2', display: 'flex', gap: 12 }}>
                                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ flexShrink: 0, color: '#DC2626' }}><path d="M10 3L2 17h16L10 3z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/><path d="M10 9v3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/><circle cx="10" cy="14.5" r="0.75" fill="currentColor"/></svg>
                                 <div>
-                                    <div style={{ fontSize: 13, fontWeight: 700, color: '#B91C1C', marginBottom: 4 }}>Diese Datei sieht nicht wie ein gültiger Produkt-Feed aus.</div>
-                                    <div style={{ fontSize: 11, color: '#7F1D1D', lineHeight: 1.6 }}>Es konnten keine bekannten Spalten erkannt werden. Erwartete Spalten: <code>ean</code>, <code>name</code>, <code>price</code>, <code>shipping_mode</code> o.&nbsp;ä.</div>
+                                    <div style={{ fontSize: 13, fontWeight: 700, color: '#B91C1C', marginBottom: 4 }}>{T.wrongFileTitle}</div>
+                                    <div style={{ fontSize: 11, color: '#7F1D1D', lineHeight: 1.6 }}>{T.wrongFileDesc}</div>
                                 </div>
                             </div>
                         ) : (
                             <div style={{ background: '#FFF', borderRadius: 16, boxShadow: '0 2px 16px rgba(0,0,0,0.08)', overflow: 'hidden' }}>
                                 {/* Card header */}
                                 <div style={{ padding: '24px 28px 20px', borderBottom: '1px solid #F3F4F6' }}>
-                                    <div style={{ fontSize: 20, fontWeight: 800, color: '#111827', marginBottom: 6 }}>Spalten-Zuordnung prüfen</div>
+                                    <div style={{ fontSize: 20, fontWeight: 800, color: '#111827', marginBottom: 6 }}>{T.mappingTitle}</div>
                                     <div style={{ fontSize: 13, color: '#6B7280' }}>
-                                        {foundFields2} von {totalFields2} Feldern automatisch erkannt.
-                                        {missingPflicht2 > 0 && <span style={{ color: '#B91C1C', fontWeight: 600 }}> {missingPflicht2} Pflichtfeld{missingPflicht2 > 1 ? 'er' : ''} nicht gefunden.</span>}
+                                        {T.mappingFound(foundFields2, totalFields2)}
+                                        {missingPflicht2 > 0 && <span style={{ color: '#B91C1C', fontWeight: 600 }}>{T.mappingMissing(missingPflicht2)}</span>}
                                     </div>
                                 </div>
 
@@ -933,7 +1128,7 @@ export default function McAngebotsfeed() {
                                 {missingPflicht2 > 0 && (
                                     <div style={{ margin: '16px 28px 0', padding: '10px 14px', borderRadius: 8, background: '#FEF2F2', border: '1px solid #FECACA', fontSize: 12, color: '#991B1B', display: 'flex', gap: 8, alignItems: 'flex-start' }}>
                                         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 1 }}><path d="M8 2L1 14h14L8 2z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M8 7v3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="12" r=".6" fill="currentColor"/></svg>
-                                        Bitte ordnen Sie die rot markierten Pflichtfelder manuell zu, bevor Sie fortfahren.
+                                        {T.mappingWarning}
                                     </div>
                                 )}
 
@@ -958,7 +1153,7 @@ export default function McAngebotsfeed() {
                                                     }}
                                                     style={{ flex: 1, fontSize: 11, padding: '4px 7px', borderRadius: 6, border: `1px solid ${missing ? '#FCA5A5' : col ? '#D1FAE5' : '#D1D5DB'}`, background: missing ? '#FFF5F5' : col ? '#F0FDF4' : '#FFF', cursor: 'pointer' }}
                                                 >
-                                                    <option value="">-- Nicht zugeordnet --</option>
+                                                    <option value="">{T.notAssigned}</option>
                                                     {headers.map((h) => <option key={h} value={h}>{h}</option>)}
                                                 </select>
                                                 {isManual && (
@@ -971,14 +1166,14 @@ export default function McAngebotsfeed() {
                                     {/* Image row */}
                                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                                         <span style={{ fontSize: 11, color: '#374151', width: 170, flexShrink: 0 }}>
-                                            Hauptbild (+ Zusatzb.)<span style={{ color: '#DC2626', fontWeight: 700 }}>*</span>
+                                            {T.mainImageLabel}<span style={{ color: '#DC2626', fontWeight: 700 }}>*</span>
                                         </span>
                                         <div style={{ flex: 1, fontSize: 11, padding: '5px 8px', borderRadius: 6, border: `1px solid ${mcImageColumns.length > 0 ? '#D1FAE5' : '#FCA5A5'}`, background: mcImageColumns.length > 0 ? '#F0FDF4' : '#FFF5F5', color: mcImageColumns.length > 0 ? '#166534' : '#DC2626', fontWeight: 600 }}>
-                                            {mcImageColumns.length > 0 ? mcImageColumns.join(', ') : '– nicht erkannt –'}
+                                            {mcImageColumns.length > 0 ? mcImageColumns.join(', ') : T.notDetected}
                                         </div>
                                     </div>
                                     {hiddenCount2 > 0 && (
-                                        <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 4 }}>{hiddenCount2} weitere optionale Felder nicht im Feed erkannt</div>
+                                        <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 4 }}>{T.hiddenFields(hiddenCount2)}</div>
                                     )}
                                 </div>
 
@@ -986,7 +1181,7 @@ export default function McAngebotsfeed() {
                                 <div style={{ padding: '0 28px 28px' }}>
                                     <button type="button" onClick={() => setStep(3)}
                                         style={{ width: '100%', padding: '14px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>
-                                        Analyse starten →
+                                        {T.startAnalysis}
                                     </button>
                                 </div>
                             </div>
@@ -1017,7 +1212,7 @@ export default function McAngebotsfeed() {
                             <button type="button" onClick={resetToStart}
                                 style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: '#6B7280', fontWeight: 600, padding: 0, display: 'flex', alignItems: 'center', gap: 6 }}>
                                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                Neuen Feed prüfen
+                                {T.newFeed}
                             </button>
                             {file && <span style={{ fontSize: 11, color: '#9CA3AF' }}>{file.name}</span>}
                         </div>
@@ -1031,10 +1226,10 @@ export default function McAngebotsfeed() {
                             </div>
                             <div>
                                 <div style={{ fontSize: 14, fontWeight: 700, color: stufe1Passed ? '#166534' : '#991B1B' }}>
-                                    {stufe1Passed ? 'Feed fehlerfrei — alle Artikel können gelistet werden.' : 'Fehler gefunden — bitte beheben und Feed erneut hochladen.'}
+                                    {stufe1Passed ? T.statusOk : T.statusErr}
                                 </div>
                                 <div style={{ fontSize: 12, color: stufe1Passed ? '#4B7A5A' : '#B91C1C', marginTop: 2 }}>
-                                    Fehlerquote: {errorRate.toFixed(1).replace('.', ',')}% (Grenzwert: 5% für APA)
+                                    {T.errorRateFmt(errorRate.toFixed(1))}
                                 </div>
                             </div>
                         </div>
@@ -1045,16 +1240,16 @@ export default function McAngebotsfeed() {
                             {/* Left: Pflichtfeldanalyse table */}
                             <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'hidden' }}>
                                 <div style={{ padding: '14px 20px', borderBottom: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                                    <div style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>Pflichtfeldanalyse</div>
+                                    <div style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>{T.analysisTitle}</div>
                                     <div style={{ fontSize: 11, color: '#6B7280' }}>
-                                        {totalPflichtFields} Felder · <span style={{ color: '#16A34A', fontWeight: 600 }}>{vollstaendigFields} vollständig</span> · <span style={{ color: '#DC2626', fontWeight: 600 }}>{totalPflichtFields - vollstaendigFields} fehlerhaft</span>
+                                        {T.analysisSummary(totalPflichtFields, vollstaendigFields, totalPflichtFields - vollstaendigFields)}
                                     </div>
                                 </div>
                                 {/* Table header */}
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 130px 120px', padding: '8px 20px', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB' }}>
-                                    <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.05em' }}>FELD</div>
-                                    <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.05em', textAlign: 'right' }}>STATUS</div>
-                                    <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.05em', paddingLeft: 16 }}>ABDECKUNG</div>
+                                    <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.05em' }}>{T.colField}</div>
+                                    <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.05em', textAlign: 'right' }}>{T.colStatus}</div>
+                                    <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.05em', paddingLeft: 16 }}>{T.colCoverage}</div>
                                 </div>
                                 {/* Table rows */}
                                 {PFLICHT_TABLE_FIELDS.map(({ key, label }) => {
@@ -1070,12 +1265,12 @@ export default function McAngebotsfeed() {
                                             <div style={{ fontSize: 12, color: '#374151', fontWeight: 500 }}>{label}</div>
                                             <div style={{ textAlign: 'right', fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap' }}>
                                                 {pct === null ? (
-                                                    <span style={{ color: '#9CA3AF' }}>Nicht im Feed</span>
+                                                    <span style={{ color: '#9CA3AF' }}>{T.notInFeed}</span>
                                                 ) : errs === 0 ? (
-                                                    <span style={{ color: '#16A34A' }}>✓ Vollständig</span>
+                                                    <span style={{ color: '#16A34A' }}>{T.complete}</span>
                                                 ) : (
                                                     <span style={{ color: pct < 30 ? '#DC2626' : '#D97706' }}>
-                                                        {errs.toLocaleString('de-DE')} fehlend
+                                                        {T.missingCount(errs.toLocaleString(numLocale))}
                                                     </span>
                                                 )}
                                             </div>
@@ -1101,13 +1296,13 @@ export default function McAngebotsfeed() {
                                 {/* 3 stats */}
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
                                     {[
-                                        { val: issues.livefaehigCount, label: 'Vollständig', color: '#16A34A', tip: 'Artikel ohne Fehler in Pflichtfeldern' },
-                                        { val: issues.blockiertCount, label: 'Fehler', color: '#DC2626', tip: 'Artikel mit mindestens einem Pflichtfeld-Fehler' },
-                                        { val: issues.totalRows, label: 'Gesamt', color: '#111827', tip: 'Gesamtzahl Artikel im Feed' },
+                                        { val: issues.livefaehigCount, label: T.statComplete, color: '#16A34A', tip: T.tipComplete },
+                                        { val: issues.blockiertCount, label: T.statErrors, color: '#DC2626', tip: T.tipErrors },
+                                        { val: issues.totalRows, label: T.statTotal, color: '#111827', tip: T.tipTotal },
                                     ].map(({ val, label, color, tip }) => (
                                         <Tooltip key={label} text={tip}>
                                             <div style={{ background: '#FFF', borderRadius: 10, padding: '12px 8px', textAlign: 'center', border: '1px solid #E5E7EB', cursor: 'help', width: '100%' }}>
-                                                <div style={{ fontSize: 22, fontWeight: 800, color, lineHeight: 1.1 }}>{val.toLocaleString('de-DE')}</div>
+                                                <div style={{ fontSize: 22, fontWeight: 800, color, lineHeight: 1.1 }}>{val.toLocaleString(numLocale)}</div>
                                                 <div style={{ fontSize: 10, color: '#6B7280', marginTop: 3 }}>{label}</div>
                                             </div>
                                         </Tooltip>
@@ -1116,32 +1311,29 @@ export default function McAngebotsfeed() {
 
                                 {/* CSV download */}
                                 <div style={{ background: '#EEF4FF', borderRadius: 12, border: `2px solid ${MC_BLUE}`, padding: '16px' }}>
-                                    <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', marginBottom: 4 }}>Fehlerbericht herunterladen</div>
-                                    <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 12, lineHeight: 1.5 }}>
-                                        CSV mit allen Fehlern pro Zeile. Importieren Sie die Datei in Excel, um die Fehler zu beheben.
-                                    </div>
+                                    <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', marginBottom: 4 }}>{T.csvTitle}</div>
+                                    <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 12, lineHeight: 1.5 }}>{T.csvDesc}</div>
                                     <button type="button"
                                         onClick={() => {
                                             const pflichtByRow = {}, optionalByRow = {};
                                             const errorMsg = (e) => {
-                                                const labels = { name: 'Artikelname', brand: 'Marke', description: 'Beschreibung', ean: 'EAN', price: 'Preis', availability: 'Verfügbarkeit', stock_amount: 'Bestand', shipping_mode: 'Versandart', delivery_time: 'Lieferzeit', image_url: 'Bild', hs_code: 'HS-Code', seller_offer_id: 'Seller-ID' };
-                                                const label = labels[e.field] || e.field;
-                                                if (e.type === 'missing') return `${label} fehlt`;
-                                                if (e.type === 'placeholder') return `${label}: Platzhalter-Wert`;
-                                                if (e.type === 'too_short') return `${label}: zu kurz`;
-                                                if (e.type === 'one_word') return `${label}: mind. 2 Wörter`;
-                                                if (e.type === 'bware') return `${label}: enthält "B-Ware"`;
-                                                if (e.type === 'wrong_length') return `${label}: muss 14 Zeichen haben`;
-                                                if (e.type === 'invalid') return `${label}: ungültiger Wert`;
-                                                return `${label} fehlerhaft`;
+                                                const label = T.csvFieldLabels[e.field] || e.field;
+                                                if (e.type === 'missing') return T.csvErrMissing(label);
+                                                if (e.type === 'placeholder') return T.csvErrPlaceholder(label);
+                                                if (e.type === 'too_short') return T.csvErrTooShort(label);
+                                                if (e.type === 'one_word') return T.csvErrOneWord(label);
+                                                if (e.type === 'bware') return T.csvErrBware(label);
+                                                if (e.type === 'wrong_length') return T.csvErrLength(label);
+                                                if (e.type === 'invalid') return T.csvErrInvalid(label);
+                                                return T.csvErrFallback(label);
                                             };
                                             issues.pflichtErrors.forEach((e) => { if (!pflichtByRow[e.row]) pflichtByRow[e.row] = []; pflichtByRow[e.row].push(errorMsg(e)); });
-                                            issues.eanDupRows.forEach((rn) => { if (!pflichtByRow[rn]) pflichtByRow[rn] = []; pflichtByRow[rn].push('EAN: doppelt vorhanden'); });
-                                            issues.nameDupRows.forEach((rn) => { if (!pflichtByRow[rn]) pflichtByRow[rn] = []; pflichtByRow[rn].push('Artikelname: doppelt vorhanden'); });
-                                            issues.optionalHints.forEach((e) => { if (!optionalByRow[e.row]) optionalByRow[e.row] = []; optionalByRow[e.row].push(`${e.field} fehlt`); });
+                                            issues.eanDupRows.forEach((rn) => { if (!pflichtByRow[rn]) pflichtByRow[rn] = []; pflichtByRow[rn].push(T.csvEanDup); });
+                                            issues.nameDupRows.forEach((rn) => { if (!pflichtByRow[rn]) pflichtByRow[rn] = []; pflichtByRow[rn].push(T.csvNameDup); });
+                                            issues.optionalHints.forEach((e) => { if (!optionalByRow[e.row]) optionalByRow[e.row] = []; optionalByRow[e.row].push(T.csvErrMissing(e.field)); });
                                             const esc = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
                                             const sep = ';';
-                                            const headerRow = ['Fehler Pflichtfelder', 'Fehler Optionale Felder', ...headers].map(esc).join(sep);
+                                            const headerRow = [T.csvColPflicht, T.csvColOptional, ...headers].map(esc).join(sep);
                                             const lines = rows.map((r, i) => {
                                                 const rn = i + 1;
                                                 const p = pflichtByRow[rn] ? [...new Set(pflichtByRow[rn])].join('; ') : '';
@@ -1158,7 +1350,7 @@ export default function McAngebotsfeed() {
                                             URL.revokeObjectURL(url);
                                         }}
                                         style={{ width: '100%', padding: '11px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
-                                        CSV herunterladen
+                                        {T.csvBtn}
                                     </button>
                                 </div>
 
@@ -1178,17 +1370,8 @@ export default function McAngebotsfeed() {
                                     });
                                     issues.eanDupRows.forEach((rn) => rowsByGroup2.ean.add(rn));
                                     issues.nameDupRows.forEach((rn) => rowsByGroup2.name.add(rn));
-                                    const topGroups2 = [
-                                        { key: 'name', label: 'Artikelname', hint: 'Fehlt, zu kurz, ein Wort oder doppelt' },
-                                        { key: 'ean', label: 'EAN', hint: 'Nicht 14 Zeichen oder doppelt' },
-                                        { key: 'desc', label: 'Beschreibung', hint: 'Fehlt, unter 20 Zeichen oder B-Ware' },
-                                        { key: 'img', label: 'Hauptbild', hint: 'Bild-URL fehlt' },
-                                        { key: 'price', label: 'Preis / Lieferung', hint: 'Fehlt oder ungültig' },
-                                        { key: 'brand', label: 'Marke', hint: 'Fehlt oder unter 2 Zeichen' },
-                                        { key: 'mfr', label: 'Herstellerangaben', hint: 'Name, PLZ, Ort oder E-Mail fehlt' },
-                                        { key: 'size', label: 'Maße', hint: 'Ungültiger Zahlenwert' },
-                                        { key: 'hs_code', label: 'HS-Code', hint: 'Pflicht bei Lager außerhalb DE' },
-                                    ].map((g) => ({ ...g, count: rowsByGroup2[g.key].size }))
+                                    const topGroups2 = T.errGroups
+                                     .map((g) => ({ ...g, count: rowsByGroup2[g.key]?.size || 0 }))
                                      .filter((g) => g.count > 0)
                                      .sort((a, b) => b.count - a.count)
                                      .slice(0, 4);
@@ -1196,13 +1379,13 @@ export default function McAngebotsfeed() {
                                     if (!topGroups2.length) return null;
                                     return (
                                         <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '14px 16px' }}>
-                                            <div style={{ fontSize: 12, fontWeight: 700, color: '#111827', marginBottom: 10 }}>Häufigste Fehler</div>
+                                            <div style={{ fontSize: 12, fontWeight: 700, color: '#111827', marginBottom: 10 }}>{T.topErrorsTitle}</div>
                                             <div style={{ display: 'grid', gap: 8 }}>
                                                 {topGroups2.map((g) => (
                                                     <div key={g.key}>
                                                         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 2 }}>
                                                             <span style={{ fontSize: 11, fontWeight: 600, color: '#111827' }}>{g.label}</span>
-                                                            <span style={{ fontSize: 10, fontWeight: 700, color: '#DC2626' }}>{g.count.toLocaleString('de-DE')} Artikel</span>
+                                                            <span style={{ fontSize: 10, fontWeight: 700, color: '#DC2626' }}>{T.articles(g.count.toLocaleString(numLocale))}</span>
                                                         </div>
                                                         <div style={{ fontSize: 10, color: '#6B7280' }}>{g.hint}</div>
                                                     </div>
@@ -1239,7 +1422,7 @@ export default function McAngebotsfeed() {
                     }}
                 >
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px', borderBottom: '1px solid #E5E7EB' }}>
-                        <span style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>Feedleitfaden 2026</span>
+                        <span style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>{T.pdfTitle}</span>
                         <div style={{ display: 'flex', gap: 8 }}>
                             <a
                                 href="https://w9cedwr8emsi29qt.public.blob.vercel-storage.com/CHECK24_Feedleitfaden_V2026.pdf"
@@ -1251,7 +1434,7 @@ export default function McAngebotsfeed() {
                                 }}
                             >
                                 <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1.5v7M4 6l2.5 2.5L9 6M1.5 11h10" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                Herunterladen
+                                {T.pdfDownload}
                             </a>
                             <button
                                 type="button"
