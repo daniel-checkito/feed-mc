@@ -579,14 +579,14 @@ export default function McAngebotsfeed() {
 
     return (
         <div style={{ background: '#F3F4F6', minHeight: '100vh' }}>
-            <header style={{ background: MC_BLUE, padding: '16px 48px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <header style={{ background: MC_BLUE, padding: '10px 48px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <button
                     type="button"
                     onClick={() => { window.location.hash = "#/checker"; }}
                     style={{ border: "none", background: "transparent", padding: 0, cursor: "pointer", display: "flex", alignItems: "center", gap: 10 }}
                     aria-label="Feed Checker Startseite"
                 >
-                    <span style={{ color: "#FFFFFF", fontWeight: 900, fontSize: 26, letterSpacing: "-0.5px", fontFamily: "ui-sans-serif, system-ui", fontStyle: "italic" }}>FEED CHECKER</span>
+                    <span style={{ color: "#FFFFFF", fontWeight: 900, fontSize: 20, letterSpacing: "-0.5px", fontFamily: "ui-sans-serif, system-ui", fontStyle: "italic" }}>FEED CHECKER</span>
                 </button>
                 <a
                     href="mailto:contentmanagement.moebel@check24.de?subject=Feed%20Checker%20-%20Hilfe"
