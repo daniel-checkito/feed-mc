@@ -299,6 +299,7 @@ export default function McAngebotsfeed() {
     const [dragging, setDragging] = useState(false);
     const [showLeitfaden, setShowLeitfaden] = useState(false);
     const [storeLocation, setStoreLocation] = useState('germany');
+    const [step, setStep] = useState(1);
     const [rows, setRows] = useState([]);
     const [headers, setHeaders] = useState([]);
     const [manualMapping, setManualMapping] = useState({});
@@ -665,964 +666,490 @@ export default function McAngebotsfeed() {
     const mcIsWrongFile =
         rows.length > 0 && Object.values(mcMapping).filter(Boolean).length === 0 && mcImageColumns.length === 0;
 
+    const outsideGermany = storeLocation === 'outside_germany';
+
+    function resetToStart() {
+        setFile(null);
+        setRows([]);
+        setHeaders([]);
+        setManualMapping({});
+        setStep(1);
+    }
+
+    // ── Field labels (shared across steps) ──
+    const FIELD_LABELS = {
+        name: 'Artikelname', price: 'Preis', seller_offer_id: 'Eigene Artikel-ID',
+        brand: 'Marke', ean: 'EAN (GTIN14)', delivery_time: 'Lieferzeit',
+        shipping_mode: 'Versandart', availability: 'Bestand / Verfügbarkeit',
+        stock_amount: 'Bestand', image_url: 'Hauptbild', description: 'Beschreibung',
+        hs_code: 'HS-Code', category_path: 'Kategoriepfad', delivery_includes: 'Lieferumfang',
+        color: 'Farbe', material: 'Material', size: 'Maße (Gesamt)', size_height: 'Höhe',
+        size_depth: 'Tiefe', size_diameter: 'Durchmesser', manufacturer_name: 'Herstellername',
+        manufacturer_street: 'Herstellerstraße', manufacturer_postcode: 'Herstellerpostleitzahl',
+        manufacturer_city: 'Herstellerstadt', manufacturer_country: 'Herstellerland',
+        manufacturer_email: 'Hersteller-E-Mail', deeplink: 'Deeplink', model: 'Modellbezeichnung',
+        size_lying_surface: 'Liegefläche', size_seat_height: 'Sitzhöhe', ausrichtung: 'Ausrichtung',
+        style: 'Stil', temper: 'Härtegrad', weight: 'Gewicht', weight_capacity: 'Belastbarkeit',
+        youtube_link: 'Youtube-Video', bild_3d_glb: '3D-Ansicht (GLB)', bild_3d_usdz: '3D-Ansicht (USDZ)',
+        assembly_instructions: 'Montageanleitung', illuminant_included: 'Leuchtmittel inklusive',
+        incl_mattress: 'Matratze inklusive', incl_slatted_frame: 'Lattenrost inklusive',
+        led_verbaut: 'LED verbaut', lighting_included: 'Beleuchtung inklusive', set_includes: 'Set-Inhalt',
+        socket: 'Steckdose/Anschluss', care_instructions: 'Pflegehinweise', filling: 'Füllung',
+        removable_cover: 'Bezug abnehmbar', suitable_for_allergic: 'Allergikergeeignet',
+        energy_efficiency_category: 'Energieeffizienzklasse', product_data_sheet: 'Produktdatenblatt',
+        manufacturer_phone_number: 'Herstellertelefonnummer',
+    };
+
+    // ── Pflicht fields for step-3 table (ordered, availability combined) ──
+    const PFLICHT_TABLE_FIELDS = [
+        { key: 'name', label: 'Artikelname' },
+        { key: 'price', label: 'Preis' },
+        { key: 'seller_offer_id', label: 'Eigene Artikel-ID' },
+        { key: 'brand', label: 'Marke' },
+        { key: 'ean', label: 'EAN (GTIN14)' },
+        { key: 'delivery_time', label: 'Lieferzeit' },
+        { key: 'shipping_mode', label: 'Versandart' },
+        { key: 'availability', label: 'Bestand / Verfügbarkeit' },
+        { key: 'description', label: 'Beschreibung' },
+        { key: 'image_url', label: 'Hauptbild' },
+        ...(outsideGermany ? [{ key: 'hs_code', label: 'HS-Code' }] : []),
+    ];
+
+    // ── Per-field error rows (for step 3 table) ──
+    const fieldErrorRows = {};
+    if (issues) {
+        issues.pflichtErrors.forEach((e) => {
+            const k = e.field === 'stock_amount' ? 'availability' : e.field;
+            if (!fieldErrorRows[k]) fieldErrorRows[k] = new Set();
+            fieldErrorRows[k].add(e.row);
+        });
+        issues.eanDupRows.forEach((rn) => {
+            if (!fieldErrorRows.ean) fieldErrorRows.ean = new Set();
+            fieldErrorRows.ean.add(rn);
+        });
+        issues.nameDupRows.forEach((rn) => {
+            if (!fieldErrorRows.name) fieldErrorRows.name = new Set();
+            fieldErrorRows.name.add(rn);
+        });
+    }
+
+    const errorRate = issues ? (issues.blockiertCount / issues.totalRows) * 100 : 0;
+    const stufe1Passed = issues ? errorRate <= 5 : false;
+
     return (
         <div style={{ background: '#F3F4F6', minHeight: '100vh' }}>
-            <header style={{ background: MC_BLUE, padding: '10px 48px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <button
-                    type="button"
-                    onClick={() => { window.location.hash = "#/checker"; }}
-                    style={{ border: "none", background: "transparent", padding: 0, cursor: "pointer", display: "flex", alignItems: "center", gap: 10 }}
-                    aria-label="Feed Checker Startseite"
-                >
-                    <span style={{ color: "#FFFFFF", fontWeight: 900, fontSize: 20, letterSpacing: "-0.5px", fontFamily: "ui-sans-serif, system-ui", fontStyle: "italic" }}>FEED CHECKER</span>
-                </button>
+            {/* ── HEADER ── */}
+            <header style={{ background: MC_BLUE, padding: '10px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+                <span style={{ color: '#FFF', fontWeight: 900, fontSize: 18, letterSpacing: '-0.5px', fontStyle: 'italic', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                    FEED CHECKER
+                </span>
+
+                {/* Step indicator */}
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    {[
+                        { n: 1, label: 'Hochladen' },
+                        { n: 2, label: 'Zuordnung' },
+                        { n: 3, label: 'Ergebnis' },
+                    ].map((s, i) => (
+                        <React.Fragment key={s.n}>
+                            {i > 0 && (
+                                <div style={{ width: 28, height: 1, background: step >= s.n ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.2)', margin: '0 2px', marginBottom: 14 }} />
+                            )}
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+                                <div style={{
+                                    width: 24, height: 24, borderRadius: '50%',
+                                    background: step === s.n ? '#FFF' : step > s.n ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.15)',
+                                    color: step === s.n ? MC_BLUE : '#FFF',
+                                    fontSize: 10, fontWeight: 800,
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    transition: 'all 0.2s',
+                                }}>
+                                    {step > s.n ? '✓' : s.n}
+                                </div>
+                                <span style={{ fontSize: 9, color: step === s.n ? '#FFF' : 'rgba(255,255,255,0.55)', fontWeight: step === s.n ? 700 : 400, whiteSpace: 'nowrap' }}>
+                                    {s.label}
+                                </span>
+                            </div>
+                        </React.Fragment>
+                    ))}
+                </div>
+
                 <a
                     href="mailto:contentmanagement.moebel@check24.de?subject=Feed%20Checker%20-%20Hilfe"
-                    style={{ border: '1px solid rgba(255,255,255,0.3)', background: 'transparent', color: '#FFFFFF', fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}
+                    style={{ border: '1px solid rgba(255,255,255,0.3)', background: 'transparent', color: '#FFFFFF', fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none', flexShrink: 0 }}
                 >
                     <svg width="13" height="13" viewBox="0 0 13 13" fill="none" style={{ flexShrink: 0 }}><rect x="1" y="2.5" width="11" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.3"/><path d="M1 4l5.5 3.5L12 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>
                     Hilfe & Kontakt
                 </a>
             </header>
-        <div style={{ maxWidth: 1500, margin: '0 auto', padding: '24px 48px' }}>
-            <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start' }}>
-                {/* ── LEFT: Upload & Settings ── */}
-                <div style={{ flex: '0 1 50%', minWidth: 0, display: 'grid', gap: 12, alignContent: 'start' }}>
-                    {/* Upload Method Toggle */}
-                    <div
-                        style={{
-                            background: '#FFF',
-                            borderRadius: 12,
-                            padding: '16px 20px',
-                            boxShadow: '0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04)',
-                        }}
-                    >
-                        <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#D1D5DB', flexShrink: 0, display: 'inline-block' }} />
-                            Datei hochladen
-                        </div>
-                        <div style={{ marginTop: 0 }}>
-                            {file && (
-                                <div
-                                    style={{
-                                        marginBottom: 8,
-                                        padding: '6px 10px',
-                                        borderRadius: 6,
-                                        border: '1px solid #E5E7EB',
-                                        background: '#F9FAFB',
-                                        fontSize: 11,
-                                        color: '#111827',
-                                    }}
-                                >
-                                    {file.name} | {(file.size / 1024).toFixed(1)} KB
-                                </div>
-                            )}
-                            <div
-                                onDragOver={(e) => {
-                                    e.preventDefault();
-                                    setDragging(true);
-                                }}
-                                onDragLeave={() => setDragging(false)}
-                                onDrop={(e) => {
-                                    e.preventDefault();
-                                    setDragging(false);
-                                    const f = e.dataTransfer.files?.[0];
-                                    if (f) parseFile(f);
-                                }}
-                                onClick={() => fileRef.current?.click()}
-                                style={{
-                                    background: dragging ? '#EEF4FF' : '#F9FAFB',
-                                    border: `2px dashed ${dragging ? MC_BLUE : '#D1D5DB'}`,
-                                    borderRadius: 8,
-                                    padding: '20px 16px',
-                                    textAlign: 'center',
-                                    cursor: 'pointer',
-                                }}
-                            >
-                                <div style={{ fontSize: 12, fontWeight: 600, color: '#111827', marginBottom: 2 }}>
-                                    Datei hierher ziehen oder anklicken
-                                </div>
-                                <div style={{ fontSize: 10, color: '#6B7280' }}>CSV, max. 64 MB</div>
-                                <input
-                                    ref={fileRef}
-                                    type="file"
-                                    accept=".csv,text/csv"
-                                    style={{ display: 'none' }}
-                                    onChange={(e) => parseFile(e.target.files?.[0] || null)}
-                                />
+        {/* ── FUNNEL BODY ── */}
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '40px 24px', minHeight: 'calc(100vh - 58px)', alignItems: step === 1 ? 'center' : 'flex-start' }}>
+            <div style={{ display: 'contents' }}>
+
+            {/* ══════════════════════════════════════════
+                STEP 1 — Upload
+            ══════════════════════════════════════════ */}
+            {step === 1 && (
+                <div style={{ width: '100%', maxWidth: 520 }}>
+                    <div style={{ background: '#FFF', borderRadius: 16, padding: '36px 40px', boxShadow: '0 2px 16px rgba(0,0,0,0.08)' }}>
+                        {/* Heading */}
+                        <div style={{ marginBottom: 28, textAlign: 'center' }}>
+                            <div style={{ fontSize: 22, fontWeight: 800, color: '#111827', marginBottom: 8 }}>Feed hochladen</div>
+                            <div style={{ fontSize: 13, color: '#6B7280', lineHeight: 1.6 }}>
+                                Laden Sie Ihren Angebotsfeed als CSV hoch. Wir prüfen alle Pflichtfelder und zeigen genau, welche Artikel Fehler haben.
                             </div>
                         </div>
+
+                        {/* Drop zone */}
+                        {file ? (
+                            <div style={{ borderRadius: 10, border: '2px solid #BBF7D0', background: '#F0FDF4', padding: '18px 20px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                                <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#DCFCE7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2.5 1.5h8.5l3 3v10h-11.5v-13z" stroke="#16A34A" strokeWidth="1.4" strokeLinejoin="round"/><path d="M11 1.5v3h3" stroke="#16A34A" strokeWidth="1.4" strokeLinejoin="round"/><path d="M5 8.5l2 2 4-3" stroke="#16A34A" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                </div>
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                    <div style={{ fontSize: 13, fontWeight: 600, color: '#166534', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{file.name}</div>
+                                    <div style={{ fontSize: 11, color: '#4B7A5A', marginTop: 2 }}>{(file.size / 1024).toFixed(1)} KB · {rows.length > 0 ? `${rows.length.toLocaleString('de-DE')} Artikel erkannt` : 'Wird gelesen…'}</div>
+                                </div>
+                                <button type="button" onClick={() => { setFile(null); setRows([]); setHeaders([]); setManualMapping({}); }}
+                                    style={{ fontSize: 11, color: '#6B7280', background: 'none', border: '1px solid #D1D5DB', borderRadius: 5, padding: '4px 10px', cursor: 'pointer' }}>
+                                    Ändern
+                                </button>
+                            </div>
+                        ) : (
+                            <div
+                                onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+                                onDragLeave={() => setDragging(false)}
+                                onDrop={(e) => { e.preventDefault(); setDragging(false); const f = e.dataTransfer.files?.[0]; if (f) parseFile(f); }}
+                                onClick={() => fileRef.current?.click()}
+                                style={{ border: `2px dashed ${dragging ? MC_BLUE : '#D1D5DB'}`, background: dragging ? '#EEF4FF' : '#F9FAFB', borderRadius: 10, padding: '36px 20px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.15s' }}
+                            >
+                                <div style={{ marginBottom: 10 }}>
+                                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" style={{ color: dragging ? MC_BLUE : '#9CA3AF' }}><rect x="4" y="6" width="18" height="22" rx="2" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/><path d="M22 6l6 6v16a2 2 0 01-2 2H10" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/><path d="M22 6v6h6" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/><path d="M10 20l3 3 6-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                </div>
+                                <div style={{ fontSize: 14, fontWeight: 700, color: '#111827', marginBottom: 4 }}>CSV-Datei hochladen</div>
+                                <div style={{ fontSize: 12, color: '#6B7280' }}>Hierher ziehen oder klicken · max. 64 MB</div>
+                                <input ref={fileRef} type="file" accept=".csv,text/csv" style={{ display: 'none' }} onChange={(e) => parseFile(e.target.files?.[0] || null)} />
+                            </div>
+                        )}
+
+                        {/* Lagerstandort toggle */}
+                        <div style={{ marginTop: 24 }}>
+                            <div style={{ fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 8 }}>Lagerstandort des Händlers</div>
+                            <div style={{ display: 'flex', background: '#F3F4F6', borderRadius: 8, padding: 3, gap: 3 }}>
+                                {[{ value: 'germany', label: 'Deutschland' }, { value: 'outside_germany', label: 'Außerhalb Deutschland' }].map((opt) => (
+                                    <button key={opt.value} type="button" onClick={() => setStoreLocation(opt.value)}
+                                        style={{ flex: 1, padding: '8px 10px', borderRadius: 6, border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: storeLocation === opt.value ? 600 : 400, background: storeLocation === opt.value ? '#FFF' : 'transparent', color: storeLocation === opt.value ? MC_BLUE : '#6B7280', boxShadow: storeLocation === opt.value ? '0 1px 3px rgba(0,0,0,0.10)' : 'none', transition: 'all 0.15s' }}>
+                                        {opt.label}
+                                    </button>
+                                ))}
+                            </div>
+                            {outsideGermany && (
+                                <div style={{ marginTop: 6, fontSize: 11, color: '#6B7280' }}>HS-Code wird als Pflichtfeld geprüft.</div>
+                            )}
+                        </div>
+
+                        {/* Primary CTA */}
+                        <button
+                            type="button"
+                            onClick={() => rows.length > 0 && setStep(2)}
+                            disabled={rows.length === 0}
+                            style={{ width: '100%', marginTop: 28, padding: '14px', background: rows.length > 0 ? MC_BLUE : '#D1D5DB', color: '#FFF', border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 700, cursor: rows.length > 0 ? 'pointer' : 'default', transition: 'background 0.2s' }}
+                        >
+                            {rows.length > 0 ? `Weiter · ${rows.length.toLocaleString('de-DE')} Artikel geladen →` : 'Bitte Datei hochladen'}
+                        </button>
                     </div>
 
-                    {/* Store Location Toggle */}
-                    <div style={{ background: '#FFF', borderRadius: 12, padding: '16px 20px', boxShadow: '0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04)' }}>
-                        <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#D1D5DB', flexShrink: 0, display: 'inline-block' }} />
-                            Lagerstandort
-                        </div>
-                        <div style={{ display: 'flex', background: '#F3F4F6', borderRadius: 8, padding: 3, gap: 3 }}>
-                            {[
-                                { value: 'germany', label: 'Deutschland' },
-                                { value: 'outside_germany', label: 'Außerhalb DE' },
-                            ].map((opt) => (
-                                <button
-                                    key={opt.value}
-                                    type="button"
-                                    onClick={() => setStoreLocation(opt.value)}
-                                    style={{
-                                        flex: 1,
-                                        padding: '7px 10px',
-                                        borderRadius: 6,
-                                        border: 'none',
-                                        cursor: 'pointer',
-                                        fontSize: 12,
-                                        fontWeight: storeLocation === opt.value ? 600 : 400,
-                                        background: storeLocation === opt.value ? '#FFF' : 'transparent',
-                                        color: storeLocation === opt.value ? MC_BLUE : '#6B7280',
-                                        boxShadow: storeLocation === opt.value ? '0 1px 3px rgba(0,0,0,0.10)' : 'none',
-                                        transition: 'all 0.15s',
-                                    }}
-                                >
-                                    {opt.label}
-                                </button>
-                            ))}
-                        </div>
-                        {storeLocation === 'outside_germany' && (
-                            <div style={{ marginTop: 8, fontSize: 11, color: '#6B7280', lineHeight: 1.5 }}>
-                                HS-Code ist Pflichtfeld für Lager außerhalb Deutschlands.
+                    {/* Downloads below card */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 12 }}>
+                        <button type="button" onClick={() => setShowLeitfaden(true)}
+                            style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #E5E7EB', background: '#FFF', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: MC_BLUE }}><path d="M2.5 1.5h8.5l3 3v10h-11.5v-13z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M11 1.5v3h3" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M5 8h6M5 10.5h6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                            <div style={{ textAlign: 'left' }}>
+                                <div style={{ fontSize: 11, fontWeight: 600, color: '#111827' }}>Feedleitfaden</div>
+                                <div style={{ fontSize: 10, color: '#6B7280' }}>PDF · Vorschau & Download</div>
+                            </div>
+                        </button>
+                        <button type="button" onClick={() => { const a = document.createElement('a'); a.href = 'http://media-partner.moebel.check24.de/feedvorlagen/Feedleitfaden_Anhang_2026/CHECK24_Feedvorlage_V2025.xlsx'; a.download = 'CHECK24_Feedvorlage_V2025.xlsx'; a.click(); }}
+                            style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #E5E7EB', background: '#FFF', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: MC_BLUE }}><path d="M8 2v8M5 7l3 3 3-3M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                            <div style={{ textAlign: 'left' }}>
+                                <div style={{ fontSize: 11, fontWeight: 600, color: '#111827' }}>Feedvorlage</div>
+                                <div style={{ fontSize: 10, color: '#6B7280' }}>XLSX · sofort herunterladen</div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* ══════════════════════════════════════════
+                STEP 2 — Spalten-Zuordnung
+            ══════════════════════════════════════════ */}
+            {step === 2 && (() => {
+                const allMcFields2 = [
+                    ...MC_PFLICHT_COLS.filter((f) => f !== 'image_url'),
+                    ...(outsideGermany ? ['hs_code'] : []),
+                    ...MC_OPTIONAL_COLS,
+                ];
+                const totalFields2 = allMcFields2.length + 1;
+                const foundFields2 = allMcFields2.filter((f) => mcMapping[f]).length + (mcImageColumns.length > 0 ? 1 : 0);
+                const manufacturerEnd = allMcFields2.indexOf('manufacturer_email');
+                const displayFields2 = [
+                    ...allMcFields2.slice(0, manufacturerEnd + 1),
+                    'manufacturer_phone_number',
+                    ...allMcFields2.filter((f) => f !== 'manufacturer_phone_number' && allMcFields2.indexOf(f) > manufacturerEnd),
+                ].filter((f) => mcMapping[f] || MC_PFLICHT_COLS.includes(f) || (outsideGermany && f === 'hs_code'));
+                const hiddenCount2 = allMcFields2.filter((f) => !mcMapping[f] && !MC_PFLICHT_COLS.includes(f) && !(outsideGermany && f === 'hs_code') && f !== 'manufacturer_phone_number').length;
+                const missingPflicht2 = issues ? issues.missingPflichtCols.length : 0;
+
+                return (
+                    <div style={{ width: '100%', maxWidth: 680 }}>
+                        {/* Back */}
+                        <button type="button" onClick={() => setStep(1)}
+                            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: '#6B7280', fontWeight: 600, padding: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                            Zurück
+                        </button>
+
+                        {mcIsWrongFile ? (
+                            <div style={{ padding: '20px', borderRadius: 12, border: '1px solid #FECACA', background: '#FEF2F2', display: 'flex', gap: 12 }}>
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ flexShrink: 0, color: '#DC2626' }}><path d="M10 3L2 17h16L10 3z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/><path d="M10 9v3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/><circle cx="10" cy="14.5" r="0.75" fill="currentColor"/></svg>
+                                <div>
+                                    <div style={{ fontSize: 13, fontWeight: 700, color: '#B91C1C', marginBottom: 4 }}>Diese Datei sieht nicht wie ein gültiger Produkt-Feed aus.</div>
+                                    <div style={{ fontSize: 11, color: '#7F1D1D', lineHeight: 1.6 }}>Es konnten keine bekannten Spalten erkannt werden. Erwartete Spalten: <code>ean</code>, <code>name</code>, <code>price</code>, <code>shipping_mode</code> o.&nbsp;ä.</div>
+                                </div>
+                            </div>
+                        ) : (
+                            <div style={{ background: '#FFF', borderRadius: 16, boxShadow: '0 2px 16px rgba(0,0,0,0.08)', overflow: 'hidden' }}>
+                                {/* Card header */}
+                                <div style={{ padding: '24px 28px 20px', borderBottom: '1px solid #F3F4F6' }}>
+                                    <div style={{ fontSize: 20, fontWeight: 800, color: '#111827', marginBottom: 6 }}>Spalten-Zuordnung prüfen</div>
+                                    <div style={{ fontSize: 13, color: '#6B7280' }}>
+                                        {foundFields2} von {totalFields2} Feldern automatisch erkannt.
+                                        {missingPflicht2 > 0 && <span style={{ color: '#B91C1C', fontWeight: 600 }}> {missingPflicht2} Pflichtfeld{missingPflicht2 > 1 ? 'er' : ''} nicht gefunden.</span>}
+                                    </div>
+                                </div>
+
+                                {/* Missing pflicht warning */}
+                                {missingPflicht2 > 0 && (
+                                    <div style={{ margin: '16px 28px 0', padding: '10px 14px', borderRadius: 8, background: '#FEF2F2', border: '1px solid #FECACA', fontSize: 12, color: '#991B1B', display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+                                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 1 }}><path d="M8 2L1 14h14L8 2z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M8 7v3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="12" r=".6" fill="currentColor"/></svg>
+                                        Bitte ordnen Sie die rot markierten Pflichtfelder manuell zu, bevor Sie fortfahren.
+                                    </div>
+                                )}
+
+                                {/* Mapping rows */}
+                                <div style={{ padding: '16px 28px', display: 'grid', gap: 5 }}>
+                                    {displayFields2.map((f) => {
+                                        const isManual = f in manualMapping;
+                                        const col = mcMapping[f];
+                                        const isPflicht = MC_PFLICHT_COLS.includes(f) || (outsideGermany && f === 'hs_code');
+                                        const missing = !col && isPflicht;
+                                        return (
+                                            <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                                <span style={{ fontSize: 11, color: '#374151', width: 170, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 4 }}>
+                                                    {FIELD_LABELS[f] || f}
+                                                    {isPflicht && <span style={{ color: '#DC2626', fontWeight: 700 }}>*</span>}
+                                                </span>
+                                                <select
+                                                    value={col || ''}
+                                                    onChange={(e) => {
+                                                        const val = e.target.value;
+                                                        setManualMapping((prev) => { const next = { ...prev }; if (val === '') delete next[f]; else next[f] = val; return next; });
+                                                    }}
+                                                    style={{ flex: 1, fontSize: 11, padding: '4px 7px', borderRadius: 6, border: `1px solid ${missing ? '#FCA5A5' : col ? '#D1FAE5' : '#D1D5DB'}`, background: missing ? '#FFF5F5' : col ? '#F0FDF4' : '#FFF', cursor: 'pointer' }}
+                                                >
+                                                    <option value="">-- Nicht zugeordnet --</option>
+                                                    {headers.map((h) => <option key={h} value={h}>{h}</option>)}
+                                                </select>
+                                                {isManual && (
+                                                    <button type="button" onClick={() => setManualMapping((prev) => { const next = { ...prev }; delete next[f]; return next; })}
+                                                        style={{ fontSize: 10, padding: '3px 7px', borderRadius: 4, border: '1px solid #C4B5FD', background: '#FFF', color: '#7C3AED', cursor: 'pointer' }}>↩</button>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                    {/* Image row */}
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                        <span style={{ fontSize: 11, color: '#374151', width: 170, flexShrink: 0 }}>
+                                            Hauptbild (+ Zusatzb.)<span style={{ color: '#DC2626', fontWeight: 700 }}>*</span>
+                                        </span>
+                                        <div style={{ flex: 1, fontSize: 11, padding: '5px 8px', borderRadius: 6, border: `1px solid ${mcImageColumns.length > 0 ? '#D1FAE5' : '#FCA5A5'}`, background: mcImageColumns.length > 0 ? '#F0FDF4' : '#FFF5F5', color: mcImageColumns.length > 0 ? '#166534' : '#DC2626', fontWeight: 600 }}>
+                                            {mcImageColumns.length > 0 ? mcImageColumns.join(', ') : '– nicht erkannt –'}
+                                        </div>
+                                    </div>
+                                    {hiddenCount2 > 0 && (
+                                        <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 4 }}>{hiddenCount2} weitere optionale Felder nicht im Feed erkannt</div>
+                                    )}
+                                </div>
+
+                                {/* CTA */}
+                                <div style={{ padding: '0 28px 28px' }}>
+                                    <button type="button" onClick={() => setStep(3)}
+                                        style={{ width: '100%', padding: '14px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>
+                                        Analyse starten →
+                                    </button>
+                                </div>
                             </div>
                         )}
                     </div>
+                );
+            })()}
 
-                    {/* Downloads */}
-                    <div style={{ background: '#FFF', borderRadius: 12, padding: '16px 20px', boxShadow: '0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04)' }}>
-                        <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#D1D5DB', flexShrink: 0, display: 'inline-block' }} />
-                            Vorlagen & Dokumentation
-                        </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                            <button
-                                type="button"
-                                onClick={() => setShowLeitfaden(true)}
-                                style={{ padding: '10px 12px', borderRadius: 6, border: '1px solid #E5E7EB', background: '#F9FAFB', cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 10 }}
-                            >
-                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: MC_BLUE }}><path d="M2.5 1.5h8.5l3 3v10h-11.5v-13z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M11 1.5v3h3" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M5 8h6M5 10.5h6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
-                                <div>
-                                    <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>Feedleitfaden</div>
-                                    <div style={{ fontSize: 10, color: '#6B7280', marginTop: 1 }}>PDF · Vorschau & Download</div>
-                                </div>
+            {/* ══════════════════════════════════════════
+                STEP 3 — Ergebnis
+            ══════════════════════════════════════════ */}
+            {step === 3 && issues && (() => {
+                // Per-field coverage for table
+                const totalPflichtFields = PFLICHT_TABLE_FIELDS.length;
+                const vollstaendigFields = PFLICHT_TABLE_FIELDS.filter(({ key }) => {
+                    const isMapped = key === 'availability'
+                        ? (mcMapping.availability || mcMapping.stock_amount)
+                        : key === 'image_url' ? mcImageColumns.length > 0
+                        : mcMapping[key];
+                    const errs = fieldErrorRows[key]?.size || 0;
+                    return isMapped && errs === 0;
+                }).length;
+
+                return (
+                    <div style={{ width: '100%', maxWidth: 820 }}>
+                        {/* Top nav */}
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                            <button type="button" onClick={resetToStart}
+                                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: '#6B7280', fontWeight: 600, padding: 0, display: 'flex', alignItems: 'center', gap: 6 }}>
+                                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                Neuen Feed prüfen
                             </button>
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    const a = document.createElement('a');
-                                    a.href = 'http://media-partner.moebel.check24.de/feedvorlagen/Feedleitfaden_Anhang_2026/CHECK24_Feedvorlage_V2025.xlsx';
-                                    a.download = 'CHECK24_Feedvorlage_V2025.xlsx';
-                                    a.click();
-                                }}
-                                style={{ padding: '10px 12px', borderRadius: 6, border: '1px solid #E5E7EB', background: '#F9FAFB', cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 10 }}
-                            >
-                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: MC_BLUE }}><path d="M8 2v8M5 7l3 3 3-3M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                <div>
-                                    <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>Feedvorlage</div>
-                                    <div style={{ fontSize: 10, color: '#6B7280', marginTop: 1 }}>XLSX · sofort herunterladen</div>
-                                </div>
-                            </button>
+                            {file && <span style={{ fontSize: 11, color: '#9CA3AF' }}>{file.name}</span>}
                         </div>
-                    </div>
 
-                    {/* So funktioniert es */}
-                    <div style={{ background: '#FFF', borderRadius: 12, padding: '16px 20px', boxShadow: '0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04)' }}>
-                        <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#D1D5DB', flexShrink: 0, display: 'inline-block' }} />
-                            So funktioniert es
-                        </div>
-                        <div style={{ display: 'grid', gap: 10 }}>
-                            {[
-                                { step: '1', title: 'Feed hochladen', desc: 'Laden Sie Ihren Angebotsfeed als CSV-Datei hoch.' },
-                                { step: '2', title: 'Fehler prüfen', desc: 'Der Tool prüft alle Pflichtfelder und zeigt Ihnen genau, welche Artikel fehlerhaft sind und warum.' },
-                                { step: '3', title: 'Fehler beheben', desc: 'Laden Sie den Fehlerbericht herunter, korrigieren Sie Ihre Datei und laden Sie sie erneut hoch.' },
-                                { step: '4', title: 'Produkte live schalten', desc: 'Ein fehlerfreier Feed bedeutet schnelleres Listing und mehr Sichtbarkeit auf CHECK24.' },
-                            ].map((s) => (
-                                <div key={s.step} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-                                    <div style={{ width: 22, height: 22, borderRadius: '50%', background: MC_BLUE, color: '#FFF', fontSize: 11, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
-                                        {s.step}
-                                    </div>
-                                    <div>
-                                        <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>{s.title}</div>
-                                        <div style={{ fontSize: 11, color: '#6B7280', marginTop: 2, lineHeight: '1.5' }}>{s.desc}</div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-
-                    {/* Spalten-Zuordnung */}
-                    {issues &&
-                        !mcIsWrongFile &&
-                        (() => {
-                            const LEFT_FL = {
-                                name: 'Artikelname',
-                                description: 'Beschreibung',
-                                brand: 'Marke',
-                                category_path: 'Kategoriepfad',
-                                seller_offer_id: 'Eigene Artikel-ID',
-                                ean: 'EAN (GTIN14)',
-                                hs_code: 'HS-Code',
-                                price: 'Preis',
-                                availability: 'Verfügbarkeit',
-                                stock_amount: 'Bestand',
-                                delivery_time: 'Lieferzeit',
-                                delivery_includes: 'Lieferumfang',
-                                shipping_mode: 'Versandart',
-                                image_url: 'Hauptbild',
-                                color: 'Farbe',
-                                material: 'Material',
-                                size: 'Maße (Gesamt)',
-                                size_height: 'Höhe',
-                                size_depth: 'Tiefe',
-                                size_diameter: 'Durchmesser',
-                                manufacturer_name: 'Herstellername',
-                                manufacturer_street: 'Herstellerstraße',
-                                manufacturer_postcode: 'Herstellerpostleitzahl',
-                                manufacturer_city: 'Herstellerstadt',
-                                manufacturer_country: 'Herstellerland',
-                                manufacturer_email: 'Hersteller-E-Mail',
-                                deeplink: 'Deeplink',
-                                model: 'Modellbezeichnung',
-                                size_lying_surface: 'Liegefläche',
-                                size_seat_height: 'Sitzhöhe',
-                                ausrichtung: 'Ausrichtung',
-                                style: 'Stil',
-                                temper: 'Härtegrad',
-                                weight: 'Gewicht',
-                                weight_capacity: 'Belastbarkeit',
-                                youtube_link: 'Youtube-Video',
-                                bild_3d_glb: '3D-Ansicht (GLB)',
-                                bild_3d_usdz: '3D-Ansicht (USDZ)',
-                                assembly_instructions: 'Montageanleitung',
-                                illuminant_included: 'Leuchtmittel inklusive',
-                                incl_mattress: 'Matratze inklusive',
-                                incl_slatted_frame: 'Lattenrost inklusive',
-                                led_verbaut: 'LED verbaut',
-                                lighting_included: 'Beleuchtung inklusive',
-                                set_includes: 'Set-Inhalt',
-                                socket: 'Steckdose/Anschluss',
-                                care_instructions: 'Pflegehinweise',
-                                filling: 'Füllung',
-                                removable_cover: 'Bezug abnehmbar',
-                                suitable_for_allergic: 'Allergikergeeignet',
-                                energy_efficiency_category: 'Energieeffizienzklasse',
-                                product_data_sheet: 'Produktdatenblatt',
-                                manufacturer_phone_number: 'Herstellertelefonnummer',
-                            };
-                            const outsideGermany = storeLocation === 'outside_germany';
-                            const allMcFields = [
-                                ...MC_PFLICHT_COLS.filter((f) => f !== 'image_url'),
-                                ...(outsideGermany ? ['hs_code'] : []),
-                                ...MC_OPTIONAL_COLS,
-                            ];
-                            const totalFields = allMcFields.length + 1;
-                            const foundFields =
-                                allMcFields.filter((f) => mcMapping[f]).length + (mcImageColumns.length > 0 ? 1 : 0);
-                            const hasMissing = issues.missingPflichtCols.length > 0;
-                            return (
-                                <details
-                                    style={{ background: '#FFF', borderRadius: 12, boxShadow: '0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04)' }}
-                                    open={mappingExpanded}
-                                    onToggle={(e) => setMappingExpanded(e.currentTarget.open)}
-                                >
-                                    <summary
-                                        style={{
-                                            padding: '12px 16px',
-                                            cursor: 'pointer',
-                                            fontSize: 13,
-                                            fontWeight: 600,
-                                            color: '#111827',
-                                        }}
-                                    >
-                                        Spalten-Zuordnung{' '}
-                                        <span style={{ color: '#6B7280', fontWeight: 400, fontSize: 11 }}>
-                                            ({foundFields}/{totalFields} erkannt)
-                                        </span>
-                                        {hasMissing && (
-                                            <span
-                                                style={{
-                                                    marginLeft: 8,
-                                                    fontSize: 10,
-                                                    color: '#B91C1C',
-                                                    fontWeight: 700,
-                                                }}
-                                            >
-                                                · {issues.missingPflichtCols.length} Pflichtspalten fehlen
-                                            </span>
-                                        )}
-                                    </summary>
-                                    <div style={{ padding: '0 16px 16px', display: 'grid', gap: 4 }}>
-                                        {(() => {
-                                            const manufacturerPflichtEnd = allMcFields.indexOf('manufacturer_email');
-                                            const displayFields = [
-                                                ...allMcFields.slice(0, manufacturerPflichtEnd + 1),
-                                                'manufacturer_phone_number',
-                                                ...allMcFields.filter(
-                                                    (f) =>
-                                                        f !== 'manufacturer_phone_number' &&
-                                                        allMcFields.indexOf(f) > manufacturerPflichtEnd,
-                                                ),
-                                            ].filter((f) => mcMapping[f] || MC_PFLICHT_COLS.includes(f) || (outsideGermany && f === 'hs_code'));
-                                            const hiddenCount = allMcFields.filter(
-                                                (f) =>
-                                                    !mcMapping[f] &&
-                                                    !MC_PFLICHT_COLS.includes(f) &&
-                                                    !(outsideGermany && f === 'hs_code') &&
-                                                    f !== 'manufacturer_phone_number',
-                                            ).length;
-                                            return (
-                                                <>
-                                                    {displayFields.map((f) => {
-                                                        const isManual = f in manualMapping;
-                                                        const col = mcMapping[f];
-                                                        const isPflicht = MC_PFLICHT_COLS.includes(f) || (outsideGermany && f === 'hs_code');
-                                                        const missing = !col && isPflicht;
-                                                        return (
-                                                            <div
-                                                                key={f}
-                                                                style={{
-                                                                    display: 'flex',
-                                                                    alignItems: 'center',
-                                                                    gap: 6,
-                                                                }}
-                                                            >
-                                                                <span
-                                                                    style={{
-                                                                        fontSize: 10,
-                                                                        color: '#374151',
-                                                                        width: 150,
-                                                                        flexShrink: 0,
-                                                                    }}
-                                                                >
-                                                                    {LEFT_FL[f] || f}
-                                                                    {isPflicht && (
-                                                                        <span
-                                                                            style={{ color: '#DC2626', marginLeft: 2 }}
-                                                                        >
-                                                                            *
-                                                                        </span>
-                                                                    )}
-                                                                </span>
-                                                                <select
-                                                                    value={col || ''}
-                                                                    onChange={(e) => {
-                                                                        const val = e.target.value;
-                                                                        setManualMapping((prev) => {
-                                                                            const next = { ...prev };
-                                                                            if (val === '') delete next[f];
-                                                                            else next[f] = val;
-                                                                            return next;
-                                                                        });
-                                                                    }}
-                                                                    style={{
-                                                                        flex: 1,
-                                                                        fontSize: 10,
-                                                                        padding: '3px 6px',
-                                                                        borderRadius: 5,
-                                                                        border: `1px solid ${missing ? '#FCA5A5' : '#D1D5DB'}`,
-                                                                        background: '#FFF',
-                                                                        cursor: 'pointer',
-                                                                    }}
-                                                                >
-                                                                    <option value="">-- Nicht zugeordnet --</option>
-                                                                    {headers.map((h) => (
-                                                                        <option
-                                                                            key={h}
-                                                                            value={h}
-                                                                        >
-                                                                            {h}
-                                                                        </option>
-                                                                    ))}
-                                                                </select>
-                                                                {isManual && (
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() =>
-                                                                            setManualMapping((prev) => {
-                                                                                const next = { ...prev };
-                                                                                delete next[f];
-                                                                                return next;
-                                                                            })
-                                                                        }
-                                                                        style={{
-                                                                            fontSize: 10,
-                                                                            padding: '2px 6px',
-                                                                            borderRadius: 4,
-                                                                            border: '1px solid #C4B5FD',
-                                                                            background: '#FFF',
-                                                                            color: '#7C3AED',
-                                                                            cursor: 'pointer',
-                                                                        }}
-                                                                    >
-                                                                        ↩
-                                                                    </button>
-                                                                )}
-                                                            </div>
-                                                        );
-                                                    })}
-                                                    {hiddenCount > 0 && (
-                                                        <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 4 }}>
-                                                            {hiddenCount} weitere optionale Felder nicht im Feed
-                                                        </div>
-                                                    )}
-                                                    {/* Hauptbild-Zuordnung (separat, nicht konfigurierbar – kommt aus Spaltenerkennung) */}
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                                                        <span style={{ fontSize: 10, color: '#374151', width: 150, flexShrink: 0 }}>
-                                                            Hauptbild (+ Zusatzb.)
-                                                        </span>
-                                                        <div
-                                                            style={{
-                                                                flex: 1,
-                                                                fontSize: 10,
-                                                                padding: '4px 8px',
-                                                                borderRadius: 5,
-                                                                border: `1px solid ${mcImageColumns.length > 0 ? '#D1D5DB' : '#FCA5A5'}`,
-                                                                background: '#F9FAFB',
-                                                                color: mcImageColumns.length > 0 ? '#166534' : '#DC2626',
-                                                                fontWeight: 600,
-                                                            }}
-                                                        >
-                                                            {mcImageColumns.length > 0 ? mcImageColumns.join(', ') : '–'}
-                                                        </div>
-                                                    </div>
-                                                </>
-                                            );
-                                        })()}
-                                    </div>
-                                </details>
-                            );
-                        })()}
-
-                </div>
-
-                {/* ── RIGHT: Analysis Results ── */}
-                {mcIsWrongFile && (
-                    <div
-                        style={{
-                            flex: '0 1 50%',
-                            minWidth: 0,
-                            alignSelf: 'start',
-                            padding: '16px 18px',
-                            borderRadius: 10,
-                            border: '1px solid #FECACA',
-                            background: '#FEF2F2',
-                            display: 'flex',
-                            gap: 12,
-                            alignItems: 'flex-start',
-                        }}
-                    >
-                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ flexShrink: 0, color: '#DC2626' }}><path d="M10 3L2 17h16L10 3z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/><path d="M10 9v3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/><circle cx="10" cy="14.5" r="0.75" fill="currentColor"/></svg>
-                        <div>
-                            <div style={{ fontSize: 13, fontWeight: 700, color: '#B91C1C', marginBottom: 4 }}>
-                                Diese Datei sieht nicht wie ein gültiger Produkt-Feed aus.
+                        {/* Status banner */}
+                        <div style={{ padding: '14px 20px', borderRadius: 12, background: stufe1Passed ? '#F0FDF4' : '#FEF2F2', border: `1px solid ${stufe1Passed ? '#BBF7D0' : '#FECACA'}`, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
+                            <div style={{ width: 32, height: 32, borderRadius: '50%', background: stufe1Passed ? '#DCFCE7' : '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                {stufe1Passed
+                                    ? <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4 6-6" stroke="#16A34A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                    : <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2L1 14h14L8 2z" stroke="#DC2626" strokeWidth="1.5" strokeLinejoin="round"/><path d="M8 7v3" stroke="#DC2626" strokeWidth="1.5" strokeLinecap="round"/><circle cx="8" cy="12" r=".6" fill="#DC2626"/></svg>}
                             </div>
-                            <div style={{ fontSize: 11, color: '#7F1D1D', lineHeight: '1.6' }}>
-                                Es konnten keine bekannten Spalten erkannt werden. Bitte laden Sie eine andere Datei
-                                hoch. Erwartete Spalten sind z.&nbsp;B. <code>ean</code>, <code>name</code>,{' '}
-                                <code>price</code>, <code>shipping_mode</code> o.&nbsp;ä.
+                            <div>
+                                <div style={{ fontSize: 14, fontWeight: 700, color: stufe1Passed ? '#166534' : '#991B1B' }}>
+                                    {stufe1Passed ? 'Feed fehlerfrei — alle Artikel können gelistet werden.' : 'Fehler gefunden — bitte beheben und Feed erneut hochladen.'}
+                                </div>
+                                <div style={{ fontSize: 12, color: stufe1Passed ? '#4B7A5A' : '#B91C1C', marginTop: 2 }}>
+                                    Fehlerquote: {errorRate.toFixed(1).replace('.', ',')}% (Grenzwert: 5% für APA)
+                                </div>
                             </div>
                         </div>
-                    </div>
-                )}
-                {issues &&
-                    !mcIsWrongFile &&
-                    (() => {
-                        // ── Gesamt-Pass/Fail-Logik ──
-                        // Technische Prüfung bestanden = Fehlerquote ≤ 5% (gleicher Schwellwert wie APA)
-                        const errorRate = issues.totalRows > 0 ? (issues.blockiertCount / issues.totalRows) * 100 : 0;
-                        const stufe1Passed = errorRate <= 5;
-                        const score = issues.totalScore;
-                        const campaignEligible = stufe1Passed && score >= 70;
-                        const fillPct = Math.round(issues.optionalFillRatio * 100);
 
-                        // Deutsche Feld-Labels (sortiert nach Wichtigkeit)
-                        const FL = {
-                            name: 'Artikelname',
-                            description: 'Beschreibung',
-                            brand: 'Marke',
-                            category_path: 'Kategoriepfad',
-                            seller_offer_id: 'Eigene Artikel-ID',
-                            ean: 'EAN (GTIN14)',
-                            price: 'Preis',
-                            availability: 'Verfügbarkeit',
-                            stock_amount: 'Bestand',
-                            delivery_time: 'Lieferzeit',
-                            delivery_includes: 'Lieferumfang',
-                            shipping_mode: 'Versandart',
-                            image_url: 'Hauptbild',
-                            color: 'Farbe',
-                            material: 'Material',
-                            size: 'Maße (Gesamt)',
-                            size_height: 'Höhe',
-                            size_depth: 'Tiefe',
-                            size_diameter: 'Durchmesser',
-                            manufacturer_name: 'Herstellername',
-                            manufacturer_street: 'Herstellerstraße',
-                            manufacturer_postcode: 'Herstellerpostleitzahl',
-                            manufacturer_city: 'Herstellerstadt',
-                            manufacturer_country: 'Herstellerland',
-                            manufacturer_email: 'Hersteller-E-Mail',
-                        };
+                        {/* Two-column grid */}
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 16, alignItems: 'start' }}>
 
-                        // Top-Fehlergruppen berechnen (für Fehlerfall oben im Pflichtattribute-Block)
-                        const rowsByGroup = {
-                            desc: new Set(),
-                            size: new Set(),
-                            mfr: new Set(),
-                            img: new Set(),
-                            price: new Set(),
-                            name: new Set(),
-                            brand: new Set(),
-                            ean: new Set(),
-                            hs_code: new Set(),
-                        };
-                        issues.pflichtErrors.forEach((e) => {
-                            if (e.field === 'description') rowsByGroup.desc.add(e.row);
-                            else if (['size', 'size_height', 'size_depth', 'size_diameter'].includes(e.field))
-                                rowsByGroup.size.add(e.row);
-                            else if (e.field.startsWith('manufacturer_')) rowsByGroup.mfr.add(e.row);
-                            else if (e.field === 'image_url') rowsByGroup.img.add(e.row);
-                            else if (
-                                [
-                                    'price',
-                                    'availability',
-                                    'stock_amount',
-                                    'delivery_time',
-                                    'delivery_includes',
-                                    'shipping_mode',
-                                ].includes(e.field)
-                            )
-                                rowsByGroup.price.add(e.row);
-                            else if (e.field === 'name') rowsByGroup.name.add(e.row);
-                            else if (e.field === 'brand') rowsByGroup.brand.add(e.row);
-                            else if (e.field === 'ean') rowsByGroup.ean.add(e.row);
-                            else if (e.field === 'hs_code') rowsByGroup.hs_code.add(e.row);
-                        });
-                        issues.eanDupRows.forEach((rn) => rowsByGroup.ean.add(rn));
-                        issues.nameDupRows.forEach((rn) => rowsByGroup.name.add(rn));
-                        const topGroups = [
-                            {
-                                key: 'desc',
-                                label: 'Beschreibung',
-                                hint: 'Fehlt, unter 20 Zeichen oder enthält "B-Ware"',
-                                count: rowsByGroup.desc.size,
-                            },
-                            {
-                                key: 'size',
-                                label: 'Maße',
-                                hint: 'Breite, Höhe oder Tiefe fehlen oder sind kein gültiger Zahlenwert',
-                                count: rowsByGroup.size.size,
-                            },
-                            {
-                                key: 'mfr',
-                                label: 'Herstellerangaben',
-                                hint: 'Name, PLZ, Ort oder E-Mail fehlt',
-                                count: rowsByGroup.mfr.size,
-                            },
-                            {
-                                key: 'img',
-                                label: 'Hauptbild',
-                                hint: 'Bild-URL fehlt',
-                                count: rowsByGroup.img.size,
-                            },
-                            {
-                                key: 'price',
-                                label: 'Preis / Lieferung',
-                                hint: 'Preis, Lieferzeit, Versandart oder Bestand fehlt oder ungültig',
-                                count: rowsByGroup.price.size,
-                            },
-                            {
-                                key: 'name',
-                                label: 'Artikelname',
-                                hint: 'Fehlt, unter 10 Zeichen, nur ein Wort, Platzhalter oder doppelt vorhanden',
-                                count: rowsByGroup.name.size,
-                            },
-                            {
-                                key: 'brand',
-                                label: 'Marke',
-                                hint: 'Fehlt, unter 2 Zeichen oder Platzhalter',
-                                count: rowsByGroup.brand.size,
-                            },
-                            {
-                                key: 'ean',
-                                label: 'EAN',
-                                hint: 'Fehlt, nicht genau 14 Zeichen oder doppelt vorhanden',
-                                count: rowsByGroup.ean.size,
-                            },
-                            {
-                                key: 'hs_code',
-                                label: 'HS-Code',
-                                hint: 'Zolltarifnummer fehlt (Pflicht für Lager außerhalb Deutschlands)',
-                                count: rowsByGroup.hs_code.size,
-                            },
-                        ]
-                            .filter((g) => g.count > 0)
-                            .sort((a, b) => b.count - a.count)
-                            .slice(0, 3);
-
-                        return (
-                            <div
-                                style={{
-                                    flex: '0 1 50%',
-                                    minWidth: 0,
-                                    display: 'grid',
-                                    gap: 12,
-                                    alignContent: 'start',
-                                }}
-                            >
-                                {/* ── STUFE 1 – TECHNISCHE PRÜFUNG ── */}
-                                <div
-                                    style={{
-                                        background: '#FFF',
-                                        border: '1px solid #E5E7EB',
-                                        borderRadius: 8,
-                                        overflow: 'hidden',
-                                    }}
-                                >
-                                    {/* Partner-Status-Banner (eigener innerer Kasten) */}
-                                    <div
-                                        style={{
-                                            margin: '12px 18px 0',
-                                            padding: '8px 12px',
-                                            borderRadius: 6,
-                                            border: `1px solid ${stufe1Passed ? '#BBF7D0' : '#FECACA'}`,
-                                            background: stufe1Passed ? '#F0FDF4' : '#FEF2F2',
-                                            display: 'flex',
-                                            gap: 10,
-                                            alignItems: 'flex-start',
-                                        }}
-                                    >
-                                        <div style={{ fontSize: 12, color: stufe1Passed ? '#166534' : '#991B1B', lineHeight: '1.5', fontWeight: 600 }}>
-                                            {stufe1Passed
-                                                ? 'Ihr Feed ist fehlerfrei. Die Artikel können gelistet werden.'
-                                                : 'Bitte beheben Sie die Fehler und laden Sie den Feed erneut hoch.'}
-                                        </div>
-                                    </div>
-
-                                    {/* Sektion-Label + Status-Pille */}
-                                    <div
-                                        style={{
-                                            padding: '14px 18px 8px',
-                                            display: 'flex',
-                                            gap: 10,
-                                            alignItems: 'center',
-                                        }}
-                                    >
-                                        <div
-                                            style={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: 10,
-                                                flex: 1,
-                                                minWidth: 0,
-                                            }}
-                                        >
-                                            <span style={{ whiteSpace: 'nowrap', fontSize: 18, fontWeight: 700, color: '#111827' }}>Datenvalidierung</span>
-                                            <span style={{ flex: 1, height: 1, background: '#E5E7EB' }} />
-                                        </div>
-                                        {stufe1Passed ? (
-                                            <span
-                                                style={{
-                                                    fontSize: 11,
-                                                    fontWeight: 700,
-                                                    padding: '3px 10px',
-                                                    borderRadius: 4,
-                                                    background: '#DCFCE7',
-                                                    color: '#16A34A',
-                                                    whiteSpace: 'nowrap',
-                                                }}
-                                            >
-                                                ✓ Bestanden
-                                            </span>
-                                        ) : (
-                                            <span
-                                                style={{
-                                                    fontSize: 11,
-                                                    fontWeight: 700,
-                                                    padding: '3px 10px',
-                                                    borderRadius: 4,
-                                                    background: '#FEE2E2',
-                                                    color: '#DC2626',
-                                                    whiteSpace: 'nowrap',
-                                                }}
-                                            >
-                                                ✗ Nicht bestanden
-                                            </span>
-                                        )}
-                                    </div>
-
-                                    {/* Pflichtattribute-Block */}
-                                    <div
-                                        style={{
-                                            margin: '0 18px 14px',
-                                            borderRadius: 8,
-                                            borderLeft: `4px solid ${stufe1Passed ? '#16A34A' : '#DC2626'}`,
-                                            background: stufe1Passed ? '#F0FDF4' : '#FEF2F2',
-                                            padding: '10px 14px',
-                                        }}
-                                    >
-                                        <div
-                                            style={{ fontSize: 12, fontWeight: 700, color: '#111827', marginBottom: 4 }}
-                                        >
-                                            Pflichtattribute ({storeLocation === 'outside_germany' ? 11 : 10} Felder)
-                                        </div>
-
-                                        {/* Top 3 Fehlergruppen – nur wenn nicht bestanden */}
-                                        {!stufe1Passed && topGroups.length > 0 && (
-                                            <div style={{ display: 'grid', gap: 5, marginBottom: 8 }}>
-                                                {topGroups.map((g) => (
-                                                    <div
-                                                        key={g.key}
-                                                        style={{
-                                                            display: 'grid',
-                                                            gridTemplateColumns: 'auto 1fr',
-                                                            gap: '3px 8px',
-                                                            alignItems: 'baseline',
-                                                            fontSize: 11,
-                                                        }}
-                                                    >
-                                                        <span
-                                                            style={{
-                                                                padding: '1px 6px',
-                                                                borderRadius: 4,
-                                                                background: '#DC2626',
-                                                                color: '#FFF',
-                                                                fontWeight: 700,
-                                                                fontSize: 10,
-                                                                flexShrink: 0,
-                                                                whiteSpace: 'nowrap',
-                                                            }}
-                                                        >
-                                                            {g.count} Artikel
-                                                        </span>
-                                                        <span style={{ fontWeight: 700, color: '#111827' }}>
-                                                            {g.label}
-                                                        </span>
-                                                        <span />
-                                                        <span style={{ color: '#6B7280', fontSize: 10 }}>
-                                                            {g.hint}
-                                                        </span>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-
-                                        {issues.blockiertCount > 0 && (
-                                            <div
-                                                style={{
-                                                    fontSize: 11,
-                                                    color: '#374151',
-                                                    marginBottom: 8,
-                                                    fontStyle: 'italic',
-                                                }}
-                                            >
-                                                {issues.blockiertCount.toLocaleString('de-DE')} Artikel mit fehlenden
-                                                Pflichtfeldern werden nicht gelistet.
-                                            </div>
-                                        )}
-
-                                        {/* Pflichtattribute-Dropdown mit allen 25 Feldnamen */}
-                                        <details style={{ marginTop: 4 }}>
-                                            <summary
-                                                style={{
-                                                    cursor: 'pointer',
-                                                    fontSize: 11,
-                                                    color: '#4B5563',
-                                                    fontWeight: 600,
-                                                    userSelect: 'none',
-                                                }}
-                                            >
-                                                Pflichtattribute anzeigen
-                                            </summary>
-                                            <div
-                                                style={{
-                                                    marginTop: 6,
-                                                    fontSize: 10,
-                                                    color: '#9CA3AF',
-                                                    lineHeight: '1.6',
-                                                    overflowWrap: 'anywhere',
-                                                    wordBreak: 'break-word',
-                                                }}
-                                            >
-                                                {[...MC_PFLICHT_COLS, ...(storeLocation === 'outside_germany' ? ['hs_code'] : [])].map((f, i) => (
-                                                    <React.Fragment key={f}>
-                                                        {i > 0 && <span style={{ margin: '0 4px' }}>·</span>}
-                                                        {FL[f] || 'HS-Code'}
-                                                    </React.Fragment>
-                                                ))}
-                                            </div>
-                                        </details>
-                                    </div>
-
-                                    {/* Stats: Vollständig | Fehler | Gesamt (kompakt, mit Tooltips) */}
-                                    <div
-                                        style={{
-                                            display: 'grid',
-                                            gridTemplateColumns: '1fr 1fr 1fr',
-                                            gap: 6,
-                                            padding: '0 18px 10px',
-                                        }}
-                                    >
-                                        {[
-                                            {
-                                                val: issues.pflichtOkCount,
-                                                label: 'Vollständig',
-                                                color: '#16A34A',
-                                                tip: 'Artikel, bei denen alle Pflichtattribute befüllt und gültig sind. Diese Artikel werden bei CHECK24 angelegt.',
-                                            },
-                                            {
-                                                val: issues.blockiertCount,
-                                                label: 'Fehler',
-                                                color: '#DC2626',
-                                                tip: 'Artikel mit mindestens einem fehlenden oder ungültigen Pflichtattribut. Diese Artikel werden nicht gelistet, bis die Fehler behoben sind.',
-                                            },
-                                            {
-                                                val: issues.totalRows,
-                                                label: 'Gesamt',
-                                                color: '#111827',
-                                                tip: 'Gesamtzahl der Artikel in Ihrem hochgeladenen Feed.',
-                                            },
-                                        ].map(({ val, label, color, tip }) => (
-                                            <div
-                                                key={label}
-                                                style={{
-                                                    padding: '6px 4px',
-                                                    borderRadius: 5,
-                                                    border: '1px solid #E5E7EB',
-                                                    background: '#FFF',
-                                                    textAlign: 'center',
-                                                }}
-                                            >
-                                                <div style={{ fontSize: 20, fontWeight: 700, color }}>
-                                                    {val.toLocaleString('de-DE')}
-                                                </div>
-                                                <Tooltip text={tip}>
-                                                    <div
-                                                        style={{
-                                                            fontSize: 10,
-                                                            color: '#6B7280',
-                                                            marginTop: 2,
-                                                            display: 'inline-flex',
-                                                            alignItems: 'center',
-                                                            gap: 3,
-                                                            cursor: 'help',
-                                                        }}
-                                                    >
-                                                        {label}
-                                                        <svg
-                                                            width="11"
-                                                            height="11"
-                                                            viewBox="0 0 16 16"
-                                                            fill="none"
-                                                            stroke="#9CA3AF"
-                                                            strokeWidth="1.5"
-                                                        >
-                                                            <circle
-                                                                cx="8"
-                                                                cy="8"
-                                                                r="7"
-                                                            />
-                                                            <line
-                                                                x1="8"
-                                                                y1="5"
-                                                                x2="8"
-                                                                y2="8"
-                                                            />
-                                                            <circle
-                                                                cx="8"
-                                                                cy="11"
-                                                                r=".6"
-                                                                fill="#9CA3AF"
-                                                            />
-                                                        </svg>
-                                                    </div>
-                                                </Tooltip>
-                                            </div>
-                                        ))}
+                            {/* Left: Pflichtfeldanalyse table */}
+                            <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'hidden' }}>
+                                <div style={{ padding: '14px 20px', borderBottom: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                                    <div style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>Pflichtfeldanalyse</div>
+                                    <div style={{ fontSize: 11, color: '#6B7280' }}>
+                                        {totalPflichtFields} Felder · <span style={{ color: '#16A34A', fontWeight: 600 }}>{vollstaendigFields} vollständig</span> · <span style={{ color: '#DC2626', fontWeight: 600 }}>{totalPflichtFields - vollstaendigFields} fehlerhaft</span>
                                     </div>
                                 </div>
-
-                                {/* ── CSV DOWNLOAD (highlighted primary action) ── */}
-                                <div
-                                    style={{
-                                        padding: '14px 16px',
-                                        borderRadius: 10,
-                                        border: `2px solid ${MC_BLUE}`,
-                                        background: '#EEF4FF',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: 12,
-                                        boxShadow: '0 2px 8px rgba(21, 83, 182, 0.12)',
-                                    }}
-                                >
-                                    <div style={{ flex: 1, minWidth: 0 }}>
-                                        <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>
-                                            Fehlerbericht herunterladen
+                                {/* Table header */}
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 130px 120px', padding: '8px 20px', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB' }}>
+                                    <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.05em' }}>FELD</div>
+                                    <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.05em', textAlign: 'right' }}>STATUS</div>
+                                    <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.05em', paddingLeft: 16 }}>ABDECKUNG</div>
+                                </div>
+                                {/* Table rows */}
+                                {PFLICHT_TABLE_FIELDS.map(({ key, label }) => {
+                                    const isMapped = key === 'availability'
+                                        ? !!(mcMapping.availability || mcMapping.stock_amount)
+                                        : key === 'image_url' ? mcImageColumns.length > 0
+                                        : !!mcMapping[key];
+                                    const errs = fieldErrorRows[key]?.size || 0;
+                                    const pct = isMapped ? Math.max(0, Math.round((1 - errs / issues.totalRows) * 100)) : null;
+                                    const barColor = pct === null ? '#E5E7EB' : pct === 100 ? '#16A34A' : pct >= 70 ? '#D97706' : '#DC2626';
+                                    return (
+                                        <div key={key} style={{ display: 'grid', gridTemplateColumns: '1fr 130px 120px', padding: '10px 20px', borderBottom: '1px solid #F9FAFB', alignItems: 'center' }}>
+                                            <div style={{ fontSize: 12, color: '#374151', fontWeight: 500 }}>{label}</div>
+                                            <div style={{ textAlign: 'right', fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap' }}>
+                                                {pct === null ? (
+                                                    <span style={{ color: '#9CA3AF' }}>Nicht im Feed</span>
+                                                ) : errs === 0 ? (
+                                                    <span style={{ color: '#16A34A' }}>✓ Vollständig</span>
+                                                ) : (
+                                                    <span style={{ color: pct < 30 ? '#DC2626' : '#D97706' }}>
+                                                        {errs.toLocaleString('de-DE')} fehlend
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <div style={{ paddingLeft: 16, display: 'flex', alignItems: 'center', gap: 6 }}>
+                                                {pct !== null ? (
+                                                    <>
+                                                        <div style={{ flex: 1, height: 6, background: '#F3F4F6', borderRadius: 3, overflow: 'hidden' }}>
+                                                            <div style={{ height: '100%', width: `${pct}%`, background: barColor, borderRadius: 3, transition: 'width 0.4s' }} />
+                                                        </div>
+                                                        <span style={{ fontSize: 10, color: '#9CA3AF', width: 26, textAlign: 'right', flexShrink: 0 }}>{pct}%</span>
+                                                    </>
+                                                ) : (
+                                                    <span style={{ fontSize: 10, color: '#D1D5DB' }}>—</span>
+                                                )}
+                                            </div>
                                         </div>
+                                    );
+                                })}
+                            </div>
+
+                            {/* Right: Stats + CSV + errors */}
+                            <div style={{ display: 'grid', gap: 12 }}>
+                                {/* 3 stats */}
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
+                                    {[
+                                        { val: issues.livefaehigCount, label: 'Vollständig', color: '#16A34A', tip: 'Artikel ohne Fehler in Pflichtfeldern' },
+                                        { val: issues.blockiertCount, label: 'Fehler', color: '#DC2626', tip: 'Artikel mit mindestens einem Pflichtfeld-Fehler' },
+                                        { val: issues.totalRows, label: 'Gesamt', color: '#111827', tip: 'Gesamtzahl Artikel im Feed' },
+                                    ].map(({ val, label, color, tip }) => (
+                                        <Tooltip key={label} text={tip}>
+                                            <div style={{ background: '#FFF', borderRadius: 10, padding: '12px 8px', textAlign: 'center', border: '1px solid #E5E7EB', cursor: 'help', width: '100%' }}>
+                                                <div style={{ fontSize: 22, fontWeight: 800, color, lineHeight: 1.1 }}>{val.toLocaleString('de-DE')}</div>
+                                                <div style={{ fontSize: 10, color: '#6B7280', marginTop: 3 }}>{label}</div>
+                                            </div>
+                                        </Tooltip>
+                                    ))}
+                                </div>
+
+                                {/* CSV download */}
+                                <div style={{ background: '#EEF4FF', borderRadius: 12, border: `2px solid ${MC_BLUE}`, padding: '16px' }}>
+                                    <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', marginBottom: 4 }}>Fehlerbericht herunterladen</div>
+                                    <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 12, lineHeight: 1.5 }}>
+                                        CSV mit allen Fehlern pro Zeile. Importieren Sie die Datei in Excel, um die Fehler zu beheben.
                                     </div>
-                                    <button
-                                        type="button"
+                                    <button type="button"
                                         onClick={() => {
-                                            const pflichtByRow = {};
-                                            const optionalByRow = {};
+                                            const pflichtByRow = {}, optionalByRow = {};
                                             const errorMsg = (e) => {
                                                 const labels = { name: 'Artikelname', brand: 'Marke', description: 'Beschreibung', ean: 'EAN', price: 'Preis', availability: 'Verfügbarkeit', stock_amount: 'Bestand', shipping_mode: 'Versandart', delivery_time: 'Lieferzeit', image_url: 'Bild', hs_code: 'HS-Code', seller_offer_id: 'Seller-ID' };
                                                 const label = labels[e.field] || e.field;
                                                 if (e.type === 'missing') return `${label} fehlt`;
                                                 if (e.type === 'placeholder') return `${label}: Platzhalter-Wert`;
                                                 if (e.type === 'too_short') return `${label}: zu kurz`;
-                                                if (e.type === 'one_word') return `${label}: mindestens zwei Wörter erforderlich`;
+                                                if (e.type === 'one_word') return `${label}: mind. 2 Wörter`;
                                                 if (e.type === 'bware') return `${label}: enthält "B-Ware"`;
-                                                if (e.type === 'wrong_length') return `${label}: muss genau 14 Zeichen haben`;
+                                                if (e.type === 'wrong_length') return `${label}: muss 14 Zeichen haben`;
                                                 if (e.type === 'invalid') return `${label}: ungültiger Wert`;
                                                 return `${label} fehlerhaft`;
                                             };
-                                            issues.pflichtErrors.forEach((e) => {
-                                                if (!pflichtByRow[e.row]) pflichtByRow[e.row] = [];
-                                                pflichtByRow[e.row].push(errorMsg(e));
-                                            });
-                                            // Also add dup EAN/name rows
-                                            issues.eanDupRows.forEach((rn) => {
-                                                if (!pflichtByRow[rn]) pflichtByRow[rn] = [];
-                                                pflichtByRow[rn].push('EAN: doppelt vorhanden');
-                                            });
-                                            issues.nameDupRows.forEach((rn) => {
-                                                if (!pflichtByRow[rn]) pflichtByRow[rn] = [];
-                                                pflichtByRow[rn].push('Artikelname: doppelt vorhanden');
-                                            });
-                                            issues.optionalHints.forEach((e) => {
-                                                if (!optionalByRow[e.row]) optionalByRow[e.row] = [];
-                                                optionalByRow[e.row].push(`${e.field} fehlt`);
-                                            });
+                                            issues.pflichtErrors.forEach((e) => { if (!pflichtByRow[e.row]) pflichtByRow[e.row] = []; pflichtByRow[e.row].push(errorMsg(e)); });
+                                            issues.eanDupRows.forEach((rn) => { if (!pflichtByRow[rn]) pflichtByRow[rn] = []; pflichtByRow[rn].push('EAN: doppelt vorhanden'); });
+                                            issues.nameDupRows.forEach((rn) => { if (!pflichtByRow[rn]) pflichtByRow[rn] = []; pflichtByRow[rn].push('Artikelname: doppelt vorhanden'); });
+                                            issues.optionalHints.forEach((e) => { if (!optionalByRow[e.row]) optionalByRow[e.row] = []; optionalByRow[e.row].push(`${e.field} fehlt`); });
                                             const esc = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
                                             const sep = ';';
-                                            const headerRow = [
-                                                'Fehler Pflichtfelder',
-                                                'Fehler Optionale Felder',
-                                                ...headers,
-                                            ]
-                                                .map(esc)
-                                                .join(sep);
+                                            const headerRow = ['Fehler Pflichtfelder', 'Fehler Optionale Felder', ...headers].map(esc).join(sep);
                                             const lines = rows.map((r, i) => {
                                                 const rn = i + 1;
-                                                const p = pflichtByRow[rn]
-                                                    ? [...new Set(pflichtByRow[rn])].join('; ')
-                                                    : '';
-                                                const o = optionalByRow[rn]
-                                                    ? [...new Set(optionalByRow[rn])].join('; ')
-                                                    : '';
+                                                const p = pflichtByRow[rn] ? [...new Set(pflichtByRow[rn])].join('; ') : '';
+                                                const o = optionalByRow[rn] ? [...new Set(optionalByRow[rn])].join('; ') : '';
                                                 return [esc(p), esc(o), ...headers.map((h) => esc(r[h]))].join(sep);
                                             });
                                             const csv = [headerRow, ...lines].join('\n');
-                                            const blob = new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8' });
+                                            const blob = new Blob([`﻿${csv}`], { type: 'text/csv;charset=utf-8' });
                                             const url = URL.createObjectURL(blob);
                                             const a = document.createElement('a');
                                             a.href = url;
@@ -1630,601 +1157,66 @@ export default function McAngebotsfeed() {
                                             a.click();
                                             URL.revokeObjectURL(url);
                                         }}
-                                        style={{
-                                            padding: '10px 18px',
-                                            borderRadius: 6,
-                                            border: 'none',
-                                            background: MC_BLUE,
-                                            color: '#FFF',
-                                            fontSize: 13,
-                                            fontWeight: 700,
-                                            cursor: 'pointer',
-                                            whiteSpace: 'nowrap',
-                                            flexShrink: 0,
-                                        }}
-                                    >
+                                        style={{ width: '100%', padding: '11px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
                                         CSV herunterladen
                                     </button>
                                 </div>
 
-                                {/* ── STUFE 2 – FEED-QUALITÄTSSCORE (Soft Score) - hidden until public release ── */}
-                                {showQualityScore && (
-                                    <div
-                                        style={{
-                                            background: '#FFF',
-                                            border: '1px solid #E5E7EB',
-                                            borderRadius: 8,
-                                            overflow: 'hidden',
-                                            position: 'relative',
-                                        }}
-                                    >
-                                        <div style={{ opacity: stufe1Passed ? 1 : 0.55 }}>
-                                            {/* Sektion-Label */}
-                                            <div
-                                                style={{
-                                                    padding: '14px 18px 8px',
-                                                    display: 'flex',
-                                                    gap: 10,
-                                                    alignItems: 'center',
-                                                }}
-                                            >
-                                                <div
-                                                    style={{
-                                                        fontSize: 10,
-                                                        fontWeight: 700,
-                                                        color: MC_BLUE,
-                                                        letterSpacing: '0.06em',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        gap: 10,
-                                                        flex: 1,
-                                                        minWidth: 0,
-                                                    }}
-                                                >
-                                                    <span style={{ whiteSpace: 'nowrap' }}>
-                                                        STUFE 2 - FEED-QUALITÄTSSCORE
-                                                    </span>
-                                                    <span style={{ flex: 1, height: 1, background: '#E5E7EB' }} />
-                                                </div>
-                                                {score >= 70 ? (
-                                                    <span
-                                                        style={{
-                                                            fontSize: 11,
-                                                            fontWeight: 700,
-                                                            padding: '3px 10px',
-                                                            borderRadius: 4,
-                                                            background: '#DCFCE7',
-                                                            color: '#16A34A',
-                                                            whiteSpace: 'nowrap',
-                                                        }}
-                                                    >
-                                                        ✓ Zielwert erreicht
-                                                    </span>
-                                                ) : (
-                                                    <span
-                                                        style={{
-                                                            fontSize: 11,
-                                                            fontWeight: 700,
-                                                            padding: '3px 10px',
-                                                            borderRadius: 4,
-                                                            background: '#FEE2E2',
-                                                            color: '#DC2626',
-                                                            whiteSpace: 'nowrap',
-                                                        }}
-                                                    >
-                                                        ✗ Zielwert nicht erreicht
-                                                    </span>
-                                                )}
-                                            </div>
+                                {/* Top error groups */}
+                                {!stufe1Passed && (() => {
+                                    const rowsByGroup2 = { desc: new Set(), size: new Set(), mfr: new Set(), img: new Set(), price: new Set(), name: new Set(), brand: new Set(), ean: new Set(), hs_code: new Set() };
+                                    issues.pflichtErrors.forEach((e) => {
+                                        if (e.field === 'description') rowsByGroup2.desc.add(e.row);
+                                        else if (['size','size_height','size_depth','size_diameter'].includes(e.field)) rowsByGroup2.size.add(e.row);
+                                        else if (e.field.startsWith('manufacturer_')) rowsByGroup2.mfr.add(e.row);
+                                        else if (e.field === 'image_url') rowsByGroup2.img.add(e.row);
+                                        else if (['price','availability','stock_amount','delivery_time','delivery_includes','shipping_mode'].includes(e.field)) rowsByGroup2.price.add(e.row);
+                                        else if (e.field === 'name') rowsByGroup2.name.add(e.row);
+                                        else if (e.field === 'brand') rowsByGroup2.brand.add(e.row);
+                                        else if (e.field === 'ean') rowsByGroup2.ean.add(e.row);
+                                        else if (e.field === 'hs_code') rowsByGroup2.hs_code.add(e.row);
+                                    });
+                                    issues.eanDupRows.forEach((rn) => rowsByGroup2.ean.add(rn));
+                                    issues.nameDupRows.forEach((rn) => rowsByGroup2.name.add(rn));
+                                    const topGroups2 = [
+                                        { key: 'name', label: 'Artikelname', hint: 'Fehlt, zu kurz, ein Wort oder doppelt' },
+                                        { key: 'ean', label: 'EAN', hint: 'Nicht 14 Zeichen oder doppelt' },
+                                        { key: 'desc', label: 'Beschreibung', hint: 'Fehlt, unter 20 Zeichen oder B-Ware' },
+                                        { key: 'img', label: 'Hauptbild', hint: 'Bild-URL fehlt' },
+                                        { key: 'price', label: 'Preis / Lieferung', hint: 'Fehlt oder ungültig' },
+                                        { key: 'brand', label: 'Marke', hint: 'Fehlt oder unter 2 Zeichen' },
+                                        { key: 'mfr', label: 'Herstellerangaben', hint: 'Name, PLZ, Ort oder E-Mail fehlt' },
+                                        { key: 'size', label: 'Maße', hint: 'Ungültiger Zahlenwert' },
+                                        { key: 'hs_code', label: 'HS-Code', hint: 'Pflicht bei Lager außerhalb DE' },
+                                    ].map((g) => ({ ...g, count: rowsByGroup2[g.key].size }))
+                                     .filter((g) => g.count > 0)
+                                     .sort((a, b) => b.count - a.count)
+                                     .slice(0, 4);
 
-                                            {/* Score */}
-                                            <div
-                                                style={{
-                                                    padding: '0 18px 10px',
-                                                    display: 'flex',
-                                                    justifyContent: 'flex-start',
-                                                    alignItems: 'flex-end',
-                                                }}
-                                            >
-                                                <div
-                                                    style={{
-                                                        fontSize: 20,
-                                                        fontWeight: 800,
-                                                        color: campaignEligible ? '#16A34A' : '#111827',
-                                                        lineHeight: 1,
-                                                    }}
-                                                >
-                                                    {score}
-                                                    <span style={{ fontWeight: 600, color: '#9CA3AF' }}>/100</span>
-                                                </div>
-                                            </div>
-
-                                            {/* Fortschrittsbalken mit 70-Marker */}
-                                            <div style={{ padding: '0 18px 4px' }}>
-                                                <div style={{ position: 'relative', paddingTop: 34 }}>
-                                                    {/* 70-Marker Pille */}
-                                                    <div
-                                                        style={{
-                                                            position: 'absolute',
-                                                            top: 0,
-                                                            left: '70%',
-                                                            transform: 'translateX(-50%)',
-                                                            display: 'flex',
-                                                            flexDirection: 'column',
-                                                            alignItems: 'center',
-                                                        }}
-                                                    >
-                                                        <div
-                                                            style={{
-                                                                fontSize: 8,
-                                                                fontWeight: 700,
-                                                                color: campaignEligible ? '#166534' : '#4B5563',
-                                                                whiteSpace: 'nowrap',
-                                                                padding: '1px 5px',
-                                                                borderRadius: 3,
-                                                                background: campaignEligible ? '#DCFCE7' : '#F3F4F6',
-                                                                border: `1px solid ${campaignEligible ? '#86EFAC' : '#E5E7EB'}`,
-                                                            }}
-                                                        >
-                                                            Zielwert erreicht
+                                    if (!topGroups2.length) return null;
+                                    return (
+                                        <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '14px 16px' }}>
+                                            <div style={{ fontSize: 12, fontWeight: 700, color: '#111827', marginBottom: 10 }}>Häufigste Fehler</div>
+                                            <div style={{ display: 'grid', gap: 8 }}>
+                                                {topGroups2.map((g) => (
+                                                    <div key={g.key}>
+                                                        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 2 }}>
+                                                            <span style={{ fontSize: 11, fontWeight: 600, color: '#111827' }}>{g.label}</span>
+                                                            <span style={{ fontSize: 10, fontWeight: 700, color: '#DC2626' }}>{g.count.toLocaleString('de-DE')} Artikel</span>
                                                         </div>
-                                                        <div
-                                                            style={{
-                                                                width: 1,
-                                                                height: 14,
-                                                                background: campaignEligible ? '#16A34A' : '#9CA3AF',
-                                                            }}
-                                                        />
+                                                        <div style={{ fontSize: 10, color: '#6B7280' }}>{g.hint}</div>
                                                     </div>
-                                                    {/* Balken */}
-                                                    <div
-                                                        style={{
-                                                            height: 16,
-                                                            borderRadius: 8,
-                                                            background: '#E5E7EB',
-                                                            overflow: 'hidden',
-                                                        }}
-                                                    >
-                                                        <div
-                                                            style={{
-                                                                height: '100%',
-                                                                width: `${score}%`,
-                                                                background: campaignEligible
-                                                                    ? '#16A34A'
-                                                                    : score >= 50
-                                                                      ? '#D97706'
-                                                                      : '#DC2626',
-                                                                transition: 'width 0.4s',
-                                                            }}
-                                                        />
-                                                    </div>
-                                                    {/* Notch an 70% */}
-                                                    <div
-                                                        style={{
-                                                            position: 'absolute',
-                                                            top: 34,
-                                                            left: '70%',
-                                                            transform: 'translateX(-50%)',
-                                                            width: 2,
-                                                            height: 16,
-                                                            background: campaignEligible ? '#16A34A' : '#6B7280',
-                                                            pointerEvents: 'none',
-                                                        }}
-                                                    />
-                                                    <div
-                                                        style={{
-                                                            display: 'flex',
-                                                            fontSize: 9,
-                                                            color: '#9CA3AF',
-                                                            marginTop: 3,
-                                                            position: 'relative',
-                                                        }}
-                                                    >
-                                                        <span>0</span>
-                                                        <span
-                                                            style={{
-                                                                position: 'absolute',
-                                                                left: '50%',
-                                                                transform: 'translateX(-50%)',
-                                                            }}
-                                                        >
-                                                            50
-                                                        </span>
-                                                        <span
-                                                            style={{
-                                                                position: 'absolute',
-                                                                left: '70%',
-                                                                transform: 'translateX(-50%)',
-                                                                color: campaignEligible ? '#16A34A' : '#4B5563',
-                                                                fontWeight: 700,
-                                                            }}
-                                                        >
-                                                            70
-                                                        </span>
-                                                        <span style={{ marginLeft: 'auto' }}>100</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* Scoring-Logik – als Dropdown, geschlossen (direkt unter Progress-Bar) */}
-                                            <details style={{ padding: '0 18px', marginTop: 8 }}>
-                                                <summary
-                                                    style={{
-                                                        cursor: 'pointer',
-                                                        fontSize: 11,
-                                                        color: '#4B5563',
-                                                        fontWeight: 600,
-                                                        userSelect: 'none',
-                                                        padding: '6px 0',
-                                                    }}
-                                                >
-                                                    Scoring-Logik anzeigen
-                                                </summary>
-
-                                                <div
-                                                    style={{
-                                                        marginTop: 4,
-                                                        padding: '7px 12px',
-                                                        borderRadius: 6,
-                                                        background: '#F9FAFB',
-                                                        border: '1px solid #E5E7EB',
-                                                        fontSize: 11,
-                                                        fontFamily: 'monospace',
-                                                        color: '#374151',
-                                                        marginBottom: 10,
-                                                    }}
-                                                >
-                                                    Score = Pflichtfelder-Score + Empfohlene-Felder-Score
-                                                </div>
-
-                                                {/* Pflichtfelder-Score */}
-                                                <div
-                                                    style={{
-                                                        padding: '10px 12px',
-                                                        borderRadius: 6,
-                                                        borderLeft: '3px solid #3B82F6',
-                                                        background: '#EFF6FF',
-                                                        marginBottom: 8,
-                                                    }}
-                                                >
-                                                    <div
-                                                        style={{
-                                                            fontSize: 12,
-                                                            fontWeight: 700,
-                                                            color: '#111827',
-                                                            marginBottom: 4,
-                                                        }}
-                                                    >
-                                                        Pflichtfelder-Score (max. 70 Pkt.)
-                                                    </div>
-                                                    <div style={{ fontSize: 11, color: '#374151', marginBottom: 4 }}>
-                                                        {issues.pflichtOkCount.toLocaleString('de-DE')} von{' '}
-                                                        {issues.totalRows.toLocaleString('de-DE')} Artikeln mit
-                                                        vollständigen Pflichtattributen.
-                                                    </div>
-                                                    <div style={{ fontSize: 11, color: '#111827', fontWeight: 600 }}>
-                                                        →{' '}
-                                                        <strong>
-                                                            {issues.pflichtOkCount.toLocaleString('de-DE')}/
-                                                            {issues.totalRows.toLocaleString('de-DE')} × 70 ={' '}
-                                                            {issues.pflichtScore}/70 Punkte
-                                                        </strong>
-                                                    </div>
-                                                </div>
-
-                                                {/* Empfohlene Felder */}
-                                                <div
-                                                    style={{
-                                                        padding: '10px 12px',
-                                                        borderRadius: 6,
-                                                        borderLeft: '3px solid #EAB308',
-                                                        background: '#FEFCE8',
-                                                        marginBottom: 10,
-                                                    }}
-                                                >
-                                                    <div
-                                                        style={{
-                                                            fontSize: 12,
-                                                            fontWeight: 700,
-                                                            color: '#111827',
-                                                            marginBottom: 4,
-                                                        }}
-                                                    >
-                                                        Empfohlene Felder (max. 30 Pkt.)
-                                                    </div>
-                                                    <div style={{ fontSize: 11, color: '#374151', marginBottom: 4 }}>
-                                                        Durchschnittlich {fillPct}% der empfohlenen Felder je Artikel
-                                                        befüllt.
-                                                    </div>
-                                                    <div
-                                                        style={{
-                                                            fontSize: 11,
-                                                            color: '#111827',
-                                                            fontWeight: 600,
-                                                            marginBottom: 8,
-                                                        }}
-                                                    >
-                                                        →{' '}
-                                                        <strong>
-                                                            {issues.optionalFillRatio.toFixed(2)} × 30 ={' '}
-                                                            {issues.optionalScore}/30 Punkte
-                                                        </strong>
-                                                    </div>
-                                                    <div style={{ fontSize: 10, color: '#6B7280', lineHeight: '1.6' }}>
-                                                        <div>
-                                                            <strong style={{ color: '#374151' }}>Produktinfos:</strong>{' '}
-                                                            Deeplink · Modellbezeichnung
-                                                        </div>
-                                                        <div>
-                                                            <strong style={{ color: '#374151' }}>
-                                                                Produktmerkmale:
-                                                            </strong>{' '}
-                                                            Stil · Gewicht · Belastbarkeit · Sitzhöhe · Liegefläche ·
-                                                            Ausrichtung · Härtegrad
-                                                        </div>
-                                                        <div>
-                                                            <strong style={{ color: '#374151' }}>
-                                                                Bilder & Medien:
-                                                            </strong>{' '}
-                                                            Zusatzbilder (2–10) · Youtube-Video · 3D-Ansicht (GLB/USDZ)
-                                                            · Montageanleitung
-                                                        </div>
-                                                        <div>
-                                                            <strong style={{ color: '#374151' }}>Ausstattung:</strong>{' '}
-                                                            Set-Inhalt · Leuchtmittel inklusive · Matratze inklusive ·
-                                                            Lattenrost inklusive · LED verbaut · Beleuchtung inklusive ·
-                                                            Steckdose/Anschluss
-                                                        </div>
-                                                        <div>
-                                                            <strong style={{ color: '#374151' }}>Textilien:</strong>{' '}
-                                                            Pflegehinweise · Füllung · Bezug abnehmbar ·
-                                                            Allergikergeeignet
-                                                        </div>
-                                                        <div>
-                                                            <strong style={{ color: '#374151' }}>Nachweise:</strong>{' '}
-                                                            Energieeffizienzklasse · Produktdatenblatt
-                                                        </div>
-                                                        <div>
-                                                            <strong style={{ color: '#374151' }}>Hersteller:</strong>{' '}
-                                                            Telefonnummer
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                {/* Gesamt */}
-                                                <div
-                                                    style={{
-                                                        padding: '10px 14px',
-                                                        borderRadius: 6,
-                                                        border: `1px solid ${campaignEligible ? '#86EFAC' : '#E5E7EB'}`,
-                                                        background: campaignEligible ? '#F0FDF4' : '#F9FAFB',
-                                                        textAlign: 'center',
-                                                        fontSize: 12,
-                                                        fontWeight: 700,
-                                                        color: '#111827',
-                                                        marginBottom: 10,
-                                                    }}
-                                                >
-                                                    Gesamt: {issues.pflichtScore} + {issues.optionalScore} = {score}/100
-                                                    →{' '}
-                                                    {campaignEligible
-                                                        ? 'Kampagnen-berechtigt ✓'
-                                                        : 'Nicht kampagnen-berechtigt'}
-                                                </div>
-                                            </details>
-
-                                            {/* Kampagnen-Karte */}
-                                            <div
-                                                style={{
-                                                    margin: '10px 18px 0',
-                                                    borderRadius: 8,
-                                                    border: `1px solid ${campaignEligible ? '#86EFAC' : '#FECACA'}`,
-                                                    background: campaignEligible ? '#F0FDF4' : '#FEF2F2',
-                                                    padding: '12px 14px',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    gap: 12,
-                                                }}
-                                            >
-                                                <div style={{ flex: 1, minWidth: 0 }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                                        <div
-                                                            style={{
-                                                                width: 18,
-                                                                height: 18,
-                                                                borderRadius: '50%',
-                                                                background: campaignEligible ? '#16A34A' : '#DC2626',
-                                                                display: 'flex',
-                                                                alignItems: 'center',
-                                                                justifyContent: 'center',
-                                                                color: '#FFF',
-                                                                fontSize: 10,
-                                                                fontWeight: 800,
-                                                                flexShrink: 0,
-                                                            }}
-                                                        >
-                                                            {campaignEligible ? '✓' : '!'}
-                                                        </div>
-                                                        <div
-                                                            style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}
-                                                        >
-                                                            Kampagnen-Teilnahme
-                                                        </div>
-                                                    </div>
-                                                    <details style={{ marginTop: 5 }}>
-                                                        <summary
-                                                            style={{
-                                                                cursor: 'pointer',
-                                                                fontSize: 10,
-                                                                color: '#4B5563',
-                                                                fontWeight: 600,
-                                                                userSelect: 'none',
-                                                            }}
-                                                        >
-                                                            Alle Kampagnen-Kriterien anzeigen
-                                                        </summary>
-                                                        <div style={{ fontSize: 10, color: '#374151', marginTop: 4 }}>
-                                                            Ab <strong>70/100</strong> ist Ihr Feed für Kampagnen
-                                                            freigeschaltet. Zusätzlich müssen auch die weiteren
-                                                            Shop-KPIs erfüllt sein:
-                                                        </div>
-                                                        <ul
-                                                            style={{
-                                                                margin: '3px 0 0 0',
-                                                                paddingLeft: 16,
-                                                                fontSize: 10,
-                                                                color: '#374151',
-                                                                lineHeight: '1.6',
-                                                                listStyleType: 'disc',
-                                                                listStylePosition: 'outside',
-                                                            }}
-                                                        >
-                                                            <li style={{ display: 'list-item' }}>
-                                                                Stornoquote ≤ 2,5 %
-                                                            </li>
-                                                            <li style={{ display: 'list-item' }}>
-                                                                Liefertermintreue ≥ 94 %
-                                                            </li>
-                                                            <li style={{ display: 'list-item' }}>
-                                                                Trackingquote ≥ 92 %
-                                                            </li>
-                                                            <li style={{ display: 'list-item' }}>
-                                                                Preisparität ≥ 95 %
-                                                            </li>
-                                                        </ul>
-                                                    </details>
-                                                </div>
-                                                <a
-                                                    href={
-                                                        campaignEligible
-                                                            ? 'http://mc.moebel.check24.de/campaigns'
-                                                            : undefined
-                                                    }
-                                                    target={campaignEligible ? '_blank' : undefined}
-                                                    rel={campaignEligible ? 'noopener noreferrer' : undefined}
-                                                    onClick={(e) => {
-                                                        if (!campaignEligible) e.preventDefault();
-                                                    }}
-                                                    aria-disabled={!campaignEligible}
-                                                    style={{
-                                                        padding: '10px 18px',
-                                                        borderRadius: 6,
-                                                        border: 'none',
-                                                        background: campaignEligible ? '#16A34A' : '#D1D5DB',
-                                                        color: '#FFF',
-                                                        fontSize: 13,
-                                                        fontWeight: 700,
-                                                        cursor: campaignEligible ? 'pointer' : 'not-allowed',
-                                                        whiteSpace: 'nowrap',
-                                                        textDecoration: 'none',
-                                                        flexShrink: 0,
-                                                        opacity: campaignEligible ? 1 : 0.7,
-                                                    }}
-                                                >
-                                                    Zum Deal-Tool →
-                                                </a>
-                                            </div>
-
-                                            {/* APA-Karte */}
-                                            <div
-                                                style={{
-                                                    margin: '10px 18px 14px',
-                                                    borderRadius: 8,
-                                                    border: `1px solid ${stufe1Passed ? '#86EFAC' : '#FECACA'}`,
-                                                    background: stufe1Passed ? '#F0FDF4' : '#FEF2F2',
-                                                    padding: '12px 14px',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    gap: 12,
-                                                }}
-                                            >
-                                                <div style={{ flex: 1, minWidth: 0 }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                                        <div
-                                                            style={{
-                                                                width: 18,
-                                                                height: 18,
-                                                                borderRadius: '50%',
-                                                                background: stufe1Passed ? '#16A34A' : '#DC2626',
-                                                                display: 'flex',
-                                                                alignItems: 'center',
-                                                                justifyContent: 'center',
-                                                                color: '#FFF',
-                                                                fontSize: 10,
-                                                                fontWeight: 800,
-                                                                flexShrink: 0,
-                                                            }}
-                                                        >
-                                                            {stufe1Passed ? '✓' : '!'}
-                                                        </div>
-                                                        <div
-                                                            style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}
-                                                        >
-                                                            APA (Automatische Produktanlage)
-                                                        </div>
-                                                    </div>
-                                                    <div style={{ fontSize: 10, color: '#374151', marginTop: 4 }}>
-                                                        {stufe1Passed ? '✓' : '✗'}{' '}
-                                                        {stufe1Passed
-                                                            ? 'Berechtigt für APA'
-                                                            : 'Nicht berechtigt für APA'}{' '}
-                                                        · Fehlerquote: {errorRate.toFixed(1).replace('.', ',')}% (Max.
-                                                        5%)
-                                                    </div>
-                                                    <div
-                                                        style={{
-                                                            fontSize: 10,
-                                                            color: stufe1Passed ? '#166534' : '#991B1B',
-                                                            fontWeight: 600,
-                                                            marginTop: 2,
-                                                        }}
-                                                    >
-                                                        {stufe1Passed
-                                                            ? 'Ihre Artikel werden automatisch innerhalb von 2–3 Tagen angelegt.'
-                                                            : 'Ohne APA werden Artikel manuell angelegt. Das kann 1–3 Wochen dauern.'}
-                                                    </div>
-                                                </div>
-                                                <a
-                                                    href={
-                                                        stufe1Passed
-                                                            ? 'mailto:partnerbetreuung@check24.de?subject=' +
-                                                              encodeURIComponent('APA-Freischaltung anfordern') +
-                                                              '&body=' +
-                                                              encodeURIComponent(
-                                                                  'Hallo CHECK24-Team,\n\nwir möchten die automatische Produktanlage (APA) für unseren Shop aktivieren. Unsere aktuelle Fehlerquote liegt bei ' +
-                                                                      errorRate.toFixed(1).replace('.', ',') +
-                                                                      '% und damit innerhalb des Grenzwerts von 5%.\n\nBitte schalten Sie uns für APA frei.\n\nVielen Dank\nIhr Partner',
-                                                              )
-                                                            : undefined
-                                                    }
-                                                    onClick={(e) => {
-                                                        if (!stufe1Passed) e.preventDefault();
-                                                    }}
-                                                    aria-disabled={!stufe1Passed}
-                                                    style={{
-                                                        padding: '10px 18px',
-                                                        borderRadius: 6,
-                                                        border: 'none',
-                                                        background: stufe1Passed ? '#16A34A' : '#D1D5DB',
-                                                        color: '#FFF',
-                                                        fontSize: 13,
-                                                        fontWeight: 700,
-                                                        cursor: stufe1Passed ? 'pointer' : 'not-allowed',
-                                                        whiteSpace: 'nowrap',
-                                                        textDecoration: 'none',
-                                                        flexShrink: 0,
-                                                        opacity: stufe1Passed ? 1 : 0.7,
-                                                    }}
-                                                >
-                                                    APA-Zugang per E-Mail anfordern
-                                                </a>
+                                                ))}
                                             </div>
                                         </div>
-                                    </div>
-                                )}
+                                    );
+                                })()}
                             </div>
-                        );
-                    })()}
+                        </div>
+                    </div>
+                );
+            })()}
+
             </div>
         </div>
 
