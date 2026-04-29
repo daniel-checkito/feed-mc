@@ -593,7 +593,8 @@ export default function McAngebotsfeed() {
                     onClick={() => setShowLeitfaden(true)}
                     style={{ border: '1px solid rgba(255,255,255,0.3)', background: 'transparent', color: '#FFFFFF', fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
                 >
-                    📄 Feedleitfaden
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" style={{ flexShrink: 0 }}><path d="M2 1h7l3 3v8H2V1z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M9 1v3h3" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M4 6.5h5M4 8.5h5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                    Feedleitfaden
                 </button>
             </header>
         <div style={{ maxWidth: 1500, margin: '0 auto', padding: '24px 48px' }}>
@@ -609,7 +610,7 @@ export default function McAngebotsfeed() {
                             boxShadow: '0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04)',
                         }}
                     >
-                        <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
                             <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#D1D5DB', flexShrink: 0, display: 'inline-block' }} />
                             Datei hochladen
                         </div>
@@ -668,7 +669,7 @@ export default function McAngebotsfeed() {
 
                     {/* Downloads */}
                     <div style={{ background: '#FFF', borderRadius: 12, padding: '16px 20px', boxShadow: '0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04)' }}>
-                        <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
                             <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#D1D5DB', flexShrink: 0, display: 'inline-block' }} />
                             Vorlagen & Dokumentation
                         </div>
@@ -683,7 +684,7 @@ export default function McAngebotsfeed() {
                                 }}
                                 style={{ padding: '10px 12px', borderRadius: 6, border: '1px solid #E5E7EB', background: '#F9FAFB', cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 10 }}
                             >
-                                <span style={{ fontSize: 16, flexShrink: 0 }}>⬇</span>
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: MC_BLUE }}><path d="M8 2v8M5 7l3 3 3-3M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                                 <div>
                                     <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>Feedvorlage</div>
                                     <div style={{ fontSize: 10, color: '#6B7280', marginTop: 1 }}>XLSX · sofort herunterladen</div>
@@ -694,7 +695,7 @@ export default function McAngebotsfeed() {
                                 onClick={() => setShowLeitfaden(true)}
                                 style={{ padding: '10px 12px', borderRadius: 6, border: '1px solid #E5E7EB', background: '#F9FAFB', cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 10 }}
                             >
-                                <span style={{ fontSize: 16, flexShrink: 0 }}>📄</span>
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: MC_BLUE }}><path d="M2.5 1.5h8.5l3 3v10h-11.5v-13z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M11 1.5v3h3" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M5 8h6M5 10.5h6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
                                 <div>
                                     <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>Feedleitfaden</div>
                                     <div style={{ fontSize: 10, color: '#6B7280', marginTop: 1 }}>PDF · Vorschau & Download</div>
@@ -705,7 +706,7 @@ export default function McAngebotsfeed() {
 
                     {/* So funktioniert es */}
                     <div style={{ background: '#FFF', borderRadius: 12, padding: '16px 20px', boxShadow: '0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04)' }}>
-                        <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
                             <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#D1D5DB', flexShrink: 0, display: 'inline-block' }} />
                             So funktioniert es
                         </div>
@@ -987,7 +988,7 @@ export default function McAngebotsfeed() {
                             alignItems: 'flex-start',
                         }}
                     >
-                        <span style={{ fontSize: 22, flexShrink: 0 }}>⚠️</span>
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ flexShrink: 0, color: '#DC2626' }}><path d="M10 3L2 17h16L10 3z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/><path d="M10 9v3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/><circle cx="10" cy="14.5" r="0.75" fill="currentColor"/></svg>
                         <div>
                             <div style={{ fontSize: 13, fontWeight: 700, color: '#B91C1C', marginBottom: 4 }}>
                                 Diese Datei sieht nicht wie ein gültiger Produkt-Feed aus.
@@ -2097,7 +2098,8 @@ export default function McAngebotsfeed() {
                                     background: '#F9FAFB', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6,
                                 }}
                             >
-                                ⬇ Herunterladen
+                                <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1.5v7M4 6l2.5 2.5L9 6M1.5 11h10" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                Herunterladen
                             </a>
                             <button
                                 type="button"
