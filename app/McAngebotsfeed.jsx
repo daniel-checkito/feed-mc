@@ -887,6 +887,9 @@ export default function McAngebotsfeed() {
 
     const outsideGermany = storeLocation === 'outside_germany';
 
+    const T = lang === 'de' ? DE_T : EN_T;
+    const numLocale = lang === 'de' ? 'de-DE' : 'en-US';
+
     function resetToStart() {
         setFile(null);
         setRows([]);
@@ -918,9 +921,6 @@ export default function McAngebotsfeed() {
 
     const errorRate = issues ? (issues.blockiertCount / issues.totalRows) * 100 : 0;
     const stufe1Passed = issues ? errorRate <= 5 : false;
-
-    const T = lang === 'de' ? DE_T : EN_T;
-    const numLocale = lang === 'de' ? 'de-DE' : 'en-US';
 
     return (
         <div style={{ background: '#F3F4F6', minHeight: '100vh' }}>
