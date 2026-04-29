@@ -590,7 +590,7 @@ export default function McAngebotsfeed() {
                 </button>
             </header>
         <div style={{ maxWidth: 1500, margin: '0 auto', padding: '24px 48px' }}>
-            <h2 style={{ fontSize: 20, fontWeight: 700, color: '#111827', margin: '0 0 12px 0' }}>Ihr Angebotsfeed</h2>
+            <h2 style={{ fontSize: 20, fontWeight: 700, color: '#111827', margin: '0 0 12px 0' }}>Feed prüfen</h2>
             <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start' }}>
                 {/* ── LEFT: Upload & Settings ── */}
                 <div style={{ flex: '0 1 50%', minWidth: 0, display: 'grid', gap: 12, alignContent: 'start' }}>
