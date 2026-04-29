@@ -676,12 +676,12 @@ export default function McAngebotsfeed() {
                             <button
                                 type="button"
                                 onClick={() => setShowLeitfaden(true)}
-                                style={{ padding: '10px 12px', borderRadius: 6, border: `1px solid ${MC_BLUE}30`, background: '#EEF4FF', cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 10 }}
+                                style={{ padding: '10px 12px', borderRadius: 6, border: '1px solid #E5E7EB', background: '#F9FAFB', cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 10 }}
                             >
-                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: MC_BLUE }}><ellipse cx="8" cy="8" rx="7" ry="4.5" stroke="currentColor" strokeWidth="1.4"/><circle cx="8" cy="8" r="2" fill="currentColor"/></svg>
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: MC_BLUE }}><path d="M2.5 1.5h8.5l3 3v10h-11.5v-13z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M11 1.5v3h3" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M5 8h6M5 10.5h6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
                                 <div>
-                                    <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>Feedleitfaden ansehen</div>
-                                    <div style={{ fontSize: 10, color: MC_BLUE, marginTop: 1 }}>Öffnet Vorschau · kein Download nötig</div>
+                                    <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>Feedleitfaden</div>
+                                    <div style={{ fontSize: 10, color: '#6B7280', marginTop: 1 }}>PDF · Vorschau & Download</div>
                                 </div>
                             </button>
                             <button
