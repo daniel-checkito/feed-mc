@@ -962,14 +962,12 @@ export default function McAngebotsfeed() {
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
                     {/* Language toggle */}
-                    <div style={{ display: 'flex', background: 'rgba(255,255,255,0.12)', borderRadius: 6, padding: 2, gap: 2 }}>
-                        {['de', 'en'].map((l) => (
-                            <button key={l} type="button" onClick={() => setLang(l)}
-                                style={{ padding: '4px 9px', borderRadius: 4, border: 'none', cursor: 'pointer', fontSize: 11, fontWeight: 700, background: lang === l ? '#FFF' : 'transparent', color: lang === l ? MC_BLUE : 'rgba(255,255,255,0.75)', transition: 'all 0.15s', textTransform: 'uppercase' }}>
-                                {l}
-                            </button>
-                        ))}
-                    </div>
+                    <button type="button" onClick={() => setLang(lang === 'de' ? 'en' : 'de')}
+                        style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: 8, padding: '6px 12px', cursor: 'pointer', color: '#FFF', fontSize: 13, fontWeight: 600, transition: 'background 0.15s' }}>
+                        <span style={{ fontSize: 16, lineHeight: 1 }}>{lang === 'de' ? '🇩🇪' : '🇬🇧'}</span>
+                        <span>{lang === 'de' ? 'Deutsch' : 'English'}</span>
+                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style={{ opacity: 0.8 }}><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    </button>
                     <a
                         href="mailto:contentmanagement.moebel@check24.de?subject=Feed%20Checker%20-%20Hilfe"
                         style={{ border: '1px solid rgba(255,255,255,0.3)', background: 'transparent', color: '#FFFFFF', fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}
