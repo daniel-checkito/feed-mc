@@ -1075,7 +1075,7 @@ export default function McAngebotsfeed() {
                             {
                                 key: 'size',
                                 label: 'Maße / Höhe / Tiefe',
-                                hint: 'Unvollständig',
+                                hint: 'Fehler',
                                 count: rowsByGroup.size.size,
                             },
                             {
@@ -1093,7 +1093,7 @@ export default function McAngebotsfeed() {
                             {
                                 key: 'price',
                                 label: 'Preis & Verfügbarkeit',
-                                hint: 'Unvollständig',
+                                hint: 'Fehler',
                                 count: rowsByGroup.price.size,
                             },
                             {
@@ -1313,7 +1313,7 @@ export default function McAngebotsfeed() {
                                         </details>
                                     </div>
 
-                                    {/* Stats: Vollständig | Unvollständig | Gesamt (kompakt, mit Tooltips) */}
+                                    {/* Stats: Vollständig | Fehler | Gesamt (kompakt, mit Tooltips) */}
                                     <div
                                         style={{
                                             display: 'grid',
@@ -1331,7 +1331,7 @@ export default function McAngebotsfeed() {
                                             },
                                             {
                                                 val: issues.blockiertCount,
-                                                label: 'Unvollständig',
+                                                label: 'Fehler',
                                                 color: '#DC2626',
                                                 tip: 'Artikel mit mindestens einem fehlenden oder ungültigen Pflichtattribut. Diese Artikel werden nicht gelistet, bis die Fehler behoben sind.',
                                             },
