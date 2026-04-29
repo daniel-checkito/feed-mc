@@ -1240,7 +1240,7 @@ export default function McAngebotsfeed() {
                                                 minWidth: 0,
                                             }}
                                         >
-                                            <span style={{ whiteSpace: 'nowrap' }}>STUFE 1 — TECHNISCHE PRÜFUNG</span>
+                                            <span style={{ whiteSpace: 'nowrap' }}>TECHNISCHE PRÜFUNG</span>
                                             <span style={{ flex: 1, height: 1, background: '#E5E7EB' }} />
                                         </div>
                                         {stufe1Passed ? (
