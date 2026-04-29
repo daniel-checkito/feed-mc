@@ -579,7 +579,7 @@ export default function McAngebotsfeed() {
 
     return (
         <div style={{ background: '#F3F4F6', minHeight: '100vh' }}>
-            <header style={{ background: MC_BLUE, padding: '12px 24px', display: 'flex', alignItems: 'center' }}>
+            <header style={{ background: MC_BLUE, padding: '16px 48px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <button
                     type="button"
                     onClick={() => { window.location.hash = "#/checker"; }}
@@ -588,12 +588,11 @@ export default function McAngebotsfeed() {
                 >
                     <span style={{ color: "#FFFFFF", fontWeight: 900, fontSize: 20, letterSpacing: "-0.5px", fontFamily: "ui-sans-serif, system-ui", fontStyle: "italic" }}>FEED CHECKER</span>
                 </button>
+                <span style={{ color: '#A8C4E0', fontSize: 12, fontWeight: 400, maxWidth: 420, textAlign: 'right', lineHeight: '1.5' }}>
+                    Feed hochladen, Fehler erkennen und beheben - für mehr Reichweite auf CHECK24
+                </span>
             </header>
         <div style={{ maxWidth: 1500, margin: '0 auto', padding: '24px 48px' }}>
-            <h2 style={{ fontSize: 20, fontWeight: 700, color: '#111827', margin: '0 0 6px 0' }}>Laden Sie Ihren Angebotsfeed hoch und prüfen Sie ihn auf Fehler</h2>
-            <p style={{ fontSize: 13, color: '#6B7280', margin: '0 0 20px 0', maxWidth: 640 }}>
-                Der Feed Checker analysiert Ihre Produktdaten und zeigt Ihnen genau, welche Pflichtfelder fehlen oder fehlerhaft sind. Beheben Sie die Fehler gezielt — je vollständiger Ihr Feed, desto schneller werden Ihre Produkte auf CHECK24 gelistet und desto mehr Reichweite erzielen Sie.
-            </p>
             <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start' }}>
                 {/* ── LEFT: Upload & Settings ── */}
                 <div style={{ flex: '0 1 50%', minWidth: 0, display: 'grid', gap: 12, alignContent: 'start' }}>
