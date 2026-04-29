@@ -304,9 +304,6 @@ export default function McAngebotsfeed() {
     const [manualMapping, setManualMapping] = useState({});
     const [mappingExpanded, setMappingExpanded] = useState(false);
     const fileRef = useRef(null);
-    const [feedFormat, setFeedFormat] = useState('CSV');
-    const [feedDelimiter, setFeedDelimiter] = useState('semicolon');
-    const [feedQuoteChar, setFeedQuoteChar] = useState('');
 
     function parseFile(f) {
         if (!f) return;
@@ -580,7 +577,19 @@ export default function McAngebotsfeed() {
         rows.length > 0 && Object.values(mcMapping).filter(Boolean).length === 0 && mcImageColumns.length === 0;
 
     return (
-        <div style={{ maxWidth: 1500, margin: '0 auto' }}>
+        <div style={{ background: '#FFFFFF', minHeight: '100vh' }}>
+            <header style={{ background: MC_BLUE, padding: '12px 24px', display: 'flex', alignItems: 'center' }}>
+                <button
+                    type="button"
+                    onClick={() => { window.location.hash = "#/checker"; }}
+                    style={{ border: "none", background: "transparent", padding: 0, cursor: "pointer", display: "flex", alignItems: "center", gap: 10 }}
+                    aria-label="Feed Checker Startseite"
+                >
+                    <span style={{ color: "#FFFFFF", fontWeight: 900, fontSize: 20, letterSpacing: "-0.5px", fontFamily: "ui-sans-serif, system-ui", fontStyle: "italic" }}>FEED CHECKER</span>
+                    <span style={{ color: "#A8C4E0", fontSize: 10, fontWeight: 400, marginLeft: 6 }}>v1.0.1</span>
+                </button>
+            </header>
+        <div style={{ maxWidth: 1500, margin: '0 auto', padding: '24px 20px' }}>
             <h2 style={{ fontSize: 20, fontWeight: 700, color: '#111827', margin: '0 0 12px 0' }}>Ihr Angebotsfeed</h2>
             <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start' }}>
                 {/* ── LEFT: Upload & Settings ── */}
@@ -672,90 +681,6 @@ export default function McAngebotsfeed() {
                         </div>
                     )}
 
-                    {/* Feed Settings */}
-                    <details style={{ background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 8 }}>
-                        <summary
-                            style={{
-                                padding: '12px 16px',
-                                cursor: 'pointer',
-                                fontSize: 13,
-                                fontWeight: 600,
-                                color: '#111827',
-                            }}
-                        >
-                            Feed-Einstellungen
-                        </summary>
-                        <div style={{ padding: '0 16px 16px', display: 'grid', gap: 8 }}>
-                            <div>
-                                <div style={{ fontSize: 11, fontWeight: 600, color: '#6B7280', marginBottom: 4 }}>
-                                    Format
-                                </div>
-                                <select
-                                    value={feedFormat}
-                                    onChange={(e) => setFeedFormat(e.target.value)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '8px 12px',
-                                        borderRadius: 6,
-                                        border: '1px solid #E5E7EB',
-                                        fontSize: 12,
-                                        color: '#111827',
-                                        background: '#FFF',
-                                        cursor: 'pointer',
-                                    }}
-                                >
-                                    <option value="CSV">CSV</option>
-                                    <option value="CSV (UTF-8)">CSV (UTF-8)</option>
-                                    <option value="CSV (Windows-1252)">CSV (Windows-1252)</option>
-                                    <option value="TSV">TSV (Tab-getrennt)</option>
-                                    <option value="TXT">TXT</option>
-                                </select>
-                            </div>
-                            <div>
-                                <div style={{ fontSize: 11, fontWeight: 600, color: '#6B7280', marginBottom: 4 }}>
-                                    Trennzeichen
-                                </div>
-                                <select
-                                    value={feedDelimiter}
-                                    onChange={(e) => setFeedDelimiter(e.target.value)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '8px 12px',
-                                        borderRadius: 6,
-                                        border: '1px solid #E5E7EB',
-                                        fontSize: 12,
-                                        color: '#111827',
-                                        background: '#FFF',
-                                        cursor: 'pointer',
-                                    }}
-                                >
-                                    <option value="semicolon">Semikolon ( ; )</option>
-                                    <option value="comma">Komma ( , )</option>
-                                    <option value="tab">Tab</option>
-                                    <option value="pipe">Pipe ( | )</option>
-                                </select>
-                            </div>
-                            <div>
-                                <div style={{ fontSize: 11, fontWeight: 600, color: '#6B7280', marginBottom: 4 }}>
-                                    Umschließungszeichen (optional)
-                                </div>
-                                <input
-                                    value={feedQuoteChar}
-                                    onChange={(e) => setFeedQuoteChar(e.target.value)}
-                                    placeholder="z.B. &quot;"
-                                    style={{
-                                        width: '100%',
-                                        padding: '8px 12px',
-                                        borderRadius: 6,
-                                        border: '1px solid #E5E7EB',
-                                        fontSize: 12,
-                                        color: '#111827',
-                                        boxSizing: 'border-box',
-                                    }}
-                                />
-                            </div>
-                        </div>
-                    </details>
 
                     {/* Spalten-Zuordnung */}
                     {issues &&
@@ -2178,6 +2103,7 @@ export default function McAngebotsfeed() {
                         );
                     })()}
             </div>
+        </div>
         </div>
     );
 }
