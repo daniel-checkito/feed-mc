@@ -829,26 +829,6 @@ export default function McAngebotsfeed() {
                                         )}
                                     </summary>
                                     <div style={{ padding: '0 16px 16px', display: 'grid', gap: 4 }}>
-                                        {/* Hauptbild-Zuordnung (separat, nicht konfigurierbar – kommt aus Spaltenerkennung) */}
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                                            <span style={{ fontSize: 10, color: '#374151', width: 150, flexShrink: 0 }}>
-                                                Hauptbild (+ Zusatzb.)
-                                            </span>
-                                            <div
-                                                style={{
-                                                    flex: 1,
-                                                    fontSize: 10,
-                                                    padding: '4px 8px',
-                                                    borderRadius: 5,
-                                                    border: `1px solid ${mcImageColumns.length > 0 ? '#D1D5DB' : '#FCA5A5'}`,
-                                                    background: '#F9FAFB',
-                                                    color: mcImageColumns.length > 0 ? '#166534' : '#DC2626',
-                                                    fontWeight: 600,
-                                                }}
-                                            >
-                                                {mcImageColumns.length > 0 ? mcImageColumns.join(', ') : '–'}
-                                            </div>
-                                        </div>
                                         {(() => {
                                             const manufacturerPflichtEnd = allMcFields.indexOf('manufacturer_email');
                                             const displayFields = [
@@ -961,6 +941,26 @@ export default function McAngebotsfeed() {
                                                             {hiddenCount} weitere optionale Felder nicht im Feed
                                                         </div>
                                                     )}
+                                                    {/* Hauptbild-Zuordnung (separat, nicht konfigurierbar – kommt aus Spaltenerkennung) */}
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                                                        <span style={{ fontSize: 10, color: '#374151', width: 150, flexShrink: 0 }}>
+                                                            Hauptbild (+ Zusatzb.)
+                                                        </span>
+                                                        <div
+                                                            style={{
+                                                                flex: 1,
+                                                                fontSize: 10,
+                                                                padding: '4px 8px',
+                                                                borderRadius: 5,
+                                                                border: `1px solid ${mcImageColumns.length > 0 ? '#D1D5DB' : '#FCA5A5'}`,
+                                                                background: '#F9FAFB',
+                                                                color: mcImageColumns.length > 0 ? '#166534' : '#DC2626',
+                                                                fontWeight: 600,
+                                                            }}
+                                                        >
+                                                            {mcImageColumns.length > 0 ? mcImageColumns.join(', ') : '–'}
+                                                        </div>
+                                                    </div>
                                                 </>
                                             );
                                         })()}
