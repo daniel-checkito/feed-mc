@@ -1390,6 +1390,13 @@ export default function McAngebotsfeed() {
                 return (
                     <div style={{ width: '100%', maxWidth: 820 }}>
 
+                        {/* Back */}
+                        <button type="button" onClick={() => setStep(2)}
+                            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: '#6B7280', fontWeight: 600, padding: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                            {T.back}
+                        </button>
+
                         {/* 1 — Status banner */}
                         <div style={{ padding: '16px 20px', borderRadius: 12, background: stufe1Passed ? '#F0FDF4' : '#FEF2F2', border: `1px solid ${stufe1Passed ? '#BBF7D0' : '#FECACA'}`, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 14 }}>
                             <div style={{ width: 36, height: 36, borderRadius: '50%', background: stufe1Passed ? '#DCFCE7' : '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
