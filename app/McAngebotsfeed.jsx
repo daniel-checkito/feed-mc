@@ -299,6 +299,7 @@ export default function McAngebotsfeed() {
 
     const [file, setFile] = useState(null);
     const [dragging, setDragging] = useState(false);
+    const [showLeitfaden, setShowLeitfaden] = useState(false);
     const [rows, setRows] = useState([]);
     const [headers, setHeaders] = useState([]);
     const [manualMapping, setManualMapping] = useState({});
@@ -589,7 +590,10 @@ export default function McAngebotsfeed() {
                 </button>
             </header>
         <div style={{ maxWidth: 1500, margin: '0 auto', padding: '24px 48px' }}>
-            <h2 style={{ fontSize: 20, fontWeight: 700, color: '#111827', margin: '0 0 12px 0' }}>Feed prüfen</h2>
+            <h2 style={{ fontSize: 20, fontWeight: 700, color: '#111827', margin: '0 0 6px 0' }}>Feed prüfen</h2>
+            <p style={{ fontSize: 13, color: '#6B7280', margin: '0 0 20px 0', maxWidth: 640 }}>
+                Laden Sie Ihren Angebotsfeed hoch, um Fehler zu erkennen und gezielt zu beheben. Je vollständiger und fehlerfreier Ihr Feed, desto schneller werden Ihre Produkte auf dem CHECK24-Marktplatz gelistet und desto mehr Reichweite erzielen Sie.
+            </p>
             <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start' }}>
                 {/* ── LEFT: Upload & Settings ── */}
                 <div style={{ flex: '0 1 50%', minWidth: 0, display: 'grid', gap: 12, alignContent: 'start' }}>
@@ -1005,12 +1009,7 @@ export default function McAngebotsfeed() {
                         </button>
                         <button
                             type="button"
-                            onClick={() => {
-                                const a = document.createElement('a');
-                                a.href = 'https://w9cedwr8emsi29qt.public.blob.vercel-storage.com/CHECK24_Feedleitfaden_V2026.pdf';
-                                a.download = 'CHECK24_Feedleitfaden_V2026.pdf';
-                                a.click();
-                            }}
+                            onClick={() => setShowLeitfaden(true)}
                             style={{
                                 padding: '10px 12px',
                                 borderRadius: 6,
@@ -1023,10 +1022,10 @@ export default function McAngebotsfeed() {
                                 gap: 10,
                             }}
                         >
-                            <span style={{ fontSize: 16, flexShrink: 0 }}>⬇</span>
+                            <span style={{ fontSize: 16, flexShrink: 0 }}>📄</span>
                             <div>
                                 <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>Feedleitfaden</div>
-                                <div style={{ fontSize: 10, color: '#6B7280', marginTop: 1 }}>PDF · sofort herunterladen</div>
+                                <div style={{ fontSize: 10, color: '#6B7280', marginTop: 1 }}>PDF · Vorschau & Download</div>
                             </div>
                         </button>
                     </div>
@@ -2133,6 +2132,59 @@ export default function McAngebotsfeed() {
                     })()}
             </div>
         </div>
+
+        {/* Feedleitfaden PDF Modal */}
+        {showLeitfaden && (
+            <div
+                onClick={() => setShowLeitfaden(false)}
+                style={{
+                    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    zIndex: 1000, padding: 24,
+                }}
+            >
+                <div
+                    onClick={(e) => e.stopPropagation()}
+                    style={{
+                        background: '#FFF', borderRadius: 12, width: '100%', maxWidth: 900,
+                        height: '90vh', display: 'flex', flexDirection: 'column',
+                        boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+                    }}
+                >
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px', borderBottom: '1px solid #E5E7EB' }}>
+                        <span style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>Feedleitfaden 2026</span>
+                        <div style={{ display: 'flex', gap: 8 }}>
+                            <a
+                                href="https://w9cedwr8emsi29qt.public.blob.vercel-storage.com/CHECK24_Feedleitfaden_V2026.pdf"
+                                download="CHECK24_Feedleitfaden_V2026.pdf"
+                                style={{
+                                    fontSize: 12, fontWeight: 600, color: '#111827',
+                                    padding: '6px 14px', borderRadius: 6, border: '1px solid #E5E7EB',
+                                    background: '#F9FAFB', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6,
+                                }}
+                            >
+                                ⬇ Herunterladen
+                            </a>
+                            <button
+                                type="button"
+                                onClick={() => setShowLeitfaden(false)}
+                                style={{
+                                    fontSize: 18, lineHeight: 1, color: '#6B7280', background: 'none',
+                                    border: 'none', cursor: 'pointer', padding: '4px 8px', borderRadius: 4,
+                                }}
+                            >
+                                ✕
+                            </button>
+                        </div>
+                    </div>
+                    <iframe
+                        src="https://w9cedwr8emsi29qt.public.blob.vercel-storage.com/CHECK24_Feedleitfaden_V2026.pdf"
+                        style={{ flex: 1, border: 'none', borderRadius: '0 0 12px 12px' }}
+                        title="Feedleitfaden 2026"
+                    />
+                </div>
+            </div>
+        )}
         </div>
     );
 }
