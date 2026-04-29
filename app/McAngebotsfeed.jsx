@@ -930,36 +930,6 @@ export default function McAngebotsfeed() {
                     FEED CHECKER
                 </span>
 
-                {/* Step indicator */}
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                    {[
-                        { n: 1, label: T.stepUpload },
-                        { n: 2, label: T.stepMapping },
-                        { n: 3, label: T.stepResults },
-                    ].map((s, i) => (
-                        <React.Fragment key={s.n}>
-                            {i > 0 && (
-                                <div style={{ width: 28, height: 1, background: step >= s.n ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.2)', margin: '0 2px', marginBottom: 14 }} />
-                            )}
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
-                                <div style={{
-                                    width: 24, height: 24, borderRadius: '50%',
-                                    background: step === s.n ? '#FFF' : step > s.n ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.15)',
-                                    color: step === s.n ? MC_BLUE : '#FFF',
-                                    fontSize: 10, fontWeight: 800,
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    transition: 'all 0.2s',
-                                }}>
-                                    {step > s.n ? '✓' : s.n}
-                                </div>
-                                <span style={{ fontSize: 9, color: step === s.n ? '#FFF' : 'rgba(255,255,255,0.55)', fontWeight: step === s.n ? 700 : 400, whiteSpace: 'nowrap' }}>
-                                    {s.label}
-                                </span>
-                            </div>
-                        </React.Fragment>
-                    ))}
-                </div>
-
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
                     {/* Language toggle */}
                     <button type="button" onClick={() => setLang(lang === 'de' ? 'en' : 'de')}
@@ -978,7 +948,38 @@ export default function McAngebotsfeed() {
                 </div>
             </header>
         {/* ── FUNNEL BODY ── */}
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '40px 24px', minHeight: 'calc(100vh - 58px)', alignItems: step === 1 ? 'center' : 'flex-start' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '32px 24px 40px', minHeight: 'calc(100vh - 48px)' }}>
+
+            {/* Step indicator */}
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: 28 }}>
+                {[
+                    { n: 1, label: T.stepUpload },
+                    { n: 2, label: T.stepMapping },
+                    { n: 3, label: T.stepResults },
+                ].map((s, i) => (
+                    <React.Fragment key={s.n}>
+                        {i > 0 && (
+                            <div style={{ width: 48, height: 2, background: step > s.n ? MC_BLUE : step === s.n ? '#CBD5E1' : '#E5E7EB', margin: '0 4px', marginBottom: 18, borderRadius: 1 }} />
+                        )}
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5 }}>
+                            <div style={{
+                                width: 28, height: 28, borderRadius: '50%',
+                                background: step > s.n ? MC_BLUE : step === s.n ? MC_BLUE : '#E5E7EB',
+                                color: step >= s.n ? '#FFF' : '#9CA3AF',
+                                fontSize: 11, fontWeight: 800,
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                transition: 'all 0.2s',
+                            }}>
+                                {step > s.n ? '✓' : s.n}
+                            </div>
+                            <span style={{ fontSize: 10, color: step === s.n ? '#111827' : '#9CA3AF', fontWeight: step === s.n ? 700 : 400, whiteSpace: 'nowrap' }}>
+                                {s.label}
+                            </span>
+                        </div>
+                    </React.Fragment>
+                ))}
+            </div>
+
             <div style={{ display: 'contents' }}>
 
             {/* ══════════════════════════════════════════
