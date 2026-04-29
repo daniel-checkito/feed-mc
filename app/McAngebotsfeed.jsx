@@ -588,14 +588,13 @@ export default function McAngebotsfeed() {
                 >
                     <span style={{ color: "#FFFFFF", fontWeight: 900, fontSize: 26, letterSpacing: "-0.5px", fontFamily: "ui-sans-serif, system-ui", fontStyle: "italic" }}>FEED CHECKER</span>
                 </button>
-                <button
-                    type="button"
-                    onClick={() => setShowLeitfaden(true)}
-                    style={{ border: '1px solid rgba(255,255,255,0.3)', background: 'transparent', color: '#FFFFFF', fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
+                <a
+                    href="mailto:contentmanagement.moebel@check24.de?subject=Feed%20Checker%20-%20Hilfe"
+                    style={{ border: '1px solid rgba(255,255,255,0.3)', background: 'transparent', color: '#FFFFFF', fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}
                 >
-                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" style={{ flexShrink: 0 }}><ellipse cx="6.5" cy="6.5" rx="5.5" ry="3.5" stroke="currentColor" strokeWidth="1.3"/><circle cx="6.5" cy="6.5" r="1.5" fill="currentColor"/></svg>
-                    Feedleitfaden ansehen
-                </button>
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" style={{ flexShrink: 0 }}><rect x="1" y="2.5" width="11" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.3"/><path d="M1 4l5.5 3.5L12 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>
+                    Hilfe & Kontakt
+                </a>
             </header>
         <div style={{ maxWidth: 1500, margin: '0 auto', padding: '24px 48px' }}>
             <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start' }}>
@@ -676,6 +675,17 @@ export default function McAngebotsfeed() {
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                             <button
                                 type="button"
+                                onClick={() => setShowLeitfaden(true)}
+                                style={{ padding: '10px 12px', borderRadius: 6, border: `1px solid ${MC_BLUE}30`, background: '#EEF4FF', cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 10 }}
+                            >
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: MC_BLUE }}><ellipse cx="8" cy="8" rx="7" ry="4.5" stroke="currentColor" strokeWidth="1.4"/><circle cx="8" cy="8" r="2" fill="currentColor"/></svg>
+                                <div>
+                                    <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>Feedleitfaden ansehen</div>
+                                    <div style={{ fontSize: 10, color: MC_BLUE, marginTop: 1 }}>Öffnet Vorschau · kein Download nötig</div>
+                                </div>
+                            </button>
+                            <button
+                                type="button"
                                 onClick={() => {
                                     const a = document.createElement('a');
                                     a.href = 'http://media-partner.moebel.check24.de/feedvorlagen/Feedleitfaden_Anhang_2026/CHECK24_Feedvorlage_V2025.xlsx';
@@ -688,17 +698,6 @@ export default function McAngebotsfeed() {
                                 <div>
                                     <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>Feedvorlage</div>
                                     <div style={{ fontSize: 10, color: '#6B7280', marginTop: 1 }}>XLSX · sofort herunterladen</div>
-                                </div>
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setShowLeitfaden(true)}
-                                style={{ padding: '10px 12px', borderRadius: 6, border: `1px solid ${MC_BLUE}30`, background: '#EEF4FF', cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 10 }}
-                            >
-                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: MC_BLUE }}><ellipse cx="8" cy="8" rx="7" ry="4.5" stroke="currentColor" strokeWidth="1.4"/><circle cx="8" cy="8" r="2" fill="currentColor"/></svg>
-                                <div>
-                                    <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>Feedleitfaden ansehen</div>
-                                    <div style={{ fontSize: 10, color: MC_BLUE, marginTop: 1 }}>Öffnet Vorschau · kein Download nötig</div>
                                 </div>
                             </button>
                         </div>
