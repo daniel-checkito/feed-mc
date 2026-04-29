@@ -413,6 +413,17 @@ const DE_T = {
         { key: 'description', label: 'Beschreibung' }, { key: 'image_url', label: 'Hauptbild' },
     ],
     hsField: { key: 'hs_code', label: 'HS-Code' },
+    qualityTitle: 'Tipps zur Feed-Qualität',
+    qualityTips: [
+        { field: 'name', icon: '✏️', title: 'Artikelname', tips: ['Mindestens 2 Wörter, aussagekräftig und spezifisch', 'Ideal: Marke + Produkt + Hauptattribut, z. B. „BRAND Sofa 3-Sitzer grau 180 cm"', 'Keine B-Ware-Hinweise oder generischen Begriffe wie „Produkt"', 'GTIN-konforme Bezeichnung, max. 255 Zeichen'] },
+        { field: 'description', icon: '📝', title: 'Beschreibung', tips: ['Mindestens 100 Zeichen, besser 300–500 Zeichen', 'Wichtige Eigenschaften nennen: Material, Farbe, Maße, Besonderheiten', 'Keine reinen Aufzählungen – fließender Text wirkt besser', 'Keine Werbefloskeln wie „günstig" oder „Top-Qualität"'] },
+        { field: 'ean', icon: '🔢', title: 'EAN (GTIN14)', tips: ['Muss exakt 14 Stellen lang sein (führende Nullen ergänzen)', 'Muss eindeutig pro Artikel sein – keine Duplikate', 'Nicht erfundene oder Test-EANs verwenden', 'Handelsübliche GTIN aus GS1-Datenbank'] },
+        { field: 'image_url', icon: '🖼️', title: 'Produktbild', tips: ['Freisteller auf weißem oder transparentem Hintergrund', 'Mindestens 600×600 Pixel, optimal 1000×1000+', 'Öffentlich erreichbare URL (kein Login erforderlich)', 'Kein Wasserzeichen, keine Preise im Bild'] },
+        { field: 'price', icon: '💶', title: 'Preis & Lieferung', tips: ['Preis im Format 19.99 (Punkt als Dezimaltrennzeichen)', 'Versandart muss einen gültigen Wert enthalten', 'Lieferzeit als Werktage angeben, z. B. „3-5"', 'Verfügbarkeit / Bestand stets aktuell halten'] },
+    ],
+    qualityShowMore: 'Alle Tipps anzeigen',
+    qualityShowLess: 'Weniger anzeigen',
+    resourcesTitle: 'Ressourcen',
 };
 
 const EN_T = {
@@ -517,6 +528,17 @@ const EN_T = {
         { key: 'description', label: 'Description' }, { key: 'image_url', label: 'Main Image' },
     ],
     hsField: { key: 'hs_code', label: 'HS Code' },
+    qualityTitle: 'Feed Quality Tips',
+    qualityTips: [
+        { field: 'name', icon: '✏️', title: 'Item Name', tips: ['At least 2 words, descriptive and specific', 'Ideal: Brand + Product + Key Attribute, e.g. "BRAND Sofa 3-seater grey 180 cm"', 'No used-goods labels or generic terms like "product"', 'Max 255 characters'] },
+        { field: 'description', icon: '📝', title: 'Description', tips: ['At least 100 characters, ideally 300–500', 'Include key attributes: material, color, dimensions, features', 'Flowing text works better than bullet lists alone', 'Avoid marketing phrases like "cheap" or "top quality"'] },
+        { field: 'ean', icon: '🔢', title: 'EAN (GTIN14)', tips: ['Must be exactly 14 digits (pad with leading zeros)', 'Must be unique per item — no duplicates', 'Do not use invented or test EANs', 'Use a valid GTIN from the GS1 database'] },
+        { field: 'image_url', icon: '🖼️', title: 'Product Image', tips: ['White or transparent background (cut-out)', 'At least 600×600 pixels, ideally 1000×1000+', 'Publicly accessible URL (no login required)', 'No watermarks or prices in the image'] },
+        { field: 'price', icon: '💶', title: 'Price & Delivery', tips: ['Price in format 19.99 (dot as decimal separator)', 'Shipping mode must contain a valid value', 'Delivery time in working days, e.g. "3-5"', 'Keep availability/stock always up to date'] },
+    ],
+    qualityShowMore: 'Show all tips',
+    qualityShowLess: 'Show less',
+    resourcesTitle: 'Resources',
     // How it works
     howTitle: 'How it works',
     howSummary: 'Upload your product feed – we check all required fields and show exactly which items have errors.',
@@ -999,7 +1021,11 @@ export default function McAngebotsfeed() {
                         {i > 0 && (
                             <div style={{ width: 48, height: 2, background: step > s.n ? MC_BLUE : step === s.n ? '#CBD5E1' : '#E5E7EB', margin: '0 4px', marginBottom: 18, borderRadius: 1 }} />
                         )}
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5 }}>
+                        <button
+                            type="button"
+                            onClick={() => { if (s.n <= step) setStep(s.n); }}
+                            style={{ background: 'none', border: 'none', padding: 0, cursor: s.n <= step ? 'pointer' : 'default', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5 }}
+                        >
                             <div style={{
                                 width: 28, height: 28, borderRadius: '50%',
                                 background: step > s.n ? MC_BLUE : step === s.n ? MC_BLUE : '#E5E7EB',
@@ -1007,13 +1033,14 @@ export default function McAngebotsfeed() {
                                 fontSize: 11, fontWeight: 800,
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                                 transition: 'all 0.2s',
+                                opacity: s.n <= step ? 1 : 0.5,
                             }}>
                                 {step > s.n ? '✓' : s.n}
                             </div>
                             <span style={{ fontSize: 10, color: step === s.n ? '#111827' : '#9CA3AF', fontWeight: step === s.n ? 700 : 400, whiteSpace: 'nowrap' }}>
                                 {s.label}
                             </span>
-                        </div>
+                        </button>
                     </React.Fragment>
                 ))}
             </div>
@@ -1030,9 +1057,9 @@ export default function McAngebotsfeed() {
                     <div>
                         <div style={{ fontSize: 20, fontWeight: 800, color: '#111827', marginBottom: 6 }}>{T.howTitle}</div>
                         <div style={{ fontSize: 13, color: '#6B7280', lineHeight: 1.6, marginBottom: 16 }}>{T.howSummary}</div>
-                        <div style={{ display: 'grid', gap: 8 }}>
-                            {T.howSteps.map((s) => (
-                                <div key={s.n} style={{ background: '#FFF', borderRadius: 10, padding: '12px 14px', border: '1px solid #E5E7EB', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                        <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', overflow: 'hidden' }}>
+                            {T.howSteps.map((s, i) => (
+                                <div key={s.n} style={{ padding: '12px 14px', borderBottom: i < T.howSteps.length - 1 ? '1px solid #F3F4F6' : 'none', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
                                     <div style={{ width: 22, height: 22, borderRadius: '50%', background: MC_BLUE, color: '#FFF', fontSize: 10, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>{s.n}</div>
                                     <div>
                                         <div style={{ fontSize: 12, fontWeight: 700, color: '#111827', marginBottom: 2 }}>{s.title}</div>
@@ -1093,7 +1120,9 @@ export default function McAngebotsfeed() {
                         </div>{/* end white card */}
 
                     {/* Downloads below card */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 12 }}>
+                    <div style={{ marginTop: 12 }}>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: '#6B7280', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{T.resourcesTitle}</div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                         <button type="button" onClick={() => setShowLeitfaden(true)}
                             style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #E5E7EB', background: '#FFF', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
                             <svg width="15" height="15" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: MC_BLUE }}><path d="M2.5 1.5h8.5l3 3v10h-11.5v-13z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M11 1.5v3h3" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M5 8h6M5 10.5h6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
@@ -1110,6 +1139,7 @@ export default function McAngebotsfeed() {
                                 <div style={{ fontSize: 10, color: '#6B7280' }}>{T.feedTemplateSub}</div>
                             </div>
                         </button>
+                    </div>
                     </div>
                     </div>{/* end right column */}
                 </div>{/* end grid */}
@@ -1516,6 +1546,28 @@ export default function McAngebotsfeed() {
 
                         </div>{/* end sidebar */}
                         </div>{/* end grid */}
+
+                        {/* Quality Tips */}
+                        <div style={{ marginTop: 16, background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'hidden' }}>
+                            <div style={{ padding: '14px 20px', borderBottom: '1px solid #E5E7EB' }}>
+                                <div style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>{T.qualityTitle}</div>
+                            </div>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0 }}>
+                                {T.qualityTips.map((tip, ti) => (
+                                    <div key={tip.field} style={{ padding: '14px 20px', borderBottom: ti < T.qualityTips.length - 2 ? '1px solid #F3F4F6' : 'none', borderRight: ti % 2 === 0 ? '1px solid #F3F4F6' : 'none' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                                            <span style={{ fontSize: 16 }}>{tip.icon}</span>
+                                            <span style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{tip.title}</span>
+                                        </div>
+                                        <ul style={{ margin: 0, padding: '0 0 0 16px', display: 'grid', gap: 4 }}>
+                                            {tip.tips.map((t, i) => (
+                                                <li key={i} style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.4 }}>{t}</li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
 
                     </div>
                 );
