@@ -298,6 +298,7 @@ export default function McAngebotsfeed() {
     const [file, setFile] = useState(null);
     const [dragging, setDragging] = useState(false);
     const [showLeitfaden, setShowLeitfaden] = useState(false);
+    const [storeLocation, setStoreLocation] = useState('germany');
     const [rows, setRows] = useState([]);
     const [headers, setHeaders] = useState([]);
     const [manualMapping, setManualMapping] = useState({});
@@ -350,6 +351,7 @@ export default function McAngebotsfeed() {
         for (const key of MC_OPTIONAL_COLS) {
             m[key] = bestHeaderMatch(headers, MC_OPTIONAL_ALIASES[key] || [key]) || null;
         }
+        m['hs_code'] = bestHeaderMatch(headers, ['hs_code', 'hs-code', 'hscode', 'zolltarifnummer', 'taric']) || null;
         return m;
     }, [headers]);
 
@@ -383,12 +385,17 @@ export default function McAngebotsfeed() {
     const issues = useMemo(() => {
         if (!rows.length || !headers.length) return null;
 
+        const outsideGermany = storeLocation === 'outside_germany';
+
         const missingPflichtCols = MC_PFLICHT_COLS.filter((c) => {
             if (c === 'image_url') return mcImageColumns.length === 0;
             if (c === 'stock_amount') return false; // handled together with availability
             if (c === 'availability') return !mcMapping['availability'] && !mcMapping['stock_amount'];
             return !mcMapping[c];
         });
+        if (outsideGermany && !mcMapping['hs_code']) {
+            missingPflichtCols.push('hs_code');
+        }
         const missingOptionalCols = MC_OPTIONAL_COLS.filter((c) => !mcMapping[c]);
 
         const pflichtErrors = [];
@@ -449,6 +456,13 @@ export default function McAngebotsfeed() {
                 const imgCount = mcImageColumns.reduce((c, col) => c + (String(row[col] ?? '').trim() ? 1 : 0), 0);
                 if (imgCount === 0) {
                     pflichtErrors.push({ row: rn, ean, field: 'image_url', type: 'missing' });
+                    pflichtOk = false;
+                }
+            }
+            if (outsideGermany && mcMapping['hs_code']) {
+                const hsVal = String(row[mcMapping['hs_code']] ?? '').trim();
+                if (!hsVal) {
+                    pflichtErrors.push({ row: rn, ean, field: 'hs_code', type: 'missing' });
                     pflichtOk = false;
                 }
             }
@@ -582,7 +596,7 @@ export default function McAngebotsfeed() {
             optionalFillRatio,
             totalScore,
         };
-    }, [rows, headers, mcMapping, mcImageColumns]);
+    }, [rows, headers, mcMapping, mcImageColumns, storeLocation]);
 
     const mcIsWrongFile =
         rows.length > 0 && Object.values(mcMapping).filter(Boolean).length === 0 && mcImageColumns.length === 0;
@@ -676,6 +690,46 @@ export default function McAngebotsfeed() {
                         </div>
                     </div>
 
+                    {/* Store Location Toggle */}
+                    <div style={{ background: '#FFF', borderRadius: 12, padding: '16px 20px', boxShadow: '0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04)' }}>
+                        <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#D1D5DB', flexShrink: 0, display: 'inline-block' }} />
+                            Lagerstandort
+                        </div>
+                        <div style={{ display: 'flex', background: '#F3F4F6', borderRadius: 8, padding: 3, gap: 3 }}>
+                            {[
+                                { value: 'germany', label: 'Deutschland' },
+                                { value: 'outside_germany', label: 'Außerhalb DE' },
+                            ].map((opt) => (
+                                <button
+                                    key={opt.value}
+                                    type="button"
+                                    onClick={() => setStoreLocation(opt.value)}
+                                    style={{
+                                        flex: 1,
+                                        padding: '7px 10px',
+                                        borderRadius: 6,
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        fontSize: 12,
+                                        fontWeight: storeLocation === opt.value ? 600 : 400,
+                                        background: storeLocation === opt.value ? '#FFF' : 'transparent',
+                                        color: storeLocation === opt.value ? MC_BLUE : '#6B7280',
+                                        boxShadow: storeLocation === opt.value ? '0 1px 3px rgba(0,0,0,0.10)' : 'none',
+                                        transition: 'all 0.15s',
+                                    }}
+                                >
+                                    {opt.label}
+                                </button>
+                            ))}
+                        </div>
+                        {storeLocation === 'outside_germany' && (
+                            <div style={{ marginTop: 8, fontSize: 11, color: '#6B7280', lineHeight: 1.5 }}>
+                                HS-Code ist Pflichtfeld für Lager außerhalb Deutschlands.
+                            </div>
+                        )}
+                    </div>
+
                     {/* Downloads */}
                     <div style={{ background: '#FFF', borderRadius: 12, padding: '16px 20px', boxShadow: '0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04)' }}>
                         <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -751,6 +805,7 @@ export default function McAngebotsfeed() {
                                 category_path: 'Kategoriepfad',
                                 seller_offer_id: 'Eigene Artikel-ID',
                                 ean: 'EAN (GTIN14)',
+                                hs_code: 'HS-Code',
                                 price: 'Preis',
                                 availability: 'Verfügbarkeit',
                                 stock_amount: 'Bestand',
@@ -798,8 +853,10 @@ export default function McAngebotsfeed() {
                                 product_data_sheet: 'Produktdatenblatt',
                                 manufacturer_phone_number: 'Herstellertelefonnummer',
                             };
+                            const outsideGermany = storeLocation === 'outside_germany';
                             const allMcFields = [
                                 ...MC_PFLICHT_COLS.filter((f) => f !== 'image_url'),
+                                ...(outsideGermany ? ['hs_code'] : []),
                                 ...MC_OPTIONAL_COLS,
                             ];
                             const totalFields = allMcFields.length + 1;
@@ -849,11 +906,12 @@ export default function McAngebotsfeed() {
                                                         f !== 'manufacturer_phone_number' &&
                                                         allMcFields.indexOf(f) > manufacturerPflichtEnd,
                                                 ),
-                                            ].filter((f) => mcMapping[f] || MC_PFLICHT_COLS.includes(f));
+                                            ].filter((f) => mcMapping[f] || MC_PFLICHT_COLS.includes(f) || (outsideGermany && f === 'hs_code'));
                                             const hiddenCount = allMcFields.filter(
                                                 (f) =>
                                                     !mcMapping[f] &&
                                                     !MC_PFLICHT_COLS.includes(f) &&
+                                                    !(outsideGermany && f === 'hs_code') &&
                                                     f !== 'manufacturer_phone_number',
                                             ).length;
                                             return (
@@ -861,7 +919,7 @@ export default function McAngebotsfeed() {
                                                     {displayFields.map((f) => {
                                                         const isManual = f in manualMapping;
                                                         const col = mcMapping[f];
-                                                        const isPflicht = MC_PFLICHT_COLS.includes(f);
+                                                        const isPflicht = MC_PFLICHT_COLS.includes(f) || (outsideGermany && f === 'hs_code');
                                                         const missing = !col && isPflicht;
                                                         return (
                                                             <div
@@ -1060,6 +1118,7 @@ export default function McAngebotsfeed() {
                             name: new Set(),
                             brand: new Set(),
                             ean: new Set(),
+                            hs_code: new Set(),
                         };
                         issues.pflichtErrors.forEach((e) => {
                             if (e.field === 'description') rowsByGroup.desc.add(e.row);
@@ -1081,6 +1140,7 @@ export default function McAngebotsfeed() {
                             else if (e.field === 'name') rowsByGroup.name.add(e.row);
                             else if (e.field === 'brand') rowsByGroup.brand.add(e.row);
                             else if (e.field === 'ean') rowsByGroup.ean.add(e.row);
+                            else if (e.field === 'hs_code') rowsByGroup.hs_code.add(e.row);
                         });
                         const topGroups = [
                             {
@@ -1130,6 +1190,12 @@ export default function McAngebotsfeed() {
                                 label: 'EAN',
                                 hint: 'Fehlt, falsche Länge oder kein gültiger GTIN',
                                 count: rowsByGroup.ean.size,
+                            },
+                            {
+                                key: 'hs_code',
+                                label: 'HS-Code',
+                                hint: 'Zolltarifnummer fehlt (Pflicht für Lager außerhalb Deutschlands)',
+                                count: rowsByGroup.hs_code.size,
                             },
                         ]
                             .filter((g) => g.count > 0)
