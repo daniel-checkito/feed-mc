@@ -1481,13 +1481,6 @@ export default function McAngebotsfeed() {
                                     )}
                                 </div>
 
-                                {/* CTA */}
-                                <div style={{ padding: '0 20px 20px' }}>
-                                    <button type="button" onClick={() => setStep(3)}
-                                        style={{ width: '100%', padding: '11px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>
-                                        {T.startAnalysis}
-                                    </button>
-                                </div>
                             </div>
                         )}
                     </div>
@@ -1660,7 +1653,7 @@ export default function McAngebotsfeed() {
                         </div>
 
                         {/* 2-column: table | action panel */}
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 12, alignItems: 'start' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 12, alignItems: 'start' }}>
 
                         {/* Field analysis table */}
                         <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', overflow: 'auto', maxHeight: 'calc(100vh - 200px)' }}>
@@ -1753,15 +1746,6 @@ export default function McAngebotsfeed() {
                                     </div>
                                 </div>
                             )}
-
-                            {/* Primary CTA */}
-                            <div style={{ padding: '14px 16px', borderBottom: '1px solid #F3F4F6' }}>
-                                <button type="button" onClick={() => setStep(4)}
-                                    style={{ width: '100%', padding: '10px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 7, fontSize: 12, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-                                    {stufe1Passed ? (lang === 'de' ? 'Zusammenfassung ansehen' : 'View summary') : T.recNextStep}
-                                    <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M5 2l5 5-5 5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                </button>
-                            </div>
 
                             {/* Reset */}
                             <div style={{ padding: '10px 16px' }}>
@@ -1986,22 +1970,8 @@ export default function McAngebotsfeed() {
                                 )}
                             </div>
 
-                            {/* Right: download + re-upload panel */}
+                            {/* Right: re-upload panel */}
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, height: '100%', overflow: 'auto' }}>
-                                {/* Download Fehlerbericht */}
-                                <div style={{ background: '#EEF4FF', border: `2px solid ${MC_BLUE}`, borderRadius: 12, padding: '16px' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                                        <svg width="16" height="16" viewBox="0 0 18 18" fill="none"><path d="M9 2v10M6 9l3 3 3-3M2 15h14" stroke={MC_BLUE} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                        <span style={{ fontSize: 13, fontWeight: 800, color: '#111827' }}>{T.recDownloadTitle}</span>
-                                    </div>
-                                    <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 12, lineHeight: 1.5 }}>{T.recDownloadDesc}</div>
-                                    <button type="button" onClick={csvOnClick}
-                                        style={{ width: '100%', padding: '11px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
-                                        <svg width="13" height="13" viewBox="0 0 15 15" fill="none"><path d="M7.5 2v8M5 7l2.5 2.5L10 7M2 13h11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                        {T.recDownloadBtn}
-                                    </button>
-                                </div>
-
                                 {/* Re-upload zone */}
                                 <div style={{ border: '2px dashed #D1D5DB', borderRadius: 12, padding: '16px', background: '#FAFAFA' }}>
                                     <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', marginBottom: 3 }}>{T.reuploadTitle}</div>
@@ -2037,7 +2007,115 @@ export default function McAngebotsfeed() {
             })()}
 
             </div>
-        </div>
+
+            {/* Sticky bar - Step 2 */}
+            {step === 2 && !mcIsWrongFile && (
+                <div style={{ position: 'sticky', bottom: 0, background: '#fff', borderTop: '1px solid #E2E6EE', padding: '14px 32px', zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+                    <div style={{ fontSize: 12, color: TEXT_MUTED }}>
+                        {(issues?.missingPflichtCols?.length ?? 0) > 0
+                            ? (lang === 'de'
+                                ? `${issues.missingPflichtCols.length} Pflichtfeld${issues.missingPflichtCols.length > 1 ? 'er' : ''} nicht zugeordnet · ${issues.missingPflichtCols.map(f => f === 'image_url' ? 'Hauptbild' : (T.fields[f] || f)).join(', ')} muss${issues.missingPflichtCols.length > 1 ? 'en' : ''} manuell zugeordnet werden`
+                                : `${issues.missingPflichtCols.length} required field${issues.missingPflichtCols.length > 1 ? 's' : ''} not mapped · ${issues.missingPflichtCols.map(f => f === 'image_url' ? 'Main Image' : (T.fields[f] || f)).join(', ')} must be mapped manually`)
+                            : (lang === 'de' ? 'Alle Pflichtfelder zugeordnet · Bereit zur Analyse' : 'All required fields mapped · Ready for analysis')
+                        }
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+                        <button type="button" onClick={() => setStep(1)}
+                            style={{ padding: '9px 18px', background: '#fff', border: '1px solid #D0D5E0', borderRadius: 8, color: '#374151', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>
+                            {T.back}
+                        </button>
+                        <button type="button" onClick={() => setStep(3)}
+                            style={{ padding: '9px 20px', background: MC_BLUE, border: 'none', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                            {T.startAnalysis}
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Sticky bar - Step 3 */}
+            {step === 3 && issues && (
+                <div style={{ position: 'sticky', bottom: 0, background: '#fff', borderTop: '1px solid #E2E6EE', padding: '14px 32px', zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+                    <div style={{ fontSize: 12, color: TEXT_MUTED }}>
+                        {issues.blockiertCount > 0
+                            ? (lang === 'de'
+                                ? `${issues.blockiertCount.toLocaleString(numLocale)} Artikel mit Fehlern · Empfehlungen zur Behebung ansehen`
+                                : `${issues.blockiertCount.toLocaleString(numLocale)} items with errors · View recommendations to fix`)
+                            : (lang === 'de' ? 'Feed fehlerfrei · Alle Artikel können gelistet werden' : 'Feed error-free · All items can be listed')
+                        }
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+                        <button type="button" onClick={() => setStep(2)}
+                            style={{ padding: '9px 18px', background: '#fff', border: '1px solid #D0D5E0', borderRadius: 8, color: '#374151', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>
+                            {T.back}
+                        </button>
+                        <button type="button" onClick={() => setStep(4)}
+                            style={{ padding: '9px 20px', background: MC_BLUE, border: 'none', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                            {stufe1Passed ? (lang === 'de' ? 'Zusammenfassung ansehen →' : 'View summary →') : T.recNextStep}
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Sticky bar - Step 4 */}
+            {step === 4 && issues && (
+                <div style={{ position: 'sticky', bottom: 0, background: '#fff', borderTop: '1px solid #E2E6EE', padding: '14px 32px', zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+                    <div style={{ fontSize: 12, color: TEXT_MUTED }}>
+                        {lang === 'de'
+                            ? 'Fehler behoben? Fehlerbericht herunterladen · CSV mit allen Fehlern je Zeile für Excel'
+                            : 'Errors fixed? Download error report · CSV with all errors per row for Excel'}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+                        <button type="button" onClick={() => setStep(3)}
+                            style={{ padding: '9px 18px', background: '#fff', border: '1px solid #D0D5E0', borderRadius: 8, color: '#374151', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>
+                            {T.back}
+                        </button>
+                        <button type="button" onClick={() => {
+                            // csvOnClick is defined inside step 4 IIFE; trigger download inline here
+                            if (!issues) return;
+                            const pflichtByRow = {}, optionalByRow = {};
+                            const errorMsg = (e) => {
+                                const label = T.csvFieldLabels[e.field] || e.field;
+                                if (e.type === 'missing') return T.csvErrMissing(label);
+                                if (e.type === 'placeholder') return T.csvErrPlaceholder(label);
+                                if (e.type === 'too_short') return T.csvErrTooShort(label);
+                                if (e.type === 'one_word') return T.csvErrOneWord(label);
+                                if (e.type === 'bware') return T.csvErrBware(label);
+                                if (e.type === 'wrong_length') return T.csvErrLength(label);
+                                if (e.type === 'invalid') return T.csvErrInvalid(label);
+                                return T.csvErrFallback(label);
+                            };
+                            issues.pflichtErrors.forEach((e) => { if (!pflichtByRow[e.row]) pflichtByRow[e.row] = []; pflichtByRow[e.row].push(errorMsg(e)); });
+                            issues.eanDupRows.forEach((rn) => { if (!pflichtByRow[rn]) pflichtByRow[rn] = []; pflichtByRow[rn].push(T.csvEanDup); });
+                            issues.nameDupRows.forEach((rn) => { if (!pflichtByRow[rn]) pflichtByRow[rn] = []; pflichtByRow[rn].push(T.csvNameDup); });
+                            issues.optionalHints.forEach((e) => { if (!optionalByRow[e.row]) optionalByRow[e.row] = []; optionalByRow[e.row].push(T.csvErrMissing(e.field)); });
+                            const esc = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+                            const sep = ';';
+                            const headerRow = [T.csvColPflicht, T.csvColOptional, ...headers].map(esc).join(sep);
+                            const lines = rows.map((r, i) => {
+                                const rn = i + 1;
+                                const p = pflichtByRow[rn] ? [...new Set(pflichtByRow[rn])].join('; ') : '';
+                                const o = optionalByRow[rn] ? [...new Set(optionalByRow[rn])].join('; ') : '';
+                                return [esc(p), esc(o), ...headers.map((h) => esc(r[h]))].join(sep);
+                            });
+                            const csv = [headerRow, ...lines].join('\n');
+                            const blob = new Blob([`﻿${csv}`], { type: 'text/csv;charset=utf-8' });
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = `feed-fehlerliste-${new Date().toISOString().slice(0, 10)}.csv`;
+                            a.click();
+                            URL.revokeObjectURL(url);
+                        }}
+                            style={{ padding: '9px 20px', background: MC_BLUE, border: 'none', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 7 }}>
+                            <svg width="13" height="13" viewBox="0 0 15 15" fill="none"><path d="M7.5 2v8M5 7l2.5 2.5L10 7M2 13h11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                            {lang === 'de' ? 'Fehlerbericht als CSV herunterladen' : 'Download Error Report as CSV'}
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            </div>{/* end scrollable area */}
+        </div>{/* end main body */}
 
         {/* Feedleitfaden PDF Modal */}
         {showLeitfaden && (
