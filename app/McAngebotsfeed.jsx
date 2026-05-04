@@ -2679,23 +2679,6 @@ export default function McAngebotsfeed() {
                                     ))}
                                 </div>
 
-                                {/* Quality = reach banner */}
-                                <div style={{ background: 'linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)', border: '1px solid #FDE68A', borderRadius: 12, padding: '14px 16px' }}>
-                                    <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" style={{ flexShrink: 0, marginTop: 1 }}><path d="M10 2l2 5.5h5.5l-4.5 3.3 1.7 5.5L10 13l-4.7 3.3 1.7-5.5L2.5 7.5H8L10 2z" fill="#F59E0B" stroke="#D97706" strokeWidth="1"/></svg>
-                                        <div>
-                                            <div style={{ fontSize: 11, fontWeight: 700, color: '#92400E', marginBottom: 4 }}>
-                                                {lang === 'de' ? 'Besserer Feed = mehr Reichweite' : 'Better feed = more reach'}
-                                            </div>
-                                            <div style={{ fontSize: 10, color: '#78350F', lineHeight: 1.5 }}>
-                                                {lang === 'de'
-                                                    ? 'Je vollständiger und hochwertiger Ihr Feed, desto besser die Platzierung auf unserem Marktplatz – und desto schneller werden Ihre Produkte freigeschaltet.'
-                                                    : 'The more complete and high-quality your feed, the better the placement on our marketplace – and the faster your products go live.'}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
                                 {/* Reset */}
                                 <button type="button" onClick={resetToStart}
                                     style={{ width: '100%', padding: '9px', background: '#FFF', color: '#374151', border: '1px solid #D1D5DB', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
