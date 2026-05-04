@@ -1258,11 +1258,13 @@ export default function McAngebotsfeed() {
                             <div style={{ fontSize: 14, fontWeight: 700, color: '#111827', marginBottom: 12 }}>{T.resourcesTitle}</div>
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                                 <button type="button" onClick={() => setShowLeitfaden(true)}
-                                    style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', borderRadius: 8, border: '1px solid #E2E6EE', background: '#FAFAFA', cursor: 'pointer', textAlign: 'left' }}>
-                                    <div style={{ width: 32, height: 32, borderRadius: 7, background: '#FEF2F2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2.5 1.5h8.5l3 3v10h-11.5v-13z" stroke="#DC2626" strokeWidth="1.4" strokeLinejoin="round"/><path d="M11 1.5v3h3" stroke="#DC2626" strokeWidth="1.4" strokeLinejoin="round"/><path d="M5 8h6M5 10.5h4" stroke="#DC2626" strokeWidth="1.2" strokeLinecap="round"/></svg>
-                                    </div>
-                                    <div>
+                                    style={{ display: 'flex', flexDirection: 'column', borderRadius: 8, border: '1px solid #E2E6EE', background: '#FAFAFA', cursor: 'pointer', textAlign: 'left', overflow: 'hidden', padding: 0 }}>
+                                    <img
+                                        src="https://w9cedwr8emsi29qt.public.blob.vercel-storage.com/Bildschirmfoto%202026-05-04%20um%2014.43.56.png"
+                                        alt="Feedleitfaden Vorschau"
+                                        style={{ width: '100%', height: 90, objectFit: 'cover', objectPosition: 'top', display: 'block', borderBottom: '1px solid #E2E6EE' }}
+                                    />
+                                    <div style={{ padding: '10px 12px' }}>
                                         <div style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{lang === 'de' ? 'Feedleitfaden 2026' : 'Feed Guide 2026'}</div>
                                         <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 1 }}>{T.feedGuideSub}</div>
                                     </div>
