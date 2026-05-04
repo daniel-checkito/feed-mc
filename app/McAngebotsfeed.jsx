@@ -353,7 +353,7 @@ const DE_T = {
     csvErrTooShort: (l) => `${l}: zu kurz`,
     csvErrOneWord: (l) => `${l}: mind. 2 Wörter`,
     csvErrBware: (l) => `${l}: enthält "B-Ware"`,
-    csvErrLength: (l) => `${l}: muss 14 Zeichen haben`,
+    csvErrLength: (l) => `${l}: muss 13 oder 14 Zeichen haben`,
     csvErrInvalid: (l) => `${l}: ungültiger Wert`,
     csvErrFallback: (l) => `${l} fehlerhaft`,
     csvEanDup: 'EAN: doppelt vorhanden',
@@ -363,7 +363,7 @@ const DE_T = {
     // Error group hints
     errGroups: [
         { key: 'name', label: 'Artikelname', hint: 'Fehlt, zu kurz, ein Wort oder doppelt' },
-        { key: 'ean', label: 'EAN', hint: 'Nicht 14 Zeichen oder doppelt' },
+        { key: 'ean', label: 'EAN', hint: 'Nicht 13 oder 14 Zeichen oder doppelt' },
         { key: 'desc', label: 'Beschreibung', hint: 'Fehlt, unter 20 Zeichen oder B-Ware' },
         { key: 'img', label: 'Hauptbild', hint: 'Bild-URL fehlt' },
         { key: 'price', label: 'Preis / Lieferung', hint: 'Fehlt oder ungültig' },
@@ -417,7 +417,7 @@ const DE_T = {
     qualityTips: [
         { field: 'name', icon: '✏️', title: 'Artikelname', tips: ['Mindestens 2 Wörter, aussagekräftig und spezifisch', 'Ideal: Marke + Produkt + Hauptattribut, z. B. „BRAND Sofa 3-Sitzer grau 180 cm"', 'Keine B-Ware-Hinweise oder generischen Begriffe wie „Produkt"', 'GTIN-konforme Bezeichnung, max. 255 Zeichen'] },
         { field: 'description', icon: '📝', title: 'Beschreibung', tips: ['Mindestens 100 Zeichen, besser 300–500 Zeichen', 'Wichtige Eigenschaften nennen: Material, Farbe, Maße, Besonderheiten', 'Keine reinen Aufzählungen – fließender Text wirkt besser', 'Keine Werbefloskeln wie „günstig" oder „Top-Qualität"'] },
-        { field: 'ean', icon: '🔢', title: 'EAN (GTIN14)', tips: ['Muss exakt 14 Stellen lang sein (führende Nullen ergänzen)', 'Muss eindeutig pro Artikel sein – keine Duplikate', 'Nicht erfundene oder Test-EANs verwenden', 'Handelsübliche GTIN aus GS1-Datenbank'] },
+        { field: 'ean', icon: '🔢', title: 'EAN (GTIN14)', tips: ['Muss 13 oder 14 Stellen lang sein (EAN-13 oder GTIN-14)', 'Muss eindeutig pro Artikel sein – keine Duplikate', 'Nicht erfundene oder Test-EANs verwenden', 'Handelsübliche GTIN aus GS1-Datenbank'] },
         { field: 'image_url', icon: '🖼️', title: 'Produktbild', tips: ['Freisteller auf weißem oder transparentem Hintergrund', 'Mindestens 600×600 Pixel, optimal 1000×1000+', 'Öffentlich erreichbare URL (kein Login erforderlich)', 'Kein Wasserzeichen, keine Preise im Bild'] },
         { field: 'price', icon: '💶', title: 'Preis & Lieferung', tips: ['Preis im Format 19.99 (Punkt als Dezimaltrennzeichen)', 'Versandart muss einen gültigen Wert enthalten', 'Lieferzeit als Werktage angeben, z. B. „3-5"', 'Verfügbarkeit / Bestand stets aktuell halten'] },
     ],
@@ -489,7 +489,7 @@ const EN_T = {
     csvErrTooShort: (l) => `${l}: too short`,
     csvErrOneWord: (l) => `${l}: at least 2 words required`,
     csvErrBware: (l) => `${l}: contains "used goods" label`,
-    csvErrLength: (l) => `${l}: must be exactly 14 characters`,
+    csvErrLength: (l) => `${l}: must be 13 or 14 characters`,
     csvErrInvalid: (l) => `${l}: invalid value`,
     csvErrFallback: (l) => `${l} error`,
     csvEanDup: 'EAN: duplicate',
@@ -498,7 +498,7 @@ const EN_T = {
     csvColOptional: 'Optional Field Hints',
     errGroups: [
         { key: 'name', label: 'Item Name', hint: 'Missing, too short, one word, or duplicate' },
-        { key: 'ean', label: 'EAN', hint: 'Not 14 characters or duplicate' },
+        { key: 'ean', label: 'EAN', hint: 'Not 13 or 14 characters or duplicate' },
         { key: 'desc', label: 'Description', hint: 'Missing, under 20 chars, or contains used-goods label' },
         { key: 'img', label: 'Main Image', hint: 'Image URL missing' },
         { key: 'price', label: 'Price / Delivery', hint: 'Missing or invalid' },
@@ -541,7 +541,7 @@ const EN_T = {
     qualityTips: [
         { field: 'name', icon: '✏️', title: 'Item Name', tips: ['At least 2 words, descriptive and specific', 'Ideal: Brand + Product + Key Attribute, e.g. "BRAND Sofa 3-seater grey 180 cm"', 'No used-goods labels or generic terms like "product"', 'Max 255 characters'] },
         { field: 'description', icon: '📝', title: 'Description', tips: ['At least 100 characters, ideally 300–500', 'Include key attributes: material, color, dimensions, features', 'Flowing text works better than bullet lists alone', 'Avoid marketing phrases like "cheap" or "top quality"'] },
-        { field: 'ean', icon: '🔢', title: 'EAN (GTIN14)', tips: ['Must be exactly 14 digits (pad with leading zeros)', 'Must be unique per item — no duplicates', 'Do not use invented or test EANs', 'Use a valid GTIN from the GS1 database'] },
+        { field: 'ean', icon: '🔢', title: 'EAN (GTIN14)', tips: ['Must be 13 or 14 digits (EAN-13 or GTIN-14)', 'Must be unique per item — no duplicates', 'Do not use invented or test EANs', 'Use a valid GTIN from the GS1 database'] },
         { field: 'image_url', icon: '🖼️', title: 'Product Image', tips: ['White or transparent background (cut-out)', 'At least 600×600 pixels, ideally 1000×1000+', 'Publicly accessible URL (no login required)', 'No watermarks or prices in the image'] },
         { field: 'price', icon: '💶', title: 'Price & Delivery', tips: ['Price in format 19.99 (dot as decimal separator)', 'Shipping mode must contain a valid value', 'Delivery time in working days, e.g. "3-5"', 'Keep availability/stock always up to date'] },
     ],
@@ -768,7 +768,7 @@ export default function McAngebotsfeed() {
                     pflichtOk = false;
                 }
                 if (key === 'ean') {
-                    if (val.length !== 14) {
+                    if (val.length !== 13 && val.length !== 14) {
                         pflichtErrors.push({ row: rn, ean, field: 'ean', type: 'wrong_length', value: val });
                         pflichtOk = false;
                     }
@@ -989,6 +989,20 @@ export default function McAngebotsfeed() {
                     FEED CHECKER
                 </span>
 
+                {/* Header resource buttons */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <button type="button" onClick={() => setShowLeitfaden(true)}
+                        style={{ display: 'flex', alignItems: 'center', gap: 6, border: '1px solid rgba(255,255,255,0.3)', background: 'transparent', color: '#FFF', fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 6, cursor: 'pointer' }}>
+                        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 1.5h8.5l3 3v10h-11.5v-13z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M11 1.5v3h3" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M5 8h6M5 10.5h6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                        {T.feedGuide}
+                    </button>
+                    <button type="button" onClick={() => { const a = document.createElement('a'); a.href = 'http://media-partner.moebel.check24.de/feedvorlagen/Feedleitfaden_Anhang_2026/CHECK24_Feedvorlage_V2025.xlsx'; a.download = 'CHECK24_Feedvorlage_V2025.xlsx'; a.click(); }}
+                        style={{ display: 'flex', alignItems: 'center', gap: 6, border: '1px solid rgba(255,255,255,0.3)', background: 'transparent', color: '#FFF', fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 6, cursor: 'pointer' }}>
+                        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M5 7l3 3 3-3M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                        {T.feedTemplate}
+                    </button>
+                </div>
+
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
                     {/* Language dropdown */}
                     <div style={{ position: 'relative' }}>
@@ -1026,10 +1040,10 @@ export default function McAngebotsfeed() {
                 </div>
             </header>
         {/* ── FUNNEL BODY ── */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '32px 24px 40px', minHeight: 'calc(100vh - 48px)' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px 32px 24px', height: 'calc(100vh - 48px)', overflow: 'hidden', boxSizing: 'border-box' }}>
 
             {/* Step indicator */}
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: 28 }}>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: 16 }}>
                 {[
                     { n: 1, label: T.stepUpload },
                     { n: 2, label: T.stepMapping },
@@ -1042,8 +1056,12 @@ export default function McAngebotsfeed() {
                         )}
                         <button
                             type="button"
-                            onClick={() => { if (s.n <= step) setStep(s.n); }}
-                            style={{ background: 'none', border: 'none', padding: 0, cursor: s.n <= step ? 'pointer' : 'default', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5 }}
+                            onClick={() => {
+                                if (s.n === 1) setStep(1);
+                                else if (s.n === 2 && rows.length > 0) setStep(2);
+                                else if ((s.n === 3 || s.n === 4) && issues) setStep(s.n);
+                            }}
+                            style={{ background: 'none', border: 'none', padding: 0, cursor: (s.n === 1 || (s.n === 2 && rows.length > 0) || ((s.n === 3 || s.n === 4) && issues)) ? 'pointer' : 'default', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5 }}
                         >
                             <div style={{
                                 width: 28, height: 28, borderRadius: '50%',
@@ -1052,7 +1070,7 @@ export default function McAngebotsfeed() {
                                 fontSize: 11, fontWeight: 800,
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                                 transition: 'all 0.2s',
-                                opacity: s.n <= step ? 1 : 0.5,
+                                opacity: (s.n === 1 || (s.n === 2 && rows.length > 0) || ((s.n === 3 || s.n === 4) && issues)) ? 1 : 0.5,
                             }}>
                                 {step > s.n ? '✓' : s.n}
                             </div>
@@ -1070,7 +1088,7 @@ export default function McAngebotsfeed() {
                 STEP 1 — Upload
             ══════════════════════════════════════════ */}
             {step === 1 && (
-                <div style={{ width: '100%', maxWidth: 860, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 28, alignItems: 'start' }}>
+                <div style={{ width: '100%', maxWidth: 1100, display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: 28, alignItems: 'start' }}>
 
                     {/* Left: How it works */}
                     <div>
@@ -1091,7 +1109,7 @@ export default function McAngebotsfeed() {
 
                     {/* Right: Upload card + downloads */}
                     <div>
-                        <div style={{ background: '#FFF', borderRadius: 16, padding: '28px', boxShadow: '0 2px 16px rgba(0,0,0,0.08)', marginBottom: 10 }}>
+                        <div style={{ background: '#FFF', borderRadius: 16, padding: '20px', boxShadow: '0 2px 16px rgba(0,0,0,0.08)', marginBottom: 10 }}>
                         {/* Drop zone */}
                         {file ? (
                             <div style={{ borderRadius: 10, border: '2px solid #BBF7D0', background: '#F0FDF4', padding: '18px 20px', display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -1132,34 +1150,12 @@ export default function McAngebotsfeed() {
                             type="button"
                             onClick={() => rows.length > 0 && setStep(2)}
                             disabled={rows.length === 0}
-                            style={{ width: '100%', marginTop: 28, padding: '14px', background: rows.length > 0 ? MC_BLUE : '#D1D5DB', color: '#FFF', border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 700, cursor: rows.length > 0 ? 'pointer' : 'default', transition: 'background 0.2s' }}
+                            style={{ width: '100%', marginTop: 16, padding: '14px', background: rows.length > 0 ? MC_BLUE : '#D1D5DB', color: '#FFF', border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 700, cursor: rows.length > 0 ? 'pointer' : 'default', transition: 'background 0.2s' }}
                         >
                             {rows.length > 0 ? T.continueBtn(rows.length.toLocaleString(numLocale)) : T.uploadPrompt}
                         </button>
                         </div>{/* end white card */}
 
-                    {/* Downloads below card */}
-                    <div style={{ marginTop: 12 }}>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: '#6B7280', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{T.resourcesTitle}</div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                        <button type="button" onClick={() => setShowLeitfaden(true)}
-                            style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #E5E7EB', background: '#FFF', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: MC_BLUE }}><path d="M2.5 1.5h8.5l3 3v10h-11.5v-13z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M11 1.5v3h3" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M5 8h6M5 10.5h6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
-                            <div style={{ textAlign: 'left' }}>
-                                <div style={{ fontSize: 11, fontWeight: 600, color: '#111827' }}>{T.feedGuide}</div>
-                                <div style={{ fontSize: 10, color: '#6B7280' }}>{T.feedGuideSub}</div>
-                            </div>
-                        </button>
-                        <button type="button" onClick={() => { const a = document.createElement('a'); a.href = 'http://media-partner.moebel.check24.de/feedvorlagen/Feedleitfaden_Anhang_2026/CHECK24_Feedvorlage_V2025.xlsx'; a.download = 'CHECK24_Feedvorlage_V2025.xlsx'; a.click(); }}
-                            style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #E5E7EB', background: '#FFF', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: MC_BLUE }}><path d="M8 2v8M5 7l3 3 3-3M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                            <div style={{ textAlign: 'left' }}>
-                                <div style={{ fontSize: 11, fontWeight: 600, color: '#111827' }}>{T.feedTemplate}</div>
-                                <div style={{ fontSize: 10, color: '#6B7280' }}>{T.feedTemplateSub}</div>
-                            </div>
-                        </button>
-                    </div>
-                    </div>
                     </div>{/* end right column */}
                 </div>{/* end grid */}
             )}
@@ -1649,7 +1645,7 @@ export default function McAngebotsfeed() {
                     'name::placeholder':   { icon: '✏️', title: 'Artikelname: Platzhalterwert',     action: 'Ersetzen Sie Platzhalter wie „n/a" oder „test" durch echte Artikelnamen.',       tip: 'Verwenden Sie produktspezifische, eindeutige Namen.' },
                     'name::dup':           { icon: '✏️', title: 'Artikelname: Duplikate',           action: 'Jeder Artikel muss einen eindeutigen Namen haben. Korrigieren oder entfernen Sie Duplikate.', tip: 'Unterscheiden Sie Varianten durch Farbe, Größe oder Modellbezeichnung.' },
                     'ean::missing':        { icon: '🔢', title: 'EAN fehlt',                        action: 'Ergänzen Sie die EAN (GTIN14) für alle betroffenen Artikel.',                   tip: 'Verwenden Sie die offizielle GTIN aus der GS1-Datenbank.' },
-                    'ean::wrong_length':   { icon: '🔢', title: 'EAN: falsche Länge',               action: 'Die EAN muss exakt 14 Stellen haben. Ergänzen Sie führende Nullen.',             tip: 'Beispiel: aus „4012345678901" (13-stellig) wird „04012345678901".' },
+                    'ean::wrong_length':   { icon: '🔢', title: 'EAN: falsche Länge',               action: 'Die EAN muss 13 oder 14 Stellen haben (EAN-13 oder GTIN-14).',                   tip: 'Beispiel: EAN-13 „4012345678901" (13-stellig) oder GTIN-14 „04012345678901" (14-stellig).' },
                     'ean::invalid':        { icon: '🔢', title: 'EAN: ungültiger Wert',             action: 'Entfernen Sie Sonderzeichen – die EAN darf nur Ziffern enthalten.',              tip: 'Keine Buchstaben, Leerzeichen oder Bindestriche erlaubt.' },
                     'ean::placeholder':    { icon: '🔢', title: 'EAN: Platzhalterwert',             action: 'Ersetzen Sie Test-EANs durch gültige GTIN14-Nummern.',                          tip: 'Erfundene oder Test-EANs werden blockiert.' },
                     'ean::dup':            { icon: '🔢', title: 'EAN: Duplikate',                   action: 'Jede EAN darf nur einmal vorkommen. Korrigieren Sie die doppelten Einträge.',   tip: 'Prüfen Sie, ob Artikel versehentlich mehrfach exportiert wurden.' },
@@ -1683,7 +1679,7 @@ export default function McAngebotsfeed() {
                     'name::placeholder':   { icon: '✏️', title: 'Item name: placeholder value',  action: 'Replace placeholders like "n/a" or "test" with real item names.',               tip: 'Use product-specific, unique names.' },
                     'name::dup':           { icon: '✏️', title: 'Item name: duplicates',         action: 'Every item must have a unique name. Fix or remove duplicates.',                  tip: 'Differentiate variants by color, size, or model designation.' },
                     'ean::missing':        { icon: '🔢', title: 'EAN missing',                   action: 'Add the EAN (GTIN14) for all affected items.',                                  tip: 'Use the official GTIN from the GS1 database.' },
-                    'ean::wrong_length':   { icon: '🔢', title: 'EAN: wrong length',             action: 'EAN must be exactly 14 digits. Pad with leading zeros.',                        tip: 'Example: "4012345678901" (13 digits) becomes "04012345678901".' },
+                    'ean::wrong_length':   { icon: '🔢', title: 'EAN: wrong length',             action: 'EAN must be 13 or 14 digits (EAN-13 or GTIN-14).',                              tip: 'Example: EAN-13 "4012345678901" (13 digits) or GTIN-14 "04012345678901" (14 digits).' },
                     'ean::invalid':        { icon: '🔢', title: 'EAN: invalid value',            action: 'Remove special characters – EAN must contain digits only.',                     tip: 'No letters, spaces, or hyphens allowed.' },
                     'ean::placeholder':    { icon: '🔢', title: 'EAN: placeholder value',        action: 'Replace test EANs with valid GTIN14 numbers.',                                  tip: 'Invented or test EANs will be blocked.' },
                     'ean::dup':            { icon: '🔢', title: 'EAN: duplicates',               action: 'Each EAN may only appear once. Fix the duplicate entries.',                     tip: 'Check whether items were accidentally exported multiple times.' },
