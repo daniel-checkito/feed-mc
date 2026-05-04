@@ -1676,10 +1676,11 @@ export default function McAngebotsfeed() {
                                     : !!mcMapping[key];
                                 const errs = fieldErrorRows[key]?.size || 0;
                                 const pct = isMapped ? Math.max(0, Math.round((1 - errs / issues.totalRows) * 100)) : null;
+                                const hasError = pct !== null && errs > 0;
                                 const barColor = pct === null ? '#E5E7EB' : pct === 100 ? '#16A34A' : pct >= 70 ? '#D97706' : '#DC2626';
                                 return (
-                                    <div key={key} style={{ display: 'grid', gridTemplateColumns: '1fr 90px 120px', padding: '7px 16px', borderBottom: '1px solid #F9FAFB', alignItems: 'center' }}>
-                                        <div style={{ fontSize: 11, color: '#374151', fontWeight: 500 }}>{label}</div>
+                                    <div key={key} style={{ display: 'grid', gridTemplateColumns: '1fr 90px 120px', padding: '7px 16px', borderBottom: '1px solid #F9FAFB', alignItems: 'center', background: hasError ? '#FFFBF5' : 'transparent', borderLeft: hasError ? '3px solid #D97706' : '3px solid transparent' }}>
+                                        <div style={{ fontSize: 11, color: hasError ? '#92400E' : '#374151', fontWeight: hasError ? 600 : 500 }}>{label}</div>
                                         <div style={{ textAlign: 'right', fontSize: 10, fontWeight: 600, whiteSpace: 'nowrap' }}>
                                             {pct === null ? <span style={{ color: '#9CA3AF' }}>{T.notInFeed}</span>
                                                 : errs === 0 ? <span style={{ color: '#16A34A' }}>{T.complete}</span>
@@ -1703,8 +1704,8 @@ export default function McAngebotsfeed() {
                         {/* Right action panel */}
                         <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
 
-                            {/* Success state */}
-                            {stufe1Passed && (
+                            {/* Status state */}
+                            {detailedErrors.length === 0 ? (
                                 <div style={{ padding: '16px', borderBottom: '1px solid #F3F4F6', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, textAlign: 'center' }}>
                                     <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#DCFCE7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4 6-6" stroke="#16A34A" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
@@ -1712,11 +1713,27 @@ export default function McAngebotsfeed() {
                                     <div style={{ fontSize: 12, fontWeight: 700, color: '#166534' }}>{lang === 'de' ? 'Feed ist listingfähig' : 'Feed is ready to list'}</div>
                                     <div style={{ fontSize: 10, color: '#4B7A5A', lineHeight: 1.5 }}>{lang === 'de' ? 'Alle Pflichtfelder sind vollständig und fehlerfrei.' : 'All required fields are complete and error-free.'}</div>
                                 </div>
+                            ) : (
+                                <div style={{ padding: '12px 16px', borderBottom: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', gap: 10 }}>
+                                    <div style={{ width: 28, height: 28, borderRadius: '50%', background: stufe1Passed ? '#FEF3C7' : '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 2L1 14h14L8 2z" stroke={stufe1Passed ? '#92400E' : '#DC2626'} strokeWidth="1.5" strokeLinejoin="round"/><path d="M8 7v3" stroke={stufe1Passed ? '#92400E' : '#DC2626'} strokeWidth="1.5" strokeLinecap="round"/><circle cx="8" cy="12" r=".6" fill={stufe1Passed ? '#92400E' : '#DC2626'}/></svg>
+                                    </div>
+                                    <div>
+                                        <div style={{ fontSize: 11, fontWeight: 700, color: stufe1Passed ? '#92400E' : '#991B1B' }}>
+                                            {stufe1Passed
+                                                ? (lang === 'de' ? 'Listingfähig mit Hinweisen' : 'Listable with minor issues')
+                                                : (lang === 'de' ? 'Fehler gefunden' : 'Errors found')}
+                                        </div>
+                                        <div style={{ fontSize: 10, color: '#6B7280', marginTop: 1 }}>
+                                            {lang === 'de' ? `${issues.blockiertCount} Artikel betroffen` : `${issues.blockiertCount} items affected`}
+                                        </div>
+                                    </div>
+                                </div>
                             )}
 
                             {/* Top errors */}
                             {detailedErrors.length > 0 && (
-                                <div style={{ padding: '14px 16px', borderBottom: '1px solid #F3F4F6' }}>
+                                <div style={{ padding: '12px 16px', borderBottom: '1px solid #F3F4F6' }}>
                                     <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{T.topErrorsTitle}</div>
                                     <div style={{ display: 'grid', gap: 6 }}>
                                         {detailedErrors.map((e, i) => (
