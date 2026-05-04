@@ -111,6 +111,14 @@ const COLOR_WORDS_EN = ['black','white','grey','gray','beige','brown','natural',
 const MATERIAL_WORDS_DE = ['holz','eiche','kiefer','buche','ahorn','mdf','spanplatte','fichte','metall','stahl','edelstahl','aluminium','chrom','eisen','messing','kupfer','stoff','textil','leinen','baumwolle','polyester','velvet','samt','kunstleder','leder','glas','marmor','stein','beton','kunststoff','plastik','acryl','bambus','rattan','massiv'];
 const MATERIAL_WORDS_EN = ['wood','oak','pine','beech','maple','mdf','metal','steel','stainless','aluminum','chrome','iron','brass','copper','fabric','linen','cotton','polyester','velvet','faux leather','leather','glass','marble','stone','plastic','acrylic','bamboo','rattan','solid'];
 const DIMENSION_RE = /\d+[,.]?\d*\s*[×xX]\s*\d+|\d+[,.]?\d*\s*(cm|mm)\b/i;
+const DELIVERY_INCLUDES_RE = /\d+\s*[xX×]\s*\S+/;
+const NON_FURNITURE_CAT_RE = /\b(auto|kfz|spielzeug|elektronik|mode|kleidung|fashion|computer|handy|smartphone|sport|bücher|buch|lebensmittel|büro)\b/i;
+const LIGHTING_TITLE_RE = /lampe|leuchte|licht\b|beleuchtung\b|\bled\b/i;
+const LIGHTING_NO_RE = /ohne beleuchtung|nicht beleuchtet/i;
+const SHIPPING_MODE_ALIASES = { package: 'paket', parcel: 'paket', freight: 'spedition', delivery: 'paket', express: 'paket' };
+const TEMPLATE_DESC_RE = /beispieltext|musterbeschreibung|lorem ipsum/i;
+const ADVERTISING_RE = /jetzt kaufen|rabatt\b|angebot\b/i;
+const EXTERNAL_LINK_RE = /www\.|https?:\/\//i;
 
 function normalizeKey(input) {
     const s = String(input ?? '');
@@ -472,8 +480,17 @@ const DE_T = {
     csvErrLength: (l) => `${l}: muss 13 oder 14 Zeichen haben`,
     csvErrInvalid: (l) => `${l}: ungültiger Wert`,
     csvErrFallback: (l) => `${l} fehlerhaft`,
+    csvErrScientific: (l) => `${l}: wissenschaftliche Notation (z. B. 1.23e+13) – als Zahl speichern`,
+    csvErrSieheOben: (l) => `${l}: enthält "siehe oben" – ungültig`,
+    csvErrExternalLink: (l) => `${l}: enthält externe URL – nicht erlaubt`,
+    csvErrTemplate: (l) => `${l}: enthält Musterwert / Lorem-Ipsum`,
+    csvErrAdvertising: (l) => `${l}: enthält Werbephrasen`,
+    csvErrIdentical: (l) => `${l}: identisch mit Artikelname`,
+    csvErrSingleImage: 'Bild: nur 1 Bild vorhanden – mindestens 3 empfohlen',
     csvEanDup: 'EAN: doppelt vorhanden',
     csvNameDup: 'Artikelname: doppelt vorhanden',
+    csvOfferIdDup: 'Eigene Artikel-ID: doppelt vorhanden',
+    csvWrongCategory: 'Kategoriepfad: scheint keine Möbel-Kategorie zu sein',
     csvColPflicht: 'Fehler Pflichtfelder',
     csvColOptional: 'Fehler Optionale Felder',
     // Error group hints
@@ -662,8 +679,17 @@ const EN_T = {
     csvErrLength: (l) => `${l}: must be 13 or 14 characters`,
     csvErrInvalid: (l) => `${l}: invalid value`,
     csvErrFallback: (l) => `${l} error`,
+    csvErrScientific: (l) => `${l}: scientific notation (e.g. 1.23e+13) – save as plain number`,
+    csvErrSieheOben: (l) => `${l}: contains "siehe oben" – invalid`,
+    csvErrExternalLink: (l) => `${l}: contains external URL – not allowed`,
+    csvErrTemplate: (l) => `${l}: contains template/lorem-ipsum text`,
+    csvErrAdvertising: (l) => `${l}: contains advertising phrases`,
+    csvErrIdentical: (l) => `${l}: identical to item name`,
+    csvErrSingleImage: 'Image: only 1 image – at least 3 recommended',
     csvEanDup: 'EAN: duplicate',
     csvNameDup: 'Item Name: duplicate',
+    csvOfferIdDup: 'Own Item ID: duplicate',
+    csvWrongCategory: 'Category path: does not appear to be a furniture category',
     csvColPflicht: 'Required Field Errors',
     csvColOptional: 'Optional Field Hints',
     errGroups: [
@@ -914,6 +940,7 @@ export default function McAngebotsfeed() {
         const optionalFieldCount = MC_OPTIONAL_COLS.length + 9;
 
         const pflichtErrorRowNums = new Set();
+        const duplicateOfferIds = {};
 
         // Placeholder patterns: common filler values that are not real data
         const PLACEHOLDER_RE = /^(n\/?a|tbd|test|xxx+|leer|placeholder|example|musterwert|beispiel|0{4,}|null|undefined|-)$/i;
@@ -928,7 +955,7 @@ export default function McAngebotsfeed() {
 
             for (const key of MC_PFLICHT_COLS) {
                 if (key === 'image_url') continue;
-                if (key === 'stock_amount') continue; // handled with availability below
+                if (key === 'stock_amount') continue;
                 if (key === 'availability') {
                     const avVal = mcMapping.availability ? String(row[mcMapping.availability] ?? '').trim() : '';
                     const stVal = mcMapping.stock_amount ? String(row[mcMapping.stock_amount] ?? '').trim() : '';
@@ -960,6 +987,18 @@ export default function McAngebotsfeed() {
                     pflichtOk = false;
                     continue;
                 }
+                if (key === 'ean') {
+                    if (/\d+\.?\d*[eE][+\-]?\d+/.test(val)) {
+                        pflichtErrors.push({ row: rn, ean, field: 'ean', type: 'scientific', value: val });
+                        pflichtOk = false;
+                    } else if (!/^\d+$/.test(val)) {
+                        pflichtErrors.push({ row: rn, ean, field: 'ean', type: 'invalid', value: val });
+                        pflichtOk = false;
+                    } else if (val.length !== 13 && val.length !== 14) {
+                        pflichtErrors.push({ row: rn, ean, field: 'ean', type: 'wrong_length', value: val });
+                        pflichtOk = false;
+                    }
+                }
                 if (key === 'name') {
                     if (val.length < 10) {
                         pflichtErrors.push({ row: rn, ean, field: 'name', type: 'too_short', value: val });
@@ -967,6 +1006,9 @@ export default function McAngebotsfeed() {
                     } else if (val.trim().split(/\s+/).length < 2) {
                         pflichtErrors.push({ row: rn, ean, field: 'name', type: 'one_word', value: val });
                         pflichtOk = false;
+                    } else if (/siehe oben/i.test(val)) {
+                        pflichtErrors.push({ row: rn, ean, field: 'name', type: 'siehe_oben', value: val });
+                        // warning only — does not block listing
                     }
                 }
                 if (key === 'brand' && val.length < 2) {
@@ -974,12 +1016,26 @@ export default function McAngebotsfeed() {
                     pflichtOk = false;
                 }
                 if (key === 'description') {
-                    if (val.length < 20) {
+                    if (TEMPLATE_DESC_RE.test(val)) {
+                        pflichtErrors.push({ row: rn, ean, field: 'description', type: 'template', value: val });
+                        pflichtOk = false;
+                    } else if (val.length < 50 || val.trim().split(/\s+/).length <= 3) {
                         pflichtErrors.push({ row: rn, ean, field: 'description', type: 'too_short', value: val });
                         pflichtOk = false;
                     } else if (/b-?ware/i.test(val)) {
                         pflichtErrors.push({ row: rn, ean, field: 'description', type: 'bware', value: val });
                         pflichtOk = false;
+                    } else if (EXTERNAL_LINK_RE.test(val)) {
+                        pflichtErrors.push({ row: rn, ean, field: 'description', type: 'external_link', value: val });
+                        pflichtOk = false;
+                    } else {
+                        // Non-blocking warnings
+                        if (ADVERTISING_RE.test(val)) {
+                            pflichtErrors.push({ row: rn, ean, field: 'description', type: 'advertising', value: val });
+                        }
+                        if (name && val.toLowerCase() === name.toLowerCase()) {
+                            pflichtErrors.push({ row: rn, ean, field: 'description', type: 'identical_to_title', value: val });
+                        }
                     }
                 }
                 if (key === 'price') {
@@ -989,24 +1045,34 @@ export default function McAngebotsfeed() {
                         pflichtOk = false;
                     }
                 }
-                if (key === 'shipping_mode' && val.toLowerCase() !== 'paket' && val.toLowerCase() !== 'spedition') {
-                    pflichtErrors.push({ row: rn, ean, field: key, type: 'invalid', value: val });
-                    pflichtOk = false;
-                }
-                if (key === 'ean') {
-                    if (val.length !== 13 && val.length !== 14) {
-                        pflichtErrors.push({ row: rn, ean, field: 'ean', type: 'wrong_length', value: val });
+                if (key === 'shipping_mode') {
+                    const normalized = SHIPPING_MODE_ALIASES[val.toLowerCase()] ?? val.toLowerCase();
+                    if (normalized !== 'paket' && normalized !== 'spedition') {
+                        pflichtErrors.push({ row: rn, ean, field: key, type: 'invalid', value: val });
                         pflichtOk = false;
                     }
                 }
+                if (key === 'delivery_time' && !/\d/.test(val)) {
+                    pflichtErrors.push({ row: rn, ean, field: key, type: 'invalid', value: val });
+                    pflichtOk = false;
+                }
             }
+
+            // Image count
             if (mcImageColumns.length > 0) {
                 const imgCount = mcImageColumns.reduce((c, col) => c + (String(row[col] ?? '').trim() ? 1 : 0), 0);
                 if (imgCount === 0) {
                     pflichtErrors.push({ row: rn, ean, field: 'image_url', type: 'missing' });
                     pflichtOk = false;
+                } else if (imgCount === 1) {
+                    pflichtErrors.push({ row: rn, ean, field: 'image_url', type: 'single' });
+                    // warning but does not block listing
+                } else if (imgCount < 3) {
+                    optionalHints.push({ row: rn, ean, field: 'image_url' });
                 }
             }
+
+            // HS-Code
             if (outsideGermany && mcMapping['hs_code']) {
                 const hsVal = String(row[mcMapping['hs_code']] ?? '').trim();
                 if (!hsVal) {
@@ -1015,6 +1081,14 @@ export default function McAngebotsfeed() {
                 } else if (isPlaceholder(hsVal)) {
                     pflichtErrors.push({ row: rn, ean, field: 'hs_code', type: 'placeholder', value: hsVal });
                     pflichtOk = false;
+                }
+            }
+
+            // Delivery_includes format check
+            if (mcMapping.delivery_includes) {
+                const diVal = String(row[mcMapping.delivery_includes] ?? '').trim();
+                if (diVal && !DELIVERY_INCLUDES_RE.test(diVal)) {
+                    optionalHints.push({ row: rn, ean, field: 'delivery_includes' });
                 }
             }
 
@@ -1028,25 +1102,48 @@ export default function McAngebotsfeed() {
                     optionalFieldsPresent++;
                 }
             }
-            // Extra image slots (Bildlink_2 to Bildlink_10 = up to 9 bonus slots)
             const extraImageCols = mcImageColumns.slice(1, 10);
             optionalFieldsPresent += extraImageCols.filter((col) => String(row[col] ?? '').trim()).length;
 
-            // EAN tracking (Stufe 1: duplicates = hard error)
+            // Wrong category detection
+            if (mcMapping.category_path) {
+                const catVal = String(row[mcMapping.category_path] ?? '').trim();
+                if (catVal && NON_FURNITURE_CAT_RE.test(catVal)) {
+                    pflichtErrors.push({ row: rn, ean, field: 'category_path', type: 'wrong_category', value: catVal });
+                    // warning only
+                }
+            }
+
+            // Lighting/energy check
+            if (name && LIGHTING_TITLE_RE.test(name) && !LIGHTING_NO_RE.test(name)) {
+                const energyFilled = (mcMapping.energy_efficiency_category && String(row[mcMapping.energy_efficiency_category] ?? '').trim()) ||
+                    (mcMapping.lighting_included && /^nein$/i.test(String(row[mcMapping.lighting_included] ?? '').trim()));
+                if (!energyFilled) {
+                    optionalHints.push({ row: rn, ean, field: 'energy_efficiency_category' });
+                }
+            }
+
+            // EAN duplicate tracking
             if (ean) {
                 if (!duplicateEans[ean]) duplicateEans[ean] = [];
                 duplicateEans[ean].push(rn);
             }
-            // Name dedup tracking (Stufe 1: duplicate names = hard error)
+            // Name duplicate tracking
             if (name) {
                 if (!duplicateNames[name]) duplicateNames[name] = [];
                 duplicateNames[name].push(rn);
             }
-            // Name+EAN tracking (Stufe 2: identical name+EAN = malus)
+            // Name+EAN tracking
             if (name && ean) {
                 const k = `${name}|||${ean}`;
                 if (!duplicateNameEans[k]) duplicateNameEans[k] = [];
                 duplicateNameEans[k].push(rn);
+            }
+            // Seller offer ID duplicate tracking
+            const offerId = mcMapping.seller_offer_id ? String(row[mcMapping.seller_offer_id] ?? '').trim() : '';
+            if (offerId) {
+                if (!duplicateOfferIds[offerId]) duplicateOfferIds[offerId] = [];
+                duplicateOfferIds[offerId].push(rn);
             }
 
             if (pflichtOk) {
@@ -1075,8 +1172,16 @@ export default function McAngebotsfeed() {
                 .filter((r) => r.length > 1)
                 .flat(),
         );
-        // Stufe 1: live-fähig = no pflicht errors AND no EAN/Name duplicate
-        const livefaehigCount = rows.filter((_, i) => !pflichtErrorRowNums.has(i + 1) && !eanDupRows.has(i + 1) && !nameDupRows.has(i + 1)).length;
+        const offerIdDupRows = new Set(
+            Object.values(duplicateOfferIds)
+                .filter((r) => r.length > 1)
+                .flat(),
+        );
+        const dupOfferIdCount = Object.values(duplicateOfferIds)
+            .filter((r) => r.length > 1)
+            .reduce((s, r) => s + r.length, 0);
+        // Stufe 1: live-fähig = no pflicht errors AND no EAN/Name/OfferID duplicate
+        const livefaehigCount = rows.filter((_, i) => !pflichtErrorRowNums.has(i + 1) && !eanDupRows.has(i + 1) && !nameDupRows.has(i + 1) && !offerIdDupRows.has(i + 1)).length;
 
         // Stufe 2: name+EAN duplicate malus (same product listed twice)
         const dupNameEanCount = Object.values(duplicateNameEans)
@@ -1159,6 +1264,8 @@ export default function McAngebotsfeed() {
             dupNameEanCount,
             eanDupRows,
             nameDupRows,
+            offerIdDupRows,
+            dupOfferIdCount,
             pflichtCategoryErrors,
             pflichtScore,
             optionalScore,
@@ -1230,6 +1337,10 @@ export default function McAngebotsfeed() {
         issues.nameDupRows.forEach((rn) => {
             if (!fieldErrorRows.name) fieldErrorRows.name = new Set();
             fieldErrorRows.name.add(rn);
+        });
+        if (issues.offerIdDupRows) issues.offerIdDupRows.forEach((rn) => {
+            if (!fieldErrorRows.seller_offer_id) fieldErrorRows.seller_offer_id = new Set();
+            fieldErrorRows.seller_offer_id.add(rn);
         });
     }
 
@@ -1766,6 +1877,14 @@ export default function McAngebotsfeed() {
                     else if (e.type === 'bware') label = T.csvErrBware(fieldLabel);
                     else if (e.type === 'wrong_length') label = T.csvErrLength(fieldLabel);
                     else if (e.type === 'invalid') label = T.csvErrInvalid(fieldLabel);
+                    else if (e.type === 'scientific') label = T.csvErrScientific(fieldLabel);
+                    else if (e.type === 'siehe_oben') label = T.csvErrSieheOben(fieldLabel);
+                    else if (e.type === 'external_link') label = T.csvErrExternalLink(fieldLabel);
+                    else if (e.type === 'template') label = T.csvErrTemplate(fieldLabel);
+                    else if (e.type === 'advertising') label = T.csvErrAdvertising(fieldLabel);
+                    else if (e.type === 'identical_to_title') label = T.csvErrIdentical(fieldLabel);
+                    else if (e.type === 'single' && e.field === 'image_url') label = T.csvErrSingleImage;
+                    else if (e.type === 'wrong_category') label = T.csvWrongCategory;
                     else label = T.csvErrFallback(fieldLabel);
                     const key = `${e.field}::${e.type}`;
                     if (!errorsByType[key]) errorsByType[key] = { label, count: 0 };
@@ -1773,6 +1892,7 @@ export default function McAngebotsfeed() {
                 });
                 if (issues.eanDupRows.size > 0) errorsByType['ean::dup'] = { label: T.csvEanDup, count: issues.eanDupRows.size };
                 if (issues.nameDupRows.size > 0) errorsByType['name::dup'] = { label: T.csvNameDup, count: issues.nameDupRows.size };
+                if (issues.offerIdDupRows && issues.offerIdDupRows.size > 0) errorsByType['seller_offer_id::dup'] = { label: T.csvOfferIdDup, count: issues.offerIdDupRows.size };
                 const detailedErrors = Object.values(errorsByType)
                     .sort((a, b) => b.count - a.count)
                     .slice(0, 7);
@@ -1833,11 +1953,20 @@ export default function McAngebotsfeed() {
                         if (e.type === 'bware') return T.csvErrBware(label);
                         if (e.type === 'wrong_length') return T.csvErrLength(label);
                         if (e.type === 'invalid') return T.csvErrInvalid(label);
+                        if (e.type === 'scientific') return T.csvErrScientific(label);
+                        if (e.type === 'siehe_oben') return T.csvErrSieheOben(label);
+                        if (e.type === 'external_link') return T.csvErrExternalLink(label);
+                        if (e.type === 'template') return T.csvErrTemplate(label);
+                        if (e.type === 'advertising') return T.csvErrAdvertising(label);
+                        if (e.type === 'identical_to_title') return T.csvErrIdentical(label);
+                        if (e.type === 'single' && e.field === 'image_url') return T.csvErrSingleImage;
+                        if (e.type === 'wrong_category') return T.csvWrongCategory;
                         return T.csvErrFallback(label);
                     };
                     issues.pflichtErrors.forEach((e) => { if (!pflichtByRow[e.row]) pflichtByRow[e.row] = []; pflichtByRow[e.row].push(errorMsg(e)); });
                     issues.eanDupRows.forEach((rn) => { if (!pflichtByRow[rn]) pflichtByRow[rn] = []; pflichtByRow[rn].push(T.csvEanDup); });
                     issues.nameDupRows.forEach((rn) => { if (!pflichtByRow[rn]) pflichtByRow[rn] = []; pflichtByRow[rn].push(T.csvNameDup); });
+                    if (issues.offerIdDupRows) issues.offerIdDupRows.forEach((rn) => { if (!pflichtByRow[rn]) pflichtByRow[rn] = []; pflichtByRow[rn].push(T.csvOfferIdDup); });
                     issues.optionalHints.forEach((e) => { if (!optionalByRow[e.row]) optionalByRow[e.row] = []; optionalByRow[e.row].push(T.csvErrMissing(e.field)); });
                     const esc = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
                     const sep = ';';
@@ -2203,6 +2332,7 @@ export default function McAngebotsfeed() {
                 });
                 if (issues.eanDupRows.size > 0) errorsByType['ean::dup'] = { field: 'ean', type: 'dup', count: issues.eanDupRows.size };
                 if (issues.nameDupRows.size > 0) errorsByType['name::dup'] = { field: 'name', type: 'dup', count: issues.nameDupRows.size };
+                if (issues.offerIdDupRows && issues.offerIdDupRows.size > 0) errorsByType['seller_offer_id::dup'] = { field: 'seller_offer_id', type: 'dup', count: issues.offerIdDupRows.size };
 
                 const fieldIcon = (field) => {
                     const color = '#6B7280';
@@ -2253,6 +2383,15 @@ export default function McAngebotsfeed() {
                     'seller_offer_id::missing':{ title: 'Eigene Artikel-ID fehlt',       action: 'Ergänzen Sie Ihre interne Artikel-ID für alle betroffenen Zeilen.',            tip: 'Die Artikel-ID muss eindeutig pro Artikel sein.' },
                     'seller_offer_id::placeholder':{ title: 'Artikel-ID: Platzhalterwert', action: 'Ersetzen Sie Platzhalter durch echte, eindeutige Artikel-IDs.',            tip: 'Verwenden Sie Ihre internen SKU oder Artikelnummern.' },
                     'hs_code::missing':    { title: 'HS-Code fehlt',                    action: 'Da Ihr Lager außerhalb Deutschlands liegt, ist der HS-Code Pflichtfeld.',      tip: 'Den passenden HS-Code finden Sie im EU-Zolltarifverzeichnis (customs.ec.europa.eu).' },
+                    'ean::scientific':     { title: 'EAN in wissenschaftlicher Notation', action: 'Speichern Sie die Spalte in Excel als „Text", um die wissenschaftliche Notation zu verhindern.', tip: 'Excel wandelt lange Zahlen automatisch um. Spalte als Text formatieren, dann erneut speichern.' },
+                    'name::siehe_oben':    { title: 'Artikelname: „siehe oben"',          action: 'Tragen Sie für jeden Artikel einen eigenen, vollständigen Namen ein.',           tip: '"Siehe oben" ist kein gültiger Artikelname und wird von CHECK24 abgelehnt.' },
+                    'description::external_link': { title: 'Beschreibung: externe URL',   action: 'Entfernen Sie alle externen Links aus der Produktbeschreibung.',                tip: 'Keine www.- oder http(s)-Links in der Beschreibung erlaubt.' },
+                    'description::template': { title: 'Beschreibung: Vorlagentext',       action: 'Ersetzen Sie Mustertexte wie „Lorem Ipsum" durch echte Produktbeschreibungen.', tip: 'Jedes Produkt braucht eine einzigartige, informative Beschreibung.' },
+                    'description::advertising': { title: 'Beschreibung: Werbephrasen',    action: 'Entfernen Sie Werbephrasen wie „Jetzt kaufen" oder „Rabatt" aus der Beschreibung.', tip: 'Die Beschreibung soll Produkteigenschaften darstellen, keine Werbetexte.' },
+                    'description::identical_to_title': { title: 'Beschreibung = Artikelname', action: 'Verfassen Sie eine eigenständige Beschreibung statt den Artikelnamen zu wiederholen.', tip: 'Die Beschreibung soll die Vorteile und Details des Produkts erläutern.' },
+                    'image_url::single':   { title: 'Nur 1 Produktbild',                  action: 'Fügen Sie mindestens 3 Bilder pro Artikel hinzu (Hauptbild + 2 Zusatzbilder).', tip: 'Mehr Bilder erhöhen die Klickrate und Conversion deutlich.' },
+                    'seller_offer_id::dup':{ title: 'Eigene Artikel-ID: Duplikate',       action: 'Jede Artikel-ID (seller_offer_id) muss eindeutig sein. Korrigieren Sie Duplikate.', tip: 'Verwenden Sie Ihre interne SKU oder eine eindeutige Bestellnummer.' },
+                    'category_path::wrong_category': { title: 'Kategoriepfad: falsche Kategorie', action: 'Prüfen Sie den Kategoriepfad – dieser scheint keine Möbel-Kategorie zu sein.', tip: 'Verwenden Sie eine CHECK24-konforme Kategorie, z. B. „Boxspringbett" oder „Sofa".' },
                 } : {
                     'name::missing':       { title: 'Item name missing',              action: 'Add a full product name for every affected item.',                              tip: 'Format: Brand + Product type + Key attribute, e.g. "BRAND Sofa 3-seater grey 180 cm" · min. 2 words and 10 chars.' },
                     'name::too_short':     { title: 'Item name too short',            action: 'Extend the item name to at least 10 characters.',                               tip: 'Add product type, color, or material to create a descriptive name.' },
@@ -2287,6 +2426,15 @@ export default function McAngebotsfeed() {
                     'seller_offer_id::missing':{ title: 'Own item ID missing',        action: 'Add your internal item ID for all affected rows.',                              tip: 'The item ID must be unique per item.' },
                     'seller_offer_id::placeholder':{ title: 'Item ID: placeholder value', action: 'Replace placeholders with real, unique item IDs.',                         tip: 'Use your internal SKUs or item numbers.' },
                     'hs_code::missing':    { title: 'HS Code missing',                action: 'Since your warehouse is outside Germany, HS Code is required.',                 tip: 'Find the correct HS Code in the EU customs tariff directory.' },
+                    'ean::scientific':     { title: 'EAN in scientific notation',      action: 'Format the EAN column as "Text" in Excel to prevent scientific notation.',       tip: 'Excel converts long numbers automatically. Format the column as text before saving.' },
+                    'name::siehe_oben':    { title: 'Item name: "siehe oben"',         action: 'Enter a unique, complete name for every item.',                                  tip: '"Siehe oben" is not a valid item name and will be rejected by CHECK24.' },
+                    'description::external_link': { title: 'Description: external URL', action: 'Remove all external links from the product description.',                      tip: 'www. or http(s) links are not allowed in the description.' },
+                    'description::template': { title: 'Description: template text',    action: 'Replace template text (Lorem Ipsum etc.) with real product descriptions.',       tip: 'Every product needs a unique, informative description.' },
+                    'description::advertising': { title: 'Description: advertising phrases', action: 'Remove advertising phrases like "Buy now" or "Discount" from the description.', tip: 'Descriptions should present product features, not advertising copy.' },
+                    'description::identical_to_title': { title: 'Description = Item name', action: 'Write an independent description rather than repeating the item name.',      tip: 'The description should explain the benefits and details of the product.' },
+                    'image_url::single':   { title: 'Only 1 product image',            action: 'Add at least 3 images per item (main image + 2 additional images).',            tip: 'More images significantly increase click-through rate and conversion.' },
+                    'seller_offer_id::dup':{ title: 'Own item ID: duplicates',         action: 'Each seller_offer_id must be unique. Fix the duplicate entries.',               tip: 'Use your internal SKU or a unique order number.' },
+                    'category_path::wrong_category': { title: 'Category path: wrong category', action: 'Review the category path – it does not appear to be a furniture category.', tip: 'Use a CHECK24-compliant category, e.g. "Boxspringbett" or "Sofa".' },
                 };
 
                 const recommendations = Object.entries(errorsByType)
@@ -2305,11 +2453,20 @@ export default function McAngebotsfeed() {
                         if (e.type === 'bware') return T.csvErrBware(label);
                         if (e.type === 'wrong_length') return T.csvErrLength(label);
                         if (e.type === 'invalid') return T.csvErrInvalid(label);
+                        if (e.type === 'scientific') return T.csvErrScientific(label);
+                        if (e.type === 'siehe_oben') return T.csvErrSieheOben(label);
+                        if (e.type === 'external_link') return T.csvErrExternalLink(label);
+                        if (e.type === 'template') return T.csvErrTemplate(label);
+                        if (e.type === 'advertising') return T.csvErrAdvertising(label);
+                        if (e.type === 'identical_to_title') return T.csvErrIdentical(label);
+                        if (e.type === 'single' && e.field === 'image_url') return T.csvErrSingleImage;
+                        if (e.type === 'wrong_category') return T.csvWrongCategory;
                         return T.csvErrFallback(label);
                     };
                     issues.pflichtErrors.forEach((e) => { if (!pflichtByRow[e.row]) pflichtByRow[e.row] = []; pflichtByRow[e.row].push(errorMsg(e)); });
                     issues.eanDupRows.forEach((rn) => { if (!pflichtByRow[rn]) pflichtByRow[rn] = []; pflichtByRow[rn].push(T.csvEanDup); });
                     issues.nameDupRows.forEach((rn) => { if (!pflichtByRow[rn]) pflichtByRow[rn] = []; pflichtByRow[rn].push(T.csvNameDup); });
+                    if (issues.offerIdDupRows) issues.offerIdDupRows.forEach((rn) => { if (!pflichtByRow[rn]) pflichtByRow[rn] = []; pflichtByRow[rn].push(T.csvOfferIdDup); });
                     issues.optionalHints.forEach((e) => { if (!optionalByRow[e.row]) optionalByRow[e.row] = []; optionalByRow[e.row].push(T.csvErrMissing(e.field)); });
                     const esc = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
                     const sep = ';';
@@ -2552,11 +2709,20 @@ export default function McAngebotsfeed() {
                                 if (e.type === 'bware') return T.csvErrBware(label);
                                 if (e.type === 'wrong_length') return T.csvErrLength(label);
                                 if (e.type === 'invalid') return T.csvErrInvalid(label);
+                                if (e.type === 'scientific') return T.csvErrScientific(label);
+                                if (e.type === 'siehe_oben') return T.csvErrSieheOben(label);
+                                if (e.type === 'external_link') return T.csvErrExternalLink(label);
+                                if (e.type === 'template') return T.csvErrTemplate(label);
+                                if (e.type === 'advertising') return T.csvErrAdvertising(label);
+                                if (e.type === 'identical_to_title') return T.csvErrIdentical(label);
+                                if (e.type === 'single' && e.field === 'image_url') return T.csvErrSingleImage;
+                                if (e.type === 'wrong_category') return T.csvWrongCategory;
                                 return T.csvErrFallback(label);
                             };
                             issues.pflichtErrors.forEach((e) => { if (!pflichtByRow[e.row]) pflichtByRow[e.row] = []; pflichtByRow[e.row].push(errorMsg(e)); });
                             issues.eanDupRows.forEach((rn) => { if (!pflichtByRow[rn]) pflichtByRow[rn] = []; pflichtByRow[rn].push(T.csvEanDup); });
                             issues.nameDupRows.forEach((rn) => { if (!pflichtByRow[rn]) pflichtByRow[rn] = []; pflichtByRow[rn].push(T.csvNameDup); });
+                            if (issues.offerIdDupRows) issues.offerIdDupRows.forEach((rn) => { if (!pflichtByRow[rn]) pflichtByRow[rn] = []; pflichtByRow[rn].push(T.csvOfferIdDup); });
                             issues.optionalHints.forEach((e) => { if (!optionalByRow[e.row]) optionalByRow[e.row] = []; optionalByRow[e.row].push(T.csvErrMissing(e.field)); });
                             const esc = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
                             const sep = ';';
