@@ -1272,8 +1272,8 @@ export default function McAngebotsfeed() {
                                 style={{ border: `2px dashed ${dragging ? MC_BLUE : '#D1D5DB'}`, background: dragging ? '#EEF4FF' : '#F9FAFB', borderRadius: 8, padding: '20px', cursor: 'pointer', transition: 'all 0.15s', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}
                             >
                                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" style={{ color: dragging ? MC_BLUE : '#9CA3AF' }}>
-                                    <path d="M7 18.5A4.5 4.5 0 017 9.5h.1A6.5 6.5 0 0120 11a4 4 0 010 8H7z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
-                                    <path d="M12 21v-7m0 0l-2.5 2.5M12 14l2.5 2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                    <path d="M7 17A4.5 4.5 0 017 8h.1A6.5 6.5 0 0120 9.5a4 4 0 010 8H7z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+                                    <path d="M12 17v-6m0 0l-2 2m2-2l2 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                                 </svg>
                                 <div>
                                     <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', marginBottom: 2, textAlign: 'center' }}>{T.dropHeading}</div>
@@ -1989,7 +1989,7 @@ export default function McAngebotsfeed() {
                                         onDrop={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = '#D1D5DB'; e.currentTarget.style.background = '#F9FAFB'; const f = e.dataTransfer.files?.[0]; if (f) { resetToStart(); setTimeout(() => parseFile(f), 50); } }}
                                         onClick={() => fileRef.current?.click()}
                                         style={{ border: '1.5px dashed #D1D5DB', background: '#F9FAFB', borderRadius: 8, padding: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 10, transition: 'all 0.15s' }}>
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ color: '#9CA3AF' }}><path d="M7 18.5A4.5 4.5 0 017 9.5h.1A6.5 6.5 0 0120 11a4 4 0 010 8H7z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/><path d="M12 21v-7m0 0l-2.5 2.5M12 14l2.5 2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ color: '#9CA3AF' }}><path d="M7 17A4.5 4.5 0 017 8h.1A6.5 6.5 0 0120 9.5a4 4 0 010 8H7z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/><path d="M12 17v-6m0 0l-2 2m2-2l2 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                                         <span style={{ fontSize: 11, color: '#6B7280', fontWeight: 600 }}>{lang === 'de' ? 'Datei hierher ziehen oder klicken' : 'Drop file here or click'}</span>
                                     </div>
                                     <a href={`https://${T.portalUrl}`} target="_blank" rel="noopener noreferrer"
