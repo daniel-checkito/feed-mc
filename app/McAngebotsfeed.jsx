@@ -1182,7 +1182,7 @@ export default function McAngebotsfeed() {
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
             {/* Step tabs bar */}
-            <div style={{ background: '#fff', borderBottom: '1px solid #E2E6EE', padding: '0 32px', display: 'flex', alignItems: 'center', gap: 0, flexShrink: 0 }}>
+            <div style={{ background: '#fff', borderBottom: '1px solid #E2E6EE', padding: '0 32px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0, flexShrink: 0 }}>
                 {[
                     { n: 1, label: T.stepUpload },
                     { n: 2, label: T.stepMapping },
