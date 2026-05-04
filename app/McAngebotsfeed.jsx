@@ -1261,26 +1261,65 @@ export default function McAngebotsfeed() {
                         <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E2E6EE', padding: '18px 24px' }}>
                             <div style={{ fontSize: 14, fontWeight: 700, color: '#111827', marginBottom: 12 }}>{T.resourcesTitle}</div>
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                                {/* Feedleitfaden card */}
                                 <button type="button" onClick={() => setShowLeitfaden(true)}
                                     style={{ display: 'flex', flexDirection: 'column', borderRadius: 8, border: '1px solid #E2E6EE', background: '#FAFAFA', cursor: 'pointer', textAlign: 'left', overflow: 'hidden', padding: 0 }}>
-                                    <img
-                                        src="https://w9cedwr8emsi29qt.public.blob.vercel-storage.com/Bildschirmfoto%202026-05-04%20um%2014.43.56.png"
-                                        alt="Checkliste Vorschau"
-                                        style={{ width: '100%', height: 'auto', display: 'block', borderBottom: '1px solid #E2E6EE' }}
-                                    />
-                                    <div style={{ padding: '10px 12px' }}>
-                                        <div style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{lang === 'de' ? 'Checkliste für gute Produktdaten' : 'Checklist for good product data'}</div>
-                                        <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2, lineHeight: 1.4 }}>{lang === 'de' ? 'Pflichtfelder, Bildvorgaben & Qualitätstipps · PDF' : 'Required fields, image specs & quality tips · PDF'}</div>
+                                    <div style={{ width: '100%', height: 110, overflow: 'hidden', borderBottom: '1px solid #E2E6EE', background: '#F9FAFB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <img
+                                            src="https://w9cedwr8emsi29qt.public.blob.vercel-storage.com/Bildschirmfoto%202026-05-04%20um%2014.43.56.png"
+                                            alt="Checkliste Vorschau"
+                                            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top', display: 'block' }}
+                                        />
+                                    </div>
+                                    <div style={{ padding: '8px 12px' }}>
+                                        <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>{lang === 'de' ? 'Checkliste für gute Produktdaten' : 'Checklist for good product data'}</div>
+                                        <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2, lineHeight: 1.4 }}>{lang === 'de' ? 'Pflichtfelder, Bildvorgaben & Qualitätstipps · PDF' : 'Required fields, image specs & quality tips · PDF'}</div>
                                     </div>
                                 </button>
+                                {/* Feedvorlage card */}
                                 <button type="button" onClick={() => setShowVorlage(true)}
-                                    style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', borderRadius: 8, border: '1px solid #E2E6EE', background: '#FAFAFA', cursor: 'pointer', textAlign: 'left' }}>
-                                    <div style={{ width: 32, height: 32, borderRadius: 7, background: '#F0FDF4', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="13" height="13" rx="1.5" stroke="#16A34A" strokeWidth="1.3"/><path d="M5 5.5h6M5 8h6M5 10.5h4" stroke="#16A34A" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                                    style={{ display: 'flex', flexDirection: 'column', borderRadius: 8, border: '1px solid #E2E6EE', background: '#FAFAFA', cursor: 'pointer', textAlign: 'left', overflow: 'hidden', padding: 0 }}>
+                                    <div style={{ width: '100%', height: 110, borderBottom: '1px solid #E2E6EE', overflow: 'hidden' }}>
+                                        <svg viewBox="0 0 220 110" width="100%" height="110" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block' }}>
+                                            {/* Background */}
+                                            <rect width="220" height="110" fill="#F0FDF4"/>
+                                            {/* Top header bar */}
+                                            <rect width="220" height="24" fill="#16A34A"/>
+                                            {/* Header bar text */}
+                                            <text x="10" y="16" fontFamily="Arial,sans-serif" fontSize="9" fontWeight="700" fill="white">CHECK24 Feedvorlage 2026</text>
+                                            <text x="175" y="16" fontFamily="Arial,sans-serif" fontSize="8" fill="rgba(255,255,255,0.8)">XLSX</text>
+                                            {/* Column header row */}
+                                            <rect y="24" width="220" height="14" fill="#DCFCE7"/>
+                                            {/* Column dividers + labels */}
+                                            {[['EAN', 8], ['offer_id', 38], ['name', 78], ['brand', 130], ['price', 168]].map(([label, x], i) => (
+                                                <g key={i}>
+                                                    <rect x={x} y="24" width={i < 4 ? (([38,78,130,168,220][i]) - x) : 52} height="14" fill="none" stroke="#BBF7D0" strokeWidth="0.5"/>
+                                                    <text x={x + 3} y="34" fontFamily="Arial,sans-serif" fontSize="7" fontWeight="600" fill="#166534">{label}</text>
+                                                </g>
+                                            ))}
+                                            {/* Data rows */}
+                                            {[38, 52, 66, 80].map((y, ri) => (
+                                                <g key={ri}>
+                                                    <rect y={y} width="220" height="14" fill={ri % 2 === 0 ? '#F0FDF4' : '#FFFFFF'}/>
+                                                    {[8, 38, 78, 130, 168].map((x, ci) => (
+                                                        <g key={ci}>
+                                                            <rect x={x} y={y} width={ci < 4 ? ([38,78,130,168,220][ci] - x) : 52} height="14" fill="none" stroke="#BBF7D0" strokeWidth="0.5"/>
+                                                            <rect x={x + 3} y={y + 4} width={[22, 28, 38, 24, 20][ci]} height="5" rx="1" fill="#D1FAE5"/>
+                                                        </g>
+                                                    ))}
+                                                </g>
+                                            ))}
+                                            {/* Pflichtangaben row (amber) */}
+                                            <rect y="94" width="220" height="16" fill="#FEF3C7"/>
+                                            <text x="10" y="105" fontFamily="Arial,sans-serif" fontSize="7" fontWeight="600" fill="#92400E">Pflichtangaben</text>
+                                            {/* File type badge */}
+                                            <rect x="178" y="4" width="34" height="14" rx="3" fill="rgba(255,255,255,0.2)"/>
+                                            <text x="195" y="14" fontFamily="Arial,sans-serif" fontSize="7.5" fontWeight="700" fill="white" textAnchor="middle">92 Felder</text>
+                                        </svg>
                                     </div>
-                                    <div>
-                                        <div style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{lang === 'de' ? 'Feedvorlage XLSX' : 'Feed Template XLSX'}</div>
-                                        <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 1 }}>{T.feedTemplateSub2}</div>
+                                    <div style={{ padding: '8px 12px' }}>
+                                        <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>{lang === 'de' ? 'Feedvorlage XLSX' : 'Feed Template XLSX'}</div>
+                                        <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2, lineHeight: 1.4 }}>{T.feedTemplateSub2}</div>
                                     </div>
                                 </button>
                             </div>
