@@ -149,6 +149,12 @@ function detectFieldByContent(unmappedFields, headers, rows, sampleSize = 10) {
 }
 
 const MC_BLUE = '#1553B6';
+const HEADER_BG = '#0F2557';
+const PAGE_BG = '#F0F2F5';
+const CARD_BORDER = '#E2E6EE';
+const TEXT_PRIMARY = '#0F2557';
+const TEXT_MUTED = '#7A8499';
+const TEXT_HINT = '#9099A8';
 
 const MC_PFLICHT_COLS = [
     'name',
@@ -1087,22 +1093,27 @@ export default function McAngebotsfeed() {
     }, [step, allRequiredMapped]);
 
     return (
-        <div style={{ background: '#F3F4F6', height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <div style={{ background: PAGE_BG, height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
             {/* ── HEADER ── */}
-            <header style={{ background: MC_BLUE, padding: '10px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
-                <span style={{ color: '#FFF', fontWeight: 900, fontSize: 22, letterSpacing: '-0.5px', fontStyle: 'italic', whiteSpace: 'nowrap', flexShrink: 0 }}>
-                    FEED CHECKER
-                </span>
+            <header style={{ background: HEADER_BG, height: 56, padding: '0 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexShrink: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
+                    <div style={{ width: 30, height: 30, borderRadius: 7, background: MC_BLUE, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <span style={{ color: '#fff', fontSize: 12, fontWeight: 700, letterSpacing: '-0.5px' }}>FC</span>
+                    </div>
+                    <span style={{ color: '#FFF', fontWeight: 700, fontSize: 15, letterSpacing: '-0.2px', whiteSpace: 'nowrap' }}>Feed Checker</span>
+                    <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: 14 }}>|</span>
+                    <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12, fontWeight: 400 }}>Möbel · CHECK24</span>
+                </div>
 
                 {/* Header resource buttons */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <button type="button" onClick={() => setShowLeitfaden(true)}
-                        style={{ display: 'flex', alignItems: 'center', gap: 6, border: '1px solid rgba(255,255,255,0.3)', background: 'transparent', color: '#FFF', fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 6, cursor: 'pointer' }}>
+                        style={{ display: 'flex', alignItems: 'center', gap: 6, border: '1px solid rgba(255,255,255,0.25)', background: 'rgba(255,255,255,0.08)', color: '#FFF', fontSize: 12, fontWeight: 500, padding: '6px 14px', borderRadius: 6, cursor: 'pointer' }}>
                         <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 1.5h8.5l3 3v10h-11.5v-13z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M11 1.5v3h3" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M5 8h6M5 10.5h6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
                         {T.feedGuide}
                     </button>
                     <button type="button" onClick={() => { const a = document.createElement('a'); a.href = 'http://media-partner.moebel.check24.de/feedvorlagen/Feedleitfaden_Anhang_2026/CHECK24_Feedvorlage_V2025.xlsx'; a.download = 'CHECK24_Feedvorlage_V2025.xlsx'; a.click(); }}
-                        style={{ display: 'flex', alignItems: 'center', gap: 6, border: '1px solid rgba(255,255,255,0.3)', background: 'transparent', color: '#FFF', fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 6, cursor: 'pointer' }}>
+                        style={{ display: 'flex', alignItems: 'center', gap: 6, border: '1px solid rgba(255,255,255,0.25)', background: 'rgba(255,255,255,0.08)', color: '#FFF', fontSize: 12, fontWeight: 500, padding: '6px 14px', borderRadius: 6, cursor: 'pointer' }}>
                         <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M5 7l3 3 3-3M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                         {T.feedTemplate}
                     </button>
@@ -1165,58 +1176,53 @@ export default function McAngebotsfeed() {
                     </div>
                     <a
                         href="mailto:contentmanagement.moebel@check24.de?subject=Feed%20Checker%20-%20Hilfe"
-                        style={{ border: '1px solid rgba(255,255,255,0.3)', background: 'transparent', color: '#FFFFFF', fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}
+                        style={{ border: '1px solid rgba(255,255,255,0.25)', background: 'rgba(255,255,255,0.08)', color: '#FFFFFF', fontSize: 12, fontWeight: 500, padding: '6px 14px', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}
                     >
                         <svg width="13" height="13" viewBox="0 0 13 13" fill="none" style={{ flexShrink: 0 }}><rect x="1" y="2.5" width="11" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.3"/><path d="M1 4l5.5 3.5L12 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>
                         {T.helpContact}
                     </a>
                 </div>
             </header>
-        {/* ── FUNNEL BODY ── */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '16px 32px 0', overflow: 'hidden', boxSizing: 'border-box' }}>
+        {/* ── MAIN BODY ── */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
-            {/* Step indicator */}
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: 16 }}>
+            {/* Step tabs bar */}
+            <div style={{ background: '#fff', borderBottom: '1px solid #E2E6EE', padding: '0 32px', display: 'flex', alignItems: 'center', gap: 0, flexShrink: 0 }}>
                 {[
                     { n: 1, label: T.stepUpload },
                     { n: 2, label: T.stepMapping },
                     { n: 3, label: T.stepResults },
                     { n: 4, label: T.stepRecommendations },
-                ].map((s, i) => (
-                    <React.Fragment key={s.n}>
-                        {i > 0 && (
-                            <div style={{ width: 48, height: 2, background: step > s.n ? MC_BLUE : step === s.n ? '#CBD5E1' : '#E5E7EB', margin: '0 4px', marginBottom: 18, borderRadius: 1 }} />
-                        )}
+                ].map((s) => {
+                    const isActive = step === s.n;
+                    const isDone = step > s.n;
+                    const isClickable = s.n === 1 || (s.n === 2 && rows.length > 0) || ((s.n === 3 || s.n === 4) && issues);
+                    const tabColor = isDone ? '#166534' : isActive ? MC_BLUE : TEXT_HINT;
+                    return (
                         <button
+                            key={s.n}
                             type="button"
                             onClick={() => {
                                 if (s.n === 1) setStep(1);
                                 else if (s.n === 2 && rows.length > 0) setStep(2);
                                 else if ((s.n === 3 || s.n === 4) && issues) setStep(s.n);
                             }}
-                            style={{ background: 'none', border: 'none', padding: 0, cursor: (s.n === 1 || (s.n === 2 && rows.length > 0) || ((s.n === 3 || s.n === 4) && issues)) ? 'pointer' : 'default', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5 }}
+                            style={{ height: 50, display: 'flex', alignItems: 'center', gap: 8, padding: '0 20px', background: 'none', border: 'none', borderBottom: isActive ? `2px solid ${MC_BLUE}` : '2px solid transparent', cursor: isClickable ? 'pointer' : 'default', color: tabColor, opacity: isClickable ? 1 : 0.5, transition: 'all 0.15s', whiteSpace: 'nowrap' }}
                         >
-                            <div style={{
-                                width: 28, height: 28, borderRadius: '50%',
-                                background: step > s.n ? MC_BLUE : step === s.n ? MC_BLUE : '#E5E7EB',
-                                color: step >= s.n ? '#FFF' : '#9CA3AF',
-                                fontSize: 11, fontWeight: 800,
-                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                transition: 'all 0.2s',
-                                opacity: (s.n === 1 || (s.n === 2 && rows.length > 0) || ((s.n === 3 || s.n === 4) && issues)) ? 1 : 0.5,
-                            }}>
-                                {step > s.n ? '✓' : s.n}
+                            <div style={{ width: 22, height: 22, borderRadius: '50%', border: `1.5px solid ${tabColor}`, background: (isActive || isDone) ? tabColor : 'transparent', color: (isActive || isDone) ? '#fff' : tabColor, fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'all 0.15s' }}>
+                                {isDone ? '✓' : s.n}
                             </div>
-                            <span style={{ fontSize: 10, color: step === s.n ? '#111827' : '#9CA3AF', fontWeight: step === s.n ? 700 : 400, whiteSpace: 'nowrap' }}>
-                                {s.label}
-                            </span>
+                            <span style={{ fontSize: 13, fontWeight: isActive ? 600 : 400 }}>{s.label}</span>
                         </button>
-                    </React.Fragment>
-                ))}
+                    );
+                })}
             </div>
 
+            {/* Scrollable area: step content + sticky bars */}
+            <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
 
-            <div style={{ display: 'contents' }}>
+            {/* Step content */}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '24px 32px', boxSizing: 'border-box' }}>
 
             {/* ══════════════════════════════════════════
                 STEP 1 - Upload
@@ -1231,10 +1237,10 @@ export default function McAngebotsfeed() {
                     </div>
 
                     {/* Two columns aligned at the same top */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: 16, alignItems: 'start' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 420px', gap: 16, alignItems: 'start' }}>
 
                         {/* Left: How it works */}
-                        <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', overflow: 'hidden' }}>
+                        <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E2E6EE', overflow: 'hidden' }}>
                             {T.howSteps.map((s, i) => (
                                 <div key={s.n} style={{ padding: '10px 14px', borderBottom: i < T.howSteps.length - 1 ? '1px solid #F3F4F6' : 'none', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
                                     <div style={{ width: 20, height: 20, borderRadius: '50%', background: MC_BLUE, color: '#FFF', fontSize: 10, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>{s.n}</div>
