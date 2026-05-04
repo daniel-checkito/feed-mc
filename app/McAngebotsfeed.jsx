@@ -1265,12 +1265,12 @@ export default function McAngebotsfeed() {
                                     style={{ display: 'flex', flexDirection: 'column', borderRadius: 8, border: '1px solid #E2E6EE', background: '#FAFAFA', cursor: 'pointer', textAlign: 'left', overflow: 'hidden', padding: 0 }}>
                                     <img
                                         src="https://w9cedwr8emsi29qt.public.blob.vercel-storage.com/Bildschirmfoto%202026-05-04%20um%2014.43.56.png"
-                                        alt="Feedleitfaden Vorschau"
-                                        style={{ width: '100%', height: 90, objectFit: 'cover', objectPosition: 'top', display: 'block', borderBottom: '1px solid #E2E6EE' }}
+                                        alt="Checkliste Vorschau"
+                                        style={{ width: '100%', height: 'auto', display: 'block', borderBottom: '1px solid #E2E6EE' }}
                                     />
                                     <div style={{ padding: '10px 12px' }}>
-                                        <div style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{lang === 'de' ? 'Feedleitfaden 2026' : 'Feed Guide 2026'}</div>
-                                        <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 1 }}>{T.feedGuideSub}</div>
+                                        <div style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{lang === 'de' ? 'Checkliste für gute Produktdaten' : 'Checklist for good product data'}</div>
+                                        <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2, lineHeight: 1.4 }}>{lang === 'de' ? 'Pflichtfelder, Bildvorgaben & Qualitätstipps · PDF' : 'Required fields, image specs & quality tips · PDF'}</div>
                                     </div>
                                 </button>
                                 <button type="button" onClick={() => setShowVorlage(true)}
