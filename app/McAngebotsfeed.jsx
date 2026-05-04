@@ -1609,7 +1609,7 @@ export default function McAngebotsfeed() {
                 const listablePct = Math.round((issues.livefaehigCount / issues.totalRows) * 100);
 
                 return (
-                    <div style={{ width: '100%', maxWidth: 1280, display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden', gap: 12 }}>
+                    <div style={{ width: '100%', maxWidth: 1280, display: 'flex', flexDirection: 'column', gap: 12 }}>
 
                         {/* Status header */}
                         <div style={{ borderRadius: 10, background: stufe1Passed ? '#F0FDF4' : '#FEF2F2', border: `1px solid ${stufe1Passed ? '#BBF7D0' : '#FECACA'}`, padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
@@ -1654,10 +1654,10 @@ export default function McAngebotsfeed() {
                         </div>
 
                         {/* 2-column: table | action panel */}
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 12, flex: 1, overflow: 'hidden', alignItems: 'start' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 12, alignItems: 'start' }}>
 
                         {/* Field analysis table */}
-                        <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', overflow: 'auto', height: '100%' }}>
+                        <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', overflow: 'auto', maxHeight: 'calc(100vh - 200px)' }}>
                             <div style={{ padding: '10px 16px', borderBottom: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', position: 'sticky', top: 0, background: '#FFF', zIndex: 1 }}>
                                 <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{T.analysisTitle}</div>
                                 <div style={{ fontSize: 10, color: '#6B7280' }}>
