@@ -1199,33 +1199,37 @@ export default function McAngebotsfeed() {
                 STEP 1 — Upload
             ══════════════════════════════════════════ */}
             {step === 1 && (
-                <div style={{ width: '100%', maxWidth: 1100, display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: 28, alignItems: 'start' }}>
+                <div style={{ width: '100%', maxWidth: 1100, display: 'flex', flexDirection: 'column', gap: 14 }}>
 
-                    {/* Left: How it works */}
+                    {/* Title row — above both columns */}
                     <div>
-                        <div style={{ fontSize: 20, fontWeight: 800, color: '#111827', marginBottom: 6 }}>{T.howTitle}</div>
-                        <div style={{ fontSize: 13, color: '#6B7280', lineHeight: 1.6, marginBottom: 16 }}>{T.howSummary}</div>
+                        <div style={{ fontSize: 18, fontWeight: 800, color: '#111827', marginBottom: 3 }}>{T.howTitle}</div>
+                        <div style={{ fontSize: 12, color: '#6B7280', lineHeight: 1.5 }}>{T.howSummary}</div>
+                    </div>
+
+                    {/* Two columns aligned at the same top */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: 16, alignItems: 'start' }}>
+
+                        {/* Left: How it works */}
                         <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', overflow: 'hidden' }}>
                             {T.howSteps.map((s, i) => (
-                                <div key={s.n} style={{ padding: '12px 14px', borderBottom: i < T.howSteps.length - 1 ? '1px solid #F3F4F6' : 'none', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                                    <div style={{ width: 22, height: 22, borderRadius: '50%', background: MC_BLUE, color: '#FFF', fontSize: 10, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>{s.n}</div>
+                                <div key={s.n} style={{ padding: '10px 14px', borderBottom: i < T.howSteps.length - 1 ? '1px solid #F3F4F6' : 'none', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                                    <div style={{ width: 20, height: 20, borderRadius: '50%', background: MC_BLUE, color: '#FFF', fontSize: 10, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>{s.n}</div>
                                     <div>
-                                        <div style={{ fontSize: 12, fontWeight: 700, color: '#111827', marginBottom: 2 }}>{s.title}</div>
-                                        <div style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.4 }}>{s.desc}</div>
+                                        <div style={{ fontSize: 12, fontWeight: 700, color: '#111827', marginBottom: 1 }}>{s.title}</div>
+                                        <div style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.35 }}>{s.desc}</div>
                                     </div>
                                 </div>
                             ))}
                         </div>
-                    </div>
 
-                    {/* Right: Upload card + downloads */}
-                    <div>
-                        <div style={{ background: '#FFF', borderRadius: 16, padding: '20px', boxShadow: '0 2px 16px rgba(0,0,0,0.08)', marginBottom: 10 }}>
+                        {/* Right: Upload card */}
+                        <div style={{ background: '#FFF', borderRadius: 12, padding: '16px', boxShadow: '0 2px 12px rgba(0,0,0,0.07)' }}>
                         {/* Drop zone */}
                         {file ? (
-                            <div style={{ borderRadius: 10, border: '2px solid #BBF7D0', background: '#F0FDF4', padding: '18px 20px', display: 'flex', alignItems: 'center', gap: 12 }}>
-                                <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#DCFCE7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2.5 1.5h8.5l3 3v10h-11.5v-13z" stroke="#16A34A" strokeWidth="1.4" strokeLinejoin="round"/><path d="M11 1.5v3h3" stroke="#16A34A" strokeWidth="1.4" strokeLinejoin="round"/><path d="M5 8.5l2 2 4-3" stroke="#16A34A" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                            <div style={{ borderRadius: 8, border: '2px solid #BBF7D0', background: '#F0FDF4', padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                                <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#DCFCE7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2.5 1.5h8.5l3 3v10h-11.5v-13z" stroke="#16A34A" strokeWidth="1.4" strokeLinejoin="round"/><path d="M11 1.5v3h3" stroke="#16A34A" strokeWidth="1.4" strokeLinejoin="round"/><path d="M5 8.5l2 2 4-3" stroke="#16A34A" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
                                 </div>
                                 <div style={{ flex: 1, minWidth: 0 }}>
                                     <div style={{ fontSize: 13, fontWeight: 600, color: '#166534', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{file.name}</div>
@@ -1242,15 +1246,15 @@ export default function McAngebotsfeed() {
                                 onDragLeave={() => setDragging(false)}
                                 onDrop={(e) => { e.preventDefault(); setDragging(false); const f = e.dataTransfer.files?.[0]; if (f) parseFile(f); }}
                                 onClick={() => fileRef.current?.click()}
-                                style={{ border: `2px dashed ${dragging ? MC_BLUE : '#D1D5DB'}`, background: dragging ? '#EEF4FF' : '#F9FAFB', borderRadius: 10, padding: '32px 20px', cursor: 'pointer', transition: 'all 0.15s', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}
+                                style={{ border: `2px dashed ${dragging ? MC_BLUE : '#D1D5DB'}`, background: dragging ? '#EEF4FF' : '#F9FAFB', borderRadius: 8, padding: '20px', cursor: 'pointer', transition: 'all 0.15s', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}
                             >
-                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" style={{ color: dragging ? MC_BLUE : '#9CA3AF' }}>
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" style={{ color: dragging ? MC_BLUE : '#9CA3AF' }}>
                                     <path d="M7 18.5A4.5 4.5 0 017 9.5h.1A6.5 6.5 0 0120 11a4 4 0 010 8H7z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
                                     <path d="M12 21v-7m0 0l-2.5 2.5M12 14l2.5 2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                                 </svg>
                                 <div>
-                                    <div style={{ fontSize: 14, fontWeight: 700, color: '#111827', marginBottom: 3, textAlign: 'center' }}>{T.dropHeading}</div>
-                                    <div style={{ fontSize: 12, color: '#9CA3AF', textAlign: 'center' }}>{T.dropSub}</div>
+                                    <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', marginBottom: 2, textAlign: 'center' }}>{T.dropHeading}</div>
+                                    <div style={{ fontSize: 11, color: '#9CA3AF', textAlign: 'center' }}>{T.dropSub}</div>
                                 </div>
                                 <input ref={fileRef} type="file" accept=".csv,text/csv" style={{ display: 'none' }} onChange={(e) => parseFile(e.target.files?.[0] || null)} />
                             </div>
@@ -1261,11 +1265,11 @@ export default function McAngebotsfeed() {
                             type="button"
                             onClick={() => rows.length > 0 && setStep(2)}
                             disabled={rows.length === 0}
-                            style={{ width: '100%', marginTop: 16, padding: '14px', background: rows.length > 0 ? MC_BLUE : '#D1D5DB', color: '#FFF', border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 700, cursor: rows.length > 0 ? 'pointer' : 'default', transition: 'background 0.2s' }}
+                            style={{ width: '100%', marginTop: 12, padding: '12px', background: rows.length > 0 ? MC_BLUE : '#D1D5DB', color: '#FFF', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 700, cursor: rows.length > 0 ? 'pointer' : 'default', transition: 'background 0.2s' }}
                         >
                             {rows.length > 0 ? T.continueBtn(rows.length.toLocaleString(numLocale)) : T.uploadPrompt}
                         </button>
-                        </div>{/* end white card */}
+                        </div>{/* end upload card */}
 
                     </div>
                 </div>
