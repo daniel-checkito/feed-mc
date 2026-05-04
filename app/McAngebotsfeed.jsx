@@ -2180,6 +2180,55 @@ export default function McAngebotsfeed() {
                                     </button>
                                 </div>
 
+                                {/* Next steps workflow */}
+                                <div style={{ background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 12, padding: '14px 16px' }}>
+                                    <div style={{ fontSize: 11, fontWeight: 700, color: '#374151', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                                        {lang === 'de' ? 'So geht es weiter' : 'What to do next'}
+                                    </div>
+                                    {[
+                                        {
+                                            n: 1,
+                                            title: lang === 'de' ? 'Fehlerbericht herunterladen' : 'Download error report',
+                                            desc: lang === 'de' ? 'CSV-Datei mit allen Fehlern je Zeile für Excel' : 'CSV file with all errors per row for Excel',
+                                        },
+                                        {
+                                            n: 2,
+                                            title: lang === 'de' ? 'Fehler in Excel korrigieren' : 'Fix errors in Excel',
+                                            desc: lang === 'de' ? 'Betroffene Artikel anhand der Fehlerspalte bearbeiten' : 'Edit affected items using the error column',
+                                        },
+                                        {
+                                            n: 3,
+                                            title: lang === 'de' ? 'Korrigierten Feed hochladen' : 'Re-upload corrected feed',
+                                            desc: lang === 'de' ? 'Direkt im Händlerportal unter Einstellungen → Feed' : 'In the merchant portal under Settings → Feed',
+                                        },
+                                    ].map(({ n, title, desc }) => (
+                                        <div key={n} style={{ display: 'flex', gap: 10, marginBottom: n < 3 ? 10 : 0 }}>
+                                            <div style={{ width: 20, height: 20, borderRadius: '50%', background: MC_BLUE, color: '#FFF', fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>{n}</div>
+                                            <div>
+                                                <div style={{ fontSize: 11, fontWeight: 600, color: '#111827' }}>{title}</div>
+                                                <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 1, lineHeight: 1.4 }}>{desc}</div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* Quality = reach banner */}
+                                <div style={{ background: 'linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)', border: '1px solid #FDE68A', borderRadius: 12, padding: '14px 16px' }}>
+                                    <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" style={{ flexShrink: 0, marginTop: 1 }}><path d="M10 2l2 5.5h5.5l-4.5 3.3 1.7 5.5L10 13l-4.7 3.3 1.7-5.5L2.5 7.5H8L10 2z" fill="#F59E0B" stroke="#D97706" strokeWidth="1"/></svg>
+                                        <div>
+                                            <div style={{ fontSize: 11, fontWeight: 700, color: '#92400E', marginBottom: 4 }}>
+                                                {lang === 'de' ? 'Besserer Feed = mehr Reichweite' : 'Better feed = more reach'}
+                                            </div>
+                                            <div style={{ fontSize: 10, color: '#78350F', lineHeight: 1.5 }}>
+                                                {lang === 'de'
+                                                    ? 'Je vollständiger und hochwertiger Ihr Feed, desto besser die Platzierung auf unserem Marktplatz – und desto schneller werden Ihre Produkte freigeschaltet.'
+                                                    : 'The more complete and high-quality your feed, the better the placement on our marketplace – and the faster your products go live.'}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 {/* Reset */}
                                 <button type="button" onClick={resetToStart}
                                     style={{ width: '100%', padding: '9px', background: '#FFF', color: '#374151', border: '1px solid #D1D5DB', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
