@@ -1312,7 +1312,7 @@ export default function McAngebotsfeed() {
                 const langDE = lang === 'de';
 
                 return (
-                    <div style={{ width: '100%', maxWidth: 1100 }}>
+                    <div style={{ width: '100%', maxWidth: 720 }}>
                         {/* Back */}
                         <button type="button" onClick={() => setStep(1)}
                             style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: '#6B7280', fontWeight: 600, padding: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -1462,7 +1462,7 @@ export default function McAngebotsfeed() {
                                 {/* CTA */}
                                 <div style={{ padding: '0 20px 20px' }}>
                                     <button type="button" onClick={() => setStep(3)}
-                                        style={{ width: '100%', padding: '14px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>
+                                        style={{ width: '100%', padding: '11px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>
                                         {T.startAnalysis}
                                     </button>
                                 </div>
