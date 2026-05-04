@@ -1915,6 +1915,22 @@ export default function McAngebotsfeed() {
                     .sort((a, b) => b.count - a.count)
                     .slice(0, 7);
 
+                // Image count distribution
+                const imgStats = mcImageColumns.length > 0 ? (() => {
+                    const buckets = { none: 0, one: 0, two: 0, good: 0 };
+                    let total = 0, totalImgs = 0;
+                    rows.forEach((r) => {
+                        total++;
+                        const cnt = mcImageColumns.reduce((s, col) => s + (String(r[col] ?? '').trim() ? 1 : 0), 0);
+                        totalImgs += cnt;
+                        if (cnt === 0) buckets.none++;
+                        else if (cnt === 1) buckets.one++;
+                        else if (cnt === 2) buckets.two++;
+                        else buckets.good++;
+                    });
+                    return { total, avg: total ? +(totalImgs / total).toFixed(1) : 0, buckets };
+                })() : null;
+
                 // Description length distribution
                 const descCol = mcMapping['description'];
                 const descStats = descCol ? (() => {
@@ -2325,6 +2341,49 @@ export default function McAngebotsfeed() {
                                             {lang === 'de'
                                                 ? 'Durchschnittliche Beschreibung unter 150 Zeichen. Längere Beschreibungen mit Material, Maßen und Besonderheiten verbessern die Conversion.'
                                                 : 'Average description under 150 characters. Longer descriptions including material, dimensions and features improve conversion.'}
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Image count distribution */}
+                        {imgStats && imgStats.total > 0 && (
+                            <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', padding: '14px 20px', gridColumn: 1 }}>
+                                <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 12 }}>
+                                    <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>
+                                        {lang === 'de' ? 'Bildanzahl – Verteilung' : 'Image Count – Distribution'}
+                                    </div>
+                                    <div style={{ fontSize: 10, color: '#9CA3AF' }}>
+                                        {lang === 'de' ? `Ø ${imgStats.avg.toLocaleString(numLocale)} Bilder · Empfehlung: 3+` : `Avg. ${imgStats.avg.toLocaleString(numLocale)} images · Recommended: 3+`}
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end', height: 60, marginBottom: 8 }}>
+                                    {[
+                                        { key: 'none', label: lang === 'de' ? '0' : '0', color: '#EF4444', desc: lang === 'de' ? 'Kein Bild' : 'No image' },
+                                        { key: 'one',  label: lang === 'de' ? '1' : '1',  color: '#F59E0B', desc: lang === 'de' ? '1 Bild' : '1 image' },
+                                        { key: 'two',  label: lang === 'de' ? '2' : '2',  color: '#D97706', desc: lang === 'de' ? '2 Bilder' : '2 images' },
+                                        { key: 'good', label: lang === 'de' ? '3+' : '3+', color: '#16A34A', desc: lang === 'de' ? '3+ Bilder' : '3+ images' },
+                                    ].map(({ key, label, color, desc }) => {
+                                        const count = imgStats.buckets[key];
+                                        const pct = imgStats.total ? Math.round((count / imgStats.total) * 100) : 0;
+                                        return (
+                                            <div key={key} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+                                                <div style={{ fontSize: 9, fontWeight: 700, color }}>{pct}%</div>
+                                                <div style={{ width: '100%', height: Math.max(4, pct * 0.44), background: color, borderRadius: 3, opacity: 0.85 }} />
+                                                <div style={{ fontSize: 8, color: '#9CA3AF', textAlign: 'center', lineHeight: 1.2 }}>{label}</div>
+                                                <div style={{ fontSize: 8, color: '#6B7280', fontWeight: 600, textAlign: 'center' }}>{desc}</div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                                {imgStats.avg < 3 && (
+                                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, background: '#FFFBEB', borderRadius: 6, padding: '7px 10px' }}>
+                                        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 1 }}><circle cx="8" cy="8" r="6.5" stroke="#D97706" strokeWidth="1.4"/><path d="M8 7v4" stroke="#D97706" strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="5.5" r=".6" fill="#D97706"/></svg>
+                                        <span style={{ fontSize: 10, color: '#92400E', lineHeight: 1.5 }}>
+                                            {lang === 'de'
+                                                ? 'Durchschnittlich unter 3 Bilder pro Artikel. Mehr Bilder (Freisteller, Detail, Ambiente) erhöhen die Klickrate und Conversion deutlich.'
+                                                : 'Average under 3 images per item. More images (cut-out, detail, lifestyle) significantly increase click-through rate and conversion.'}
                                         </span>
                                     </div>
                                 )}
