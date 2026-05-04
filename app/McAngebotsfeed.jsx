@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useRef } from 'react';
+import React, { useMemo, useState, useRef, useEffect } from 'react';
 import Papa from 'papaparse';
 import Tooltip from './Tooltip';
 
@@ -327,8 +327,8 @@ const DE_T = {
     startAnalysis: 'Analyse starten →',
     // Step 3
     newFeed: 'Neuen Feed prüfen',
-    statusOk: 'Feed fehlerfrei — alle Artikel können gelistet werden.',
-    statusErr: 'Fehler gefunden — bitte beheben und Feed erneut hochladen.',
+    statusOk: 'Feed fehlerfrei - alle Artikel koennen gelistet werden.',
+    statusErr: 'Fehler gefunden - bitte beheben und Feed erneut hochladen.',
     errorRateFmt: (r) => `Fehlerquote: ${r.replace('.', ',')}%`,
     analysisTitle: 'Pflichtfeldanalyse',
     analysisSummary: (t, v, e) => `${t} Felder · ${v} vollständig · ${e} fehlerhaft`,
@@ -397,7 +397,7 @@ const DE_T = {
     },
     // How it works
     listableCount: (l, t) => `${l} / ${t} Artikel listbar`,
-    statusBanner: (n, t) => `Bitte beheben Sie die Fehler und laden Sie den Feed erneut hoch. — ${n} von ${t} Artikeln betroffen`,
+    statusBanner: (n, t) => `Bitte beheben Sie die Fehler und laden Sie den Feed erneut hoch. ${n} von ${t} Artikeln betroffen`,
     hinweisTitle: 'Wichtige Hinweise zum Feed',
     hinweisBeforeNext: 'Vor dem nächsten Upload prüfen',
     hinweisPflicht: {
@@ -447,11 +447,8 @@ const DE_T = {
     howSummary: 'Laden Sie Ihren Angebotsfeed hoch – wir prüfen alle Pflichtfelder und zeigen genau, welche Artikel Fehler haben.',
     howSteps: [
         { n: 1, title: 'Feed hochladen', desc: 'CSV-Datei per Drag & Drop oder Klick hochladen' },
-        { n: 2, title: 'Zuordnung prüfen', desc: 'Spalten werden automatisch erkannt und zugeordnet' },
-        { n: 3, title: 'Fehler prüfen', desc: 'Alle Pflichtfelder werden auf Fehler geprüft' },
-        { n: 4, title: 'Hinweise beachten', desc: 'Wichtige Anforderungen zum Feed lesen' },
-        { n: 5, title: 'Fehler beheben', desc: 'Fehlerbericht als CSV herunterladen und korrigieren' },
-        { n: 6, title: 'Produkte live schalten', desc: 'Sauberer Feed = schnelleres Listing, mehr Sichtbarkeit' },
+        { n: 2, title: 'Fehler prüfen', desc: 'Alle Pflichtfelder werden automatisch analysiert' },
+        { n: 3, title: 'Fehler beheben', desc: 'Fehlerbericht als CSV herunterladen und korrigieren' },
     ],
     // Pflicht table field labels
     pflichtFields: [
@@ -464,11 +461,11 @@ const DE_T = {
     hsField: { key: 'hs_code', label: 'HS-Code' },
     qualityTitle: 'Tipps zur Feed-Qualität',
     qualityTips: [
-        { field: 'name', icon: '✏️', title: 'Artikelname', tips: ['Mindestens 2 Wörter, aussagekräftig und spezifisch', 'Ideal: Marke + Produkt + Hauptattribut, z. B. „BRAND Sofa 3-Sitzer grau 180 cm"', 'Keine B-Ware-Hinweise oder generischen Begriffe wie „Produkt"', 'GTIN-konforme Bezeichnung, max. 255 Zeichen'] },
-        { field: 'description', icon: '📝', title: 'Beschreibung', tips: ['Mindestens 100 Zeichen, besser 300–500 Zeichen', 'Wichtige Eigenschaften nennen: Material, Farbe, Maße, Besonderheiten', 'Keine reinen Aufzählungen – fließender Text wirkt besser', 'Keine Werbefloskeln wie „günstig" oder „Top-Qualität"'] },
-        { field: 'ean', icon: '🔢', title: 'EAN (GTIN14)', tips: ['Muss 13 oder 14 Stellen lang sein (EAN-13 oder GTIN-14)', 'Muss eindeutig pro Artikel sein – keine Duplikate', 'Nicht erfundene oder Test-EANs verwenden', 'Handelsübliche GTIN aus GS1-Datenbank'] },
-        { field: 'image_url', icon: '🖼️', title: 'Produktbild', tips: ['Freisteller auf weißem oder transparentem Hintergrund', 'Mindestens 600×600 Pixel, optimal 1000×1000+', 'Öffentlich erreichbare URL (kein Login erforderlich)', 'Kein Wasserzeichen, keine Preise im Bild'] },
-        { field: 'price', icon: '💶', title: 'Preis & Lieferung', tips: ['Preis im Format 19.99 (Punkt als Dezimaltrennzeichen)', 'Versandart muss einen gültigen Wert enthalten', 'Lieferzeit als Werktage angeben, z. B. „3-5"', 'Verfügbarkeit / Bestand stets aktuell halten'] },
+        { field: 'name', title: 'Artikelname', tips: ['Mindestens 2 Woerter, aussagekraeftig und spezifisch', 'Ideal: Marke + Produkt + Hauptattribut, z. B. "BRAND Sofa 3-Sitzer grau 180 cm"', 'Keine B-Ware-Hinweise oder generischen Begriffe wie "Produkt"', 'GTIN-konforme Bezeichnung, max. 255 Zeichen'] },
+        { field: 'description', title: 'Beschreibung', tips: ['Mindestens 100 Zeichen, besser 300-500 Zeichen', 'Wichtige Eigenschaften nennen: Material, Farbe, Masse, Besonderheiten', 'Keine reinen Aufzaehlungen - fliesender Text wirkt besser', 'Keine Werbefloskeln wie "guenstig" oder "Top-Qualitaet"'] },
+        { field: 'ean', title: 'EAN (GTIN14)', tips: ['Muss 13 oder 14 Stellen lang sein (EAN-13 oder GTIN-14)', 'Muss eindeutig pro Artikel sein - keine Duplikate', 'Nicht erfundene oder Test-EANs verwenden', 'Handelsuebliche GTIN aus GS1-Datenbank'] },
+        { field: 'image_url', title: 'Produktbild', tips: ['Freisteller auf weissem oder transparentem Hintergrund', 'Mindestens 600x600 Pixel, optimal 1000x1000+', 'Oeffentlich erreichbare URL (kein Login erforderlich)', 'Kein Wasserzeichen, keine Preise im Bild'] },
+        { field: 'price', title: 'Preis & Lieferung', tips: ['Preis im Format 19.99 (Punkt als Dezimaltrennzeichen)', 'Versandart muss einen gueltigen Wert enthalten', 'Lieferzeit als Werktage angeben, z. B. "3-5"', 'Verfuegbarkeit / Bestand stets aktuell halten'] },
     ],
     qualityShowMore: 'Alle Tipps anzeigen',
     qualityShowLess: 'Weniger anzeigen',
@@ -514,8 +511,8 @@ const EN_T = {
     hiddenFields: (n) => `${n} more optional fields not detected in feed`,
     startAnalysis: 'Start Analysis →',
     newFeed: 'Check New Feed',
-    statusOk: 'Feed is error-free — all items can be listed.',
-    statusErr: 'Errors found — please fix and re-upload the feed.',
+    statusOk: 'Feed is error-free - all items can be listed.',
+    statusErr: 'Errors found - please fix and re-upload the feed.',
     errorRateFmt: (r) => `Error rate: ${r}%`,
     analysisTitle: 'Required Field Analysis',
     analysisSummary: (t, v, e) => `${t} fields · ${v} complete · ${e} with errors`,
@@ -588,11 +585,11 @@ const EN_T = {
     hsField: { key: 'hs_code', label: 'HS Code' },
     qualityTitle: 'Feed Quality Tips',
     qualityTips: [
-        { field: 'name', icon: '✏️', title: 'Item Name', tips: ['At least 2 words, descriptive and specific', 'Ideal: Brand + Product + Key Attribute, e.g. "BRAND Sofa 3-seater grey 180 cm"', 'No used-goods labels or generic terms like "product"', 'Max 255 characters'] },
-        { field: 'description', icon: '📝', title: 'Description', tips: ['At least 100 characters, ideally 300–500', 'Include key attributes: material, color, dimensions, features', 'Flowing text works better than bullet lists alone', 'Avoid marketing phrases like "cheap" or "top quality"'] },
-        { field: 'ean', icon: '🔢', title: 'EAN (GTIN14)', tips: ['Must be 13 or 14 digits (EAN-13 or GTIN-14)', 'Must be unique per item — no duplicates', 'Do not use invented or test EANs', 'Use a valid GTIN from the GS1 database'] },
-        { field: 'image_url', icon: '🖼️', title: 'Product Image', tips: ['White or transparent background (cut-out)', 'At least 600×600 pixels, ideally 1000×1000+', 'Publicly accessible URL (no login required)', 'No watermarks or prices in the image'] },
-        { field: 'price', icon: '💶', title: 'Price & Delivery', tips: ['Price in format 19.99 (dot as decimal separator)', 'Shipping mode must contain a valid value', 'Delivery time in working days, e.g. "3-5"', 'Keep availability/stock always up to date'] },
+        { field: 'name', title: 'Item Name', tips: ['At least 2 words, descriptive and specific', 'Ideal: Brand + Product + Key Attribute, e.g. "BRAND Sofa 3-seater grey 180 cm"', 'No used-goods labels or generic terms like "product"', 'Max 255 characters'] },
+        { field: 'description', title: 'Description', tips: ['At least 100 characters, ideally 300-500', 'Include key attributes: material, color, dimensions, features', 'Flowing text works better than bullet lists alone', 'Avoid marketing phrases like "cheap" or "top quality"'] },
+        { field: 'ean', title: 'EAN (GTIN14)', tips: ['Must be 13 or 14 digits (EAN-13 or GTIN-14)', 'Must be unique per item - no duplicates', 'Do not use invented or test EANs', 'Use a valid GTIN from the GS1 database'] },
+        { field: 'image_url', title: 'Product Image', tips: ['White or transparent background (cut-out)', 'At least 600×600 pixels, ideally 1000×1000+', 'Publicly accessible URL (no login required)', 'No watermarks or prices in the image'] },
+        { field: 'price', title: 'Price & Delivery', tips: ['Price in format 19.99 (dot as decimal separator)', 'Shipping mode must contain a valid value', 'Delivery time in working days, e.g. "3-5"', 'Keep availability/stock always up to date'] },
     ],
     qualityShowMore: 'Show all tips',
     qualityShowLess: 'Show less',
@@ -607,7 +604,7 @@ const EN_T = {
     recDownloadDesc: 'CSV file with all errors per row – import into Excel to fix the affected items directly.',
     recDownloadBtn: 'Download Error Report as CSV',
     listableCount: (l, t) => `${l} / ${t} items listable`,
-    statusBanner: (n, t) => `Please fix the errors and re-upload the feed. — ${n} of ${t} items affected`,
+    statusBanner: (n, t) => `Please fix the errors and re-upload the feed. ${n} of ${t} items affected`,
     hinweisTitle: 'Important Feed Requirements',
     hinweisBeforeNext: 'Check before next upload',
     hinweisPflicht: {
@@ -657,12 +654,9 @@ const EN_T = {
     howTitle: 'How it works',
     howSummary: 'Upload your product feed – we check all required fields and show exactly which items have errors.',
     howSteps: [
-        { n: 1, title: 'Upload feed', desc: 'Drop your CSV file or click to browse' },
-        { n: 2, title: 'Review mapping', desc: 'Columns are detected and matched automatically' },
-        { n: 3, title: 'Check errors', desc: 'All required fields are checked for errors' },
-        { n: 4, title: 'Read requirements', desc: 'Review important feed requirements' },
-        { n: 5, title: 'Fix errors', desc: 'Download error report as CSV and correct' },
-        { n: 6, title: 'Go live', desc: 'Clean feed = faster listing, more visibility' },
+        { n: 1, title: 'Upload feed', desc: 'Upload your CSV file via drag & drop or click' },
+        { n: 2, title: 'Check errors', desc: 'All required fields are analysed automatically' },
+        { n: 3, title: 'Fix errors', desc: 'Download the error report as CSV and correct it' },
     ],
 };
 
@@ -1079,6 +1073,19 @@ export default function McAngebotsfeed() {
     const errorRate = issues ? (issues.blockiertCount / issues.totalRows) * 100 : 0;
     const stufe1Passed = issues ? errorRate <= 5 : false;
 
+    const allRequiredMapped = MC_PFLICHT_COLS.every(f => {
+        if (f === 'image_url') return mcImageColumns.length > 0;
+        if (f === 'availability') return !!(mcMapping.availability || mcMapping.stock_amount);
+        return !!mcMapping[f];
+    }) && (!outsideGermany || !!mcMapping['hs_code']);
+
+    useEffect(() => {
+        if (step === 2 && allRequiredMapped) {
+            const t = setTimeout(() => setStep(3), 800);
+            return () => clearTimeout(t);
+        }
+    }, [step, allRequiredMapped]);
+
     return (
         <div style={{ background: '#F3F4F6', height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
             {/* ── HEADER ── */}
@@ -1106,7 +1113,21 @@ export default function McAngebotsfeed() {
                     <div style={{ position: 'relative' }}>
                         <button type="button" onClick={() => setLangOpen((v) => !v)}
                             style={{ display: 'flex', alignItems: 'center', gap: 7, background: langOpen ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: langOpen ? '8px 8px 0 0' : 8, padding: '6px 12px', cursor: 'pointer', color: '#FFF', fontSize: 13, fontWeight: 600, transition: 'background 0.15s' }}>
-                            <span style={{ fontSize: 16, lineHeight: 1 }}>{lang === 'de' ? '🇩🇪' : '🇬🇧'}</span>
+                            {lang === 'de' ? (
+                                <svg width="18" height="13" viewBox="0 0 18 13" style={{ borderRadius: 2, flexShrink: 0 }}>
+                                    <rect width="18" height="4.33" y="0" fill="#000"/>
+                                    <rect width="18" height="4.33" y="4.33" fill="#D00"/>
+                                    <rect width="18" height="4.34" y="8.66" fill="#FFCE00"/>
+                                </svg>
+                            ) : (
+                                <svg width="18" height="13" viewBox="0 0 18 13" style={{ borderRadius: 2, flexShrink: 0 }}>
+                                    <rect width="18" height="13" fill="#012169"/>
+                                    <path d="M0 0L18 13M18 0L0 13" stroke="#FFF" strokeWidth="2.6"/>
+                                    <path d="M0 0L18 13M18 0L0 13" stroke="#C8102E" strokeWidth="1.4"/>
+                                    <path d="M9 0v13M0 6.5h18" stroke="#FFF" strokeWidth="3.5"/>
+                                    <path d="M9 0v13M0 6.5h18" stroke="#C8102E" strokeWidth="2"/>
+                                </svg>
+                            )}
                             <span>{lang === 'de' ? 'Deutsch' : 'English'}</span>
                             <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style={{ opacity: 0.8, transform: langOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }}><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
                         </button>
@@ -1115,11 +1136,25 @@ export default function McAngebotsfeed() {
                                 {/* Click-outside backdrop */}
                                 <div style={{ position: 'fixed', inset: 0, zIndex: 99 }} onClick={() => setLangOpen(false)} />
                                 <div style={{ position: 'absolute', top: '100%', right: 0, background: '#FFF', borderRadius: '0 0 8px 8px', border: '1px solid rgba(255,255,255,0.25)', boxShadow: '0 8px 24px rgba(0,0,0,0.18)', overflow: 'hidden', zIndex: 100, minWidth: '100%' }}>
-                                    {[{ value: 'de', flag: '🇩🇪', label: 'Deutsch' }, { value: 'en', flag: '🇬🇧', label: 'English' }].map((opt) => (
+                                    {[{ value: 'de', label: 'Deutsch' }, { value: 'en', label: 'English' }].map((opt) => (
                                         <button key={opt.value} type="button"
                                             onClick={() => { setLang(opt.value); setLangOpen(false); }}
                                             style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8, padding: '9px 14px', background: lang === opt.value ? '#EEF4FF' : '#FFF', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: lang === opt.value ? 700 : 400, color: lang === opt.value ? MC_BLUE : '#374151', whiteSpace: 'nowrap' }}>
-                                            <span style={{ fontSize: 16 }}>{opt.flag}</span>
+                                            {opt.value === 'de' ? (
+                                                <svg width="18" height="13" viewBox="0 0 18 13" style={{ borderRadius: 2, flexShrink: 0 }}>
+                                                    <rect width="18" height="4.33" y="0" fill="#000"/>
+                                                    <rect width="18" height="4.33" y="4.33" fill="#D00"/>
+                                                    <rect width="18" height="4.34" y="8.66" fill="#FFCE00"/>
+                                                </svg>
+                                            ) : (
+                                                <svg width="18" height="13" viewBox="0 0 18 13" style={{ borderRadius: 2, flexShrink: 0 }}>
+                                                    <rect width="18" height="13" fill="#012169"/>
+                                                    <path d="M0 0L18 13M18 0L0 13" stroke="#FFF" strokeWidth="2.6"/>
+                                                    <path d="M0 0L18 13M18 0L0 13" stroke="#C8102E" strokeWidth="1.4"/>
+                                                    <path d="M9 0v13M0 6.5h18" stroke="#FFF" strokeWidth="3.5"/>
+                                                    <path d="M9 0v13M0 6.5h18" stroke="#C8102E" strokeWidth="2"/>
+                                                </svg>
+                                            )}
                                             {opt.label}
                                             {lang === opt.value && <svg width="11" height="11" viewBox="0 0 11 11" fill="none" style={{ marginLeft: 'auto' }}><path d="M2 5.5l2.5 2.5 4.5-4.5" stroke={MC_BLUE} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>}
                                         </button>
@@ -1180,28 +1215,16 @@ export default function McAngebotsfeed() {
                 ))}
             </div>
 
-            {/* Status banner — shown in steps 3/4 when errors exist */}
-            {(step === 3 || step === 4) && issues && !stufe1Passed && (
-                <div style={{ width: '100%', maxWidth: step === 3 ? 1280 : 1200, marginBottom: 10, background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 8, padding: '8px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}><circle cx="8" cy="8" r="6.5" stroke="#DC2626" strokeWidth="1.4"/><path d="M8 5v3.5" stroke="#DC2626" strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="11" r=".6" fill="#DC2626"/></svg>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: '#991B1B' }}>{T.statusBanner(issues.blockiertCount.toLocaleString(numLocale), issues.totalRows.toLocaleString(numLocale))}</span>
-                    </div>
-                    <button type="button" onClick={() => setStep(4)} style={{ fontSize: 12, fontWeight: 600, color: MC_BLUE, background: 'none', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}>
-                        {lang === 'de' ? 'Empfehlungen ansehen →' : 'View recommendations →'}
-                    </button>
-                </div>
-            )}
 
             <div style={{ display: 'contents' }}>
 
             {/* ══════════════════════════════════════════
-                STEP 1 — Upload
+                STEP 1 - Upload
             ══════════════════════════════════════════ */}
             {step === 1 && (
                 <div style={{ width: '100%', maxWidth: 1100, display: 'flex', flexDirection: 'column', gap: 14 }}>
 
-                    {/* Title row — above both columns */}
+                    {/* Title row - above both columns */}
                     <div>
                         <div style={{ fontSize: 18, fontWeight: 800, color: '#111827', marginBottom: 3 }}>{T.howTitle}</div>
                         <div style={{ fontSize: 12, color: '#6B7280', lineHeight: 1.5 }}>{T.howSummary}</div>
@@ -1276,7 +1299,7 @@ export default function McAngebotsfeed() {
             )}
 
             {/* ══════════════════════════════════════════
-                STEP 2 — Spalten-Zuordnung
+                STEP 2 - Spalten-Zuordnung
             ══════════════════════════════════════════ */}
             {step === 2 && (() => {
                 const allFields2 = [
@@ -1313,13 +1336,6 @@ export default function McAngebotsfeed() {
 
                 return (
                     <div style={{ width: '100%', maxWidth: 720 }}>
-                        {/* Back */}
-                        <button type="button" onClick={() => setStep(1)}
-                            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: '#6B7280', fontWeight: 600, padding: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: 6 }}>
-                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                            {T.back}
-                        </button>
-
                         {mcIsWrongFile ? (
                             <div style={{ padding: '20px', borderRadius: 12, border: '1px solid #FECACA', background: '#FEF2F2', display: 'flex', gap: 12 }}>
                                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ flexShrink: 0, color: '#DC2626' }}><path d="M10 3L2 17h16L10 3z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/><path d="M10 9v3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/><circle cx="10" cy="14.5" r="0.75" fill="currentColor"/></svg>
@@ -1473,7 +1489,7 @@ export default function McAngebotsfeed() {
             })()}
 
             {/* ══════════════════════════════════════════
-                STEP 3 — Ergebnis
+                STEP 3 - Ergebnis
             ══════════════════════════════════════════ */}
             {step === 3 && issues && (() => {
                 const totalPflichtFields = PFLICHT_TABLE_FIELDS.length;
@@ -1571,12 +1587,12 @@ export default function McAngebotsfeed() {
                                 <div style={{ fontSize: 10, fontWeight: 700, color: '#6B7280', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{lang === 'de' ? 'Vorlagen & Dokumentation' : 'Templates & Docs'}</div>
                                 <div style={{ display: 'grid', gap: 4 }}>
                                     {[
-                                        { icon: '📄', label: T.feedGuide, sub: lang === 'de' ? 'PDF · 24 Seiten' : 'PDF · 24 pages', onClick: () => setShowLeitfaden(true) },
-                                        { icon: '📊', label: T.feedTemplate, sub: lang === 'de' ? 'XLSX · Alle Pflichtfelder' : 'XLSX · All required fields', onClick: () => { const a = document.createElement('a'); a.href = 'http://media-partner.moebel.check24.de/feedvorlagen/Feedleitfaden_Anhang_2026/CHECK24_Feedvorlage_V2025.xlsx'; a.download = 'CHECK24_Feedvorlage_V2025.xlsx'; a.click(); } },
+                                        { svg: <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 1.5h8.5l3 3v10h-11.5v-13z" stroke="#6B7280" strokeWidth="1.3" strokeLinejoin="round"/><path d="M11 1.5v3h3" stroke="#6B7280" strokeWidth="1.3" strokeLinejoin="round"/><path d="M5 8h6M5 10.5h4" stroke="#6B7280" strokeWidth="1.2" strokeLinecap="round"/></svg>, label: T.feedGuide, sub: lang === 'de' ? 'PDF · 24 Seiten' : 'PDF · 24 pages', onClick: () => setShowLeitfaden(true) },
+                                        { svg: <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="13" height="13" rx="1.5" stroke="#6B7280" strokeWidth="1.3"/><path d="M5 5.5h6M5 8h6M5 10.5h4" stroke="#6B7280" strokeWidth="1.2" strokeLinecap="round"/></svg>, label: T.feedTemplate, sub: lang === 'de' ? 'XLSX · Alle Pflichtfelder' : 'XLSX · All required fields', onClick: () => { const a = document.createElement('a'); a.href = 'http://media-partner.moebel.check24.de/feedvorlagen/Feedleitfaden_Anhang_2026/CHECK24_Feedvorlage_V2025.xlsx'; a.download = 'CHECK24_Feedvorlage_V2025.xlsx'; a.click(); } },
                                     ].map((r) => (
                                         <button key={r.label} type="button" onClick={r.onClick}
                                             style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 6, border: '1px solid #E5E7EB', background: '#F9FAFB', cursor: 'pointer', textAlign: 'left', width: '100%' }}>
-                                            <span style={{ fontSize: 14 }}>{r.icon}</span>
+                                            <span style={{ flexShrink: 0 }}>{r.svg}</span>
                                             <div>
                                                 <div style={{ fontSize: 10, fontWeight: 700, color: '#111827' }}>{r.label}</div>
                                                 <div style={{ fontSize: 9, color: '#9CA3AF' }}>{r.sub}</div>
@@ -1594,13 +1610,6 @@ export default function McAngebotsfeed() {
 
                 return (
                     <div style={{ width: '100%', maxWidth: 1280, display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden', gap: 12 }}>
-
-                        {/* Back */}
-                        <button type="button" onClick={() => setStep(2)}
-                            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: '#6B7280', fontWeight: 600, padding: 0, display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
-                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                            {T.back}
-                        </button>
 
                         {/* Status header */}
                         <div style={{ borderRadius: 10, background: stufe1Passed ? '#F0FDF4' : '#FEF2F2', border: `1px solid ${stufe1Passed ? '#BBF7D0' : '#FECACA'}`, padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
@@ -1684,15 +1693,26 @@ export default function McAngebotsfeed() {
                                                     </div>
                                                     <span style={{ fontSize: 9, color: '#9CA3AF', width: 26, textAlign: 'right', flexShrink: 0 }}>{pct}%</span>
                                                 </>
-                                            ) : <span style={{ fontSize: 9, color: '#D1D5DB' }}>—</span>}
+                                            ) : <span style={{ fontSize: 9, color: '#D1D5DB' }}>-</span>}
                                         </div>
                                     </div>
                                 );
                             })}
                         </div>
 
-                        {/* Right action panel — height follows content, no stretching */}
+                        {/* Right action panel */}
                         <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+
+                            {/* Success state */}
+                            {stufe1Passed && (
+                                <div style={{ padding: '16px', borderBottom: '1px solid #F3F4F6', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, textAlign: 'center' }}>
+                                    <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#DCFCE7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4 6-6" stroke="#16A34A" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                    </div>
+                                    <div style={{ fontSize: 12, fontWeight: 700, color: '#166534' }}>{lang === 'de' ? 'Feed ist listingfähig' : 'Feed is ready to list'}</div>
+                                    <div style={{ fontSize: 10, color: '#4B7A5A', lineHeight: 1.5 }}>{lang === 'de' ? 'Alle Pflichtfelder sind vollständig und fehlerfrei.' : 'All required fields are complete and error-free.'}</div>
+                                </div>
+                            )}
 
                             {/* Top errors */}
                             {detailedErrors.length > 0 && (
@@ -1715,7 +1735,7 @@ export default function McAngebotsfeed() {
                             <div style={{ padding: '14px 16px', borderBottom: '1px solid #F3F4F6' }}>
                                 <button type="button" onClick={() => setStep(4)}
                                     style={{ width: '100%', padding: '10px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 7, fontSize: 12, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-                                    {T.recNextStep}
+                                    {stufe1Passed ? (lang === 'de' ? 'Zusammenfassung ansehen' : 'View summary') : T.recNextStep}
                                     <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M5 2l5 5-5 5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/></svg>
                                 </button>
                             </div>
@@ -1737,7 +1757,7 @@ export default function McAngebotsfeed() {
             })()}
 
             {/* ══════════════════════════════════════════
-                STEP 4 — Empfehlungen & Download
+                STEP 4 - Empfehlungen & Download
             ══════════════════════════════════════════ */}
             {step === 4 && issues && (() => {
                 // Build grouped recommendations from errors
@@ -1751,73 +1771,73 @@ export default function McAngebotsfeed() {
                 if (issues.nameDupRows.size > 0) errorsByType['name::dup'] = { field: 'name', type: 'dup', count: issues.nameDupRows.size };
 
                 const recRules = lang === 'de' ? {
-                    'name::missing':       { icon: '✏️', title: 'Artikelname fehlt',               action: 'Tragen Sie für jeden betroffenen Artikel einen vollständigen Namen ein.',         tip: 'Format: Marke + Produkttyp + Hauptattribut, z. B. „BRAND Sofa 3-Sitzer grau 180 cm" · mind. 2 Wörter und 10 Zeichen.' },
-                    'name::too_short':     { icon: '✏️', title: 'Artikelname zu kurz',              action: 'Verlängern Sie den Artikelnamen auf mindestens 10 Zeichen.',                     tip: 'Ergänzen Sie Produkttyp, Farbe oder Material für einen aussagekräftigen Namen.' },
-                    'name::one_word':      { icon: '✏️', title: 'Artikelname: nur ein Wort',        action: 'Der Name muss aus mindestens 2 Wörtern bestehen.',                              tip: 'Kombinieren Sie Marke + Produktname, z. B. „BRAND Tisch" oder „Hersteller Sofa grau".' },
-                    'name::placeholder':   { icon: '✏️', title: 'Artikelname: Platzhalterwert',     action: 'Ersetzen Sie Platzhalter wie „n/a" oder „test" durch echte Artikelnamen.',       tip: 'Verwenden Sie produktspezifische, eindeutige Namen.' },
-                    'name::dup':           { icon: '✏️', title: 'Artikelname: Duplikate',           action: 'Jeder Artikel muss einen eindeutigen Namen haben. Korrigieren oder entfernen Sie Duplikate.', tip: 'Unterscheiden Sie Varianten durch Farbe, Größe oder Modellbezeichnung.' },
-                    'ean::missing':        { icon: '🔢', title: 'EAN fehlt',                        action: 'Ergänzen Sie die EAN (GTIN14) für alle betroffenen Artikel.',                   tip: 'Verwenden Sie die offizielle GTIN aus der GS1-Datenbank.' },
-                    'ean::wrong_length':   { icon: '🔢', title: 'EAN: falsche Länge',               action: 'Die EAN muss 13 oder 14 Stellen haben (EAN-13 oder GTIN-14).',                   tip: 'Beispiel: EAN-13 „4012345678901" (13-stellig) oder GTIN-14 „04012345678901" (14-stellig).' },
-                    'ean::invalid':        { icon: '🔢', title: 'EAN: ungültiger Wert',             action: 'Entfernen Sie Sonderzeichen – die EAN darf nur Ziffern enthalten.',              tip: 'Keine Buchstaben, Leerzeichen oder Bindestriche erlaubt.' },
-                    'ean::placeholder':    { icon: '🔢', title: 'EAN: Platzhalterwert',             action: 'Ersetzen Sie Test-EANs durch gültige GTIN14-Nummern.',                          tip: 'Erfundene oder Test-EANs werden blockiert.' },
-                    'ean::dup':            { icon: '🔢', title: 'EAN: Duplikate',                   action: 'Jede EAN darf nur einmal vorkommen. Korrigieren Sie die doppelten Einträge.',   tip: 'Prüfen Sie, ob Artikel versehentlich mehrfach exportiert wurden.' },
-                    'description::missing':    { icon: '📝', title: 'Beschreibung fehlt',               action: 'Ergänzen Sie eine Produktbeschreibung für alle betroffenen Artikel.',           tip: 'Mindestens 20 Zeichen, empfohlen 100–500 Zeichen mit Material, Maßen und Features.' },
-                    'description::too_short':  { icon: '📝', title: 'Beschreibung zu kurz',             action: 'Verlängern Sie die Beschreibung auf mindestens 20 Zeichen.',                     tip: 'Nennen Sie Material, Farbe, Maße und besondere Produkteigenschaften.' },
-                    'description::bware':      { icon: '📝', title: 'Beschreibung: B-Ware-Hinweis',     action: 'Entfernen Sie die Kennzeichnung „B-Ware" aus der Beschreibung.',                tip: 'B-Ware-Artikel können nicht als Neuware gelistet werden.' },
-                    'description::placeholder':{ icon: '📝', title: 'Beschreibung: Platzhalterwert',    action: 'Ersetzen Sie Platzhalter durch echte Produktbeschreibungen.',                   tip: 'Beschreiben Sie Material, Farbe und Besonderheiten des Produkts.' },
-                    'price::missing':      { icon: '💶', title: 'Preis fehlt',                      action: 'Ergänzen Sie den Preis für alle betroffenen Artikel.',                          tip: 'Format: 19.99 (Punkt als Dezimaltrennzeichen, ohne €-Zeichen).' },
-                    'price::invalid':      { icon: '💶', title: 'Preis: ungültiges Format',         action: 'Korrigieren Sie das Preisformat auf 19.99.',                                    tip: 'Nur positive Zahlen mit Punkt als Dezimaltrennzeichen, z. B. 29.99.' },
-                    'price::placeholder':  { icon: '💶', title: 'Preis: Platzhalterwert',           action: 'Ersetzen Sie Platzhalterwerte durch den korrekten Artikelpreis.',               tip: 'Der Preis muss eine positive Zahl größer als 0 sein.' },
-                    'shipping_mode::missing':  { icon: '🚚', title: 'Versandart fehlt',              action: 'Tragen Sie die Versandart für alle betroffenen Artikel ein.',                   tip: 'Erlaubte Werte: „paket" oder „spedition" (Groß-/Kleinschreibung egal).' },
-                    'shipping_mode::invalid':  { icon: '🚚', title: 'Versandart: ungültiger Wert',   action: 'Korrigieren Sie die Versandart auf „paket" oder „spedition".',                  tip: 'Keine anderen Werte zulässig – prüfen Sie Leerzeichen oder Tippfehler.' },
-                    'shipping_mode::placeholder': { icon: '🚚', title: 'Versandart: Platzhalterwert', action: 'Ersetzen Sie Platzhalterwerte durch „paket" oder „spedition".',              tip: 'Erlaubte Werte: „paket" für Paketversand, „spedition" für Speditionslieferung.' },
-                    'image_url::missing':  { icon: '🖼️', title: 'Bild-URL fehlt',                  action: 'Fügen Sie für jeden Artikel eine öffentlich erreichbare Bild-URL ein.',         tip: 'Freigestelltes Bild auf weißem Hintergrund, mind. 600×600 px, kein Login nötig.' },
-                    'image_url::invalid':  { icon: '🖼️', title: 'Bild-URL: ungültiger Wert',       action: 'Prüfen Sie, ob die Bild-URL korrekt und öffentlich erreichbar ist.',            tip: 'URL muss mit http:// oder https:// beginnen und direkt auf eine Bilddatei zeigen.' },
-                    'availability::missing':   { icon: '📦', title: 'Bestand / Verfügbarkeit fehlt', action: 'Geben Sie Lagerbestand oder Verfügbarkeitsstatus für alle Artikel an.',        tip: 'Entweder numerischer Bestand (z. B. 10) oder einen Verfügbarkeitsstatus.' },
-                    'stock_amount::missing':   { icon: '📦', title: 'Bestand fehlt',                 action: 'Ergänzen Sie den numerischen Lagerbestand.',                                   tip: 'Tragen Sie den aktuellen Bestand als Zahl ein, z. B. 5 oder 100.' },
-                    'brand::missing':      { icon: '🏷️', title: 'Marke fehlt',                      action: 'Ergänzen Sie den Markennamen für alle betroffenen Artikel.',                   tip: 'Verwenden Sie den offiziellen Markennamen, mind. 2 Zeichen.' },
-                    'brand::too_short':    { icon: '🏷️', title: 'Marke: zu kurz',                   action: 'Der Markenname muss mindestens 2 Zeichen haben.',                              tip: 'Verwenden Sie den vollständigen, offiziellen Markennamen.' },
-                    'brand::placeholder':  { icon: '🏷️', title: 'Marke: Platzhalterwert',           action: 'Ersetzen Sie Platzhalter durch den echten Markennamen.',                       tip: 'Der Markenname muss für jeden Artikel ausgefüllt sein.' },
-                    'delivery_time::missing':  { icon: '⏱️', title: 'Lieferzeit fehlt',              action: 'Ergänzen Sie die Lieferzeit für alle betroffenen Artikel.',                   tip: 'Format: Zahl + Einheit, z. B. „3-5 Werktage" oder „2 Tage".' },
-                    'delivery_time::invalid':  { icon: '⏱️', title: 'Lieferzeit: ungültiges Format', action: 'Korrigieren Sie das Format der Lieferzeit.',                                   tip: 'Beispiele: „3-5 Werktage", „1 Woche", „2 Tage". Einheit muss erkennbar sein.' },
-                    'delivery_time::placeholder': { icon: '⏱️', title: 'Lieferzeit: Platzhalterwert', action: 'Ersetzen Sie Platzhalter durch reale Lieferzeitangaben.',                   tip: 'Geben Sie die tatsächliche Lieferzeit an, z. B. „3-5 Werktage".' },
-                    'seller_offer_id::missing':{ icon: '🆔', title: 'Eigene Artikel-ID fehlt',       action: 'Ergänzen Sie Ihre interne Artikel-ID für alle betroffenen Zeilen.',            tip: 'Die Artikel-ID muss eindeutig pro Artikel sein.' },
-                    'seller_offer_id::placeholder':{ icon: '🆔', title: 'Artikel-ID: Platzhalterwert', action: 'Ersetzen Sie Platzhalter durch echte, eindeutige Artikel-IDs.',            tip: 'Verwenden Sie Ihre internen SKU oder Artikelnummern.' },
-                    'hs_code::missing':    { icon: '🌍', title: 'HS-Code fehlt',                    action: 'Da Ihr Lager außerhalb Deutschlands liegt, ist der HS-Code Pflichtfeld.',      tip: 'Den passenden HS-Code finden Sie im EU-Zolltarifverzeichnis (customs.ec.europa.eu).' },
+                    'name::missing':       { title: 'Artikelname fehlt',               action: 'Tragen Sie für jeden betroffenen Artikel einen vollständigen Namen ein.',         tip: 'Format: Marke + Produkttyp + Hauptattribut, z. B. „BRAND Sofa 3-Sitzer grau 180 cm" · mind. 2 Wörter und 10 Zeichen.' },
+                    'name::too_short':     { title: 'Artikelname zu kurz',              action: 'Verlängern Sie den Artikelnamen auf mindestens 10 Zeichen.',                     tip: 'Ergänzen Sie Produkttyp, Farbe oder Material für einen aussagekräftigen Namen.' },
+                    'name::one_word':      { title: 'Artikelname: nur ein Wort',        action: 'Der Name muss aus mindestens 2 Wörtern bestehen.',                              tip: 'Kombinieren Sie Marke + Produktname, z. B. „BRAND Tisch" oder „Hersteller Sofa grau".' },
+                    'name::placeholder':   { title: 'Artikelname: Platzhalterwert',     action: 'Ersetzen Sie Platzhalter wie „n/a" oder „test" durch echte Artikelnamen.',       tip: 'Verwenden Sie produktspezifische, eindeutige Namen.' },
+                    'name::dup':           { title: 'Artikelname: Duplikate',           action: 'Jeder Artikel muss einen eindeutigen Namen haben. Korrigieren oder entfernen Sie Duplikate.', tip: 'Unterscheiden Sie Varianten durch Farbe, Größe oder Modellbezeichnung.' },
+                    'ean::missing':        { title: 'EAN fehlt',                        action: 'Ergänzen Sie die EAN (GTIN14) für alle betroffenen Artikel.',                   tip: 'Verwenden Sie die offizielle GTIN aus der GS1-Datenbank.' },
+                    'ean::wrong_length':   { title: 'EAN: falsche Länge',               action: 'Die EAN muss 13 oder 14 Stellen haben (EAN-13 oder GTIN-14).',                   tip: 'Beispiel: EAN-13 „4012345678901" (13-stellig) oder GTIN-14 „04012345678901" (14-stellig).' },
+                    'ean::invalid':        { title: 'EAN: ungültiger Wert',             action: 'Entfernen Sie Sonderzeichen – die EAN darf nur Ziffern enthalten.',              tip: 'Keine Buchstaben, Leerzeichen oder Bindestriche erlaubt.' },
+                    'ean::placeholder':    { title: 'EAN: Platzhalterwert',             action: 'Ersetzen Sie Test-EANs durch gültige GTIN14-Nummern.',                          tip: 'Erfundene oder Test-EANs werden blockiert.' },
+                    'ean::dup':            { title: 'EAN: Duplikate',                   action: 'Jede EAN darf nur einmal vorkommen. Korrigieren Sie die doppelten Einträge.',   tip: 'Prüfen Sie, ob Artikel versehentlich mehrfach exportiert wurden.' },
+                    'description::missing':    { title: 'Beschreibung fehlt',               action: 'Ergänzen Sie eine Produktbeschreibung für alle betroffenen Artikel.',           tip: 'Mindestens 20 Zeichen, empfohlen 100–500 Zeichen mit Material, Maßen und Features.' },
+                    'description::too_short':  { title: 'Beschreibung zu kurz',             action: 'Verlängern Sie die Beschreibung auf mindestens 20 Zeichen.',                     tip: 'Nennen Sie Material, Farbe, Maße und besondere Produkteigenschaften.' },
+                    'description::bware':      { title: 'Beschreibung: B-Ware-Hinweis',     action: 'Entfernen Sie die Kennzeichnung „B-Ware" aus der Beschreibung.',                tip: 'B-Ware-Artikel können nicht als Neuware gelistet werden.' },
+                    'description::placeholder':{ title: 'Beschreibung: Platzhalterwert',    action: 'Ersetzen Sie Platzhalter durch echte Produktbeschreibungen.',                   tip: 'Beschreiben Sie Material, Farbe und Besonderheiten des Produkts.' },
+                    'price::missing':      { title: 'Preis fehlt',                      action: 'Ergänzen Sie den Preis für alle betroffenen Artikel.',                          tip: 'Format: 19.99 (Punkt als Dezimaltrennzeichen, ohne €-Zeichen).' },
+                    'price::invalid':      { title: 'Preis: ungültiges Format',         action: 'Korrigieren Sie das Preisformat auf 19.99.',                                    tip: 'Nur positive Zahlen mit Punkt als Dezimaltrennzeichen, z. B. 29.99.' },
+                    'price::placeholder':  { title: 'Preis: Platzhalterwert',           action: 'Ersetzen Sie Platzhalterwerte durch den korrekten Artikelpreis.',               tip: 'Der Preis muss eine positive Zahl größer als 0 sein.' },
+                    'shipping_mode::missing':  { title: 'Versandart fehlt',              action: 'Tragen Sie die Versandart für alle betroffenen Artikel ein.',                   tip: 'Erlaubte Werte: „paket" oder „spedition" (Groß-/Kleinschreibung egal).' },
+                    'shipping_mode::invalid':  { title: 'Versandart: ungültiger Wert',   action: 'Korrigieren Sie die Versandart auf „paket" oder „spedition".',                  tip: 'Keine anderen Werte zulässig – prüfen Sie Leerzeichen oder Tippfehler.' },
+                    'shipping_mode::placeholder': { title: 'Versandart: Platzhalterwert', action: 'Ersetzen Sie Platzhalterwerte durch „paket" oder „spedition".',              tip: 'Erlaubte Werte: „paket" für Paketversand, „spedition" für Speditionslieferung.' },
+                    'image_url::missing':  { title: 'Bild-URL fehlt',                  action: 'Fügen Sie für jeden Artikel eine öffentlich erreichbare Bild-URL ein.',         tip: 'Freigestelltes Bild auf weißem Hintergrund, mind. 600×600 px, kein Login nötig.' },
+                    'image_url::invalid':  { title: 'Bild-URL: ungültiger Wert',       action: 'Prüfen Sie, ob die Bild-URL korrekt und öffentlich erreichbar ist.',            tip: 'URL muss mit http:// oder https:// beginnen und direkt auf eine Bilddatei zeigen.' },
+                    'availability::missing':   { title: 'Bestand / Verfügbarkeit fehlt', action: 'Geben Sie Lagerbestand oder Verfügbarkeitsstatus für alle Artikel an.',        tip: 'Entweder numerischer Bestand (z. B. 10) oder einen Verfügbarkeitsstatus.' },
+                    'stock_amount::missing':   { title: 'Bestand fehlt',                 action: 'Ergänzen Sie den numerischen Lagerbestand.',                                   tip: 'Tragen Sie den aktuellen Bestand als Zahl ein, z. B. 5 oder 100.' },
+                    'brand::missing':      { title: 'Marke fehlt',                      action: 'Ergänzen Sie den Markennamen für alle betroffenen Artikel.',                   tip: 'Verwenden Sie den offiziellen Markennamen, mind. 2 Zeichen.' },
+                    'brand::too_short':    { title: 'Marke: zu kurz',                   action: 'Der Markenname muss mindestens 2 Zeichen haben.',                              tip: 'Verwenden Sie den vollständigen, offiziellen Markennamen.' },
+                    'brand::placeholder':  { title: 'Marke: Platzhalterwert',           action: 'Ersetzen Sie Platzhalter durch den echten Markennamen.',                       tip: 'Der Markenname muss für jeden Artikel ausgefüllt sein.' },
+                    'delivery_time::missing':  { title: 'Lieferzeit fehlt',              action: 'Ergänzen Sie die Lieferzeit für alle betroffenen Artikel.',                   tip: 'Format: Zahl + Einheit, z. B. „3-5 Werktage" oder „2 Tage".' },
+                    'delivery_time::invalid':  { title: 'Lieferzeit: ungültiges Format', action: 'Korrigieren Sie das Format der Lieferzeit.',                                   tip: 'Beispiele: „3-5 Werktage", „1 Woche", „2 Tage". Einheit muss erkennbar sein.' },
+                    'delivery_time::placeholder': { title: 'Lieferzeit: Platzhalterwert', action: 'Ersetzen Sie Platzhalter durch reale Lieferzeitangaben.',                   tip: 'Geben Sie die tatsächliche Lieferzeit an, z. B. „3-5 Werktage".' },
+                    'seller_offer_id::missing':{ title: 'Eigene Artikel-ID fehlt',       action: 'Ergänzen Sie Ihre interne Artikel-ID für alle betroffenen Zeilen.',            tip: 'Die Artikel-ID muss eindeutig pro Artikel sein.' },
+                    'seller_offer_id::placeholder':{ title: 'Artikel-ID: Platzhalterwert', action: 'Ersetzen Sie Platzhalter durch echte, eindeutige Artikel-IDs.',            tip: 'Verwenden Sie Ihre internen SKU oder Artikelnummern.' },
+                    'hs_code::missing':    { title: 'HS-Code fehlt',                    action: 'Da Ihr Lager außerhalb Deutschlands liegt, ist der HS-Code Pflichtfeld.',      tip: 'Den passenden HS-Code finden Sie im EU-Zolltarifverzeichnis (customs.ec.europa.eu).' },
                 } : {
-                    'name::missing':       { icon: '✏️', title: 'Item name missing',              action: 'Add a full product name for every affected item.',                              tip: 'Format: Brand + Product type + Key attribute, e.g. "BRAND Sofa 3-seater grey 180 cm" · min. 2 words and 10 chars.' },
-                    'name::too_short':     { icon: '✏️', title: 'Item name too short',            action: 'Extend the item name to at least 10 characters.',                               tip: 'Add product type, color, or material to create a descriptive name.' },
-                    'name::one_word':      { icon: '✏️', title: 'Item name: single word only',   action: 'The name must consist of at least 2 words.',                                    tip: 'Combine brand + product name, e.g. "BRAND Table" or "Brand Sofa grey".' },
-                    'name::placeholder':   { icon: '✏️', title: 'Item name: placeholder value',  action: 'Replace placeholders like "n/a" or "test" with real item names.',               tip: 'Use product-specific, unique names.' },
-                    'name::dup':           { icon: '✏️', title: 'Item name: duplicates',         action: 'Every item must have a unique name. Fix or remove duplicates.',                  tip: 'Differentiate variants by color, size, or model designation.' },
-                    'ean::missing':        { icon: '🔢', title: 'EAN missing',                   action: 'Add the EAN (GTIN14) for all affected items.',                                  tip: 'Use the official GTIN from the GS1 database.' },
-                    'ean::wrong_length':   { icon: '🔢', title: 'EAN: wrong length',             action: 'EAN must be 13 or 14 digits (EAN-13 or GTIN-14).',                              tip: 'Example: EAN-13 "4012345678901" (13 digits) or GTIN-14 "04012345678901" (14 digits).' },
-                    'ean::invalid':        { icon: '🔢', title: 'EAN: invalid value',            action: 'Remove special characters – EAN must contain digits only.',                     tip: 'No letters, spaces, or hyphens allowed.' },
-                    'ean::placeholder':    { icon: '🔢', title: 'EAN: placeholder value',        action: 'Replace test EANs with valid GTIN14 numbers.',                                  tip: 'Invented or test EANs will be blocked.' },
-                    'ean::dup':            { icon: '🔢', title: 'EAN: duplicates',               action: 'Each EAN may only appear once. Fix the duplicate entries.',                     tip: 'Check whether items were accidentally exported multiple times.' },
-                    'description::missing':    { icon: '📝', title: 'Description missing',           action: 'Add a product description for all affected items.',                             tip: 'Min. 20 characters, ideally 100–500 with material, dimensions, and features.' },
-                    'description::too_short':  { icon: '📝', title: 'Description too short',         action: 'Extend the description to at least 20 characters.',                             tip: 'Mention material, color, dimensions, and key product features.' },
-                    'description::bware':      { icon: '📝', title: 'Description: used-goods label', action: 'Remove the "B-Ware" label from the description.',                               tip: 'Used goods items cannot be listed as new.' },
-                    'description::placeholder':{ icon: '📝', title: 'Description: placeholder value', action: 'Replace placeholder values with real product descriptions.',                  tip: 'Describe material, color, and special features of the product.' },
-                    'price::missing':      { icon: '💶', title: 'Price missing',                  action: 'Add the price for all affected items.',                                         tip: 'Format: 19.99 (dot as decimal separator, no currency symbol).' },
-                    'price::invalid':      { icon: '💶', title: 'Price: invalid format',          action: 'Correct the price format to 19.99.',                                            tip: 'Only positive numbers with dot as decimal separator, e.g. 29.99.' },
-                    'price::placeholder':  { icon: '💶', title: 'Price: placeholder value',       action: 'Replace placeholder values with the correct item price.',                       tip: 'The price must be a positive number greater than 0.' },
-                    'shipping_mode::missing':  { icon: '🚚', title: 'Shipping mode missing',      action: 'Set the shipping mode for all affected items.',                                 tip: 'Allowed values: "paket" or "spedition" (case-insensitive).' },
-                    'shipping_mode::invalid':  { icon: '🚚', title: 'Shipping mode: invalid value', action: 'Fix the shipping mode to "paket" or "spedition".',                           tip: 'No other values allowed – check for spaces or typos.' },
-                    'shipping_mode::placeholder':{ icon: '🚚', title: 'Shipping mode: placeholder', action: 'Replace placeholders with "paket" or "spedition".',                          tip: '"paket" for parcel delivery, "spedition" for freight delivery.' },
-                    'image_url::missing':  { icon: '🖼️', title: 'Image URL missing',             action: 'Add a publicly accessible image URL for every item.',                           tip: 'Cut-out on white background, min. 600×600 px, no login required.' },
-                    'image_url::invalid':  { icon: '🖼️', title: 'Image URL: invalid value',      action: 'Check that the image URL is correct and publicly accessible.',                  tip: 'URL must start with http:// or https:// and point directly to an image file.' },
-                    'availability::missing':   { icon: '📦', title: 'Stock / Availability missing', action: 'Provide stock count or availability status for every item.',                   tip: 'Either a numeric stock count (e.g. 10) or an availability status.' },
-                    'stock_amount::missing':   { icon: '📦', title: 'Stock missing',              action: 'Add the numeric stock count.',                                                  tip: 'Enter the current stock as a number, e.g. 5 or 100.' },
-                    'brand::missing':      { icon: '🏷️', title: 'Brand missing',                 action: 'Add the brand name for all affected items.',                                   tip: 'Use the official brand name, min. 2 characters.' },
-                    'brand::too_short':    { icon: '🏷️', title: 'Brand: too short',              action: 'Brand name must be at least 2 characters.',                                    tip: 'Use the full, official brand name.' },
-                    'brand::placeholder':  { icon: '🏷️', title: 'Brand: placeholder value',      action: 'Replace placeholders with the real brand name.',                               tip: 'Brand name must be filled in for every item.' },
-                    'delivery_time::missing':  { icon: '⏱️', title: 'Delivery time missing',     action: 'Add the delivery time for all affected items.',                                 tip: 'Format: number + unit, e.g. "3-5 working days" or "2 days".' },
-                    'delivery_time::invalid':  { icon: '⏱️', title: 'Delivery time: invalid format', action: 'Fix the delivery time format.',                                              tip: 'Examples: "3-5 working days", "1 week", "2 days". Unit must be recognizable.' },
-                    'delivery_time::placeholder':{ icon: '⏱️', title: 'Delivery time: placeholder', action: 'Replace placeholders with actual delivery time information.',                 tip: 'Enter the real delivery time, e.g. "3-5 working days".' },
-                    'seller_offer_id::missing':{ icon: '🆔', title: 'Own item ID missing',        action: 'Add your internal item ID for all affected rows.',                              tip: 'The item ID must be unique per item.' },
-                    'seller_offer_id::placeholder':{ icon: '🆔', title: 'Item ID: placeholder value', action: 'Replace placeholders with real, unique item IDs.',                         tip: 'Use your internal SKUs or item numbers.' },
-                    'hs_code::missing':    { icon: '🌍', title: 'HS Code missing',                action: 'Since your warehouse is outside Germany, HS Code is required.',                 tip: 'Find the correct HS Code in the EU customs tariff directory.' },
+                    'name::missing':       { title: 'Item name missing',              action: 'Add a full product name for every affected item.',                              tip: 'Format: Brand + Product type + Key attribute, e.g. "BRAND Sofa 3-seater grey 180 cm" · min. 2 words and 10 chars.' },
+                    'name::too_short':     { title: 'Item name too short',            action: 'Extend the item name to at least 10 characters.',                               tip: 'Add product type, color, or material to create a descriptive name.' },
+                    'name::one_word':      { title: 'Item name: single word only',   action: 'The name must consist of at least 2 words.',                                    tip: 'Combine brand + product name, e.g. "BRAND Table" or "Brand Sofa grey".' },
+                    'name::placeholder':   { title: 'Item name: placeholder value',  action: 'Replace placeholders like "n/a" or "test" with real item names.',               tip: 'Use product-specific, unique names.' },
+                    'name::dup':           { title: 'Item name: duplicates',         action: 'Every item must have a unique name. Fix or remove duplicates.',                  tip: 'Differentiate variants by color, size, or model designation.' },
+                    'ean::missing':        { title: 'EAN missing',                   action: 'Add the EAN (GTIN14) for all affected items.',                                  tip: 'Use the official GTIN from the GS1 database.' },
+                    'ean::wrong_length':   { title: 'EAN: wrong length',             action: 'EAN must be 13 or 14 digits (EAN-13 or GTIN-14).',                              tip: 'Example: EAN-13 "4012345678901" (13 digits) or GTIN-14 "04012345678901" (14 digits).' },
+                    'ean::invalid':        { title: 'EAN: invalid value',            action: 'Remove special characters – EAN must contain digits only.',                     tip: 'No letters, spaces, or hyphens allowed.' },
+                    'ean::placeholder':    { title: 'EAN: placeholder value',        action: 'Replace test EANs with valid GTIN14 numbers.',                                  tip: 'Invented or test EANs will be blocked.' },
+                    'ean::dup':            { title: 'EAN: duplicates',               action: 'Each EAN may only appear once. Fix the duplicate entries.',                     tip: 'Check whether items were accidentally exported multiple times.' },
+                    'description::missing':    { title: 'Description missing',           action: 'Add a product description for all affected items.',                             tip: 'Min. 20 characters, ideally 100–500 with material, dimensions, and features.' },
+                    'description::too_short':  { title: 'Description too short',         action: 'Extend the description to at least 20 characters.',                             tip: 'Mention material, color, dimensions, and key product features.' },
+                    'description::bware':      { title: 'Description: used-goods label', action: 'Remove the "B-Ware" label from the description.',                               tip: 'Used goods items cannot be listed as new.' },
+                    'description::placeholder':{ title: 'Description: placeholder value', action: 'Replace placeholder values with real product descriptions.',                  tip: 'Describe material, color, and special features of the product.' },
+                    'price::missing':      { title: 'Price missing',                  action: 'Add the price for all affected items.',                                         tip: 'Format: 19.99 (dot as decimal separator, no currency symbol).' },
+                    'price::invalid':      { title: 'Price: invalid format',          action: 'Correct the price format to 19.99.',                                            tip: 'Only positive numbers with dot as decimal separator, e.g. 29.99.' },
+                    'price::placeholder':  { title: 'Price: placeholder value',       action: 'Replace placeholder values with the correct item price.',                       tip: 'The price must be a positive number greater than 0.' },
+                    'shipping_mode::missing':  { title: 'Shipping mode missing',      action: 'Set the shipping mode for all affected items.',                                 tip: 'Allowed values: "paket" or "spedition" (case-insensitive).' },
+                    'shipping_mode::invalid':  { title: 'Shipping mode: invalid value', action: 'Fix the shipping mode to "paket" or "spedition".',                           tip: 'No other values allowed – check for spaces or typos.' },
+                    'shipping_mode::placeholder':{ title: 'Shipping mode: placeholder', action: 'Replace placeholders with "paket" or "spedition".',                          tip: '"paket" for parcel delivery, "spedition" for freight delivery.' },
+                    'image_url::missing':  { title: 'Image URL missing',             action: 'Add a publicly accessible image URL for every item.',                           tip: 'Cut-out on white background, min. 600×600 px, no login required.' },
+                    'image_url::invalid':  { title: 'Image URL: invalid value',      action: 'Check that the image URL is correct and publicly accessible.',                  tip: 'URL must start with http:// or https:// and point directly to an image file.' },
+                    'availability::missing':   { title: 'Stock / Availability missing', action: 'Provide stock count or availability status for every item.',                   tip: 'Either a numeric stock count (e.g. 10) or an availability status.' },
+                    'stock_amount::missing':   { title: 'Stock missing',              action: 'Add the numeric stock count.',                                                  tip: 'Enter the current stock as a number, e.g. 5 or 100.' },
+                    'brand::missing':      { title: 'Brand missing',                 action: 'Add the brand name for all affected items.',                                   tip: 'Use the official brand name, min. 2 characters.' },
+                    'brand::too_short':    { title: 'Brand: too short',              action: 'Brand name must be at least 2 characters.',                                    tip: 'Use the full, official brand name.' },
+                    'brand::placeholder':  { title: 'Brand: placeholder value',      action: 'Replace placeholders with the real brand name.',                               tip: 'Brand name must be filled in for every item.' },
+                    'delivery_time::missing':  { title: 'Delivery time missing',     action: 'Add the delivery time for all affected items.',                                 tip: 'Format: number + unit, e.g. "3-5 working days" or "2 days".' },
+                    'delivery_time::invalid':  { title: 'Delivery time: invalid format', action: 'Fix the delivery time format.',                                              tip: 'Examples: "3-5 working days", "1 week", "2 days". Unit must be recognizable.' },
+                    'delivery_time::placeholder':{ title: 'Delivery time: placeholder', action: 'Replace placeholders with actual delivery time information.',                 tip: 'Enter the real delivery time, e.g. "3-5 working days".' },
+                    'seller_offer_id::missing':{ title: 'Own item ID missing',        action: 'Add your internal item ID for all affected rows.',                              tip: 'The item ID must be unique per item.' },
+                    'seller_offer_id::placeholder':{ title: 'Item ID: placeholder value', action: 'Replace placeholders with real, unique item IDs.',                         tip: 'Use your internal SKUs or item numbers.' },
+                    'hs_code::missing':    { title: 'HS Code missing',                action: 'Since your warehouse is outside Germany, HS Code is required.',                 tip: 'Find the correct HS Code in the EU customs tariff directory.' },
                 };
 
                 const recommendations = Object.entries(errorsByType)
@@ -1864,13 +1884,6 @@ export default function McAngebotsfeed() {
                 return (
                     <div style={{ width: '100%', maxWidth: 1200, display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
 
-                        {/* Back */}
-                        <button type="button" onClick={() => setStep(3)}
-                            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: '#6B7280', fontWeight: 600, padding: '0 0 12px 0', display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
-                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                            {T.back}
-                        </button>
-
                         {/* Header */}
                         <div style={{ marginBottom: 12, flexShrink: 0 }}>
                             <div style={{ fontSize: 18, fontWeight: 800, color: '#111827', marginBottom: 4 }}>
@@ -1906,7 +1919,9 @@ export default function McAngebotsfeed() {
                                             <div key={key} style={{ background: '#FFF', border: '1px solid #E5E7EB', borderLeft: '4px solid #DC2626', borderRadius: 10, padding: '16px 20px' }}>
                                                 <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 8 }}>
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                                                        <span style={{ fontSize: 20, lineHeight: 1 }}>{rule.icon}</span>
+                                                        <div style={{ width: 28, height: 28, borderRadius: 6, background: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                                        {(() => { const f = key.split('::')[0]; const c = '#6B7280'; if (f==='name') return <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M3 13V4l4-2.5L11 4v9" stroke={c} strokeWidth="1.3" strokeLinejoin="round"/><path d="M7 1.5v11.5" stroke={c} strokeWidth="1.3"/><path d="M3 13h8" stroke={c} strokeWidth="1.3" strokeLinecap="round"/></svg>; if (f==='ean') return <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="1.5" height="10" fill={c}/><rect x="5" y="3" width="1" height="10" fill={c}/><rect x="7.5" y="3" width="2" height="10" fill={c}/><rect x="11" y="3" width="1" height="10" fill={c}/><rect x="13" y="3" width="1" height="10" fill={c}/></svg>; if (f==='description') return <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="2" y="1.5" width="12" height="13" rx="1.5" stroke={c} strokeWidth="1.3"/><path d="M5 5.5h6M5 8h6M5 10.5h4" stroke={c} strokeWidth="1.2" strokeLinecap="round"/></svg>; if (f==='price') return <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke={c} strokeWidth="1.3"/><path d="M8 4.5v7M6 6.5c0-.8.9-1.5 2-1.5s2 .7 2 1.5-1 1.3-2 1.5-2 .7-2 1.5.9 1.5 2 1.5 2-.7 2-1.5" stroke={c} strokeWidth="1.2" strokeLinecap="round"/></svg>; if (f==='shipping_mode') return <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M1 9h9V3H1v6z" stroke={c} strokeWidth="1.3" strokeLinejoin="round"/><path d="M10 5h2.5l2 3v1H10V5z" stroke={c} strokeWidth="1.3" strokeLinejoin="round"/><circle cx="3.5" cy="11.5" r="1.5" stroke={c} strokeWidth="1.3"/><circle cx="12" cy="11.5" r="1.5" stroke={c} strokeWidth="1.3"/></svg>; if (f==='image_url') return <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="2" width="13" height="12" rx="1.5" stroke={c} strokeWidth="1.3"/><circle cx="5.5" cy="6" r="1.5" stroke={c} strokeWidth="1.2"/><path d="M1.5 11l3.5-3 3 3 2-2 3.5 3" stroke={c} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>; if (f==='availability'||f==='stock_amount') return <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 1.5L2 5v3L8 12l6-4V5L8 1.5z" stroke={c} strokeWidth="1.3" strokeLinejoin="round"/><path d="M2 8l6 3.5L14 8" stroke={c} strokeWidth="1.3"/><path d="M8 11.5V15" stroke={c} strokeWidth="1.3"/></svg>; if (f==='brand') return <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.5 3.5L13 6l-2.5 2.5.5 3.5L8 10.5 5 12l.5-3.5L3 6l3.5-.5L8 2z" stroke={c} strokeWidth="1.3" strokeLinejoin="round"/></svg>; if (f==='delivery_time') return <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke={c} strokeWidth="1.3"/><path d="M8 5v3.5L10.5 10" stroke={c} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>; if (f==='seller_offer_id') return <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="3" width="13" height="10" rx="1.5" stroke={c} strokeWidth="1.3"/><path d="M5 8h6M5 10.5h3" stroke={c} strokeWidth="1.2" strokeLinecap="round"/><circle cx="4" cy="6" r="1" fill={c}/></svg>; return <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke={c} strokeWidth="1.3"/><path d="M5.5 8a2.5 2.5 0 005 0" stroke={c} strokeWidth="1.2"/><path d="M2.5 8h11" stroke={c} strokeWidth="1.2"/></svg>; })()}
+                                                        </div>
                                                         <div>
                                                             <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                                                                 <span style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>{rule.title}</span>
