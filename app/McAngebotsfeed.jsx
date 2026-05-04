@@ -1267,8 +1267,8 @@ export default function McAngebotsfeed() {
                         </button>
                         </div>{/* end white card */}
 
-                    </div>{/* end right column */}
-                </div>{/* end grid */}
+                    </div>
+                </div>
             )}
 
             {/* ══════════════════════════════════════════
