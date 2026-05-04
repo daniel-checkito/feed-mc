@@ -931,6 +931,7 @@ export default function McAngebotsfeed() {
         const missingOptionalCols = MC_OPTIONAL_COLS.filter((c) => !mcMapping[c]);
 
         const pflichtErrors = [];
+        const warnErrors = [];
         const optionalHints = [];
         const duplicateEans = {};
         const duplicateNames = {};
@@ -978,14 +979,23 @@ export default function McAngebotsfeed() {
                 const col = mcMapping[key];
                 if (!col) continue;
                 const val = String(row[col] ?? '').trim();
+                const isWarnField = key === 'brand' || key === 'shipping_mode' || key === 'delivery_time';
                 if (!val) {
-                    pflichtErrors.push({ row: rn, ean, field: key, type: 'missing' });
-                    pflichtOk = false;
+                    if (isWarnField) {
+                        warnErrors.push({ row: rn, ean, field: key, type: 'missing' });
+                    } else {
+                        pflichtErrors.push({ row: rn, ean, field: key, type: 'missing' });
+                        pflichtOk = false;
+                    }
                     continue;
                 }
                 if (isPlaceholder(val)) {
-                    pflichtErrors.push({ row: rn, ean, field: key, type: 'placeholder', value: val });
-                    pflichtOk = false;
+                    if (isWarnField) {
+                        warnErrors.push({ row: rn, ean, field: key, type: 'placeholder', value: val });
+                    } else {
+                        pflichtErrors.push({ row: rn, ean, field: key, type: 'placeholder', value: val });
+                        pflichtOk = false;
+                    }
                     continue;
                 }
                 if (key === 'ean') {
@@ -1013,8 +1023,7 @@ export default function McAngebotsfeed() {
                     }
                 }
                 if (key === 'brand' && val.length < 2) {
-                    pflichtErrors.push({ row: rn, ean, field: 'brand', type: 'too_short', value: val });
-                    pflichtOk = false;
+                    warnErrors.push({ row: rn, ean, field: 'brand', type: 'too_short', value: val });
                 }
                 if (key === 'description') {
                     if (TEMPLATE_DESC_RE.test(val)) {
@@ -1049,13 +1058,11 @@ export default function McAngebotsfeed() {
                 if (key === 'shipping_mode') {
                     const normalized = SHIPPING_MODE_ALIASES[val.toLowerCase()] ?? val.toLowerCase();
                     if (normalized !== 'paket' && normalized !== 'spedition') {
-                        pflichtErrors.push({ row: rn, ean, field: key, type: 'invalid', value: val });
-                        pflichtOk = false;
+                        warnErrors.push({ row: rn, ean, field: key, type: 'invalid', value: val });
                     }
                 }
                 if (key === 'delivery_time' && !/\d/.test(val)) {
-                    pflichtErrors.push({ row: rn, ean, field: key, type: 'invalid', value: val });
-                    pflichtOk = false;
+                    warnErrors.push({ row: rn, ean, field: key, type: 'invalid', value: val });
                 }
             }
 
@@ -1063,8 +1070,7 @@ export default function McAngebotsfeed() {
             if (mcImageColumns.length > 0) {
                 const imgCount = mcImageColumns.reduce((c, col) => c + (String(row[col] ?? '').trim() ? 1 : 0), 0);
                 if (imgCount === 0) {
-                    pflichtErrors.push({ row: rn, ean, field: 'image_url', type: 'missing' });
-                    pflichtOk = false;
+                    warnErrors.push({ row: rn, ean, field: 'image_url', type: 'missing' });
                 } else if (imgCount === 1) {
                     pflichtErrors.push({ row: rn, ean, field: 'image_url', type: 'single' });
                     // warning but does not block listing
@@ -1254,6 +1260,7 @@ export default function McAngebotsfeed() {
             missingPflichtCols,
             missingOptionalCols,
             pflichtErrors,
+            warnErrors,
             optionalHints,
             pflichtOkCount,
             livefaehigCount,
@@ -1977,25 +1984,22 @@ export default function McAngebotsfeed() {
                 const colorWords = lang === 'de' ? COLOR_WORDS_DE : COLOR_WORDS_EN;
                 const materialWords = lang === 'de' ? MATERIAL_WORDS_DE : MATERIAL_WORDS_EN;
                 const titleAnalysis = nameCol ? (() => {
-                    let missingColor = 0, missingMaterial = 0, missingDimension = 0, missingBrand = 0;
+                    let missingColor = 0, missingMaterial = 0, missingDimension = 0;
                     const sampleBad = [];
                     rows.forEach((r) => {
                         const title = String(r[nameCol] ?? '').trim().toLowerCase();
-                        const brand = brandCol ? String(r[brandCol] ?? '').trim().toLowerCase() : '';
                         if (!title) return;
                         const hasColor = colorWords.some(w => title.includes(w));
                         const hasMaterial = materialWords.some(w => title.includes(w));
                         const hasDimension = DIMENSION_RE.test(title);
-                        const hasBrand = brand && title.includes(brand);
                         if (!hasColor) missingColor++;
                         if (!hasMaterial) missingMaterial++;
                         if (!hasDimension) missingDimension++;
-                        if (brandCol && !hasBrand) missingBrand++;
                         if ((!hasColor || !hasMaterial || !hasDimension) && sampleBad.length < 2) {
                             sampleBad.push({ title: String(r[nameCol] ?? ''), hasColor, hasMaterial, hasDimension });
                         }
                     });
-                    return { total: rows.length, missingColor, missingMaterial, missingDimension, missingBrand: brandCol ? missingBrand : null, sampleBad };
+                    return { total: rows.length, missingColor, missingMaterial, missingDimension, sampleBad };
                 })() : null;
 
                 const csvOnClick = () => {
@@ -2020,6 +2024,7 @@ export default function McAngebotsfeed() {
                         return T.csvErrFallback(label);
                     };
                     issues.pflichtErrors.forEach((e) => { if (!pflichtByRow[e.row]) pflichtByRow[e.row] = []; pflichtByRow[e.row].push(errorMsg(e)); });
+                    if (issues.warnErrors) issues.warnErrors.forEach((e) => { if (!pflichtByRow[e.row]) pflichtByRow[e.row] = []; pflichtByRow[e.row].push(`[Hinweis] ${errorMsg(e)}`); });
                     issues.eanDupRows.forEach((rn) => { if (!pflichtByRow[rn]) pflichtByRow[rn] = []; pflichtByRow[rn].push(T.csvEanDup); });
                     issues.nameDupRows.forEach((rn) => { if (!pflichtByRow[rn]) pflichtByRow[rn] = []; pflichtByRow[rn].push(T.csvNameDup); });
                     if (issues.offerIdDupRows) issues.offerIdDupRows.forEach((rn) => { if (!pflichtByRow[rn]) pflichtByRow[rn] = []; pflichtByRow[rn].push(T.csvOfferIdDup); });
@@ -2299,7 +2304,6 @@ export default function McAngebotsfeed() {
                                         { label: lang === 'de' ? 'Farbe fehlt' : 'Color missing', count: titleAnalysis.missingColor, tip: lang === 'de' ? 'z. B. „schwarz", „beige", „grau"' : 'e.g. "black", "beige", "grey"' },
                                         { label: lang === 'de' ? 'Material fehlt' : 'Material missing', count: titleAnalysis.missingMaterial, tip: lang === 'de' ? 'z. B. „Eiche", „Kunstleder", „Metall"' : 'e.g. "oak", "faux leather", "metal"' },
                                         { label: lang === 'de' ? 'Maße fehlen' : 'Dimensions missing', count: titleAnalysis.missingDimension, tip: lang === 'de' ? 'z. B. „180 cm", „80×200 cm"' : 'e.g. "180 cm", "80×200 cm"' },
-                                        ...(titleAnalysis.missingBrand !== null ? [{ label: lang === 'de' ? 'Marke fehlt' : 'Brand missing', count: titleAnalysis.missingBrand, tip: lang === 'de' ? 'Markenname sollte im Titel stehen' : 'Brand name should appear in title' }] : []),
                                     ].map(({ label, count, tip }) => {
                                         const pct = Math.round((count / titleAnalysis.total) * 100);
                                         const isOk = pct === 0;
@@ -2437,12 +2441,21 @@ export default function McAngebotsfeed() {
                 const errorsByType = {};
                 issues.pflichtErrors.forEach((e) => {
                     const key = `${e.field}::${e.type}`;
-                    if (!errorsByType[key]) errorsByType[key] = { field: e.field, type: e.type, count: 0 };
+                    if (!errorsByType[key]) errorsByType[key] = { field: e.field, type: e.type, count: 0, eans: [] };
                     errorsByType[key].count++;
+                    if (e.ean && errorsByType[key].eans.length < 10) errorsByType[key].eans.push(e.ean);
                 });
-                if (issues.eanDupRows.size > 0) errorsByType['ean::dup'] = { field: 'ean', type: 'dup', count: issues.eanDupRows.size };
-                if (issues.nameDupRows.size > 0) errorsByType['name::dup'] = { field: 'name', type: 'dup', count: issues.nameDupRows.size };
-                if (issues.offerIdDupRows && issues.offerIdDupRows.size > 0) errorsByType['seller_offer_id::dup'] = { field: 'seller_offer_id', type: 'dup', count: issues.offerIdDupRows.size };
+                if (issues.eanDupRows.size > 0) errorsByType['ean::dup'] = { field: 'ean', type: 'dup', count: issues.eanDupRows.size, eans: [] };
+                if (issues.nameDupRows.size > 0) errorsByType['name::dup'] = { field: 'name', type: 'dup', count: issues.nameDupRows.size, eans: [] };
+                if (issues.offerIdDupRows && issues.offerIdDupRows.size > 0) errorsByType['seller_offer_id::dup'] = { field: 'seller_offer_id', type: 'dup', count: issues.offerIdDupRows.size, eans: [] };
+
+                const warnsByType = {};
+                if (issues.warnErrors) issues.warnErrors.forEach((e) => {
+                    const key = `${e.field}::${e.type}`;
+                    if (!warnsByType[key]) warnsByType[key] = { field: e.field, type: e.type, count: 0, eans: [] };
+                    warnsByType[key].count++;
+                    if (e.ean && warnsByType[key].eans.length < 10) warnsByType[key].eans.push(e.ean);
+                });
 
                 const fieldIcon = (field) => {
                     const color = '#6B7280';
@@ -2549,7 +2562,12 @@ export default function McAngebotsfeed() {
 
                 const recommendations = Object.entries(errorsByType)
                     .sort((a, b) => b[1].count - a[1].count)
-                    .map(([key, { count }]) => ({ key, count, rule: recRules[key] || null }))
+                    .map(([key, { count, eans }]) => ({ key, count, eans, rule: recRules[key] || null }))
+                    .filter(({ rule }) => rule !== null);
+
+                const warningCards = Object.entries(warnsByType)
+                    .sort((a, b) => b[1].count - a[1].count)
+                    .map(([key, { count, eans }]) => ({ key, count, eans, rule: recRules[key] || null }))
                     .filter(({ rule }) => rule !== null);
 
                 const csvOnClick = () => {
@@ -2574,6 +2592,7 @@ export default function McAngebotsfeed() {
                         return T.csvErrFallback(label);
                     };
                     issues.pflichtErrors.forEach((e) => { if (!pflichtByRow[e.row]) pflichtByRow[e.row] = []; pflichtByRow[e.row].push(errorMsg(e)); });
+                    if (issues.warnErrors) issues.warnErrors.forEach((e) => { if (!pflichtByRow[e.row]) pflichtByRow[e.row] = []; pflichtByRow[e.row].push(`[Hinweis] ${errorMsg(e)}`); });
                     issues.eanDupRows.forEach((rn) => { if (!pflichtByRow[rn]) pflichtByRow[rn] = []; pflichtByRow[rn].push(T.csvEanDup); });
                     issues.nameDupRows.forEach((rn) => { if (!pflichtByRow[rn]) pflichtByRow[rn] = []; pflichtByRow[rn].push(T.csvNameDup); });
                     if (issues.offerIdDupRows) issues.offerIdDupRows.forEach((rn) => { if (!pflichtByRow[rn]) pflichtByRow[rn] = []; pflichtByRow[rn].push(T.csvOfferIdDup); });
@@ -2603,9 +2622,9 @@ export default function McAngebotsfeed() {
                         {/* Header */}
                         <div style={{ marginBottom: 12, flexShrink: 0 }}>
                             <div style={{ fontSize: 18, fontWeight: 800, color: '#111827', marginBottom: 4 }}>
-                                {recommendations.length > 0 ? T.recTitle(recommendations.length) : T.recNoErrorsTitle}
+                                {recommendations.length > 0 ? T.recTitle(recommendations.length) : (warningCards.length > 0 ? (lang === 'de' ? `${warningCards.length} Hinweis${warningCards.length > 1 ? 'e' : ''} gefunden` : `${warningCards.length} warning${warningCards.length > 1 ? 's' : ''} found`) : T.recNoErrorsTitle)}
                             </div>
-                            {recommendations.length === 0 && (
+                            {recommendations.length === 0 && warningCards.length === 0 && (
                                 <div style={{ fontSize: 13, color: '#6B7280' }}>{T.recNoErrorsSub}</div>
                             )}
                         </div>
@@ -2631,7 +2650,7 @@ export default function McAngebotsfeed() {
                                 {/* Recommendation cards */}
                                 {recommendations.length > 0 && (
                                     <div style={{ display: 'grid', gap: 10 }}>
-                                        {recommendations.map(({ key, count, rule }) => (
+                                        {recommendations.map(({ key, count, eans, rule }) => (
                                             <div key={key} style={{ background: '#FFF', border: '1px solid #E5E7EB', borderLeft: '4px solid #DC2626', borderRadius: 10, padding: '16px 20px' }}>
                                                 <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 8 }}>
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -2654,12 +2673,70 @@ export default function McAngebotsfeed() {
                                                 <div style={{ fontSize: 13, color: '#374151', lineHeight: 1.6, marginBottom: 6 }}>
                                                     {rule.action}
                                                 </div>
-                                                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, background: '#F9FAFB', borderRadius: 6, padding: '8px 12px' }}>
+                                                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, background: '#F9FAFB', borderRadius: 6, padding: '8px 12px', marginBottom: eans && eans.length > 0 ? 6 : 0 }}>
                                                     <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 1 }}><circle cx="8" cy="8" r="6.5" stroke={MC_BLUE} strokeWidth="1.4"/><path d="M8 7v4" stroke={MC_BLUE} strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="5.5" r=".6" fill={MC_BLUE}/></svg>
                                                     <span style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.5 }}>{rule.tip}</span>
                                                 </div>
+                                                {eans && eans.length > 0 && (
+                                                    <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 4 }}>
+                                                        <span style={{ fontSize: 10, color: '#9CA3AF', flexShrink: 0 }}>EAN:</span>
+                                                        {eans.slice(0, 5).map((e, i) => (
+                                                            <span key={i} style={{ fontSize: 10, fontFamily: 'monospace', background: '#F3F4F6', border: '1px solid #E5E7EB', padding: '1px 6px', borderRadius: 3, color: '#374151' }}>{e}</span>
+                                                        ))}
+                                                        {count > 5 && <span style={{ fontSize: 10, color: '#9CA3AF' }}>+{count - 5} {lang === 'de' ? 'weitere' : 'more'}</span>}
+                                                    </div>
+                                                )}
                                             </div>
                                         ))}
+                                    </div>
+                                )}
+
+                                {/* Warning cards (non-blocking) */}
+                                {warningCards.length > 0 && (
+                                    <div style={{ marginTop: recommendations.length > 0 ? 16 : 0 }}>
+                                        {recommendations.length > 0 && (
+                                            <div style={{ fontSize: 11, fontWeight: 700, color: '#92400E', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>
+                                                {lang === 'de' ? 'Hinweise (nicht listungsblockierend)' : 'Warnings (non-blocking)'}
+                                            </div>
+                                        )}
+                                        <div style={{ display: 'grid', gap: 10 }}>
+                                            {warningCards.map(({ key, count, eans, rule }) => (
+                                                <div key={key} style={{ background: '#FFFBEB', border: '1px solid #FDE68A', borderLeft: '4px solid #F59E0B', borderRadius: 10, padding: '16px 20px' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+                                                        <div style={{ width: 28, height: 28, borderRadius: 6, background: '#FEF3C7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                                            {fieldIcon(key.split('::')[0])}
+                                                        </div>
+                                                        <div>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                                                                <span style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>{rule.title}</span>
+                                                                <span style={{ fontSize: 10, fontWeight: 700, color: '#92400E', background: '#FEF3C7', padding: '2px 7px', borderRadius: 4, letterSpacing: '0.04em' }}>
+                                                                    {lang === 'de' ? 'HINWEIS' : 'WARNING'}
+                                                                </span>
+                                                            </div>
+                                                            <div style={{ fontSize: 11, color: '#D97706', fontWeight: 600, marginTop: 2 }}>
+                                                                {T.recAffected(count.toLocaleString(numLocale))}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div style={{ fontSize: 13, color: '#374151', lineHeight: 1.6, marginBottom: 6 }}>
+                                                        {rule.action}
+                                                    </div>
+                                                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, background: '#FEF9C3', borderRadius: 6, padding: '8px 12px', marginBottom: eans && eans.length > 0 ? 6 : 0 }}>
+                                                        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 1 }}><circle cx="8" cy="8" r="6.5" stroke="#D97706" strokeWidth="1.4"/><path d="M8 7v4" stroke="#D97706" strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="5.5" r=".6" fill="#D97706"/></svg>
+                                                        <span style={{ fontSize: 11, color: '#92400E', lineHeight: 1.5 }}>{rule.tip}</span>
+                                                    </div>
+                                                    {eans && eans.length > 0 && (
+                                                        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 4 }}>
+                                                            <span style={{ fontSize: 10, color: '#9CA3AF', flexShrink: 0 }}>EAN:</span>
+                                                            {eans.slice(0, 5).map((e, i) => (
+                                                                <span key={i} style={{ fontSize: 10, fontFamily: 'monospace', background: '#FEF3C7', border: '1px solid #FDE68A', padding: '1px 6px', borderRadius: 3, color: '#92400E' }}>{e}</span>
+                                                            ))}
+                                                            {count > 5 && <span style={{ fontSize: 10, color: '#9CA3AF' }}>+{count - 5} {lang === 'de' ? 'weitere' : 'more'}</span>}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
                                 )}
                             </div>
