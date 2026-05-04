@@ -1603,19 +1603,19 @@ export default function McAngebotsfeed() {
                         </button>
 
                         {/* Status header */}
-                        <div style={{ borderRadius: 12, background: stufe1Passed ? '#F0FDF4' : '#FEF2F2', border: `1px solid ${stufe1Passed ? '#BBF7D0' : '#FECACA'}`, padding: '14px 20px', display: 'flex', alignItems: 'center', gap: 16, flexShrink: 0 }}>
-                            <div style={{ width: 36, height: 36, borderRadius: '50%', background: stufe1Passed ? '#DCFCE7' : '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <div style={{ borderRadius: 10, background: stufe1Passed ? '#F0FDF4' : '#FEF2F2', border: `1px solid ${stufe1Passed ? '#BBF7D0' : '#FECACA'}`, padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
+                            <div style={{ width: 28, height: 28, borderRadius: '50%', background: stufe1Passed ? '#DCFCE7' : '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                                 {stufe1Passed
-                                    ? <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4 6-6" stroke="#16A34A" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                    : <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2L1 14h14L8 2z" stroke="#DC2626" strokeWidth="1.5" strokeLinejoin="round"/><path d="M8 7v3" stroke="#DC2626" strokeWidth="1.5" strokeLinecap="round"/><circle cx="8" cy="12" r=".6" fill="#DC2626"/></svg>}
+                                    ? <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4 6-6" stroke="#16A34A" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                    : <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 2L1 14h14L8 2z" stroke="#DC2626" strokeWidth="1.5" strokeLinejoin="round"/><path d="M8 7v3" stroke="#DC2626" strokeWidth="1.5" strokeLinecap="round"/><circle cx="8" cy="12" r=".6" fill="#DC2626"/></svg>}
                             </div>
                             <div style={{ flex: 1 }}>
-                                <div style={{ fontSize: 14, fontWeight: 700, color: stufe1Passed ? '#166534' : '#991B1B', marginBottom: 2 }}>
+                                <div style={{ fontSize: 13, fontWeight: 700, color: stufe1Passed ? '#166534' : '#991B1B' }}>
                                     {stufe1Passed ? T.statusOk : T.statusErr}
                                 </div>
-                                <div style={{ fontSize: 11, color: stufe1Passed ? '#4B7A5A' : '#B91C1C' }}>
+                                <div style={{ fontSize: 10, color: stufe1Passed ? '#4B7A5A' : '#B91C1C' }}>
                                     {T.errorRateFmt(errorRate.toFixed(1))}
-                                    {file && <span style={{ color: '#9CA3AF', marginLeft: 10 }}>{file.name}</span>}
+                                    {file && <span style={{ color: '#9CA3AF', marginLeft: 8 }}>{file.name}</span>}
                                 </div>
                             </div>
                             {/* Inline stats */}
@@ -1625,37 +1625,37 @@ export default function McAngebotsfeed() {
                                 { val: issues.totalRows, label: T.statTotal, color: '#374151', tip: T.tipTotal },
                             ].map(({ val, label, color, tip }) => (
                                 <Tooltip key={label} text={tip}>
-                                    <div style={{ textAlign: 'center', paddingLeft: 24, borderLeft: '1px solid rgba(0,0,0,0.08)', cursor: 'help' }}>
-                                        <div style={{ fontSize: 24, fontWeight: 900, color, lineHeight: 1 }}>{val.toLocaleString(numLocale)}</div>
-                                        <div style={{ fontSize: 10, color: '#6B7280', marginTop: 2 }}>{label}</div>
+                                    <div style={{ textAlign: 'center', paddingLeft: 16, borderLeft: '1px solid rgba(0,0,0,0.08)', cursor: 'help' }}>
+                                        <div style={{ fontSize: 18, fontWeight: 900, color, lineHeight: 1 }}>{val.toLocaleString(numLocale)}</div>
+                                        <div style={{ fontSize: 9, color: '#6B7280', marginTop: 2 }}>{label}</div>
                                     </div>
                                 </Tooltip>
                             ))}
                             {/* Progress bar */}
-                            <div style={{ paddingLeft: 24, borderLeft: '1px solid rgba(0,0,0,0.08)', minWidth: 140 }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                                    <span style={{ fontSize: 10, fontWeight: 600, color: '#374151' }}>{T.statComplete}</span>
-                                    <span style={{ fontSize: 10, fontWeight: 700, color: stufe1Passed ? '#16A34A' : '#DC2626' }}>{listablePct}%</span>
+                            <div style={{ paddingLeft: 16, borderLeft: '1px solid rgba(0,0,0,0.08)', minWidth: 120 }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
+                                    <span style={{ fontSize: 9, fontWeight: 600, color: '#374151' }}>{T.statComplete}</span>
+                                    <span style={{ fontSize: 9, fontWeight: 700, color: stufe1Passed ? '#16A34A' : '#DC2626' }}>{listablePct}%</span>
                                 </div>
-                                <div style={{ height: 7, background: 'rgba(0,0,0,0.08)', borderRadius: 4, overflow: 'hidden' }}>
-                                    <div style={{ height: '100%', width: `${listablePct}%`, background: stufe1Passed ? '#16A34A' : '#DC2626', borderRadius: 4, transition: 'width 0.4s' }} />
+                                <div style={{ height: 5, background: 'rgba(0,0,0,0.08)', borderRadius: 3, overflow: 'hidden' }}>
+                                    <div style={{ height: '100%', width: `${listablePct}%`, background: stufe1Passed ? '#16A34A' : '#DC2626', borderRadius: 3, transition: 'width 0.4s' }} />
                                 </div>
-                                <div style={{ fontSize: 9, color: '#9CA3AF', marginTop: 3 }}>{T.listableCount(issues.livefaehigCount.toLocaleString(numLocale), issues.totalRows.toLocaleString(numLocale))}</div>
+                                <div style={{ fontSize: 9, color: '#9CA3AF', marginTop: 2 }}>{T.listableCount(issues.livefaehigCount.toLocaleString(numLocale), issues.totalRows.toLocaleString(numLocale))}</div>
                             </div>
                         </div>
 
                         {/* 2-column: table | action panel */}
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 12, flex: 1, overflow: 'hidden', alignItems: 'start' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 12, flex: 1, overflow: 'hidden', alignItems: 'start' }}>
 
                         {/* Field analysis table */}
-                        <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'auto', height: '100%' }}>
-                            <div style={{ padding: '12px 18px', borderBottom: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', position: 'sticky', top: 0, background: '#FFF', zIndex: 1 }}>
-                                <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{T.analysisTitle}</div>
+                        <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', overflow: 'auto', height: '100%' }}>
+                            <div style={{ padding: '10px 16px', borderBottom: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', position: 'sticky', top: 0, background: '#FFF', zIndex: 1 }}>
+                                <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{T.analysisTitle}</div>
                                 <div style={{ fontSize: 10, color: '#6B7280' }}>
                                     {T.analysisSummary(totalPflichtFields, vollstaendigFields, totalPflichtFields - vollstaendigFields)}
                                 </div>
                             </div>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 130px', padding: '6px 18px', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 90px 120px', padding: '5px 16px', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB' }}>
                                 <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.05em' }}>{T.colField}</div>
                                 <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.05em', textAlign: 'right' }}>{T.colStatus}</div>
                                 <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.05em', paddingLeft: 12 }}>{T.colCoverage}</div>
@@ -1669,18 +1669,18 @@ export default function McAngebotsfeed() {
                                 const pct = isMapped ? Math.max(0, Math.round((1 - errs / issues.totalRows) * 100)) : null;
                                 const barColor = pct === null ? '#E5E7EB' : pct === 100 ? '#16A34A' : pct >= 70 ? '#D97706' : '#DC2626';
                                 return (
-                                    <div key={key} style={{ display: 'grid', gridTemplateColumns: '1fr 100px 130px', padding: '9px 18px', borderBottom: '1px solid #F9FAFB', alignItems: 'center' }}>
-                                        <div style={{ fontSize: 12, color: '#374151', fontWeight: 500 }}>{label}</div>
-                                        <div style={{ textAlign: 'right', fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap' }}>
+                                    <div key={key} style={{ display: 'grid', gridTemplateColumns: '1fr 90px 120px', padding: '7px 16px', borderBottom: '1px solid #F9FAFB', alignItems: 'center' }}>
+                                        <div style={{ fontSize: 11, color: '#374151', fontWeight: 500 }}>{label}</div>
+                                        <div style={{ textAlign: 'right', fontSize: 10, fontWeight: 600, whiteSpace: 'nowrap' }}>
                                             {pct === null ? <span style={{ color: '#9CA3AF' }}>{T.notInFeed}</span>
                                                 : errs === 0 ? <span style={{ color: '#16A34A' }}>{T.complete}</span>
                                                 : <span style={{ color: pct < 30 ? '#DC2626' : '#D97706' }}>{T.missingCount(errs.toLocaleString(numLocale))}</span>}
                                         </div>
-                                        <div style={{ paddingLeft: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+                                        <div style={{ paddingLeft: 12, display: 'flex', alignItems: 'center', gap: 5 }}>
                                             {pct !== null ? (
                                                 <>
-                                                    <div style={{ flex: 1, height: 5, background: '#F3F4F6', borderRadius: 3, overflow: 'hidden' }}>
-                                                        <div style={{ height: '100%', width: `${pct}%`, background: barColor, borderRadius: 3, transition: 'width 0.4s' }} />
+                                                    <div style={{ flex: 1, height: 4, background: '#F3F4F6', borderRadius: 2, overflow: 'hidden' }}>
+                                                        <div style={{ height: '100%', width: `${pct}%`, background: barColor, borderRadius: 2, transition: 'width 0.4s' }} />
                                                     </div>
                                                     <span style={{ fontSize: 9, color: '#9CA3AF', width: 26, textAlign: 'right', flexShrink: 0 }}>{pct}%</span>
                                                 </>
@@ -1691,53 +1691,50 @@ export default function McAngebotsfeed() {
                             })}
                         </div>
 
-                        {/* Right action panel */}
-                        <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'hidden', display: 'flex', flexDirection: 'column', height: '100%' }}>
+                        {/* Right action panel — height follows content, no stretching */}
+                        <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
 
                             {/* Top errors */}
                             {detailedErrors.length > 0 && (
-                                <div style={{ padding: '16px 18px', borderBottom: '1px solid #F3F4F6' }}>
-                                    <div style={{ fontSize: 11, fontWeight: 700, color: '#111827', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{T.topErrorsTitle}</div>
-                                    <div style={{ display: 'grid', gap: 7 }}>
+                                <div style={{ padding: '14px 16px', borderBottom: '1px solid #F3F4F6' }}>
+                                    <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{T.topErrorsTitle}</div>
+                                    <div style={{ display: 'grid', gap: 6 }}>
                                         {detailedErrors.map((e, i) => (
-                                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                                <div style={{ minWidth: 36, height: 22, background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                                    <span style={{ fontSize: 11, fontWeight: 800, color: '#DC2626' }}>{e.count.toLocaleString(numLocale)}</span>
+                                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                                                <div style={{ minWidth: 32, height: 18, background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                                    <span style={{ fontSize: 10, fontWeight: 800, color: '#DC2626' }}>{e.count.toLocaleString(numLocale)}</span>
                                                 </div>
-                                                <span style={{ fontSize: 11, color: '#374151', lineHeight: 1.35 }}>{e.label}</span>
+                                                <span style={{ fontSize: 10, color: '#374151', lineHeight: 1.3 }}>{e.label}</span>
                                             </div>
                                         ))}
                                     </div>
                                 </div>
                             )}
 
-                            {/* Spacer */}
-                            <div style={{ flex: 1 }} />
-
                             {/* Download section */}
-                            <div style={{ padding: '16px 18px', borderTop: '1px solid #F3F4F6' }}>
-                                <div style={{ fontSize: 12, fontWeight: 700, color: '#111827', marginBottom: 2 }}>{T.csvTitle}</div>
-                                <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 12, lineHeight: 1.5 }}>{T.csvDesc}</div>
+                            <div style={{ padding: '14px 16px', borderBottom: '1px solid #F3F4F6' }}>
+                                <div style={{ fontSize: 11, fontWeight: 700, color: '#111827', marginBottom: 2 }}>{T.csvTitle}</div>
+                                <div style={{ fontSize: 10, color: '#6B7280', marginBottom: 10, lineHeight: 1.45 }}>{T.csvDesc}</div>
                                 <button type="button" onClick={csvOnClick}
-                                    style={{ width: '100%', padding: '10px', background: '#F9FAFB', color: '#374151', border: '1px solid #E5E7EB', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
-                                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2v9M4 8l4 4 4-4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 14h12" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/></svg>
+                                    style={{ width: '100%', padding: '8px', background: '#F9FAFB', color: '#374151', border: '1px solid #E5E7EB', borderRadius: 7, fontSize: 11, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                                    <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M8 2v9M4 8l4 4 4-4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 14h12" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/></svg>
                                     {T.csvBtn}
                                 </button>
                             </div>
 
                             {/* Primary CTA */}
-                            <div style={{ padding: '0 18px 16px' }}>
+                            <div style={{ padding: '14px 16px', borderBottom: '1px solid #F3F4F6' }}>
                                 <button type="button" onClick={() => setStep(4)}
-                                    style={{ width: '100%', padding: '12px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
+                                    style={{ width: '100%', padding: '10px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 7, fontSize: 12, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
                                     {T.recNextStep}
-                                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 2l5 5-5 5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                    <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M5 2l5 5-5 5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/></svg>
                                 </button>
                             </div>
 
                             {/* Reset */}
-                            <div style={{ padding: '0 18px 16px' }}>
+                            <div style={{ padding: '10px 16px' }}>
                                 <button type="button" onClick={resetToStart}
-                                    style={{ width: '100%', padding: '9px', background: 'none', color: '#9CA3AF', border: 'none', borderRadius: 8, fontSize: 11, fontWeight: 500, cursor: 'pointer' }}>
+                                    style={{ width: '100%', padding: '7px', background: 'none', color: '#9CA3AF', border: 'none', borderRadius: 7, fontSize: 10, fontWeight: 500, cursor: 'pointer' }}>
                                     {lang === 'de' ? 'Neuen Feed hochladen' : 'Upload New Feed'}
                                 </button>
                             </div>
