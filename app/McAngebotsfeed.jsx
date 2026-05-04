@@ -7,11 +7,95 @@ const VORLAGE_HEADERS = ['EAN (GTIN14)','offer_id','name','description','categor
 const VORLAGE_EXAMPLE = ['4045347288557','T12345678-123','Dreammöbel "Dream" Ecksofa mit Hocker, Kunstleder schwarz, 180 x 200 cm','Dieses wunderschöne Sofa passt perfekt in jedes Wohnzimmer. Das Kunstleder ist leicht pflegbar. Weitere Infos: Maße: B 200cm x H 80cm x T 120cm; Material: Kunstleder, …','Wohnzimmer > Sofas > Ecksofas','https://beispielfeed.link.de/T12345678','Dreammöbel','Premiumline','T12345678-123','Rot / Schwarz','H 80 x T 120 x B 200 cm','80 cm','200 cm','120 cm','500 mm','140x200 cm','40 cm','50 cm','50 cm','links, rechts, beidseitig','26,5 kg','120 kg','Holz / Metall','matt / glänzend','MDF','Aluminium','H2','RG 40','Samt / 100 % Polyester','ja oder nein','ja oder nein','Bezug waschbar bei bis zu 60 °C','ja oder nein','OEKO-TEX Standard 100 / FSC','7','100 % Daunen','1531 g','240 l','Kassettensteppung','10 x 10 Kassetten','ja oder nein','2','2','3','ja oder nein','https://beispielfeed.link.de/T12345678/image1.jpg','https://beispielfeed.link.de/T12345678/image2.jpg','https://beispielfeed.link.de/T12345678/image3.jpg','https://beispielfeed.link.de/T12345678/image4.jpg','https://beispielfeed.link.de/T12345678/image5.jpg','https://beispielfeed.link.de/T12345678/image6.jpg','https://beispielfeed.link.de/T12345678/image7.jpg','https://beispielfeed.link.de/T12345678/image8.jpg','https://beispielfeed.link.de/T12345678/image9.jpg','https://beispielfeed.link.de/T12345678/image10.jpg','2x Kissen, 2x Bettdecke','1x Tisch, 4x Stuhl','ja oder nein','ja oder nein','ja oder nein','ja oder nein','https://beispielprodukt.link.de/eek_label/T12345.jpg','C','E27','"Bordsteinkante" oder "bis in die Wohnung"','teilmontiert, montiert, zerlegt','RF-A19D-W2SV0612-P8','25','39,55','24 Werktage, 1-2 Wochen, 24','Paket, Spedition','6,95','3','120 x 29 x 29 cm','20 kg','auf Lager, sofort lieferbar','https://www.tariffnumber.com/','Frank GmbH','Teststr. 1','10117','Berlin','Deutschland','test@gmail.com','309345678','0','40','10','30','https://beispielprodukt.link.de/ce_erklaerung/T12345.pdf','https://beispielprodukt.link.de/anleitung/T34567.pdf','https://beispielprodukt.link.de/sicherheitshinweis/T12345.pdf','https://beispielprodukt.link.de/anleitung/T12345.pdf','https://beispielprodukt.link.de/produktdatenblatt/T12345.pdf','ja/nein'];
 
 function downloadFeedvorlage() {
-    const ws = XLSX.utils.aoa_to_sheet([VORLAGE_HEADERS, VORLAGE_EXAMPLE, [], ['Pflichtangaben']]);
+    const ws = XLSX.utils.aoa_to_sheet([VORLAGE_HEADERS, VORLAGE_EXAMPLE, []]);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Feedvorlage');
     XLSX.writeFile(wb, 'CHECK24_Feedvorlage_2026.xlsx');
 }
+
+const FIELD_TOOLTIPS_DE = {
+    name: 'Artikelname: Marke + Produktname + Typ + Farbe + Maße. Min. 5 Zeichen, kein Einwort-Titel.',
+    price: 'Bruttopreis in EUR. Dezimaltrennzeichen: Komma oder Punkt (z. B. 39,99).',
+    seller_offer_id: 'Eindeutige Artikel-ID Ihres Systems. Keine Duplikate zulässig.',
+    brand: 'Markenname des Produkts. Min. 2 Zeichen.',
+    ean: 'EAN als GTIN-13 oder GTIN-14 (13–14 Ziffern). Keine Duplikate.',
+    delivery_time: 'Lieferzeit z. B. "2-4 Werktage", "1-2 Wochen" oder "24 Stunden".',
+    shipping_mode: 'Versandart: "Paket" oder "Spedition".',
+    availability: 'Verfügbarkeitsstatus: z. B. "auf Lager" oder "sofort lieferbar".',
+    stock_amount: 'Lagerbestand als ganze Zahl (z. B. 25). Alternativ zu availability.',
+    image_url: 'Direkte Bild-URL (HTTPS). Min. 800×600 px, kein Logo/Wasserzeichen.',
+    description: 'HTML-Beschreibung ohne Shop-Texte oder externe Links. Min. 20 Zeichen.',
+    hs_code: 'Harmonisierter Systemcode (HS-Code). Pflicht bei Lager außerhalb Deutschlands.',
+    category_path: 'Kategoriepfad z. B. "Wohnzimmer > Sofas > Ecksofas".',
+    delivery_includes: 'Lieferumfang im Format "1x Tisch, 4x Stuhl".',
+    color: 'Farbe des Produkts (z. B. "Schwarz", "Beige / Weiß").',
+    material: 'Hauptmaterial z. B. "Eiche massiv", "Kunstleder".',
+    size: 'Gesamtmaße im Format H×T×B in cm.',
+    size_height: 'Höhe in cm.',
+    size_depth: 'Tiefe in cm.',
+    size_diameter: 'Durchmesser in cm oder mm.',
+    manufacturer_name: 'Vollständiger Firmenname des Herstellers.',
+    manufacturer_street: 'Straße und Hausnummer des Herstellers.',
+    manufacturer_postcode: 'Postleitzahl des Herstellers.',
+    manufacturer_city: 'Stadt des Herstellers.',
+    manufacturer_country: 'Land des Herstellers (z. B. "Deutschland").',
+    manufacturer_email: 'E-Mail-Adresse des Herstellers.',
+    deeplink: 'Direkte URL zum Produkt auf Ihrer Website.',
+    model: 'Modellbezeichnung oder Artikelnummer des Herstellers.',
+    size_lying_surface: 'Liegefläche z. B. "140×200 cm".',
+    size_seat_height: 'Sitzhöhe in cm.',
+    ausrichtung: 'Ausrichtung: "links", "rechts" oder "beidseitig".',
+    style: 'Stilrichtung z. B. "Modern", "Skandinavisch".',
+    temper: 'Härtegrad z. B. "H2", "H3".',
+    weight: 'Gewicht in kg.',
+    weight_capacity: 'Max. Belastbarkeit in kg.',
+    youtube_link: 'YouTube-Video-URL zum Produkt oder zur Montage.',
+    assembly_instructions: 'URL zur Montageanleitung (PDF).',
+    illuminant_included: 'Leuchtmittel beigelegt: "ja" oder "nein".',
+    incl_mattress: 'Matratze inklusive: "ja" oder "nein".',
+    incl_slatted_frame: 'Lattenrost inklusive: "ja" oder "nein".',
+    led_verbaut: 'LED verbaut: "ja" oder "nein".',
+    lighting_included: 'Beleuchtung inklusive: "ja" oder "nein".',
+    set_includes: 'Set-Inhalt z. B. "2x Kissen, 1x Decke".',
+    socket: 'Steckdose/Anschluss z. B. "E27".',
+    care_instructions: 'Pflegehinweise z. B. "waschbar bei 60 °C".',
+    filling: 'Füllung z. B. "100 % Daunen".',
+    removable_cover: 'Bezug abnehmbar: "ja" oder "nein".',
+    suitable_for_allergic: 'Allergikergeeignet: "ja" oder "nein".',
+    energy_efficiency_category: 'Energieeffizienzklasse z. B. "A++", "C".',
+    product_data_sheet: 'URL zum Produktdatenblatt (PDF).',
+    manufacturer_phone_number: 'Telefonnummer des Herstellers.',
+};
+const FIELD_TOOLTIPS_EN = {
+    name: 'Product name: Brand + Name + Type + Color + Dimensions. Min. 5 chars, no single-word titles.',
+    price: 'Gross price in EUR. Decimal separator: comma or period (e.g. 39.99).',
+    seller_offer_id: 'Unique item ID from your system. No duplicates allowed.',
+    brand: 'Brand name. Min. 2 characters.',
+    ean: 'EAN as GTIN-13 or GTIN-14 (13–14 digits). No duplicates.',
+    delivery_time: 'Delivery time e.g. "2-4 business days" or "1-2 weeks".',
+    shipping_mode: 'Shipping mode: "Paket" (parcel) or "Spedition" (freight).',
+    availability: 'Availability status e.g. "auf Lager" or "sofort lieferbar".',
+    stock_amount: 'Stock count as integer (e.g. 25). Alternative to availability.',
+    image_url: 'Direct image URL (HTTPS). Min. 800×600 px, no logo/watermark.',
+    description: 'HTML description without shop texts or external links. Min. 20 chars.',
+    hs_code: 'Harmonized System Code. Required when warehouse is outside Germany.',
+    category_path: 'Category path e.g. "Living Room > Sofas > Corner Sofas".',
+    delivery_includes: 'Delivery scope e.g. "1x Table, 4x Chair".',
+    color: 'Product color (e.g. "Black", "Beige / White").',
+    material: 'Main material e.g. "Solid oak", "Faux leather".',
+    size: 'Overall dimensions in H×D×W format in cm.',
+    size_height: 'Height in cm.',
+    size_depth: 'Depth in cm.',
+    size_diameter: 'Diameter in cm or mm.',
+    manufacturer_name: 'Full legal name of the manufacturer.',
+    manufacturer_street: 'Street and number of the manufacturer.',
+    manufacturer_postcode: 'Postal code of the manufacturer.',
+    manufacturer_city: 'City of the manufacturer.',
+    manufacturer_country: 'Country of the manufacturer (e.g. "Germany").',
+    manufacturer_email: 'E-mail address of the manufacturer.',
+    deeplink: 'Direct URL to the product on your website.',
+    model: 'Model designation or manufacturer article number.',
+};
 
 function normalizeKey(input) {
     const s = String(input ?? '');
@@ -1539,10 +1623,13 @@ export default function McAngebotsfeed() {
                                                 const missing = !col && isPflicht;
                                                 return (
                                                     <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                                        <span style={{ fontSize: 11, color: '#374151', width: 160, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 4 }}>
-                                                            {FIELD_LABELS[f] || f}
-                                                            {isPflicht && <span style={{ color: '#DC2626', fontWeight: 700 }}>*</span>}
-                                                        </span>
+                                                        <Tooltip text={(langDE ? FIELD_TOOLTIPS_DE : FIELD_TOOLTIPS_EN)[f] || null}>
+                                                            <span style={{ fontSize: 11, color: '#374151', width: 160, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 4, cursor: (langDE ? FIELD_TOOLTIPS_DE : FIELD_TOOLTIPS_EN)[f] ? 'help' : 'default' }}>
+                                                                {FIELD_LABELS[f] || f}
+                                                                {isPflicht && <span style={{ color: '#DC2626', fontWeight: 700 }}>*</span>}
+                                                                {(langDE ? FIELD_TOOLTIPS_DE : FIELD_TOOLTIPS_EN)[f] && <span style={{ fontSize: 9, color: '#9CA3AF', borderRadius: '50%', border: '1px solid #D1D5DB', width: 13, height: 13, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>?</span>}
+                                                            </span>
+                                                        </Tooltip>
                                                         <select value={col || ''} onChange={(e) => { const val = e.target.value; setManualMapping((prev) => { const next = { ...prev }; if (val === '') delete next[f]; else next[f] = val; return next; }); }}
                                                             style={{ flex: 1, fontSize: 11, padding: '4px 7px', borderRadius: 6, border: `1px solid ${missing ? '#FCA5A5' : col ? '#D1FAE5' : '#D1D5DB'}`, background: missing ? '#FFF5F5' : col ? '#F0FDF4' : '#FFF', cursor: 'pointer' }}>
                                                             <option value="">{T.notAssigned}</option>
@@ -1557,13 +1644,17 @@ export default function McAngebotsfeed() {
                                             })}
                                             {/* Image row */}
                                             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                                <span style={{ fontSize: 11, color: '#374151', width: 160, flexShrink: 0 }}>
-                                                    {T.mainImageLabel}<span style={{ color: '#DC2626', fontWeight: 700 }}>*</span>
-                                                </span>
+                                                <Tooltip text={(langDE ? FIELD_TOOLTIPS_DE : FIELD_TOOLTIPS_EN)['image_url'] || null}>
+                                                    <span style={{ fontSize: 11, color: '#374151', width: 160, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 4, cursor: 'help' }}>
+                                                        {T.mainImageLabel}<span style={{ color: '#DC2626', fontWeight: 700 }}>*</span>
+                                                        <span style={{ fontSize: 9, color: '#9CA3AF', borderRadius: '50%', border: '1px solid #D1D5DB', width: 13, height: 13, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>?</span>
+                                                    </span>
+                                                </Tooltip>
                                                 <div style={{ flex: 1, fontSize: 11, padding: '5px 8px', borderRadius: 6, border: `1px solid ${mcImageColumns.length > 0 ? '#D1FAE5' : '#FCA5A5'}`, background: mcImageColumns.length > 0 ? '#F0FDF4' : '#FFF5F5', color: mcImageColumns.length > 0 ? '#166534' : '#DC2626', fontWeight: 600 }}>
                                                     {mcImageColumns.length > 0 ? mcImageColumns.join(', ') : T.notDetected}
                                                 </div>
                                             </div>
+
                                         </div>
                                     )}
                                 </div>
@@ -1695,7 +1786,7 @@ export default function McAngebotsfeed() {
                 const listablePct = Math.round((issues.livefaehigCount / issues.totalRows) * 100);
 
                 return (
-                    <div style={{ width: '100%', maxWidth: 1280, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    <div style={{ width: '100%', maxWidth: 1000, display: 'flex', flexDirection: 'column', gap: 12 }}>
 
                         {/* Status header */}
                         <div style={{ borderRadius: 10, background: stufe1Passed ? '#F0FDF4' : '#FEF2F2', border: `1px solid ${stufe1Passed ? '#BBF7D0' : '#FECACA'}`, padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
@@ -2105,9 +2196,9 @@ export default function McAngebotsfeed() {
 
             </div>
 
-            {/* Sticky bar - Step 2 */}
+            {/* Action bar - Step 2 */}
             {step === 2 && !mcIsWrongFile && (
-                <div style={{ position: 'sticky', bottom: 0, background: '#fff', borderTop: '1px solid #E2E6EE', padding: '14px 32px', zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+                <div style={{ background: '#fff', borderTop: '1px solid #E2E6EE', padding: '14px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexShrink: 0 }}>
                     <div style={{ fontSize: 12, color: TEXT_MUTED }}>
                         {(issues?.missingPflichtCols?.length ?? 0) > 0
                             ? (lang === 'de'
@@ -2129,9 +2220,9 @@ export default function McAngebotsfeed() {
                 </div>
             )}
 
-            {/* Sticky bar - Step 3 */}
+            {/* Action bar - Step 3 */}
             {step === 3 && issues && (
-                <div style={{ position: 'sticky', bottom: 0, background: '#fff', borderTop: '1px solid #E2E6EE', padding: '14px 32px', zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+                <div style={{ background: '#fff', borderTop: '1px solid #E2E6EE', padding: '14px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexShrink: 0 }}>
                     <div style={{ fontSize: 12, color: TEXT_MUTED }}>
                         {issues.blockiertCount > 0
                             ? (lang === 'de'
@@ -2153,9 +2244,9 @@ export default function McAngebotsfeed() {
                 </div>
             )}
 
-            {/* Sticky bar - Step 4 */}
+            {/* Action bar - Step 4 */}
             {step === 4 && issues && (
-                <div style={{ position: 'sticky', bottom: 0, background: '#fff', borderTop: '1px solid #E2E6EE', padding: '14px 32px', zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+                <div style={{ background: '#fff', borderTop: '1px solid #E2E6EE', padding: '14px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexShrink: 0 }}>
                     <div style={{ fontSize: 12, color: TEXT_MUTED }}>
                         {lang === 'de'
                             ? 'Fehler behoben? Fehlerbericht herunterladen · CSV mit allen Fehlern je Zeile für Excel'
@@ -2210,6 +2301,12 @@ export default function McAngebotsfeed() {
                     </div>
                 </div>
             )}
+
+            {/* Footer scrolls with content */}
+            <footer style={{ background: '#FFF', borderTop: '1px solid #E5E7EB', padding: '5px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0, marginTop: 'auto' }}>
+                <span style={{ fontSize: 10, color: '#9CA3AF' }}>{T.footerLeft}</span>
+                <span style={{ fontSize: 10, color: '#9CA3AF' }}>{T.footerRight}</span>
+            </footer>
 
             </div>{/* end scrollable area */}
         </div>{/* end main body */}
@@ -2295,35 +2392,45 @@ export default function McAngebotsfeed() {
                             </button>
                         </div>
                     </div>
+                    {/* Legend */}
+                    <div style={{ padding: '6px 20px', background: '#FFFEF0', borderBottom: '1px solid #E5E7EB', display: 'flex', alignItems: 'center', gap: 16, flexShrink: 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <div style={{ width: 14, height: 14, background: '#FEF08A', border: '1px solid #EAB308', borderRadius: 3 }} />
+                            <span style={{ fontSize: 11, color: '#6B7280' }}>{lang === 'de' ? 'Gelbe Spalten = Pflichtangaben' : 'Yellow columns = Required fields'}</span>
+                        </div>
+                    </div>
                     {/* Spreadsheet table */}
                     <div style={{ flex: 1, overflow: 'auto' }}>
                         <table style={{ borderCollapse: 'collapse', fontSize: 12, whiteSpace: 'nowrap', minWidth: '100%' }}>
                             <thead>
                                 <tr>
                                     <th style={{ padding: '6px 10px', background: '#F0F2F5', border: '1px solid #D1D5DB', color: '#6B7280', fontWeight: 600, fontSize: 11, textAlign: 'center', position: 'sticky', top: 0, left: 0, zIndex: 3, minWidth: 36 }}></th>
-                                    {VORLAGE_HEADERS.map((h, i) => (
-                                        <th key={i} style={{ padding: '7px 10px', background: '#F0F2F5', border: '1px solid #D1D5DB', color: '#374151', fontWeight: 600, fontSize: 11, textAlign: 'left', position: 'sticky', top: 0, zIndex: 2, whiteSpace: 'nowrap' }}>{h}</th>
-                                    ))}
+                                    {VORLAGE_HEADERS.map((h, i) => {
+                                        const isPflicht = h === 'EAN (GTIN14)' || h === 'name';
+                                        return (
+                                            <th key={i} style={{ padding: '7px 10px', background: isPflicht ? '#FEF9C3' : '#F0F2F5', border: '1px solid #D1D5DB', color: isPflicht ? '#854D0E' : '#374151', fontWeight: 600, fontSize: 11, textAlign: 'left', position: 'sticky', top: 0, zIndex: 2, whiteSpace: 'nowrap' }}>{h}</th>
+                                        );
+                                    })}
                                 </tr>
                             </thead>
                             <tbody>
                                 {/* Row 2: example values */}
                                 <tr style={{ background: '#FAFAFA' }}>
                                     <td style={{ padding: '5px 10px', border: '1px solid #E5E7EB', color: '#9CA3AF', fontSize: 11, textAlign: 'center', position: 'sticky', left: 0, background: '#F0F2F5', zIndex: 1 }}>2</td>
-                                    {VORLAGE_EXAMPLE.map((v, i) => (
-                                        <td key={i} style={{ padding: '5px 10px', border: '1px solid #E5E7EB', color: '#374151', maxWidth: 260, overflow: 'hidden', textOverflow: 'ellipsis' }}>{v}</td>
-                                    ))}
+                                    {VORLAGE_EXAMPLE.map((v, i) => {
+                                        const isPflicht = VORLAGE_HEADERS[i] === 'EAN (GTIN14)' || VORLAGE_HEADERS[i] === 'name';
+                                        return (
+                                            <td key={i} style={{ padding: '5px 10px', border: '1px solid #E5E7EB', color: '#374151', maxWidth: 260, overflow: 'hidden', textOverflow: 'ellipsis', background: isPflicht ? '#FEFCE8' : 'transparent' }}>{v}</td>
+                                        );
+                                    })}
                                 </tr>
                                 {/* Row 3: empty */}
                                 <tr>
                                     <td style={{ padding: '5px 10px', border: '1px solid #E5E7EB', color: '#9CA3AF', fontSize: 11, textAlign: 'center', position: 'sticky', left: 0, background: '#F0F2F5', zIndex: 1 }}>3</td>
-                                    {VORLAGE_HEADERS.map((_, i) => <td key={i} style={{ border: '1px solid #E5E7EB' }} />)}
-                                </tr>
-                                {/* Row 4: Pflichtangaben */}
-                                <tr style={{ background: '#FFF9F0' }}>
-                                    <td style={{ padding: '5px 10px', border: '1px solid #E5E7EB', color: '#9CA3AF', fontSize: 11, textAlign: 'center', position: 'sticky', left: 0, background: '#F0F2F5', zIndex: 1 }}>4</td>
-                                    <td style={{ padding: '5px 10px', border: '1px solid #E5E7EB', color: '#D97706', fontWeight: 600 }}>Pflichtangaben</td>
-                                    {VORLAGE_HEADERS.slice(1).map((_, i) => <td key={i} style={{ border: '1px solid #E5E7EB' }} />)}
+                                    {VORLAGE_HEADERS.map((h, i) => {
+                                        const isPflicht = h === 'EAN (GTIN14)' || h === 'name';
+                                        return <td key={i} style={{ border: '1px solid #E5E7EB', background: isPflicht ? '#FEFCE8' : 'transparent' }} />;
+                                    })}
                                 </tr>
                             </tbody>
                         </table>
@@ -2331,11 +2438,6 @@ export default function McAngebotsfeed() {
                 </div>
             </div>
         )}
-        {/* ── FOOTER ── */}
-        <footer style={{ background: '#FFF', borderTop: '1px solid #E5E7EB', padding: '5px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
-            <span style={{ fontSize: 10, color: '#9CA3AF' }}>{T.footerLeft}</span>
-            <span style={{ fontSize: 10, color: '#9CA3AF' }}>{T.footerRight}</span>
-        </footer>
         </div>
     );
 }
