@@ -1711,17 +1711,6 @@ export default function McAngebotsfeed() {
                                 </div>
                             )}
 
-                            {/* Download section */}
-                            <div style={{ padding: '14px 16px', borderBottom: '1px solid #F3F4F6' }}>
-                                <div style={{ fontSize: 11, fontWeight: 700, color: '#111827', marginBottom: 2 }}>{T.csvTitle}</div>
-                                <div style={{ fontSize: 10, color: '#6B7280', marginBottom: 10, lineHeight: 1.45 }}>{T.csvDesc}</div>
-                                <button type="button" onClick={csvOnClick}
-                                    style={{ width: '100%', padding: '8px', background: '#F9FAFB', color: '#374151', border: '1px solid #E5E7EB', borderRadius: 7, fontSize: 11, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-                                    <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M8 2v9M4 8l4 4 4-4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 14h12" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/></svg>
-                                    {T.csvBtn}
-                                </button>
-                            </div>
-
                             {/* Primary CTA */}
                             <div style={{ padding: '14px 16px', borderBottom: '1px solid #F3F4F6' }}>
                                 <button type="button" onClick={() => setStep(4)}
