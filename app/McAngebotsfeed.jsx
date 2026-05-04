@@ -97,6 +97,21 @@ const FIELD_TOOLTIPS_EN = {
     model: 'Model designation or manufacturer article number.',
 };
 
+const EXAMPLE_FEED_CSV = `EAN (GTIN14);offer_id;name;description;brand;price;delivery_time;shipping_mode;availability;stock_amount;Bildlink_1;manufacturer_name;manufacturer_street;manufacturer_postcode;manufacturer_city;manufacturer_country;manufacturer_email
+4045347288557;T12345-SW;Dreammöbel Dream Ecksofa mit Hocker, Kunstleder schwarz, 180x200 cm;Elegantes Ecksofa aus hochwertigem Kunstleder in Schwarz. Maße: B 200 cm × H 80 cm × T 120 cm. Pflegeleicht und strapazierfähig. Inkl. Hocker.;Dreammöbel;599.00;3-5 Werktage;Spedition;auf Lager;12;https://example.com/img/sofa-schwarz.jpg;Traum GmbH;Musterstr. 1;10115;Berlin;Deutschland;info@traumgmbh.de
+4045347288558;T12345-GR;Dreammöbel Dream Ecksofa mit Hocker, Kunstleder grau, 180x200 cm;Elegantes Ecksofa aus hochwertigem Kunstleder in Grau. Maße: B 200 cm × H 80 cm × T 120 cm. Pflegeleicht und strapazierfähig. Inkl. Hocker.;Dreammöbel;579.00;3-5 Werktage;Spedition;auf Lager;8;https://example.com/img/sofa-grau.jpg;Traum GmbH;Musterstr. 1;10115;Berlin;Deutschland;info@traumgmbh.de
+4045347299001;T67890;Holztisch;Tisch aus Holz.;NaturWood;149.99;1-2 Wochen;Paket;auf Lager;25;https://example.com/img/tisch.jpg;NaturWood GmbH;Waldweg 5;80331;München;Deutschland;service@naturwood.de
+;T99999;Regal;Schönes Regal für viele Bücher und Dekogegenstände, sehr praktisch und stabil aus MDF gefertigt.;HomeStyle;89.00;2-4 Werktage;Paket;auf Lager;5;https://example.com/img/regal.jpg;HomeStyle KG;Hauptstr. 10;20095;Hamburg;Deutschland;info@homestyle.de
+4045347299002;T55555;;Modernes Sideboard aus Eiche massiv, naturfarben. Breite 160 cm, Höhe 75 cm, Tiefe 40 cm.;OakLine;349.00;1-2 Wochen;Spedition;sofort lieferbar;3;https://example.com/img/sideboard.jpg;OakLine GmbH;Eichenweg 3;50667;Köln;Deutschland;kontakt@oakline.de
+4045347299003;T55555;Bücherregal Weiß 80cm breit, MDF lackiert;Weißes Bücherregal aus MDF, hochglanz lackiert. 5 Fächer, Breite 80 cm × Höhe 180 cm × Tiefe 30 cm.;HomeStyle;129.00;2-4 Werktage;Paket;auf Lager;15;https://example.com/img/buecherregal.jpg;HomeStyle KG;Hauptstr. 10;20095;Hamburg;Deutschland;info@homestyle.de`;
+
+// Word lists for title structure analysis
+const COLOR_WORDS_DE = ['schwarz','weiß','weiss','grau','beige','braun','natur','naturfarben','silber','gold','rot','blau','grün','gelb','orange','türkis','creme','sand','anthrazit','cognac','cappuccino','taupe','dunkelgrau','hellgrau','dunkelbraun','elfenbein','bordeaux','petrol'];
+const COLOR_WORDS_EN = ['black','white','grey','gray','beige','brown','natural','silver','gold','red','blue','green','yellow','orange','turquoise','cream','sand','anthracite','cognac','taupe','dark','light'];
+const MATERIAL_WORDS_DE = ['holz','eiche','kiefer','buche','ahorn','mdf','spanplatte','fichte','metall','stahl','edelstahl','aluminium','chrom','eisen','messing','kupfer','stoff','textil','leinen','baumwolle','polyester','velvet','samt','kunstleder','leder','glas','marmor','stein','beton','kunststoff','plastik','acryl','bambus','rattan','massiv'];
+const MATERIAL_WORDS_EN = ['wood','oak','pine','beech','maple','mdf','metal','steel','stainless','aluminum','chrome','iron','brass','copper','fabric','linen','cotton','polyester','velvet','faux leather','leather','glass','marble','stone','plastic','acrylic','bamboo','rattan','solid'];
+const DIMENSION_RE = /\d+[,.]?\d*\s*[×xX]\s*\d+|\d+[,.]?\d*\s*(cm|mm)\b/i;
+
 function normalizeKey(input) {
     const s = String(input ?? '');
     return s
@@ -802,6 +817,7 @@ export default function McAngebotsfeed() {
         setRows([]);
         setHeaders([]);
         setManualMapping({});
+        try { localStorage.removeItem('feedchecker_session_v1'); } catch (_) {}
         const tryParseMc = (encoding) => {
             const reader = new FileReader();
             reader.onload = (evt) => {
@@ -1165,7 +1181,36 @@ export default function McAngebotsfeed() {
         setHeaders([]);
         setManualMapping({});
         setStep(1);
+        try { localStorage.removeItem('feedchecker_session_v1'); } catch (_) {}
     }
+
+    // ── LocalStorage persistence ──
+    const LS_KEY = 'feedchecker_session_v1';
+
+    // Restore on mount
+    useEffect(() => {
+        try {
+            const saved = localStorage.getItem(LS_KEY);
+            if (!saved) return;
+            const { headers: h, rows: r, manualMapping: m, step: s, lang: l } = JSON.parse(saved);
+            if (Array.isArray(h) && h.length && Array.isArray(r) && r.length) {
+                setHeaders(h);
+                setRows(r);
+                if (m && typeof m === 'object') setManualMapping(m);
+                if (typeof s === 'number' && s >= 1 && s <= 4) setStep(s);
+                if (l === 'de' || l === 'en') setLang(l);
+            }
+        } catch (_) {}
+    }, []);
+
+    // Save on every relevant change (skip if empty)
+    useEffect(() => {
+        if (!headers.length || !rows.length) return;
+        try {
+            const payload = JSON.stringify({ headers, rows: rows.slice(0, 3000), manualMapping, step, lang });
+            if (payload.length < 5_000_000) localStorage.setItem(LS_KEY, payload);
+        } catch (_) {}
+    }, [headers, rows, manualMapping, step, lang]);
 
     const FIELD_LABELS = T.fields;
     const PFLICHT_TABLE_FIELDS = [...T.pflichtFields, ...(outsideGermany ? [T.hsField] : [])];
@@ -1467,6 +1512,29 @@ export default function McAngebotsfeed() {
                                 </div>
                             )}
 
+                            {/* Load example feed */}
+                            {!file && (
+                                <button type="button" onClick={() => {
+                                    Papa.parse(EXAMPLE_FEED_CSV, {
+                                        header: true,
+                                        delimiter: ';',
+                                        skipEmptyLines: true,
+                                        complete: (res) => {
+                                            const r = Array.isArray(res.data) ? res.data : [];
+                                            const h = res.meta?.fields || Object.keys(r[0] || {});
+                                            setHeaders(h);
+                                            setRows(r);
+                                            setManualMapping({});
+                                            setFile({ name: lang === 'de' ? 'Beispiel-Feed.csv' : 'Example-Feed.csv', size: EXAMPLE_FEED_CSV.length });
+                                        },
+                                    });
+                                }}
+                                    style={{ width: '100%', padding: '9px', background: '#FFF', color: '#374151', border: '1px dashed #D1D5DB', borderRadius: 8, fontSize: 12, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                                    <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.5 3.5L13 6l-2.5 2.5.5 3.5L8 10.5 5 12l.5-3.5L3 6l3.5-.5L8 2z" stroke="#9CA3AF" strokeWidth="1.3" strokeLinejoin="round"/></svg>
+                                    {lang === 'de' ? 'Beispiel-Feed laden (6 Artikel, inkl. Fehler)' : 'Load example feed (6 items, incl. errors)'}
+                                </button>
+                            )}
+
                             {/* Primary CTA */}
                             <button
                                 type="button"
@@ -1709,6 +1777,51 @@ export default function McAngebotsfeed() {
                     .sort((a, b) => b.count - a.count)
                     .slice(0, 7);
 
+                // Description length distribution
+                const descCol = mcMapping['description'];
+                const descStats = descCol ? (() => {
+                    const buckets = { short: 0, ok: 0, good: 0, great: 0 };
+                    let total = 0, totalChars = 0;
+                    rows.forEach((r) => {
+                        const d = String(r[descCol] ?? '').trim();
+                        if (!d) return;
+                        total++;
+                        totalChars += d.length;
+                        if (d.length < 50) buckets.short++;
+                        else if (d.length < 150) buckets.ok++;
+                        else if (d.length < 500) buckets.good++;
+                        else buckets.great++;
+                    });
+                    return { total, avg: total ? Math.round(totalChars / total) : 0, buckets };
+                })() : null;
+
+                // Title structure analysis
+                const nameCol = mcMapping['name'];
+                const brandCol = mcMapping['brand'];
+                const colorWords = lang === 'de' ? COLOR_WORDS_DE : COLOR_WORDS_EN;
+                const materialWords = lang === 'de' ? MATERIAL_WORDS_DE : MATERIAL_WORDS_EN;
+                const titleAnalysis = nameCol ? (() => {
+                    let missingColor = 0, missingMaterial = 0, missingDimension = 0, missingBrand = 0;
+                    const sampleBad = [];
+                    rows.forEach((r) => {
+                        const title = String(r[nameCol] ?? '').trim().toLowerCase();
+                        const brand = brandCol ? String(r[brandCol] ?? '').trim().toLowerCase() : '';
+                        if (!title) return;
+                        const hasColor = colorWords.some(w => title.includes(w));
+                        const hasMaterial = materialWords.some(w => title.includes(w));
+                        const hasDimension = DIMENSION_RE.test(title);
+                        const hasBrand = brand && title.includes(brand);
+                        if (!hasColor) missingColor++;
+                        if (!hasMaterial) missingMaterial++;
+                        if (!hasDimension) missingDimension++;
+                        if (brandCol && !hasBrand) missingBrand++;
+                        if ((!hasColor || !hasMaterial || !hasDimension) && sampleBad.length < 2) {
+                            sampleBad.push({ title: String(r[nameCol] ?? ''), hasColor, hasMaterial, hasDimension });
+                        }
+                    });
+                    return { total: rows.length, missingColor, missingMaterial, missingDimension, missingBrand: brandCol ? missingBrand : null, sampleBad };
+                })() : null;
+
                 const csvOnClick = () => {
                     const pflichtByRow = {}, optionalByRow = {};
                     const errorMsg = (e) => {
@@ -1793,6 +1906,14 @@ export default function McAngebotsfeed() {
 
                 const listablePct = Math.round((issues.livefaehigCount / issues.totalRows) * 100);
 
+                const score = issues.totalScore;
+                const grade = score >= 85 ? 'A' : score >= 70 ? 'B' : score >= 50 ? 'C' : 'D';
+                const gradeColor = grade === 'A' ? '#16A34A' : grade === 'B' ? '#D97706' : grade === 'C' ? '#EA580C' : '#DC2626';
+                const gradeBg = grade === 'A' ? '#DCFCE7' : grade === 'B' ? '#FEF3C7' : grade === 'C' ? '#FFEDD5' : '#FEE2E2';
+                const gradeTip = lang === 'de'
+                    ? `Feed-Score: ${score}/100 · Pflichtfelder ${issues.pflichtScore}/70 · Optionale Felder ${issues.optionalScore}/30`
+                    : `Feed score: ${score}/100 · Required fields ${issues.pflichtScore}/70 · Optional fields ${issues.optionalScore}/30`;
+
                 return (
                     <div style={{ width: '100%', maxWidth: 1000, display: 'flex', flexDirection: 'column', gap: 12 }}>
 
@@ -1836,6 +1957,14 @@ export default function McAngebotsfeed() {
                                 </div>
                                 <div style={{ fontSize: 9, color: '#9CA3AF', marginTop: 2 }}>{T.listableCount(issues.livefaehigCount.toLocaleString(numLocale), issues.totalRows.toLocaleString(numLocale))}</div>
                             </div>
+                            {/* Feed grade badge */}
+                            <Tooltip text={gradeTip}>
+                                <div style={{ paddingLeft: 16, borderLeft: '1px solid rgba(0,0,0,0.08)', textAlign: 'center', cursor: 'help' }}>
+                                    <div style={{ fontSize: 28, fontWeight: 900, color: gradeColor, lineHeight: 1, fontFamily: 'monospace' }}>{grade}</div>
+                                    <div style={{ fontSize: 9, color: '#6B7280', marginTop: 2 }}>{lang === 'de' ? 'Feed-Note' : 'Feed Grade'}</div>
+                                    <div style={{ fontSize: 8, color: gradeColor, fontWeight: 700, background: gradeBg, borderRadius: 3, padding: '1px 5px', marginTop: 2 }}>{score}/100</div>
+                                </div>
+                            </Tooltip>
                         </div>
 
                         {/* 2-column: table | action panel */}
@@ -1960,6 +2089,102 @@ export default function McAngebotsfeed() {
                         </div>{/* end right panel */}
 
                         </div>{/* end grid */}
+
+                        {/* Title structure analysis card */}
+                        {titleAnalysis && titleAnalysis.total > 0 && (
+                            <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', padding: '14px 20px' }}>
+                                <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 12 }}>
+                                    <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>
+                                        {lang === 'de' ? 'Titelqualität – Strukturanalyse' : 'Title Quality – Structure Analysis'}
+                                    </div>
+                                    <div style={{ fontSize: 10, color: '#9CA3AF' }}>
+                                        {lang === 'de' ? `Empfehlung: Marke + Produktart + Material + Farbe + Maße` : `Recommended: Brand + Type + Material + Color + Dimensions`}
+                                    </div>
+                                </div>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 12 }}>
+                                    {[
+                                        { label: lang === 'de' ? 'Farbe fehlt' : 'Color missing', count: titleAnalysis.missingColor, tip: lang === 'de' ? 'z. B. „schwarz", „beige", „grau"' : 'e.g. "black", "beige", "grey"' },
+                                        { label: lang === 'de' ? 'Material fehlt' : 'Material missing', count: titleAnalysis.missingMaterial, tip: lang === 'de' ? 'z. B. „Eiche", „Kunstleder", „Metall"' : 'e.g. "oak", "faux leather", "metal"' },
+                                        { label: lang === 'de' ? 'Maße fehlen' : 'Dimensions missing', count: titleAnalysis.missingDimension, tip: lang === 'de' ? 'z. B. „180 cm", „80×200 cm"' : 'e.g. "180 cm", "80×200 cm"' },
+                                        ...(titleAnalysis.missingBrand !== null ? [{ label: lang === 'de' ? 'Marke fehlt' : 'Brand missing', count: titleAnalysis.missingBrand, tip: lang === 'de' ? 'Markenname sollte im Titel stehen' : 'Brand name should appear in title' }] : []),
+                                    ].map(({ label, count, tip }) => {
+                                        const pct = Math.round((count / titleAnalysis.total) * 100);
+                                        const isOk = pct === 0;
+                                        return (
+                                            <Tooltip key={label} text={tip}>
+                                                <div style={{ background: isOk ? '#F0FDF4' : '#FFFBF5', border: `1px solid ${isOk ? '#BBF7D0' : '#FDE68A'}`, borderRadius: 8, padding: '10px 14px', cursor: 'help', width: '100%' }}>
+                                                    <div style={{ fontSize: 18, fontWeight: 800, color: isOk ? '#16A34A' : count > titleAnalysis.total * 0.5 ? '#DC2626' : '#D97706', lineHeight: 1 }}>{pct}%</div>
+                                                    <div style={{ fontSize: 10, color: '#374151', fontWeight: 600, marginTop: 4 }}>{label}</div>
+                                                    <div style={{ fontSize: 9, color: '#9CA3AF', marginTop: 2 }}>{count.toLocaleString(numLocale)} {lang === 'de' ? 'Artikel' : 'items'}</div>
+                                                </div>
+                                            </Tooltip>
+                                        );
+                                    })}
+                                </div>
+                                {titleAnalysis.sampleBad.length > 0 && (
+                                    <div>
+                                        <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{lang === 'de' ? 'Beispiele zur Verbesserung' : 'Examples to improve'}</div>
+                                        {titleAnalysis.sampleBad.map(({ title, hasColor, hasMaterial, hasDimension }, i) => (
+                                            <div key={i} style={{ background: '#F9FAFB', borderRadius: 6, padding: '8px 12px', marginBottom: 4, display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                                                <div style={{ flex: 1, fontSize: 11, color: '#374151', lineHeight: 1.4, fontStyle: 'italic' }}>„{title}"</div>
+                                                <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
+                                                    {[
+                                                        { ok: hasColor, lbl: lang === 'de' ? 'Farbe' : 'Color' },
+                                                        { ok: hasMaterial, lbl: lang === 'de' ? 'Material' : 'Material' },
+                                                        { ok: hasDimension, lbl: lang === 'de' ? 'Maße' : 'Dim.' },
+                                                    ].map(({ ok, lbl }) => (
+                                                        <span key={lbl} style={{ fontSize: 9, fontWeight: 600, padding: '2px 6px', borderRadius: 4, background: ok ? '#DCFCE7' : '#FEE2E2', color: ok ? '#166534' : '#991B1B' }}>{lbl}</span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Description length distribution */}
+                        {descStats && descStats.total > 0 && (
+                            <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', padding: '14px 20px' }}>
+                                <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 12 }}>
+                                    <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>
+                                        {lang === 'de' ? 'Beschreibungslänge – Verteilung' : 'Description Length – Distribution'}
+                                    </div>
+                                    <div style={{ fontSize: 10, color: '#9CA3AF' }}>
+                                        {lang === 'de' ? `Ø ${descStats.avg.toLocaleString(numLocale)} Zeichen · Empfehlung: 150–500+` : `Avg. ${descStats.avg.toLocaleString(numLocale)} chars · Recommended: 150–500+`}
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end', height: 60, marginBottom: 8 }}>
+                                    {[
+                                        { key: 'short', label: lang === 'de' ? '<50' : '<50', color: '#EF4444', bg: '#FEF2F2', desc: lang === 'de' ? 'Zu kurz' : 'Too short' },
+                                        { key: 'ok', label: '50–149', color: '#F59E0B', bg: '#FFFBEB', desc: lang === 'de' ? 'Ausbaufähig' : 'Could improve' },
+                                        { key: 'good', label: '150–499', color: '#16A34A', bg: '#F0FDF4', desc: lang === 'de' ? 'Gut' : 'Good' },
+                                        { key: 'great', label: '500+', color: '#1553B6', bg: '#EEF4FF', desc: lang === 'de' ? 'Sehr gut' : 'Excellent' },
+                                    ].map(({ key, label, color, bg, desc }) => {
+                                        const count = descStats.buckets[key];
+                                        const pct = descStats.total ? Math.round((count / descStats.total) * 100) : 0;
+                                        return (
+                                            <div key={key} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+                                                <div style={{ fontSize: 9, fontWeight: 700, color }}>{pct}%</div>
+                                                <div style={{ width: '100%', height: Math.max(4, pct * 0.44), background: color, borderRadius: 3, opacity: 0.85 }} />
+                                                <div style={{ fontSize: 8, color: '#9CA3AF', textAlign: 'center', lineHeight: 1.2 }}>{label}</div>
+                                                <div style={{ fontSize: 8, color: '#6B7280', fontWeight: 600, textAlign: 'center' }}>{desc}</div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                                {descStats.avg < 150 && (
+                                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, background: '#FFFBEB', borderRadius: 6, padding: '7px 10px' }}>
+                                        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 1 }}><circle cx="8" cy="8" r="6.5" stroke="#D97706" strokeWidth="1.4"/><path d="M8 7v4" stroke="#D97706" strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="5.5" r=".6" fill="#D97706"/></svg>
+                                        <span style={{ fontSize: 10, color: '#92400E', lineHeight: 1.5 }}>
+                                            {lang === 'de'
+                                                ? 'Durchschnittliche Beschreibung unter 150 Zeichen. Längere Beschreibungen mit Material, Maßen und Besonderheiten verbessern die Conversion.'
+                                                : 'Average description under 150 characters. Longer descriptions including material, dimensions and features improve conversion.'}
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+                        )}
 
                     </div>
                 );
