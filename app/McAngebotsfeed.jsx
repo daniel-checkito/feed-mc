@@ -1574,6 +1574,23 @@ export default function McAngebotsfeed() {
                             </div>
                         </div>
 
+                        {/* Quality = reach banner */}
+                        <div style={{ background: 'linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)', border: '1px solid #FDE68A', borderRadius: 12, padding: '14px 18px' }}>
+                            <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" style={{ flexShrink: 0, marginTop: 2 }}><path d="M10 2l2 5.5h5.5l-4.5 3.3 1.7 5.5L10 13l-4.7 3.3 1.7-5.5L2.5 7.5H8L10 2z" fill="#F59E0B" stroke="#D97706" strokeWidth="1"/></svg>
+                                <div>
+                                    <div style={{ fontSize: 12, fontWeight: 700, color: '#92400E', marginBottom: 4 }}>
+                                        {lang === 'de' ? 'Besserer Feed = mehr Reichweite' : 'Better feed = more reach'}
+                                    </div>
+                                    <div style={{ fontSize: 11, color: '#78350F', lineHeight: 1.5 }}>
+                                        {lang === 'de'
+                                            ? 'Je vollständiger und hochwertiger Ihr Feed, desto besser die Platzierung auf unserem Marktplatz – und desto schneller werden Ihre Produkte freigeschaltet.'
+                                            : 'The more complete and high-quality your feed, the better the placement on our marketplace – and the faster your products go live.'}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
                     {/* Right column: Upload card */}
@@ -2218,11 +2235,9 @@ export default function McAngebotsfeed() {
 
                         </div>{/* end right panel */}
 
-                        </div>{/* end grid */}
-
                         {/* Title structure analysis card */}
                         {titleAnalysis && titleAnalysis.total > 0 && (
-                            <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', padding: '14px 20px' }}>
+                            <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', padding: '14px 20px', gridColumn: 1 }}>
                                 <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 12 }}>
                                     <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>
                                         {lang === 'de' ? 'Titelqualität – Strukturanalyse' : 'Title Quality – Structure Analysis'}
@@ -2275,7 +2290,7 @@ export default function McAngebotsfeed() {
 
                         {/* Description length distribution */}
                         {descStats && descStats.total > 0 && (
-                            <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', padding: '14px 20px' }}>
+                            <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', padding: '14px 20px', gridColumn: 1 }}>
                                 <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 12 }}>
                                     <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>
                                         {lang === 'de' ? 'Beschreibungslänge – Verteilung' : 'Description Length – Distribution'}
@@ -2315,6 +2330,8 @@ export default function McAngebotsfeed() {
                                 )}
                             </div>
                         )}
+
+                        </div>{/* end grid */}
 
                     </div>
                 );
