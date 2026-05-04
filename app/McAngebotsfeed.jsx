@@ -611,7 +611,7 @@ const DE_T = {
     qualityShowMore: 'Alle Tipps anzeigen',
     qualityShowLess: 'Weniger anzeigen',
     resourcesTitle: 'Ressourcen',
-    recNextStep: 'Weiter zu Empfehlungen →',
+    recNextStep: 'Weiter →',
     recTitle: (n) => `${n} Handlungsempfehlung${n !== 1 ? 'en' : ''} zur Fehlerbehebung`,
     recNoErrorsTitle: 'Feed fehlerfrei',
     recNoErrorsSub: 'Ihr Feed enthält keine Pflichtfeldfehler. Alle Artikel können gelistet werden.',
@@ -744,7 +744,7 @@ const EN_T = {
     qualityShowMore: 'Show all tips',
     qualityShowLess: 'Show less',
     resourcesTitle: 'Resources',
-    recNextStep: 'Continue to Recommendations →',
+    recNextStep: 'Continue →',
     recTitle: (n) => `${n} Recommendation${n !== 1 ? 's' : ''} to Fix Errors`,
     recNoErrorsTitle: 'Feed error-free',
     recNoErrorsSub: 'Your feed has no required field errors. All items can be listed.',
@@ -2142,12 +2142,12 @@ export default function McAngebotsfeed() {
                                 </div>
                                 <div style={{ fontSize: 9, color: '#9CA3AF', marginTop: 2 }}>{T.listableCount(issues.livefaehigCount.toLocaleString(numLocale), issues.totalRows.toLocaleString(numLocale))}</div>
                             </div>
-                            {/* Feed grade badge */}
+                            {/* Feed score */}
                             <Tooltip text={gradeTip}>
                                 <div style={{ paddingLeft: 16, borderLeft: '1px solid rgba(0,0,0,0.08)', textAlign: 'center', cursor: 'help' }}>
-                                    <div style={{ fontSize: 28, fontWeight: 900, color: gradeColor, lineHeight: 1, fontFamily: 'monospace' }}>{grade}</div>
-                                    <div style={{ fontSize: 9, color: '#6B7280', marginTop: 2 }}>{lang === 'de' ? 'Feed-Note' : 'Feed Grade'}</div>
-                                    <div style={{ fontSize: 8, color: gradeColor, fontWeight: 700, background: gradeBg, borderRadius: 3, padding: '1px 5px', marginTop: 2 }}>{score}/100</div>
+                                    <div style={{ fontSize: 24, fontWeight: 900, color: gradeColor, lineHeight: 1, fontFamily: 'monospace' }}>{score}</div>
+                                    <div style={{ fontSize: 9, color: '#6B7280', marginTop: 1 }}>{lang === 'de' ? 'Feed-Score' : 'Feed Score'}</div>
+                                    <div style={{ fontSize: 8, color: '#9CA3AF', marginTop: 1 }}>/100</div>
                                 </div>
                             </Tooltip>
                         </div>
@@ -2314,25 +2314,26 @@ export default function McAngebotsfeed() {
                                         );
                                     })}
                                 </div>
-                                {titleAnalysis.sampleBad.length > 0 && (
-                                    <div>
-                                        <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{lang === 'de' ? 'Beispiele zur Verbesserung' : 'Examples to improve'}</div>
-                                        {titleAnalysis.sampleBad.map(({ title, hasColor, hasMaterial, hasDimension }, i) => (
-                                            <div key={i} style={{ background: '#F9FAFB', borderRadius: 6, padding: '8px 12px', marginBottom: 4, display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                                                <div style={{ flex: 1, fontSize: 11, color: '#374151', lineHeight: 1.4, fontStyle: 'italic' }}>„{title}"</div>
-                                                <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
-                                                    {[
-                                                        { ok: hasColor, lbl: lang === 'de' ? 'Farbe' : 'Color' },
-                                                        { ok: hasMaterial, lbl: lang === 'de' ? 'Material' : 'Material' },
-                                                        { ok: hasDimension, lbl: lang === 'de' ? 'Maße' : 'Dim.' },
-                                                    ].map(({ ok, lbl }) => (
-                                                        <span key={lbl} style={{ fontSize: 9, fontWeight: 600, padding: '2px 6px', borderRadius: 4, background: ok ? '#DCFCE7' : '#FEE2E2', color: ok ? '#166534' : '#991B1B' }}>{lbl}</span>
+                                <div>
+                                        <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{lang === 'de' ? 'Gute Titelbeispiele' : 'Good title examples'}</div>
+                                        <div style={{ fontSize: 10, color: '#6B7280', marginBottom: 8, lineHeight: 1.5 }}>
+                                            {lang === 'de' ? 'Format: Marke + Produktart + Material + Farbe + Maße' : 'Format: Brand + Product type + Material + Color + Dimensions'}
+                                        </div>
+                                        {[
+                                            { title: lang === 'de' ? 'Dreammöbel Dream Ecksofa, Kunstleder, schwarz, 280×175 cm' : 'Dreammöbel Dream Corner Sofa, faux leather, black, 280×175 cm', tags: ['Marke', 'Material', 'Farbe', 'Maße'] },
+                                            { title: lang === 'de' ? 'KARE Design Couchtisch Circle, Massivholz Eiche, naturbraun, 120×60 cm' : 'KARE Design Coffee Table Circle, solid oak, natural brown, 120×60 cm', tags: ['Marke', 'Material', 'Farbe', 'Maße'] },
+                                            { title: lang === 'de' ? 'Maisons du Monde Bett Josephine, Leinen, ecru, 160×200 cm' : 'Maisons du Monde Bed Josephine, linen, ecru, 160×200 cm', tags: ['Marke', 'Material', 'Farbe', 'Maße'] },
+                                        ].map(({ title, tags }, i) => (
+                                            <div key={i} style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 6, padding: '8px 12px', marginBottom: 6 }}>
+                                                <div style={{ fontSize: 11, color: '#166534', lineHeight: 1.4, marginBottom: 5, fontWeight: 500 }}>„{title}"</div>
+                                                <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                                                    {(lang === 'de' ? tags : tags.map(t => ({ Marke: 'Brand', Material: 'Material', Farbe: 'Color', Maße: 'Dim.' }[t]))).map((lbl) => (
+                                                        <span key={lbl} style={{ fontSize: 9, fontWeight: 600, padding: '2px 6px', borderRadius: 4, background: '#DCFCE7', color: '#166534' }}>✓ {lbl}</span>
                                                     ))}
                                                 </div>
                                             </div>
                                         ))}
                                     </div>
-                                )}
                             </div>
                         )}
 
@@ -2665,20 +2666,6 @@ export default function McAngebotsfeed() {
 
                             {/* Right: download + reset panel */}
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, position: 'sticky', top: 20, alignSelf: 'flex-start', maxHeight: 'calc(100vh - 120px)', overflowY: 'auto' }}>
-                                {/* Download Fehlerbericht */}
-                                <div style={{ background: '#EEF4FF', border: `2px solid ${MC_BLUE}`, borderRadius: 12, padding: '16px' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                                        <svg width="16" height="16" viewBox="0 0 18 18" fill="none"><path d="M9 2v10M6 9l3 3 3-3M2 15h14" stroke={MC_BLUE} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                        <span style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{T.recDownloadTitle}</span>
-                                    </div>
-                                    <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 12, lineHeight: 1.5 }}>{T.recDownloadDesc}</div>
-                                    <button type="button" onClick={csvOnClick}
-                                        style={{ width: '100%', padding: '11px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
-                                        <svg width="13" height="13" viewBox="0 0 15 15" fill="none"><path d="M7.5 2v8M5 7l2.5 2.5L10 7M2 13h11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                        {T.recDownloadBtn}
-                                    </button>
-                                </div>
-
                                 {/* Next steps workflow */}
                                 <div style={{ background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 12, padding: '14px 16px' }}>
                                     <div style={{ fontSize: 11, fontWeight: 700, color: '#374151', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
@@ -2709,6 +2696,33 @@ export default function McAngebotsfeed() {
                                             </div>
                                         </div>
                                     ))}
+                                </div>
+
+                                {/* Download Fehlerbericht */}
+                                <div style={{ background: '#EEF4FF', border: `2px solid ${MC_BLUE}`, borderRadius: 12, padding: '16px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                                        <svg width="16" height="16" viewBox="0 0 18 18" fill="none"><path d="M9 2v10M6 9l3 3 3-3M2 15h14" stroke={MC_BLUE} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                        <span style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{T.recDownloadTitle}</span>
+                                    </div>
+                                    <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 12, lineHeight: 1.5 }}>{T.recDownloadDesc}</div>
+                                    <button type="button" onClick={csvOnClick}
+                                        style={{ width: '100%', padding: '11px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
+                                        <svg width="13" height="13" viewBox="0 0 15 15" fill="none"><path d="M7.5 2v8M5 7l2.5 2.5L10 7M2 13h11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                        {T.recDownloadBtn}
+                                    </button>
+                                </div>
+
+                                {/* Motivational tip */}
+                                <div style={{ background: 'linear-gradient(135deg, #F0FDF4 0%, #ECFDF5 100%)', border: '1px solid #BBF7D0', borderRadius: 12, padding: '14px 16px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+                                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.8 3.6L14 5.5l-3 2.9.7 4.1L8 10.4l-3.7 1.9.7-4.1L2 5.5l4.2-.9L8 1z" fill="#16A34A" stroke="#16A34A" strokeWidth="0.5" strokeLinejoin="round"/></svg>
+                                        <span style={{ fontSize: 11, fontWeight: 700, color: '#166534' }}>{lang === 'de' ? 'Besserer Feed = mehr Reichweite' : 'Better feed = more reach'}</span>
+                                    </div>
+                                    <div style={{ fontSize: 11, color: '#166534', lineHeight: 1.6 }}>
+                                        {lang === 'de'
+                                            ? 'Händler mit vollständigen und qualitativ hochwertigen Feeds erzielen bis zu 3× mehr Klicks. Jeder korrigierte Fehler verbessert deine Sichtbarkeit auf CHECK24.'
+                                            : 'Merchants with complete, high-quality feeds achieve up to 3× more clicks. Every fixed error improves your visibility on CHECK24.'}
+                                    </div>
                                 </div>
 
                                 {/* Nav */}
@@ -2798,7 +2812,7 @@ export default function McAngebotsfeed() {
         {/* Feedvorlage Column Reference Modal */}
         {showVorlage && (() => {
             const exMap = Object.fromEntries(VORLAGE_HEADERS.map((h, i) => [h, VORLAGE_EXAMPLE[i]]));
-            const PFLICHT_SET = new Set(['EAN (GTIN14)', 'name']);
+            const PFLICHT_SET = new Set(['EAN (GTIN14)', 'offer_id', 'name', 'description', 'brand', 'price', 'availability', 'stock_amount', 'delivery_time', 'shipping_mode', 'Bildlink_1']);
             const VG = [
                 { label: lang === 'de' ? 'Identifikation' : 'Identification', color: '#1553B6', cols: ['EAN (GTIN14)', 'offer_id', 'name', 'brand', 'series', 'model', 'category_path', 'deeplink'] },
                 { label: lang === 'de' ? 'Beschreibung & Merkmale' : 'Description & Features', color: '#7C3AED', cols: ['description', 'color', 'material', 'surface_treatment', 'material_wood_quality', 'frame_material', 'orientation', 'cover', 'removable_cover', 'washable_cover', 'care_instructions', 'suitable_for_allergic', 'certificate', 'temper', 'density', 'filling', 'filling_weight', 'filling_quantity', 'quilt_type', 'quilt_zones', 'number_lying_zones'] },
@@ -2842,12 +2856,60 @@ export default function McAngebotsfeed() {
                                 <input type="text" value={vorlageSearch} onChange={e => setVorlageSearch(e.target.value)} placeholder={lang === 'de' ? 'Spaltenname oder Beispielwert suchen…' : 'Search column name or example value…'} style={{ width: '100%', paddingLeft: 28, paddingRight: 10, paddingTop: 6, paddingBottom: 6, border: '1px solid #D1D5DB', borderRadius: 6, fontSize: 12, outline: 'none', boxSizing: 'border-box', background: '#fff' }} />
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
-                                <div style={{ width: 12, height: 12, background: '#FEF08A', border: '1px solid #EAB308', borderRadius: 2 }} />
+                                <div style={{ width: 12, height: 12, background: '#FEE2E2', border: '1px solid #FCA5A5', borderRadius: 2 }} />
                                 <span style={{ fontSize: 11, color: '#6B7280' }}>{lang === 'de' ? '= Pflichtfeld' : '= Required field'}</span>
                             </div>
                         </div>
                         {/* Grouped cards */}
                         <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+                            {/* Tips panel */}
+                            {!vorlageSearch && (
+                                <div style={{ background: '#EEF4FF', border: `1px solid ${MC_BLUE}20`, borderRadius: 10, padding: '14px 16px' }}>
+                                    <div style={{ fontSize: 12, fontWeight: 700, color: MC_BLUE, marginBottom: 10 }}>
+                                        {lang === 'de' ? 'Was ist wichtig?' : 'What matters?'}
+                                    </div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                                        {[
+                                            {
+                                                icon: '🔴',
+                                                title: lang === 'de' ? 'Pflichtfelder (11 Spalten)' : 'Required fields (11 columns)',
+                                                body: lang === 'de'
+                                                    ? 'EAN, Eigene Artikel-ID, Artikelname, Beschreibung, Marke, Preis, Verfügbarkeit, Lagerbestand, Lieferzeit, Versandart und Bildlink_1 müssen immer gefüllt sein. Fehlende Pflichtfelder blockieren die Listung.'
+                                                    : 'EAN, Offer ID, Name, Description, Brand, Price, Availability, Stock, Delivery time, Shipping mode, and Image link 1 must always be filled. Missing required fields block listing.',
+                                            },
+                                            {
+                                                icon: '✏️',
+                                                title: lang === 'de' ? 'Gute Artikelnamen schreiben' : 'Writing good product titles',
+                                                body: lang === 'de'
+                                                    ? 'Format: Marke + Produktart + Material + Farbe + Maße. Beispiel: „KARE Design Couchtisch Circle, Massivholz Eiche, naturbraun, 120×60 cm". Je mehr relevante Details, desto besser die Sichtbarkeit.'
+                                                    : 'Format: Brand + Product type + Material + Color + Dimensions. Example: "KARE Design Coffee Table Circle, solid oak, natural brown, 120×60 cm". More relevant details = better visibility.',
+                                            },
+                                            {
+                                                icon: '🖼️',
+                                                title: lang === 'de' ? 'Bilder: mindestens 3 empfohlen' : 'Images: at least 3 recommended',
+                                                body: lang === 'de'
+                                                    ? 'Bildlink_1 ist Pflicht. Mehr Bilder (Bildlink_2 bis Bildlink_10) verbessern die Conversion erheblich. Nutze Freisteller, Milieu- und Detailfotos.'
+                                                    : 'Image link 1 is required. More images (links 2–10) significantly improve conversion. Use cutout, lifestyle, and detail shots.',
+                                            },
+                                            {
+                                                icon: '📝',
+                                                title: lang === 'de' ? 'Beschreibung: 150–500+ Zeichen' : 'Description: 150–500+ characters',
+                                                body: lang === 'de'
+                                                    ? 'Kurze Beschreibungen kosten Reichweite. Beschreibe Material, Maße, Besonderheiten und Pflegehinweise. Vermeide externe Links oder Werbephrasen.'
+                                                    : 'Short descriptions cost reach. Describe material, dimensions, features, and care instructions. Avoid external links or advertising phrases.',
+                                            },
+                                        ].map(({ icon, title, body }) => (
+                                            <div key={title} style={{ display: 'flex', gap: 10 }}>
+                                                <span style={{ fontSize: 14, flexShrink: 0, marginTop: 1 }}>{icon}</span>
+                                                <div>
+                                                    <div style={{ fontSize: 11, fontWeight: 700, color: '#111827', marginBottom: 2 }}>{title}</div>
+                                                    <div style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.5 }}>{body}</div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                             {filteredGroups.length === 0 && (
                                 <div style={{ textAlign: 'center', color: '#9CA3AF', fontSize: 13, padding: '40px 0' }}>{lang === 'de' ? 'Keine Spalten gefunden.' : 'No columns found.'}</div>
                             )}
@@ -2858,17 +2920,17 @@ export default function McAngebotsfeed() {
                                         <span style={{ fontSize: 12, fontWeight: 700, color: '#374151', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{grp.label}</span>
                                         <span style={{ fontSize: 11, color: '#9CA3AF' }}>({grp.cols.length})</span>
                                     </div>
-                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8 }}>
                                         {grp.cols.filter(c => VORLAGE_HEADERS.includes(c)).map((col) => {
                                             const isPflicht = PFLICHT_SET.has(col);
                                             const ex = exMap[col] || '';
                                             const idx = VORLAGE_HEADERS.indexOf(col) + 1;
                                             return (
-                                                <div key={col} style={{ border: `1px solid ${isPflicht ? '#FDE68A' : '#E5E7EB'}`, borderRadius: 7, padding: '8px 10px', background: isPflicht ? '#FFFBEB' : '#FAFAFA', display: 'flex', flexDirection: 'column', gap: 3 }}>
+                                                <div key={col} style={{ border: `1px solid ${isPflicht ? '#FCA5A5' : '#E5E7EB'}`, borderRadius: 7, padding: '8px 10px', background: isPflicht ? '#FFF5F5' : '#FAFAFA', display: 'flex', flexDirection: 'column', gap: 3 }}>
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                                                         <span style={{ fontSize: 10, color: '#9CA3AF', minWidth: 18, fontVariantNumeric: 'tabular-nums' }}>{idx}</span>
-                                                        <span style={{ fontSize: 12, fontWeight: 600, color: isPflicht ? '#92400E' : '#111827', fontFamily: 'monospace', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={col}>{col}</span>
-                                                        {isPflicht && <span style={{ fontSize: 9, fontWeight: 700, color: '#92400E', background: '#FEF08A', border: '1px solid #EAB308', borderRadius: 3, padding: '1px 4px', flexShrink: 0 }}>P</span>}
+                                                        <span style={{ fontSize: 12, fontWeight: 600, color: isPflicht ? '#991B1B' : '#111827', fontFamily: 'monospace', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={col}>{col}</span>
+                                                        {isPflicht && <span style={{ fontSize: 9, fontWeight: 700, color: '#991B1B', background: '#FEE2E2', border: '1px solid #FCA5A5', borderRadius: 3, padding: '1px 4px', flexShrink: 0 }}>Pflicht</span>}
                                                     </div>
                                                     <div style={{ fontSize: 11, color: '#6B7280', fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', paddingLeft: 23 }} title={ex}>{ex || '—'}</div>
                                                 </div>
