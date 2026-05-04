@@ -1864,6 +1864,28 @@ export default function McAngebotsfeed() {
                                     )}
                                 </div>
 
+                                {/* Nav buttons */}
+                                <div style={{ padding: '12px 24px', borderTop: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+                                    <div style={{ fontSize: 11, color: (issues?.missingPflichtCols?.length ?? 0) > 0 ? '#DC2626' : '#16A34A', fontWeight: 500 }}>
+                                        {(issues?.missingPflichtCols?.length ?? 0) > 0
+                                            ? (lang === 'de'
+                                                ? `${issues.missingPflichtCols.length} Pflichtfeld${issues.missingPflichtCols.length > 1 ? 'er' : ''} fehlen noch`
+                                                : `${issues.missingPflichtCols.length} required field${issues.missingPflichtCols.length > 1 ? 's' : ''} missing`)
+                                            : (lang === 'de' ? '✓ Alle Pflichtfelder zugeordnet' : '✓ All required fields mapped')
+                                        }
+                                    </div>
+                                    <div style={{ display: 'flex', gap: 8 }}>
+                                        <button type="button" onClick={() => setStep(1)}
+                                            style={{ padding: '8px 16px', background: '#fff', border: '1px solid #D0D5E0', borderRadius: 8, color: '#374151', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}>
+                                            {T.back}
+                                        </button>
+                                        <button type="button" onClick={() => setStep(3)}
+                                            style={{ padding: '8px 18px', background: MC_BLUE, border: 'none', borderRadius: 8, color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+                                            {T.startAnalysis}
+                                        </button>
+                                    </div>
+                                </div>
+
                             </div>
                         )}
                     </div>
@@ -2241,10 +2263,20 @@ export default function McAngebotsfeed() {
                                 </div>
                             )}
 
-                            {/* Reset */}
-                            <div style={{ padding: '10px 16px' }}>
+                            {/* Nav buttons */}
+                            <div style={{ padding: '10px 16px', borderTop: '1px solid #F3F4F6', display: 'flex', flexDirection: 'column', gap: 6 }}>
+                                <div style={{ display: 'flex', gap: 6 }}>
+                                    <button type="button" onClick={() => setStep(2)}
+                                        style={{ flex: 1, padding: '8px', background: '#fff', border: '1px solid #D0D5E0', borderRadius: 8, color: '#374151', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}>
+                                        {T.back}
+                                    </button>
+                                    <button type="button" onClick={() => setStep(4)}
+                                        style={{ flex: 2, padding: '8px', background: MC_BLUE, border: 'none', borderRadius: 8, color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+                                        {stufe1Passed ? (lang === 'de' ? 'Zusammenfassung →' : 'Summary →') : T.recNextStep}
+                                    </button>
+                                </div>
                                 <button type="button" onClick={resetToStart}
-                                    style={{ width: '100%', padding: '7px', background: 'none', color: '#9CA3AF', border: 'none', borderRadius: 7, fontSize: 10, fontWeight: 500, cursor: 'pointer' }}>
+                                    style={{ width: '100%', padding: '5px', background: 'none', color: '#9CA3AF', border: 'none', borderRadius: 6, fontSize: 10, cursor: 'pointer' }}>
                                     {lang === 'de' ? 'Neuen Feed hochladen' : 'Upload New Feed'}
                                 </button>
                             </div>
@@ -2679,12 +2711,18 @@ export default function McAngebotsfeed() {
                                     ))}
                                 </div>
 
-                                {/* Reset */}
-                                <button type="button" onClick={resetToStart}
-                                    style={{ width: '100%', padding: '9px', background: '#FFF', color: '#374151', border: '1px solid #D1D5DB', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
-                                    <svg width="11" height="11" viewBox="0 0 15 15" fill="none"><path d="M2 7.5h11M7 2.5l-5 5 5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                    {lang === 'de' ? 'Neuen Feed hochladen' : 'Upload New Feed'}
-                                </button>
+                                {/* Nav */}
+                                <div style={{ display: 'flex', gap: 6 }}>
+                                    <button type="button" onClick={() => setStep(3)}
+                                        style={{ flex: 1, padding: '9px', background: '#FFF', color: '#374151', border: '1px solid #D1D5DB', borderRadius: 8, fontSize: 12, fontWeight: 500, cursor: 'pointer' }}>
+                                        {T.back}
+                                    </button>
+                                    <button type="button" onClick={resetToStart}
+                                        style={{ flex: 1, padding: '9px', background: '#FFF', color: '#374151', border: '1px solid #D1D5DB', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                                        <svg width="11" height="11" viewBox="0 0 15 15" fill="none"><path d="M2 7.5h11M7 2.5l-5 5 5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                        {lang === 'de' ? 'Neu hochladen' : 'Upload new'}
+                                    </button>
+                                </div>
                             </div>
 
                         </div>
@@ -2694,121 +2732,6 @@ export default function McAngebotsfeed() {
             })()}
 
             </div>
-
-            {/* Action bar - Step 2 */}
-            {step === 2 && !mcIsWrongFile && (
-                <div style={{ background: '#fff', borderTop: '1px solid #E2E6EE', padding: '14px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexShrink: 0 }}>
-                    <div style={{ fontSize: 12, color: TEXT_MUTED }}>
-                        {(issues?.missingPflichtCols?.length ?? 0) > 0
-                            ? (lang === 'de'
-                                ? `${issues.missingPflichtCols.length} Pflichtfeld${issues.missingPflichtCols.length > 1 ? 'er' : ''} nicht zugeordnet · ${issues.missingPflichtCols.map(f => f === 'image_url' ? 'Hauptbild' : (T.fields[f] || f)).join(', ')} muss${issues.missingPflichtCols.length > 1 ? 'en' : ''} manuell zugeordnet werden`
-                                : `${issues.missingPflichtCols.length} required field${issues.missingPflichtCols.length > 1 ? 's' : ''} not mapped · ${issues.missingPflichtCols.map(f => f === 'image_url' ? 'Main Image' : (T.fields[f] || f)).join(', ')} must be mapped manually`)
-                            : (lang === 'de' ? 'Alle Pflichtfelder zugeordnet · Bereit zur Analyse' : 'All required fields mapped · Ready for analysis')
-                        }
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-                        <button type="button" onClick={() => setStep(1)}
-                            style={{ padding: '9px 18px', background: '#fff', border: '1px solid #D0D5E0', borderRadius: 8, color: '#374151', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>
-                            {T.back}
-                        </button>
-                        <button type="button" onClick={() => setStep(3)}
-                            style={{ padding: '9px 20px', background: MC_BLUE, border: 'none', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
-                            {T.startAnalysis}
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            {/* Action bar - Step 3 */}
-            {step === 3 && issues && (
-                <div style={{ background: '#fff', borderTop: '1px solid #E2E6EE', padding: '14px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexShrink: 0 }}>
-                    <div style={{ fontSize: 12, color: TEXT_MUTED }}>
-                        {issues.blockiertCount > 0
-                            ? (lang === 'de'
-                                ? `${issues.blockiertCount.toLocaleString(numLocale)} Artikel mit Fehlern · Empfehlungen zur Behebung ansehen`
-                                : `${issues.blockiertCount.toLocaleString(numLocale)} items with errors · View recommendations to fix`)
-                            : (lang === 'de' ? 'Feed fehlerfrei · Alle Artikel können gelistet werden' : 'Feed error-free · All items can be listed')
-                        }
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-                        <button type="button" onClick={() => setStep(2)}
-                            style={{ padding: '9px 18px', background: '#fff', border: '1px solid #D0D5E0', borderRadius: 8, color: '#374151', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>
-                            {T.back}
-                        </button>
-                        <button type="button" onClick={() => setStep(4)}
-                            style={{ padding: '9px 20px', background: MC_BLUE, border: 'none', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
-                            {stufe1Passed ? (lang === 'de' ? 'Zusammenfassung ansehen →' : 'View summary →') : T.recNextStep}
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            {/* Action bar - Step 4 */}
-            {step === 4 && issues && (
-                <div style={{ background: '#fff', borderTop: '1px solid #E2E6EE', padding: '14px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexShrink: 0 }}>
-                    <div style={{ fontSize: 12, color: TEXT_MUTED }}>
-                        {lang === 'de'
-                            ? 'Fehler behoben? Fehlerbericht herunterladen · CSV mit allen Fehlern je Zeile für Excel'
-                            : 'Errors fixed? Download error report · CSV with all errors per row for Excel'}
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-                        <button type="button" onClick={() => setStep(3)}
-                            style={{ padding: '9px 18px', background: '#fff', border: '1px solid #D0D5E0', borderRadius: 8, color: '#374151', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>
-                            {T.back}
-                        </button>
-                        <button type="button" onClick={() => {
-                            // csvOnClick is defined inside step 4 IIFE; trigger download inline here
-                            if (!issues) return;
-                            const pflichtByRow = {}, optionalByRow = {};
-                            const errorMsg = (e) => {
-                                const label = T.csvFieldLabels[e.field] || e.field;
-                                if (e.type === 'missing') return T.csvErrMissing(label);
-                                if (e.type === 'placeholder') return T.csvErrPlaceholder(label);
-                                if (e.type === 'too_short') return T.csvErrTooShort(label);
-                                if (e.type === 'one_word') return T.csvErrOneWord(label);
-                                if (e.type === 'bware') return T.csvErrBware(label);
-                                if (e.type === 'wrong_length') return T.csvErrLength(label);
-                                if (e.type === 'invalid') return T.csvErrInvalid(label);
-                                if (e.type === 'scientific') return T.csvErrScientific(label);
-                                if (e.type === 'siehe_oben') return T.csvErrSieheOben(label);
-                                if (e.type === 'external_link') return T.csvErrExternalLink(label);
-                                if (e.type === 'template') return T.csvErrTemplate(label);
-                                if (e.type === 'advertising') return T.csvErrAdvertising(label);
-                                if (e.type === 'identical_to_title') return T.csvErrIdentical(label);
-                                if (e.type === 'single' && e.field === 'image_url') return T.csvErrSingleImage;
-                                if (e.type === 'wrong_category') return T.csvWrongCategory;
-                                return T.csvErrFallback(label);
-                            };
-                            issues.pflichtErrors.forEach((e) => { if (!pflichtByRow[e.row]) pflichtByRow[e.row] = []; pflichtByRow[e.row].push(errorMsg(e)); });
-                            issues.eanDupRows.forEach((rn) => { if (!pflichtByRow[rn]) pflichtByRow[rn] = []; pflichtByRow[rn].push(T.csvEanDup); });
-                            issues.nameDupRows.forEach((rn) => { if (!pflichtByRow[rn]) pflichtByRow[rn] = []; pflichtByRow[rn].push(T.csvNameDup); });
-                            if (issues.offerIdDupRows) issues.offerIdDupRows.forEach((rn) => { if (!pflichtByRow[rn]) pflichtByRow[rn] = []; pflichtByRow[rn].push(T.csvOfferIdDup); });
-                            issues.optionalHints.forEach((e) => { if (!optionalByRow[e.row]) optionalByRow[e.row] = []; optionalByRow[e.row].push(T.csvErrMissing(e.field)); });
-                            const esc = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
-                            const sep = ';';
-                            const headerRow = [T.csvColPflicht, T.csvColOptional, ...headers].map(esc).join(sep);
-                            const lines = rows.map((r, i) => {
-                                const rn = i + 1;
-                                const p = pflichtByRow[rn] ? [...new Set(pflichtByRow[rn])].join('; ') : '';
-                                const o = optionalByRow[rn] ? [...new Set(optionalByRow[rn])].join('; ') : '';
-                                return [esc(p), esc(o), ...headers.map((h) => esc(r[h]))].join(sep);
-                            });
-                            const csv = [headerRow, ...lines].join('\n');
-                            const blob = new Blob([`﻿${csv}`], { type: 'text/csv;charset=utf-8' });
-                            const url = URL.createObjectURL(blob);
-                            const a = document.createElement('a');
-                            a.href = url;
-                            a.download = `feed-fehlerliste-${new Date().toISOString().slice(0, 10)}.csv`;
-                            a.click();
-                            URL.revokeObjectURL(url);
-                        }}
-                            style={{ padding: '9px 20px', background: MC_BLUE, border: 'none', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 7 }}>
-                            <svg width="13" height="13" viewBox="0 0 15 15" fill="none"><path d="M7.5 2v8M5 7l2.5 2.5L10 7M2 13h11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                            {lang === 'de' ? 'Fehlerbericht als CSV herunterladen' : 'Download Error Report as CSV'}
-                        </button>
-                    </div>
-                </div>
-            )}
 
             {/* Footer scrolls with content */}
             <footer style={{ background: '#FFF', borderTop: '1px solid #E5E7EB', padding: '5px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0, marginTop: 'auto' }}>
