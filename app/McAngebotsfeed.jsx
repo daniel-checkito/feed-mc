@@ -449,13 +449,17 @@ const DE_T = {
     reuploadSub: 'Datei hier ablegen oder direkt im Händlerportal hochladen.',
     footerLeft: 'CHECK24 Feed Checker · Stand: 04/2026 · Hinweise basieren auf dem aktuellen Feedleitfaden',
     footerRight: 'v2.4.1 · haendler-support@check24.de',
-    howTitle: 'So funktioniert es',
-    howSummary: 'Laden Sie Ihren Angebotsfeed hoch – wir prüfen alle Pflichtfelder und zeigen genau, welche Artikel Fehler haben.',
+    howTitle: 'So funktioniert der Feed Checker',
+    howSummary: 'Laden Sie Ihren Angebotsfeed als CSV hoch – wir prüfen alle Pflichtfelder und zeigen genau, welche Artikel Fehler haben.',
     howSteps: [
-        { n: 1, title: 'Feed hochladen', desc: 'CSV-Datei per Drag & Drop oder Klick hochladen' },
-        { n: 2, title: 'Fehler prüfen', desc: 'Alle Pflichtfelder werden automatisch analysiert' },
-        { n: 3, title: 'Fehler beheben', desc: 'Fehlerbericht als CSV herunterladen und korrigieren' },
+        { n: 1, title: 'Feed hochladen', desc: 'CSV-Datei per Drag & Drop oder Klick hochladen. Unterstützt UTF-8 und Windows-1252. Max. 64 MB.' },
+        { n: 2, title: 'Spalten automatisch erkennen', desc: 'Wir ordnen Ihre Spalten automatisch den Pflichtfeldern zu. Manuelle Korrekturen sind jederzeit möglich.' },
+        { n: 3, title: 'Fehler analysieren & beheben', desc: 'Alle Pflichtfelder werden geprüft. Fehlerbericht als CSV herunterladen, in Excel korrigieren und neu hochladen.' },
     ],
+    warehouseDEsub: 'Kein HS-Code erforderlich',
+    warehouseNonDEsub: 'HS-Code wird als Pflichtfeld geprüft',
+    continueMappingBtn: 'Weiter zur Spalten-Zuordnung',
+    feedTemplateSub2: 'Alle Pflichtfelder vorbefüllt',
     // Pflicht table field labels
     pflichtFields: [
         { key: 'name', label: 'Artikelname' }, { key: 'price', label: 'Preis' },
@@ -657,13 +661,17 @@ const EN_T = {
     footerLeft: 'CHECK24 Feed Checker · As of 04/2026 · Notes based on current feed guide',
     footerRight: 'v2.4.1 · haendler-support@check24.de',
     // How it works
-    howTitle: 'How it works',
-    howSummary: 'Upload your product feed – we check all required fields and show exactly which items have errors.',
+    howTitle: 'How Feed Checker works',
+    howSummary: 'Upload your product feed as CSV – we check all required fields and show exactly which items have errors.',
     howSteps: [
-        { n: 1, title: 'Upload feed', desc: 'Upload your CSV file via drag & drop or click' },
-        { n: 2, title: 'Check errors', desc: 'All required fields are analysed automatically' },
-        { n: 3, title: 'Fix errors', desc: 'Download the error report as CSV and correct it' },
+        { n: 1, title: 'Upload feed', desc: 'Upload your CSV file via drag & drop or click. Supports UTF-8 and Windows-1252. Max. 64 MB.' },
+        { n: 2, title: 'Auto-detect columns', desc: 'We automatically map your columns to required fields. Manual corrections are always possible.' },
+        { n: 3, title: 'Analyse & fix errors', desc: 'All required fields are checked. Download the error report as CSV, correct in Excel, and re-upload.' },
     ],
+    warehouseDEsub: 'No HS Code required',
+    warehouseNonDEsub: 'HS Code validated as required field',
+    continueMappingBtn: 'Continue to Column Mapping',
+    feedTemplateSub2: 'All required fields pre-filled',
 };
 
 export default function McAngebotsfeed() {
@@ -1223,79 +1231,140 @@ export default function McAngebotsfeed() {
                 STEP 1 - Upload
             ══════════════════════════════════════════ */}
             {step === 1 && (
-                <div style={{ width: '100%', maxWidth: 1100, display: 'flex', flexDirection: 'column', gap: 14 }}>
+                <div style={{ width: '100%', maxWidth: 1100, display: 'grid', gridTemplateColumns: '1fr 420px', gap: 20, alignItems: 'start' }}>
 
-                    {/* Title row - above both columns */}
-                    <div>
-                        <div style={{ fontSize: 18, fontWeight: 800, color: '#111827', marginBottom: 3 }}>{T.howTitle}</div>
-                        <div style={{ fontSize: 12, color: '#6B7280', lineHeight: 1.5 }}>{T.howSummary}</div>
-                    </div>
+                    {/* Left column: How-it-works + Resources */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
-                    {/* Two columns aligned at the same top */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 420px', gap: 16, alignItems: 'start' }}>
-
-                        {/* Left: How it works */}
-                        <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E2E6EE', overflow: 'hidden' }}>
+                        {/* How it works card */}
+                        <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E2E6EE', overflow: 'hidden' }}>
+                            <div style={{ padding: '20px 24px 16px', borderBottom: '1px solid #F3F4F6' }}>
+                                <div style={{ fontSize: 16, fontWeight: 700, color: '#111827', marginBottom: 4 }}>{T.howTitle}</div>
+                                <div style={{ fontSize: 13, color: '#6B7280', lineHeight: 1.55 }}>{T.howSummary}</div>
+                            </div>
                             {T.howSteps.map((s, i) => (
-                                <div key={s.n} style={{ padding: '10px 14px', borderBottom: i < T.howSteps.length - 1 ? '1px solid #F3F4F6' : 'none', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                                    <div style={{ width: 20, height: 20, borderRadius: '50%', background: MC_BLUE, color: '#FFF', fontSize: 10, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>{s.n}</div>
+                                <div key={s.n} style={{ padding: '14px 24px', borderBottom: i < T.howSteps.length - 1 ? '1px solid #F3F4F6' : 'none', display: 'flex', gap: 14, alignItems: 'flex-start' }}>
+                                    <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#EEF3FF', color: MC_BLUE, fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{s.n}</div>
                                     <div>
-                                        <div style={{ fontSize: 12, fontWeight: 700, color: '#111827', marginBottom: 1 }}>{s.title}</div>
-                                        <div style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.35 }}>{s.desc}</div>
+                                        <div style={{ fontSize: 14, fontWeight: 600, color: '#111827', marginBottom: 3 }}>{s.title}</div>
+                                        <div style={{ fontSize: 12, color: '#6B7280', lineHeight: 1.5 }}>{s.desc}</div>
                                     </div>
                                 </div>
                             ))}
                         </div>
 
-                        {/* Right: Upload card */}
-                        <div style={{ background: '#FFF', borderRadius: 12, padding: '16px', boxShadow: '0 2px 12px rgba(0,0,0,0.07)' }}>
-                        {/* Drop zone */}
-                        {file ? (
-                            <div style={{ borderRadius: 8, border: '2px solid #BBF7D0', background: '#F0FDF4', padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
-                                <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#DCFCE7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2.5 1.5h8.5l3 3v10h-11.5v-13z" stroke="#16A34A" strokeWidth="1.4" strokeLinejoin="round"/><path d="M11 1.5v3h3" stroke="#16A34A" strokeWidth="1.4" strokeLinejoin="round"/><path d="M5 8.5l2 2 4-3" stroke="#16A34A" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                </div>
-                                <div style={{ flex: 1, minWidth: 0 }}>
-                                    <div style={{ fontSize: 13, fontWeight: 600, color: '#166534', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{file.name}</div>
-                                    <div style={{ fontSize: 11, color: '#4B7A5A', marginTop: 2 }}>{(file.size / 1024).toFixed(1)} KB · {rows.length > 0 ? T.fileLoaded(rows.length.toLocaleString(numLocale)) : T.fileReading}</div>
-                                </div>
-                                <button type="button" onClick={() => { setFile(null); setRows([]); setHeaders([]); setManualMapping({}); }}
-                                    style={{ fontSize: 11, color: '#6B7280', background: 'none', border: '1px solid #D1D5DB', borderRadius: 5, padding: '4px 10px', cursor: 'pointer' }}>
-                                    {T.fileChange}
+                        {/* Resources card */}
+                        <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E2E6EE', padding: '18px 24px' }}>
+                            <div style={{ fontSize: 14, fontWeight: 700, color: '#111827', marginBottom: 12 }}>{T.resourcesTitle}</div>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                                <button type="button" onClick={() => setShowLeitfaden(true)}
+                                    style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', borderRadius: 8, border: '1px solid #E2E6EE', background: '#FAFAFA', cursor: 'pointer', textAlign: 'left' }}>
+                                    <div style={{ width: 32, height: 32, borderRadius: 7, background: '#FEF2F2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2.5 1.5h8.5l3 3v10h-11.5v-13z" stroke="#DC2626" strokeWidth="1.4" strokeLinejoin="round"/><path d="M11 1.5v3h3" stroke="#DC2626" strokeWidth="1.4" strokeLinejoin="round"/><path d="M5 8h6M5 10.5h4" stroke="#DC2626" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                                    </div>
+                                    <div>
+                                        <div style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{lang === 'de' ? 'Feedleitfaden 2026' : 'Feed Guide 2026'}</div>
+                                        <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 1 }}>{T.feedGuideSub}</div>
+                                    </div>
+                                </button>
+                                <button type="button" onClick={() => { const a = document.createElement('a'); a.href = 'http://media-partner.moebel.check24.de/feedvorlagen/Feedleitfaden_Anhang_2026/CHECK24_Feedvorlage_V2025.xlsx'; a.download = 'CHECK24_Feedvorlage_V2025.xlsx'; a.click(); }}
+                                    style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', borderRadius: 8, border: '1px solid #E2E6EE', background: '#FAFAFA', cursor: 'pointer', textAlign: 'left' }}>
+                                    <div style={{ width: 32, height: 32, borderRadius: 7, background: '#F0FDF4', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="13" height="13" rx="1.5" stroke="#16A34A" strokeWidth="1.3"/><path d="M5 5.5h6M5 8h6M5 10.5h4" stroke="#16A34A" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                                    </div>
+                                    <div>
+                                        <div style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{lang === 'de' ? 'Feedvorlage XLSX' : 'Feed Template XLSX'}</div>
+                                        <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 1 }}>{T.feedTemplateSub2}</div>
+                                    </div>
                                 </button>
                             </div>
-                        ) : (
-                            <div
-                                onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
-                                onDragLeave={() => setDragging(false)}
-                                onDrop={(e) => { e.preventDefault(); setDragging(false); const f = e.dataTransfer.files?.[0]; if (f) parseFile(f); }}
-                                onClick={() => fileRef.current?.click()}
-                                style={{ border: `2px dashed ${dragging ? MC_BLUE : '#D1D5DB'}`, background: dragging ? '#EEF4FF' : '#F9FAFB', borderRadius: 8, padding: '20px', cursor: 'pointer', transition: 'all 0.15s', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}
-                            >
-                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" style={{ color: dragging ? MC_BLUE : '#9CA3AF' }}>
-                                    <path d="M7 17A4.5 4.5 0 017 8h.1A6.5 6.5 0 0120 9.5a4 4 0 010 8H7z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
-                                    <path d="M12 17v-6m0 0l-2 2m2-2l2 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                                </svg>
-                                <div>
-                                    <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', marginBottom: 2, textAlign: 'center' }}>{T.dropHeading}</div>
-                                    <div style={{ fontSize: 11, color: '#9CA3AF', textAlign: 'center' }}>{T.dropSub}</div>
-                                </div>
-                                <input ref={fileRef} type="file" accept=".csv,text/csv" style={{ display: 'none' }} onChange={(e) => parseFile(e.target.files?.[0] || null)} />
-                            </div>
-                        )}
-
-                        {/* Primary CTA */}
-                        <button
-                            type="button"
-                            onClick={() => rows.length > 0 && setStep(2)}
-                            disabled={rows.length === 0}
-                            style={{ width: '100%', marginTop: 12, padding: '12px', background: rows.length > 0 ? MC_BLUE : '#D1D5DB', color: '#FFF', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 700, cursor: rows.length > 0 ? 'pointer' : 'default', transition: 'background 0.2s' }}
-                        >
-                            {rows.length > 0 ? T.continueBtn(rows.length.toLocaleString(numLocale)) : T.uploadPrompt}
-                        </button>
-                        </div>{/* end upload card */}
+                        </div>
 
                     </div>
+
+                    {/* Right column: Upload card */}
+                    <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E2E6EE', overflow: 'hidden' }}>
+                        <div style={{ padding: '20px 24px 16px', borderBottom: '1px solid #F3F4F6' }}>
+                            <div style={{ fontSize: 16, fontWeight: 700, color: '#111827', marginBottom: 2 }}>{T.s1Heading}</div>
+                            <div style={{ fontSize: 12, color: '#9CA3AF' }}>{lang === 'de' ? 'CSV-Datei mit Ihren Angebotsdaten' : 'CSV file with your product data'}</div>
+                        </div>
+
+                        <div style={{ padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+                            {/* Drop zone */}
+                            {file ? (
+                                <div style={{ borderRadius: 8, border: '2px solid #BBF7D0', background: '#F0FDF4', padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                                    <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#DCFCE7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2.5 1.5h8.5l3 3v10h-11.5v-13z" stroke="#16A34A" strokeWidth="1.4" strokeLinejoin="round"/><path d="M11 1.5v3h3" stroke="#16A34A" strokeWidth="1.4" strokeLinejoin="round"/><path d="M5 8.5l2 2 4-3" stroke="#16A34A" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                    </div>
+                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                        <div style={{ fontSize: 13, fontWeight: 600, color: '#166534', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{file.name}</div>
+                                        <div style={{ fontSize: 11, color: '#4B7A5A', marginTop: 2 }}>{(file.size / 1024).toFixed(1)} KB · {rows.length > 0 ? T.fileLoaded(rows.length.toLocaleString(numLocale)) : T.fileReading}</div>
+                                    </div>
+                                    <button type="button" onClick={() => { setFile(null); setRows([]); setHeaders([]); setManualMapping({}); }}
+                                        style={{ fontSize: 11, color: '#6B7280', background: 'none', border: '1px solid #D1D5DB', borderRadius: 5, padding: '4px 10px', cursor: 'pointer' }}>
+                                        {T.fileChange}
+                                    </button>
+                                </div>
+                            ) : (
+                                <div
+                                    onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+                                    onDragLeave={() => setDragging(false)}
+                                    onDrop={(e) => { e.preventDefault(); setDragging(false); const f = e.dataTransfer.files?.[0]; if (f) parseFile(f); }}
+                                    onClick={() => fileRef.current?.click()}
+                                    style={{ border: `2px dashed ${dragging ? MC_BLUE : '#D1D5DB'}`, background: dragging ? '#EEF4FF' : '#F9FAFB', borderRadius: 10, padding: '32px 20px', cursor: 'pointer', transition: 'all 0.15s', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}
+                                >
+                                    <div style={{ width: 44, height: 44, borderRadius: '50%', background: '#EEF3FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" style={{ color: MC_BLUE }}>
+                                            <path d="M7 17A4.5 4.5 0 017 8h.1A6.5 6.5 0 0120 9.5a4 4 0 010 8H7z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+                                            <path d="M12 17v-6m0 0l-2 2m2-2l2 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                        </svg>
+                                    </div>
+                                    <div style={{ textAlign: 'center' }}>
+                                        <div style={{ fontSize: 14, fontWeight: 600, color: '#111827', marginBottom: 3 }}>{T.dropHeading}</div>
+                                        <div style={{ fontSize: 12, color: '#9CA3AF' }}>{lang === 'de' ? 'Hierher ziehen oder klicken · max. 64 MB' : 'Drag here or click · max. 64 MB'}</div>
+                                    </div>
+                                    <div style={{ fontSize: 11, color: '#9CA3AF', background: '#F3F4F6', borderRadius: 20, padding: '3px 12px' }}>
+                                        {lang === 'de' ? 'CSV · UTF-8 oder Windows-1252' : 'CSV · UTF-8 or Windows-1252'}
+                                    </div>
+                                    <input ref={fileRef} type="file" accept=".csv,text/csv" style={{ display: 'none' }} onChange={(e) => parseFile(e.target.files?.[0] || null)} />
+                                </div>
+                            )}
+
+                            {/* Warehouse location */}
+                            <div>
+                                <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.07em', marginBottom: 8, textTransform: 'uppercase' }}>{T.warehouseLabel}</div>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                                    {[
+                                        { value: 'germany', label: T.warehouseDE, sub: T.warehouseDEsub },
+                                        { value: 'outside_germany', label: T.warehouseNonDE, sub: T.warehouseNonDEsub },
+                                    ].map((opt) => {
+                                        const active = storeLocation === opt.value;
+                                        return (
+                                            <label key={opt.value} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 14px', borderRadius: 8, border: `1.5px solid ${active ? MC_BLUE : '#E2E6EE'}`, background: active ? '#EEF3FF' : '#FFF', cursor: 'pointer', transition: 'all 0.15s' }}>
+                                                <input type="radio" name="storeLocation" value={opt.value} checked={active} onChange={() => setStoreLocation(opt.value)} style={{ accentColor: MC_BLUE, flexShrink: 0 }} />
+                                                <div>
+                                                    <div style={{ fontSize: 14, fontWeight: 600, color: active ? MC_BLUE : '#111827' }}>{opt.label}</div>
+                                                    <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 1 }}>{opt.sub}</div>
+                                                </div>
+                                            </label>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
+                            {/* Primary CTA */}
+                            <button
+                                type="button"
+                                onClick={() => rows.length > 0 && setStep(2)}
+                                disabled={rows.length === 0}
+                                style={{ width: '100%', padding: '14px', background: rows.length > 0 ? MC_BLUE : '#D1D5DB', color: '#FFF', border: 'none', borderRadius: 8, fontSize: 15, fontWeight: 700, cursor: rows.length > 0 ? 'pointer' : 'default', transition: 'background 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
+                            >
+                                {rows.length > 0 ? T.continueMappingBtn : T.uploadPrompt}
+                                {rows.length > 0 && <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                            </button>
+                        </div>
+                    </div>{/* end upload card */}
+
                 </div>
             )}
 
