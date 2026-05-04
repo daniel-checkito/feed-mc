@@ -1197,27 +1197,13 @@ export default function McAngebotsfeed() {
                 const langDE = lang === 'de';
 
                 return (
-                    <div style={{ width: '100%', maxWidth: 600 }}>
+                    <div style={{ width: '100%', maxWidth: 1100 }}>
                         {/* Back */}
                         <button type="button" onClick={() => setStep(1)}
                             style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: '#6B7280', fontWeight: 600, padding: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: 6 }}>
                             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
                             {T.back}
                         </button>
-
-                        {/* Resources */}
-                        <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-                            <button type="button" onClick={() => setShowLeitfaden(true)}
-                                style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 12px', borderRadius: 7, border: '1px solid #E5E7EB', background: '#FFF', cursor: 'pointer', fontSize: 11, color: '#374151', fontWeight: 600 }}>
-                                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ color: MC_BLUE }}><path d="M2.5 1.5h8.5l3 3v10h-11.5v-13z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M11 1.5v3h3" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M5 8h6M5 10.5h6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
-                                {T.feedGuide}
-                            </button>
-                            <button type="button" onClick={() => { const a = document.createElement('a'); a.href = 'http://media-partner.moebel.check24.de/feedvorlagen/Feedleitfaden_Anhang_2026/CHECK24_Feedvorlage_V2025.xlsx'; a.download = 'CHECK24_Feedvorlage_V2025.xlsx'; a.click(); }}
-                                style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 12px', borderRadius: 7, border: '1px solid #E5E7EB', background: '#FFF', cursor: 'pointer', fontSize: 11, color: '#374151', fontWeight: 600 }}>
-                                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ color: MC_BLUE }}><path d="M8 2v8M5 7l3 3 3-3M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                {T.feedTemplate}
-                            </button>
-                        </div>
 
                         {mcIsWrongFile ? (
                             <div style={{ padding: '20px', borderRadius: 12, border: '1px solid #FECACA', background: '#FEF2F2', display: 'flex', gap: 12 }}>
@@ -1444,11 +1430,11 @@ export default function McAngebotsfeed() {
                 };
 
                 return (
-                    <div style={{ width: '100%', maxWidth: 820 }}>
+                    <div style={{ width: '100%', maxWidth: 1200 }}>
 
                         {/* Back */}
                         <button type="button" onClick={() => setStep(2)}
-                            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: '#6B7280', fontWeight: 600, padding: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: 6 }}>
+                            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: '#6B7280', fontWeight: 600, padding: '0 0 12px 0', display: 'flex', alignItems: 'center', gap: 6 }}>
                             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
                             {T.back}
                         </button>
@@ -1573,49 +1559,13 @@ export default function McAngebotsfeed() {
                                 {lang === 'de' ? 'Neuen Feed hochladen' : 'Upload New Feed'}
                             </button>
 
-                            {/* Resources */}
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
-                                <button type="button" onClick={() => setShowLeitfaden(true)}
-                                    style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 10px', borderRadius: 7, border: '1px solid #E5E7EB', background: '#FFF', cursor: 'pointer', fontSize: 10, color: '#374151', fontWeight: 600 }}>
-                                    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style={{ color: MC_BLUE, flexShrink: 0 }}><path d="M2.5 1.5h8.5l3 3v10h-11.5v-13z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M11 1.5v3h3" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M5 8h6M5 10.5h6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
-                                    {T.feedGuide}
-                                </button>
-                                <button type="button" onClick={() => { const a = document.createElement('a'); a.href = 'http://media-partner.moebel.check24.de/feedvorlagen/Feedleitfaden_Anhang_2026/CHECK24_Feedvorlage_V2025.xlsx'; a.download = 'CHECK24_Feedvorlage_V2025.xlsx'; a.click(); }}
-                                    style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 10px', borderRadius: 7, border: '1px solid #E5E7EB', background: '#FFF', cursor: 'pointer', fontSize: 10, color: '#374151', fontWeight: 600 }}>
-                                    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style={{ color: MC_BLUE, flexShrink: 0 }}><path d="M8 2v8M5 7l3 3 3-3M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                    {T.feedTemplate}
-                                </button>
-                            </div>
-
                         </div>{/* end sidebar */}
                         </div>{/* end grid */}
 
-                        {/* Quality Tips */}
-                        <div style={{ marginTop: 16, background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'hidden' }}>
-                            <div style={{ padding: '14px 20px', borderBottom: '1px solid #E5E7EB' }}>
-                                <div style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>{T.qualityTitle}</div>
-                            </div>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0 }}>
-                                {T.qualityTips.map((tip, ti) => (
-                                    <div key={tip.field} style={{ padding: '14px 20px', borderBottom: ti < T.qualityTips.length - 2 ? '1px solid #F3F4F6' : 'none', borderRight: ti % 2 === 0 ? '1px solid #F3F4F6' : 'none' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                                            <span style={{ fontSize: 16 }}>{tip.icon}</span>
-                                            <span style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{tip.title}</span>
-                                        </div>
-                                        <ul style={{ margin: 0, padding: '0 0 0 16px', display: 'grid', gap: 4 }}>
-                                            {tip.tips.map((t, i) => (
-                                                <li key={i} style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.4 }}>{t}</li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
                         {/* Continue to Step 4 */}
-                        <div style={{ marginTop: 20, display: 'flex', justifyContent: 'flex-end' }}>
+                        <div style={{ marginTop: 12, display: 'flex', justifyContent: 'flex-end' }}>
                             <button type="button" onClick={() => setStep(4)}
-                                style={{ padding: '12px 24px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
+                                style={{ padding: '9px 20px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
                                 {T.recNextStep}
                             </button>
                         </div>
@@ -1750,18 +1700,18 @@ export default function McAngebotsfeed() {
                 };
 
                 return (
-                    <div style={{ width: '100%', maxWidth: 820 }}>
+                    <div style={{ width: '100%', maxWidth: 1200, display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
 
                         {/* Back */}
                         <button type="button" onClick={() => setStep(3)}
-                            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: '#6B7280', fontWeight: 600, padding: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: 6 }}>
+                            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: '#6B7280', fontWeight: 600, padding: '0 0 12px 0', display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
                             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
                             {T.back}
                         </button>
 
                         {/* Header */}
-                        <div style={{ marginBottom: 16 }}>
-                            <div style={{ fontSize: 20, fontWeight: 800, color: '#111827', marginBottom: 4 }}>
+                        <div style={{ marginBottom: 12, flexShrink: 0 }}>
+                            <div style={{ fontSize: 18, fontWeight: 800, color: '#111827', marginBottom: 4 }}>
                                 {recommendations.length > 0 ? T.recTitle(recommendations.length) : T.recNoErrorsTitle}
                             </div>
                             {recommendations.length === 0 && (
@@ -1769,64 +1719,82 @@ export default function McAngebotsfeed() {
                             )}
                         </div>
 
-                        {/* No-errors state */}
-                        {recommendations.length === 0 && (
-                            <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 12, padding: '20px 24px', display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
-                                <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#DCFCE7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4 6-6" stroke="#16A34A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                </div>
-                                <div>
-                                    <div style={{ fontSize: 14, fontWeight: 700, color: '#166534' }}>{T.recNoErrorsTitle}</div>
-                                    <div style={{ fontSize: 12, color: '#4B7A5A', marginTop: 2 }}>{T.recNoErrorsSub}</div>
-                                </div>
-                            </div>
-                        )}
+                        {/* Two-column layout: recommendations left, download panel right */}
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 20, alignItems: 'start', flex: 1, overflow: 'hidden' }}>
 
-                        {/* Recommendation cards */}
-                        {recommendations.length > 0 && (
-                            <div style={{ display: 'grid', gap: 10, marginBottom: 20 }}>
-                                {recommendations.map(({ key, count, rule }) => (
-                                    <div key={key} style={{ background: '#FFF', border: '1px solid #E5E7EB', borderLeft: '4px solid #DC2626', borderRadius: 10, padding: '16px 20px' }}>
-                                        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 8 }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                                                <span style={{ fontSize: 20, lineHeight: 1 }}>{rule.icon}</span>
-                                                <div>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                                                        <span style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>{rule.title}</span>
-                                                        <span style={{ fontSize: 10, fontWeight: 700, color: '#DC2626', background: '#FEE2E2', padding: '2px 7px', borderRadius: 4, letterSpacing: '0.04em' }}>
-                                                            {T.recPriority}
-                                                        </span>
-                                                    </div>
-                                                    <div style={{ fontSize: 11, color: '#DC2626', fontWeight: 600, marginTop: 2 }}>
-                                                        {T.recAffected(count.toLocaleString(numLocale))}
-                                                    </div>
-                                                </div>
-                                            </div>
+                            {/* Left: recommendations (scrollable) */}
+                            <div style={{ overflow: 'auto', height: '100%', paddingRight: 4 }}>
+                                {/* No-errors state */}
+                                {recommendations.length === 0 && (
+                                    <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 12, padding: '20px 24px', display: 'flex', alignItems: 'center', gap: 14 }}>
+                                        <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#DCFCE7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                            <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4 6-6" stroke="#16A34A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                                         </div>
-                                        <div style={{ fontSize: 13, color: '#374151', lineHeight: 1.6, marginBottom: 6 }}>
-                                            {rule.action}
-                                        </div>
-                                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, background: '#F9FAFB', borderRadius: 6, padding: '8px 12px' }}>
-                                            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 1 }}><circle cx="8" cy="8" r="6.5" stroke={MC_BLUE} strokeWidth="1.4"/><path d="M8 7v4" stroke={MC_BLUE} strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="5.5" r=".6" fill={MC_BLUE}/></svg>
-                                            <span style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.5 }}>{rule.tip}</span>
+                                        <div>
+                                            <div style={{ fontSize: 14, fontWeight: 700, color: '#166534' }}>{T.recNoErrorsTitle}</div>
+                                            <div style={{ fontSize: 12, color: '#4B7A5A', marginTop: 2 }}>{T.recNoErrorsSub}</div>
                                         </div>
                                     </div>
-                                ))}
-                            </div>
-                        )}
+                                )}
 
-                        {/* Download Fehlerbericht */}
-                        <div style={{ background: '#EEF4FF', border: `2px solid ${MC_BLUE}`, borderRadius: 12, padding: '20px 24px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-                                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2v10M6 9l3 3 3-3M2 15h14" stroke={MC_BLUE} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                <span style={{ fontSize: 15, fontWeight: 800, color: '#111827' }}>{T.recDownloadTitle}</span>
+                                {/* Recommendation cards */}
+                                {recommendations.length > 0 && (
+                                    <div style={{ display: 'grid', gap: 10 }}>
+                                        {recommendations.map(({ key, count, rule }) => (
+                                            <div key={key} style={{ background: '#FFF', border: '1px solid #E5E7EB', borderLeft: '4px solid #DC2626', borderRadius: 10, padding: '16px 20px' }}>
+                                                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 8 }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                                                        <span style={{ fontSize: 20, lineHeight: 1 }}>{rule.icon}</span>
+                                                        <div>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                                                                <span style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>{rule.title}</span>
+                                                                <span style={{ fontSize: 10, fontWeight: 700, color: '#DC2626', background: '#FEE2E2', padding: '2px 7px', borderRadius: 4, letterSpacing: '0.04em' }}>
+                                                                    {T.recPriority}
+                                                                </span>
+                                                            </div>
+                                                            <div style={{ fontSize: 11, color: '#DC2626', fontWeight: 600, marginTop: 2 }}>
+                                                                {T.recAffected(count.toLocaleString(numLocale))}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div style={{ fontSize: 13, color: '#374151', lineHeight: 1.6, marginBottom: 6 }}>
+                                                    {rule.action}
+                                                </div>
+                                                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, background: '#F9FAFB', borderRadius: 6, padding: '8px 12px' }}>
+                                                    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 1 }}><circle cx="8" cy="8" r="6.5" stroke={MC_BLUE} strokeWidth="1.4"/><path d="M8 7v4" stroke={MC_BLUE} strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="5.5" r=".6" fill={MC_BLUE}/></svg>
+                                                    <span style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.5 }}>{rule.tip}</span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
-                            <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 14, lineHeight: 1.6 }}>{T.recDownloadDesc}</div>
-                            <button type="button" onClick={csvOnClick}
-                                style={{ width: '100%', padding: '13px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                                <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 2v8M5 7l2.5 2.5L10 7M2 13h11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                {T.recDownloadBtn}
-                            </button>
+
+                            {/* Right: download panel (fixed) */}
+                            <div style={{ display: 'grid', gap: 12 }}>
+                                {/* Download Fehlerbericht */}
+                                <div style={{ background: '#EEF4FF', border: `2px solid ${MC_BLUE}`, borderRadius: 12, padding: '20px 24px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+                                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2v10M6 9l3 3 3-3M2 15h14" stroke={MC_BLUE} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                        <span style={{ fontSize: 15, fontWeight: 800, color: '#111827' }}>{T.recDownloadTitle}</span>
+                                    </div>
+                                    <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 14, lineHeight: 1.6 }}>{T.recDownloadDesc}</div>
+                                    <button type="button" onClick={csvOnClick}
+                                        style={{ width: '100%', padding: '13px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                                        <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 2v8M5 7l2.5 2.5L10 7M2 13h11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                        {T.recDownloadBtn}
+                                    </button>
+                                </div>
+
+                                {/* Reset */}
+                                <button type="button" onClick={resetToStart}
+                                    style={{ width: '100%', padding: '11px', background: '#FFF', color: '#374151', border: '1px solid #D1D5DB', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                                    <svg width="13" height="13" viewBox="0 0 15 15" fill="none"><path d="M2 7.5h11M7 2.5l-5 5 5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                    {lang === 'de' ? 'Neuen Feed hochladen' : 'Upload New Feed'}
+                                </button>
+                            </div>
+
                         </div>
 
                     </div>
