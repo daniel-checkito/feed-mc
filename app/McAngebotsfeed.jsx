@@ -825,6 +825,7 @@ export default function McAngebotsfeed() {
     const [dragging, setDragging] = useState(false);
     const [showLeitfaden, setShowLeitfaden] = useState(false);
     const [showVorlage, setShowVorlage] = useState(false);
+    const [vorlageSearch, setVorlageSearch] = useState('');
     const [storeLocation, setStoreLocation] = useState('germany');
     const [step, setStep] = useState(1);
     const [rows, setRows] = useState([]);
@@ -2812,80 +2813,93 @@ export default function McAngebotsfeed() {
                 </div>
             </div>
         )}
-        {/* Feedvorlage Spreadsheet Modal */}
-        {showVorlage && (
-            <div
-                onClick={() => setShowVorlage(false)}
-                style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 24 }}
-            >
-                <div
-                    onClick={(e) => e.stopPropagation()}
-                    style={{ background: '#FFF', borderRadius: 12, width: '100%', maxWidth: 1100, height: '90vh', display: 'flex', flexDirection: 'column', boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}
-                >
-                    {/* Modal header */}
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px', borderBottom: '1px solid #E5E7EB', flexShrink: 0 }}>
-                        <div>
-                            <span style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>{lang === 'de' ? 'Feedvorlage 2026' : 'Feed Template 2026'}</span>
-                            <span style={{ fontSize: 12, color: '#9CA3AF', marginLeft: 10 }}>{VORLAGE_HEADERS.length} {lang === 'de' ? 'Spalten · Zeile 2 enthält Beispielwerte' : 'columns · Row 2 contains example values'}</span>
+        {/* Feedvorlage Column Reference Modal */}
+        {showVorlage && (() => {
+            const exMap = Object.fromEntries(VORLAGE_HEADERS.map((h, i) => [h, VORLAGE_EXAMPLE[i]]));
+            const PFLICHT_SET = new Set(['EAN (GTIN14)', 'name']);
+            const VG = [
+                { label: lang === 'de' ? 'Identifikation' : 'Identification', color: '#1553B6', cols: ['EAN (GTIN14)', 'offer_id', 'name', 'brand', 'series', 'model', 'category_path', 'deeplink'] },
+                { label: lang === 'de' ? 'Beschreibung & Merkmale' : 'Description & Features', color: '#7C3AED', cols: ['description', 'color', 'material', 'surface_treatment', 'material_wood_quality', 'frame_material', 'orientation', 'cover', 'removable_cover', 'washable_cover', 'care_instructions', 'suitable_for_allergic', 'certificate', 'temper', 'density', 'filling', 'filling_weight', 'filling_quantity', 'quilt_type', 'quilt_zones', 'number_lying_zones'] },
+                { label: lang === 'de' ? 'Maße & Gewicht' : 'Dimensions & Weight', color: '#059669', cols: ['size', 'size_height', 'size_width', 'size_depth', 'size_diameter', 'size_lying_surface', 'size_seat_height', 'size_seat_depth', 'size_seat_width', 'weight', 'weight_capacity'] },
+                { label: lang === 'de' ? 'Ausstattung & Lieferumfang' : 'Features & Included', color: '#D97706', cols: ['with_drawer', 'numbers_doors', 'numbers_drawers', 'numbers_shelf', 'softclose', 'set_includes', 'delivery_includes', 'incl_mattress', 'incl_slatted_frame', 'lighting_included', 'illuminant_included', 'socket', 'two_men_handling'] },
+                { label: lang === 'de' ? 'Energie & Zertifikate' : 'Energy & Certificates', color: '#10B981', cols: ['energy_efficiency_label', 'energy_efficiency_category', 'EPREL_registration_number', 'ce_label_declaration_confirmation', 'ce_label_instruction_manual', 'ce_label_safety_instructions', 'disposal_old_packaging', 'disposal_old_furniture'] },
+                { label: lang === 'de' ? 'Bilder (1–10)' : 'Images (1–10)', color: '#EC4899', cols: ['Bildlink_1', 'Bildlink_2', 'Bildlink_3', 'Bildlink_4', 'Bildlink_5', 'Bildlink_6', 'Bildlink_7', 'Bildlink_8', 'Bildlink_9', 'Bildlink_10'] },
+                { label: lang === 'de' ? 'Preis & Versand' : 'Price & Shipping', color: '#0891B2', cols: ['price', 'stock_amount', 'availability', 'delivery_time', 'shipping_mode', 'shipping_cost', 'shipping_no_of_items', 'shipping_size_pack1', 'shipping_weight_in_kg', 'delivery_condition', 'delivery_place_use', 'assembly_service', 'HS-Code'] },
+                { label: lang === 'de' ? 'Hersteller' : 'Manufacturer', color: '#B45309', cols: ['manufacturer_name', 'manufacturer_street', 'manufacturer_postcode', 'manufacturer_city', 'manufacturer_country', 'manufacturer_email', 'manufacturer_phone_number'] },
+                { label: lang === 'de' ? 'Dokumente & Service' : 'Documents & Service', color: '#6B7280', cols: ['assembly_instructions', 'product_data_sheet', 'automatic_return_label'] },
+            ];
+            const assignedSet = new Set(VG.flatMap(g => g.cols));
+            const remaining = VORLAGE_HEADERS.filter(h => !assignedSet.has(h));
+            const allGroups = remaining.length > 0 ? [...VG, { label: 'Sonstiges', color: '#9CA3AF', cols: remaining }] : VG;
+            const q = vorlageSearch.trim().toLowerCase();
+            const filteredGroups = q
+                ? allGroups.map(g => ({ ...g, cols: g.cols.filter(c => c.toLowerCase().includes(q) || (exMap[c] || '').toLowerCase().includes(q)) })).filter(g => g.cols.length > 0)
+                : allGroups;
+            const totalShown = filteredGroups.reduce((s, g) => s + g.cols.length, 0);
+            return (
+                <div onClick={() => { setShowVorlage(false); setVorlageSearch(''); }} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 24 }}>
+                    <div onClick={(e) => e.stopPropagation()} style={{ background: '#FFF', borderRadius: 12, width: '100%', maxWidth: 860, height: '90vh', display: 'flex', flexDirection: 'column', boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}>
+                        {/* Header */}
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px', borderBottom: '1px solid #E5E7EB', flexShrink: 0 }}>
+                            <div>
+                                <span style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>{lang === 'de' ? 'Feedvorlage 2026 – Spaltenübersicht' : 'Feed Template 2026 – Column Reference'}</span>
+                                <span style={{ fontSize: 12, color: '#9CA3AF', marginLeft: 10 }}>{totalShown} {lang === 'de' ? 'Spalten' : 'columns'}</span>
+                            </div>
+                            <div style={{ display: 'flex', gap: 8 }}>
+                                <button type="button" onClick={downloadFeedvorlage} style={{ fontSize: 12, fontWeight: 600, color: '#111827', padding: '6px 14px', borderRadius: 6, border: '1px solid #E5E7EB', background: '#F9FAFB', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+                                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1.5v7M4 6l2.5 2.5L9 6M1.5 11h10" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                    {lang === 'de' ? 'Als XLSX herunterladen' : 'Download as XLSX'}
+                                </button>
+                                <button type="button" onClick={() => { setShowVorlage(false); setVorlageSearch(''); }} style={{ fontSize: 18, lineHeight: 1, color: '#6B7280', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px', borderRadius: 4 }}>✕</button>
+                            </div>
                         </div>
-                        <div style={{ display: 'flex', gap: 8 }}>
-                            <button type="button" onClick={downloadFeedvorlage}
-                                style={{ fontSize: 12, fontWeight: 600, color: '#111827', padding: '6px 14px', borderRadius: 6, border: '1px solid #E5E7EB', background: '#F9FAFB', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
-                                <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1.5v7M4 6l2.5 2.5L9 6M1.5 11h10" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                {lang === 'de' ? 'Als XLSX herunterladen' : 'Download as XLSX'}
-                            </button>
-                            <button type="button" onClick={() => setShowVorlage(false)}
-                                style={{ fontSize: 18, lineHeight: 1, color: '#6B7280', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px', borderRadius: 4 }}>
-                                ✕
-                            </button>
+                        {/* Search + legend */}
+                        <div style={{ padding: '10px 20px', borderBottom: '1px solid #E5E7EB', display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0, background: '#FAFAFA' }}>
+                            <div style={{ position: 'relative', flex: 1 }}>
+                                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', color: '#9CA3AF', pointerEvents: 'none' }}><circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" strokeWidth="1.3"/><path d="M10 10l3 3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>
+                                <input type="text" value={vorlageSearch} onChange={e => setVorlageSearch(e.target.value)} placeholder={lang === 'de' ? 'Spaltenname oder Beispielwert suchen…' : 'Search column name or example value…'} style={{ width: '100%', paddingLeft: 28, paddingRight: 10, paddingTop: 6, paddingBottom: 6, border: '1px solid #D1D5DB', borderRadius: 6, fontSize: 12, outline: 'none', boxSizing: 'border-box', background: '#fff' }} />
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+                                <div style={{ width: 12, height: 12, background: '#FEF08A', border: '1px solid #EAB308', borderRadius: 2 }} />
+                                <span style={{ fontSize: 11, color: '#6B7280' }}>{lang === 'de' ? '= Pflichtfeld' : '= Required field'}</span>
+                            </div>
                         </div>
-                    </div>
-                    {/* Legend */}
-                    <div style={{ padding: '6px 20px', background: '#FFFEF0', borderBottom: '1px solid #E5E7EB', display: 'flex', alignItems: 'center', gap: 16, flexShrink: 0 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                            <div style={{ width: 14, height: 14, background: '#FEF08A', border: '1px solid #EAB308', borderRadius: 3 }} />
-                            <span style={{ fontSize: 11, color: '#6B7280' }}>{lang === 'de' ? 'Gelbe Spalten = Pflichtangaben' : 'Yellow columns = Required fields'}</span>
+                        {/* Grouped cards */}
+                        <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+                            {filteredGroups.length === 0 && (
+                                <div style={{ textAlign: 'center', color: '#9CA3AF', fontSize: 13, padding: '40px 0' }}>{lang === 'de' ? 'Keine Spalten gefunden.' : 'No columns found.'}</div>
+                            )}
+                            {filteredGroups.map((grp) => (
+                                <div key={grp.label}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                                        <div style={{ width: 4, height: 16, borderRadius: 2, background: grp.color, flexShrink: 0 }} />
+                                        <span style={{ fontSize: 12, fontWeight: 700, color: '#374151', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{grp.label}</span>
+                                        <span style={{ fontSize: 11, color: '#9CA3AF' }}>({grp.cols.length})</span>
+                                    </div>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+                                        {grp.cols.filter(c => VORLAGE_HEADERS.includes(c)).map((col) => {
+                                            const isPflicht = PFLICHT_SET.has(col);
+                                            const ex = exMap[col] || '';
+                                            const idx = VORLAGE_HEADERS.indexOf(col) + 1;
+                                            return (
+                                                <div key={col} style={{ border: `1px solid ${isPflicht ? '#FDE68A' : '#E5E7EB'}`, borderRadius: 7, padding: '8px 10px', background: isPflicht ? '#FFFBEB' : '#FAFAFA', display: 'flex', flexDirection: 'column', gap: 3 }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                                                        <span style={{ fontSize: 10, color: '#9CA3AF', minWidth: 18, fontVariantNumeric: 'tabular-nums' }}>{idx}</span>
+                                                        <span style={{ fontSize: 12, fontWeight: 600, color: isPflicht ? '#92400E' : '#111827', fontFamily: 'monospace', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={col}>{col}</span>
+                                                        {isPflicht && <span style={{ fontSize: 9, fontWeight: 700, color: '#92400E', background: '#FEF08A', border: '1px solid #EAB308', borderRadius: 3, padding: '1px 4px', flexShrink: 0 }}>P</span>}
+                                                    </div>
+                                                    <div style={{ fontSize: 11, color: '#6B7280', fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', paddingLeft: 23 }} title={ex}>{ex || '—'}</div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                    </div>
-                    {/* Spreadsheet table */}
-                    <div style={{ flex: 1, overflow: 'auto' }}>
-                        <table style={{ borderCollapse: 'collapse', fontSize: 12, whiteSpace: 'nowrap', minWidth: '100%' }}>
-                            <thead>
-                                <tr>
-                                    <th style={{ padding: '6px 10px', background: '#F0F2F5', border: '1px solid #D1D5DB', color: '#6B7280', fontWeight: 600, fontSize: 11, textAlign: 'center', position: 'sticky', top: 0, left: 0, zIndex: 3, minWidth: 36 }}></th>
-                                    {VORLAGE_HEADERS.map((h, i) => {
-                                        const isPflicht = h === 'EAN (GTIN14)' || h === 'name';
-                                        return (
-                                            <th key={i} style={{ padding: '7px 10px', background: isPflicht ? '#FEF9C3' : '#F0F2F5', border: '1px solid #D1D5DB', color: isPflicht ? '#854D0E' : '#374151', fontWeight: 600, fontSize: 11, textAlign: 'left', position: 'sticky', top: 0, zIndex: 2, whiteSpace: 'nowrap' }}>{h}</th>
-                                        );
-                                    })}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {/* Row 2: example values */}
-                                <tr style={{ background: '#FAFAFA' }}>
-                                    <td style={{ padding: '5px 10px', border: '1px solid #E5E7EB', color: '#9CA3AF', fontSize: 11, textAlign: 'center', position: 'sticky', left: 0, background: '#F0F2F5', zIndex: 1 }}>2</td>
-                                    {VORLAGE_EXAMPLE.map((v, i) => {
-                                        const isPflicht = VORLAGE_HEADERS[i] === 'EAN (GTIN14)' || VORLAGE_HEADERS[i] === 'name';
-                                        return (
-                                            <td key={i} style={{ padding: '5px 10px', border: '1px solid #E5E7EB', color: '#374151', maxWidth: 260, overflow: 'hidden', textOverflow: 'ellipsis', background: isPflicht ? '#FEFCE8' : 'transparent' }}>{v}</td>
-                                        );
-                                    })}
-                                </tr>
-                                {/* Row 3: empty */}
-                                <tr>
-                                    <td style={{ padding: '5px 10px', border: '1px solid #E5E7EB', color: '#9CA3AF', fontSize: 11, textAlign: 'center', position: 'sticky', left: 0, background: '#F0F2F5', zIndex: 1 }}>3</td>
-                                    {VORLAGE_HEADERS.map((h, i) => {
-                                        const isPflicht = h === 'EAN (GTIN14)' || h === 'name';
-                                        return <td key={i} style={{ border: '1px solid #E5E7EB', background: isPflicht ? '#FEFCE8' : 'transparent' }} />;
-                                    })}
-                                </tr>
-                            </tbody>
-                        </table>
                     </div>
                 </div>
-            </div>
-        )}
+            );
+        })()}
         </div>
     );
 }
