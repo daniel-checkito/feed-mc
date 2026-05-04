@@ -396,13 +396,62 @@ const DE_T = {
         manufacturer_phone_number: 'Herstellertelefonnummer',
     },
     // How it works
+    listableCount: (l, t) => `${l} / ${t} Artikel listbar`,
+    statusBanner: (n, t) => `Bitte beheben Sie die Fehler und laden Sie den Feed erneut hoch. — ${n} von ${t} Artikeln betroffen`,
+    hinweisTitle: 'Wichtige Hinweise zum Feed',
+    hinweisBeforeNext: 'Vor dem nächsten Upload prüfen',
+    hinweisPflicht: {
+        label: 'PFLICHT', color: '#DC2626', bg: '#FEF2F2', border: '#FECACA',
+        title: 'Kritische Anforderungen', sub: 'Bei Verstoß keine Listing',
+        items: [
+            'Ausschließlich Neuware zulässig im Feed',
+            'EAN (GTIN) je Produkt – nur 1 EAN je Produkt, keine Duplikate',
+            'Bestand oder Availability muss gesetzt sein',
+            'HS-Code notwendig, wenn Lager außerhalb Deutschlands',
+            'Eindeutige Seller_Offer_ID je Produkt',
+            'Preis, Versandart und Lieferzeit vollständig angegeben',
+            'Vollständige Herstellerangaben: Marke, Name, Adresse, E-Mail',
+        ],
+    },
+    hinweisQuality: {
+        label: 'QUALITÄT', color: '#D97706', bg: '#FFFBEB', border: '#FDE68A',
+        title: 'Sichtbarkeit & Darstellung', sub: 'Beeinflusst Conversion',
+        items: [
+            'Titelformat: Marke + Produktname + Produktart + Material + Farbe + Maße',
+            'Bilder mind. 800 × 600 px – kein Logo/Wasserzeichen, Freisteller',
+            'Nur YouTube-Links als Produkt-/Montagevideo zulässig',
+            'Maße im Format HxTxB (cm) · Gewicht in kg oder g',
+            '3D-Modelle (optional): GLB für Android & USDZ für iOS',
+            'Material und Farbe (color) angegeben',
+        ],
+    },
+    hinweisInhalt: {
+        label: 'INHALT', color: '#1553B6', bg: '#EEF4FF', border: '#BFDBFE',
+        title: 'Texte & Felder', sub: 'Best Practices',
+        items: [
+            'Beschreibung im HTML-Format – ohne Zeichenbegrenzung',
+            'Keine Shop-/Händlertexte oder externen Links',
+            'Kein Hinweis auf eigenen Kundenservice oder Lieferdienst',
+            'Lieferumfang im Format „1x Tisch, 4x Stuhl"',
+            'Leere Spalten leer lassen – kein „0", „X", „nicht vorhanden"',
+            'Category_Path korrekt zugeordnet (z. B. Boxspringbett)',
+        ],
+    },
+    portalUrl: 'mc.moebel.check24.de/settings/offerfeed',
+    portalBtn: 'Zum Portal →',
+    reuploadTitle: 'Korrigierten Feed hochladen',
+    reuploadSub: 'Datei hier ablegen oder direkt im Händlerportal hochladen.',
+    footerLeft: 'CHECK24 Feed Checker · Stand: 04/2026 · Hinweise basieren auf dem aktuellen Feedleitfaden',
+    footerRight: 'v2.4.1 · haendler-support@check24.de',
     howTitle: 'So funktioniert es',
     howSummary: 'Laden Sie Ihren Angebotsfeed hoch – wir prüfen alle Pflichtfelder und zeigen genau, welche Artikel Fehler haben.',
     howSteps: [
         { n: 1, title: 'Feed hochladen', desc: 'CSV-Datei per Drag & Drop oder Klick hochladen' },
         { n: 2, title: 'Zuordnung prüfen', desc: 'Spalten werden automatisch erkannt und zugeordnet' },
-        { n: 3, title: 'Analyse starten', desc: 'Alle Pflichtfelder werden auf Fehler geprüft' },
-        { n: 4, title: 'Fehler beheben', desc: 'Fehlerbericht als CSV herunterladen und korrigieren' },
+        { n: 3, title: 'Fehler prüfen', desc: 'Alle Pflichtfelder werden auf Fehler geprüft' },
+        { n: 4, title: 'Hinweise beachten', desc: 'Wichtige Anforderungen zum Feed lesen' },
+        { n: 5, title: 'Fehler beheben', desc: 'Fehlerbericht als CSV herunterladen und korrigieren' },
+        { n: 6, title: 'Produkte live schalten', desc: 'Sauberer Feed = schnelleres Listing, mehr Sichtbarkeit' },
     ],
     // Pflicht table field labels
     pflichtFields: [
@@ -557,14 +606,63 @@ const EN_T = {
     recDownloadTitle: 'Download Error Report',
     recDownloadDesc: 'CSV file with all errors per row – import into Excel to fix the affected items directly.',
     recDownloadBtn: 'Download Error Report as CSV',
+    listableCount: (l, t) => `${l} / ${t} items listable`,
+    statusBanner: (n, t) => `Please fix the errors and re-upload the feed. — ${n} of ${t} items affected`,
+    hinweisTitle: 'Important Feed Requirements',
+    hinweisBeforeNext: 'Check before next upload',
+    hinweisPflicht: {
+        label: 'REQUIRED', color: '#DC2626', bg: '#FEF2F2', border: '#FECACA',
+        title: 'Critical Requirements', sub: 'Violations prevent listing',
+        items: [
+            'Only new goods allowed in the feed',
+            'EAN (GTIN) per product – only 1 EAN per product, no duplicates',
+            'Stock or Availability must be set',
+            'HS Code required if warehouse is outside Germany',
+            'Unique Seller_Offer_ID per product',
+            'Price, shipping mode, and delivery time fully provided',
+            'Complete manufacturer info: brand, name, address, email',
+        ],
+    },
+    hinweisQuality: {
+        label: 'QUALITY', color: '#D97706', bg: '#FFFBEB', border: '#FDE68A',
+        title: 'Visibility & Presentation', sub: 'Affects conversion',
+        items: [
+            'Title format: Brand + Product name + Type + Material + Color + Size',
+            'Images min. 800 × 600 px – no logos/watermarks, cut-out preferred',
+            'Only YouTube links for product/assembly videos',
+            'Dimensions in HxDxW (cm) · Weight in kg or g',
+            '3D models (optional): GLB for Android & USDZ for iOS',
+            'Material and color fields filled in',
+        ],
+    },
+    hinweisInhalt: {
+        label: 'CONTENT', color: '#1553B6', bg: '#EEF4FF', border: '#BFDBFE',
+        title: 'Texts & Fields', sub: 'Best Practices',
+        items: [
+            'Description in HTML format – no character limit',
+            'No shop/retailer texts or external links',
+            'No reference to own customer service or delivery',
+            'Delivery scope in format "1x Table, 4x Chair"',
+            'Leave empty fields blank – no "0", "X", "not available"',
+            'Category_Path correctly mapped (e.g. Boxspring bed)',
+        ],
+    },
+    portalUrl: 'mc.moebel.check24.de/settings/offerfeed',
+    portalBtn: 'Go to Portal →',
+    reuploadTitle: 'Upload corrected feed',
+    reuploadSub: 'Drop file here or upload directly in the merchant portal.',
+    footerLeft: 'CHECK24 Feed Checker · As of 04/2026 · Notes based on current feed guide',
+    footerRight: 'v2.4.1 · haendler-support@check24.de',
     // How it works
     howTitle: 'How it works',
     howSummary: 'Upload your product feed – we check all required fields and show exactly which items have errors.',
     howSteps: [
         { n: 1, title: 'Upload feed', desc: 'Drop your CSV file or click to browse' },
         { n: 2, title: 'Review mapping', desc: 'Columns are detected and matched automatically' },
-        { n: 3, title: 'Run analysis', desc: 'All required fields are checked for errors' },
-        { n: 4, title: 'Fix errors', desc: 'Download the error report as CSV and correct' },
+        { n: 3, title: 'Check errors', desc: 'All required fields are checked for errors' },
+        { n: 4, title: 'Read requirements', desc: 'Review important feed requirements' },
+        { n: 5, title: 'Fix errors', desc: 'Download error report as CSV and correct' },
+        { n: 6, title: 'Go live', desc: 'Clean feed = faster listing, more visibility' },
     ],
 };
 
@@ -982,7 +1080,7 @@ export default function McAngebotsfeed() {
     const stufe1Passed = issues ? errorRate <= 5 : false;
 
     return (
-        <div style={{ background: '#F3F4F6', minHeight: '100vh' }}>
+        <div style={{ background: '#F3F4F6', height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
             {/* ── HEADER ── */}
             <header style={{ background: MC_BLUE, padding: '10px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
                 <span style={{ color: '#FFF', fontWeight: 900, fontSize: 22, letterSpacing: '-0.5px', fontStyle: 'italic', whiteSpace: 'nowrap', flexShrink: 0 }}>
@@ -1040,7 +1138,7 @@ export default function McAngebotsfeed() {
                 </div>
             </header>
         {/* ── FUNNEL BODY ── */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px 32px 24px', height: 'calc(100vh - 48px)', overflow: 'hidden', boxSizing: 'border-box' }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '16px 32px 0', overflow: 'hidden', boxSizing: 'border-box' }}>
 
             {/* Step indicator */}
             <div style={{ display: 'flex', alignItems: 'center', marginBottom: 16 }}>
@@ -1081,6 +1179,19 @@ export default function McAngebotsfeed() {
                     </React.Fragment>
                 ))}
             </div>
+
+            {/* Status banner — shown in steps 3/4 when errors exist */}
+            {(step === 3 || step === 4) && issues && !stufe1Passed && (
+                <div style={{ width: '100%', maxWidth: step === 3 ? 1280 : 1200, marginBottom: 10, background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 8, padding: '8px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}><circle cx="8" cy="8" r="6.5" stroke="#DC2626" strokeWidth="1.4"/><path d="M8 5v3.5" stroke="#DC2626" strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="11" r=".6" fill="#DC2626"/></svg>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: '#991B1B' }}>{T.statusBanner(issues.blockiertCount.toLocaleString(numLocale), issues.totalRows.toLocaleString(numLocale))}</span>
+                    </div>
+                    <button type="button" onClick={() => setStep(4)} style={{ fontSize: 12, fontWeight: 600, color: MC_BLUE, background: 'none', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                        {lang === 'de' ? 'Empfehlungen ansehen →' : 'View recommendations →'}
+                    </button>
+                </div>
+            )}
 
             <div style={{ display: 'contents' }}>
 
@@ -1429,8 +1540,54 @@ export default function McAngebotsfeed() {
                     URL.revokeObjectURL(url);
                 };
 
+                // Reusable Wichtige Hinweise panel (also used in step 4)
+                const HinweisPanel = () => (
+                    <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'hidden', display: 'flex', flexDirection: 'column', height: '100%' }}>
+                        <div style={{ padding: '10px 14px', borderBottom: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexShrink: 0 }}>
+                            <span style={{ fontSize: 12, fontWeight: 800, color: '#111827' }}>{T.hinweisTitle}</span>
+                            <span style={{ fontSize: 10, color: '#9CA3AF' }}>{T.hinweisBeforeNext}</span>
+                        </div>
+                        <div style={{ flex: 1, overflow: 'auto', padding: '10px 14px', display: 'grid', gap: 10 }}>
+                            {[T.hinweisPflicht, T.hinweisQuality, T.hinweisInhalt].map((h) => (
+                                <div key={h.label}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                                        <span style={{ fontSize: 9, fontWeight: 800, color: h.color, background: h.bg, border: `1px solid ${h.border}`, padding: '2px 6px', borderRadius: 4, letterSpacing: '0.06em' }}>{h.label}</span>
+                                        <span style={{ fontSize: 11, fontWeight: 700, color: '#111827' }}>{h.title}</span>
+                                        <span style={{ fontSize: 9, color: '#9CA3AF', marginLeft: 'auto', whiteSpace: 'nowrap' }}>{h.sub}</span>
+                                    </div>
+                                    <ul style={{ margin: 0, padding: '0 0 0 14px', display: 'grid', gap: 3 }}>
+                                        {h.items.map((item, i) => (
+                                            <li key={i} style={{ fontSize: 10, color: '#374151', lineHeight: 1.45 }}>{item}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            ))}
+                            {/* Vorlagen & Dokumentation */}
+                            <div style={{ borderTop: '1px solid #F3F4F6', paddingTop: 8 }}>
+                                <div style={{ fontSize: 10, fontWeight: 700, color: '#6B7280', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{lang === 'de' ? 'Vorlagen & Dokumentation' : 'Templates & Docs'}</div>
+                                <div style={{ display: 'grid', gap: 4 }}>
+                                    {[
+                                        { icon: '📄', label: T.feedGuide, sub: lang === 'de' ? 'PDF · 24 Seiten' : 'PDF · 24 pages', onClick: () => setShowLeitfaden(true) },
+                                        { icon: '📊', label: T.feedTemplate, sub: lang === 'de' ? 'XLSX · Alle Pflichtfelder' : 'XLSX · All required fields', onClick: () => { const a = document.createElement('a'); a.href = 'http://media-partner.moebel.check24.de/feedvorlagen/Feedleitfaden_Anhang_2026/CHECK24_Feedvorlage_V2025.xlsx'; a.download = 'CHECK24_Feedvorlage_V2025.xlsx'; a.click(); } },
+                                    ].map((r) => (
+                                        <button key={r.label} type="button" onClick={r.onClick}
+                                            style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 6, border: '1px solid #E5E7EB', background: '#F9FAFB', cursor: 'pointer', textAlign: 'left', width: '100%' }}>
+                                            <span style={{ fontSize: 14 }}>{r.icon}</span>
+                                            <div>
+                                                <div style={{ fontSize: 10, fontWeight: 700, color: '#111827' }}>{r.label}</div>
+                                                <div style={{ fontSize: 9, color: '#9CA3AF' }}>{r.sub}</div>
+                                            </div>
+                                            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style={{ marginLeft: 'auto', flexShrink: 0 }}><path d="M3 2l4 3-4 3" stroke="#9CA3AF" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+
                 return (
-                    <div style={{ width: '100%', maxWidth: 1200 }}>
+                    <div style={{ width: '100%', maxWidth: 1280, display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
 
                         {/* Back */}
                         <button type="button" onClick={() => setStep(2)}
@@ -1440,56 +1597,63 @@ export default function McAngebotsfeed() {
                         </button>
 
                         {/* 1 — Combined header card: status + stats */}
-                        <div style={{ borderRadius: 12, background: '#FFF', border: '1px solid #E5E7EB', marginBottom: 16, overflow: 'hidden' }}>
+                        <div style={{ borderRadius: 12, background: '#FFF', border: '1px solid #E5E7EB', marginBottom: 12, overflow: 'hidden', flexShrink: 0 }}>
                             {/* Status row */}
-                            <div style={{ padding: '14px 20px', background: stufe1Passed ? '#F0FDF4' : '#FEF2F2', borderBottom: `1px solid ${stufe1Passed ? '#BBF7D0' : '#FECACA'}`, display: 'flex', alignItems: 'center', gap: 12 }}>
-                                <div style={{ width: 30, height: 30, borderRadius: '50%', background: stufe1Passed ? '#DCFCE7' : '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <div style={{ padding: '10px 20px', background: stufe1Passed ? '#F0FDF4' : '#FEF2F2', borderBottom: `1px solid ${stufe1Passed ? '#BBF7D0' : '#FECACA'}`, display: 'flex', alignItems: 'center', gap: 12 }}>
+                                <div style={{ width: 26, height: 26, borderRadius: '50%', background: stufe1Passed ? '#DCFCE7' : '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                                     {stufe1Passed
-                                        ? <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4 6-6" stroke="#16A34A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                        : <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 2L1 14h14L8 2z" stroke="#DC2626" strokeWidth="1.5" strokeLinejoin="round"/><path d="M8 7v3" stroke="#DC2626" strokeWidth="1.5" strokeLinecap="round"/><circle cx="8" cy="12" r=".6" fill="#DC2626"/></svg>}
+                                        ? <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4 6-6" stroke="#16A34A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                        : <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 2L1 14h14L8 2z" stroke="#DC2626" strokeWidth="1.5" strokeLinejoin="round"/><path d="M8 7v3" stroke="#DC2626" strokeWidth="1.5" strokeLinecap="round"/><circle cx="8" cy="12" r=".6" fill="#DC2626"/></svg>}
                                 </div>
                                 <div style={{ flex: 1 }}>
-                                    <span style={{ fontSize: 14, fontWeight: 700, color: stufe1Passed ? '#166534' : '#991B1B' }}>
+                                    <span style={{ fontSize: 13, fontWeight: 700, color: stufe1Passed ? '#166534' : '#991B1B' }}>
                                         {stufe1Passed ? T.statusOk : T.statusErr}
                                     </span>
-                                    <span style={{ fontSize: 12, color: stufe1Passed ? '#4B7A5A' : '#B91C1C', marginLeft: 10 }}>
+                                    <span style={{ fontSize: 11, color: stufe1Passed ? '#4B7A5A' : '#B91C1C', marginLeft: 10 }}>
                                         {T.errorRateFmt(errorRate.toFixed(1))}
                                     </span>
                                 </div>
-                                {file && <span style={{ fontSize: 11, color: '#9CA3AF', flexShrink: 0 }}>{file.name}</span>}
+                                {file && <span style={{ fontSize: 10, color: '#9CA3AF', flexShrink: 0 }}>{file.name}</span>}
                             </div>
                             {/* Stats strip */}
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr' }}>
                                 {[
                                     { val: issues.livefaehigCount, label: T.statComplete, color: '#16A34A', tip: T.tipComplete },
                                     { val: issues.blockiertCount, label: T.statErrors, color: '#DC2626', tip: T.tipErrors },
                                     { val: issues.totalRows, label: T.statTotal, color: '#111827', tip: T.tipTotal },
                                 ].map(({ val, label, color, tip }, i) => (
                                     <Tooltip key={label} text={tip}>
-                                        <div style={{ padding: '14px 20px', borderRight: i < 2 ? '1px solid #F3F4F6' : 'none', cursor: 'help' }}>
-                                            <div style={{ fontSize: 26, fontWeight: 900, color, lineHeight: 1, marginBottom: 2 }}>{val.toLocaleString(numLocale)}</div>
-                                            <div style={{ fontSize: 11, color: '#6B7280' }}>{label}</div>
+                                        <div style={{ padding: '10px 20px', borderRight: '1px solid #F3F4F6', cursor: 'help' }}>
+                                            <div style={{ fontSize: 22, fontWeight: 900, color, lineHeight: 1, marginBottom: 1 }}>{val.toLocaleString(numLocale)}</div>
+                                            <div style={{ fontSize: 10, color: '#6B7280' }}>{label}</div>
                                         </div>
                                     </Tooltip>
                                 ))}
+                                {/* Listable progress */}
+                                <div style={{ padding: '10px 20px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                                    <div style={{ fontSize: 11, fontWeight: 700, color: '#111827', marginBottom: 4 }}>{T.listableCount(issues.livefaehigCount.toLocaleString(numLocale), issues.totalRows.toLocaleString(numLocale))}</div>
+                                    <div style={{ height: 6, background: '#F3F4F6', borderRadius: 3, overflow: 'hidden' }}>
+                                        <div style={{ height: '100%', width: `${Math.round((issues.livefaehigCount / issues.totalRows) * 100)}%`, background: stufe1Passed ? '#16A34A' : '#DC2626', borderRadius: 3, transition: 'width 0.4s' }} />
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        {/* 3 — Two-column: table left, sidebar right */}
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 16, alignItems: 'start' }}>
+                        {/* 3 — Three-column: table | sidebar | hinweise */}
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 220px 260px', gap: 12, alignItems: 'start', flex: 1, overflow: 'hidden' }}>
 
-                        {/* Table */}
-                        <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'hidden' }}>
-                            <div style={{ padding: '14px 20px', borderBottom: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                                <div style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>{T.analysisTitle}</div>
-                                <div style={{ fontSize: 11, color: '#6B7280' }}>
+                        {/* Table (col 1) */}
+                        <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'auto', height: '100%' }}>
+                            <div style={{ padding: '10px 16px', borderBottom: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', position: 'sticky', top: 0, background: '#FFF', zIndex: 1 }}>
+                                <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{T.analysisTitle}</div>
+                                <div style={{ fontSize: 10, color: '#6B7280' }}>
                                     {T.analysisSummary(totalPflichtFields, vollstaendigFields, totalPflichtFields - vollstaendigFields)}
                                 </div>
                             </div>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 130px 160px', padding: '8px 20px', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 110px 140px', padding: '6px 16px', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB' }}>
                                 <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.05em' }}>{T.colField}</div>
                                 <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.05em', textAlign: 'right' }}>{T.colStatus}</div>
-                                <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.05em', paddingLeft: 16 }}>{T.colCoverage}</div>
+                                <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.05em', paddingLeft: 12 }}>{T.colCoverage}</div>
                             </div>
                             {PFLICHT_TABLE_FIELDS.map(({ key, label }) => {
                                 const isMapped = key === 'availability'
@@ -1500,42 +1664,42 @@ export default function McAngebotsfeed() {
                                 const pct = isMapped ? Math.max(0, Math.round((1 - errs / issues.totalRows) * 100)) : null;
                                 const barColor = pct === null ? '#E5E7EB' : pct === 100 ? '#16A34A' : pct >= 70 ? '#D97706' : '#DC2626';
                                 return (
-                                    <div key={key} style={{ display: 'grid', gridTemplateColumns: '1fr 130px 160px', padding: '10px 20px', borderBottom: '1px solid #F9FAFB', alignItems: 'center' }}>
-                                        <div style={{ fontSize: 12, color: '#374151', fontWeight: 500 }}>{label}</div>
-                                        <div style={{ textAlign: 'right', fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap' }}>
+                                    <div key={key} style={{ display: 'grid', gridTemplateColumns: '1fr 110px 140px', padding: '8px 16px', borderBottom: '1px solid #F9FAFB', alignItems: 'center' }}>
+                                        <div style={{ fontSize: 11, color: '#374151', fontWeight: 500 }}>{label}</div>
+                                        <div style={{ textAlign: 'right', fontSize: 10, fontWeight: 600, whiteSpace: 'nowrap' }}>
                                             {pct === null ? <span style={{ color: '#9CA3AF' }}>{T.notInFeed}</span>
                                                 : errs === 0 ? <span style={{ color: '#16A34A' }}>{T.complete}</span>
                                                 : <span style={{ color: pct < 30 ? '#DC2626' : '#D97706' }}>{T.missingCount(errs.toLocaleString(numLocale))}</span>}
                                         </div>
-                                        <div style={{ paddingLeft: 16, display: 'flex', alignItems: 'center', gap: 6 }}>
+                                        <div style={{ paddingLeft: 12, display: 'flex', alignItems: 'center', gap: 5 }}>
                                             {pct !== null ? (
                                                 <>
-                                                    <div style={{ flex: 1, height: 6, background: '#F3F4F6', borderRadius: 3, overflow: 'hidden' }}>
+                                                    <div style={{ flex: 1, height: 5, background: '#F3F4F6', borderRadius: 3, overflow: 'hidden' }}>
                                                         <div style={{ height: '100%', width: `${pct}%`, background: barColor, borderRadius: 3, transition: 'width 0.4s' }} />
                                                     </div>
-                                                    <span style={{ fontSize: 10, color: '#9CA3AF', width: 26, textAlign: 'right', flexShrink: 0 }}>{pct}%</span>
+                                                    <span style={{ fontSize: 9, color: '#9CA3AF', width: 24, textAlign: 'right', flexShrink: 0 }}>{pct}%</span>
                                                 </>
-                                            ) : <span style={{ fontSize: 10, color: '#D1D5DB' }}>—</span>}
+                                            ) : <span style={{ fontSize: 9, color: '#D1D5DB' }}>—</span>}
                                         </div>
                                     </div>
                                 );
                             })}
                         </div>{/* end table */}
 
-                        {/* Sidebar */}
-                        <div style={{ display: 'grid', gap: 12 }}>
+                        {/* Sidebar (col 2) */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, height: '100%', overflow: 'auto' }}>
 
                             {/* Häufigste Fehler */}
                             {detailedErrors.length > 0 && (
-                                <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '14px 16px' }}>
-                                    <div style={{ fontSize: 12, fontWeight: 700, color: '#111827', marginBottom: 10 }}>{T.topErrorsTitle}</div>
-                                    <div style={{ display: 'grid', gap: 7 }}>
+                                <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '12px 14px' }}>
+                                    <div style={{ fontSize: 11, fontWeight: 700, color: '#111827', marginBottom: 8 }}>{T.topErrorsTitle}</div>
+                                    <div style={{ display: 'grid', gap: 6 }}>
                                         {detailedErrors.map((e, i) => (
-                                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                                <span style={{ fontSize: 11, fontWeight: 800, color: '#DC2626', minWidth: 28, textAlign: 'right', flexShrink: 0 }}>
+                                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                                                <span style={{ fontSize: 11, fontWeight: 800, color: '#DC2626', minWidth: 24, textAlign: 'right', flexShrink: 0 }}>
                                                     {e.count.toLocaleString(numLocale)}
                                                 </span>
-                                                <span style={{ fontSize: 11, color: '#374151', lineHeight: 1.3 }}>{e.label}</span>
+                                                <span style={{ fontSize: 10, color: '#374151', lineHeight: 1.3 }}>{e.label}</span>
                                             </div>
                                         ))}
                                     </div>
@@ -1543,32 +1707,34 @@ export default function McAngebotsfeed() {
                             )}
 
                             {/* Download card */}
-                            <div style={{ background: '#EEF4FF', borderRadius: 12, border: `2px solid ${MC_BLUE}`, padding: '16px' }}>
-                                <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', marginBottom: 4 }}>{T.csvTitle}</div>
-                                <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 12, lineHeight: 1.5 }}>{T.csvDesc}</div>
+                            <div style={{ background: '#EEF4FF', borderRadius: 12, border: `2px solid ${MC_BLUE}`, padding: '12px 14px' }}>
+                                <div style={{ fontSize: 12, fontWeight: 700, color: '#111827', marginBottom: 3 }}>{T.csvTitle}</div>
+                                <div style={{ fontSize: 10, color: '#6B7280', marginBottom: 10, lineHeight: 1.5 }}>{T.csvDesc}</div>
                                 <button type="button" onClick={csvOnClick}
-                                    style={{ width: '100%', padding: '11px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
+                                    style={{ width: '100%', padding: '9px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 7, fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
                                     {T.csvBtn}
                                 </button>
                             </div>
 
+                            {/* To Recommendations */}
+                            <button type="button" onClick={() => setStep(4)}
+                                style={{ width: '100%', padding: '9px', background: '#FFF', color: MC_BLUE, border: `1px solid ${MC_BLUE}`, borderRadius: 7, fontSize: 12, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                                {T.recNextStep}
+                            </button>
+
                             {/* Reset */}
                             <button type="button" onClick={resetToStart}
-                                style={{ width: '100%', padding: '11px', background: '#FFF', color: '#374151', border: '1px solid #D1D5DB', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                                <svg width="13" height="13" viewBox="0 0 15 15" fill="none"><path d="M2 7.5h11M7 2.5l-5 5 5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                style={{ width: '100%', padding: '9px', background: '#FFF', color: '#374151', border: '1px solid #D1D5DB', borderRadius: 7, fontSize: 11, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                                <svg width="11" height="11" viewBox="0 0 15 15" fill="none"><path d="M2 7.5h11M7 2.5l-5 5 5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
                                 {lang === 'de' ? 'Neuen Feed hochladen' : 'Upload New Feed'}
                             </button>
 
                         </div>{/* end sidebar */}
-                        </div>{/* end grid */}
 
-                        {/* Continue to Step 4 */}
-                        <div style={{ marginTop: 12, display: 'flex', justifyContent: 'flex-end' }}>
-                            <button type="button" onClick={() => setStep(4)}
-                                style={{ padding: '9px 20px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
-                                {T.recNextStep}
-                            </button>
-                        </div>
+                        {/* Wichtige Hinweise (col 3) */}
+                        <HinweisPanel />
+
+                        </div>{/* end grid */}
 
                     </div>
                 );
@@ -1771,26 +1937,46 @@ export default function McAngebotsfeed() {
                                 )}
                             </div>
 
-                            {/* Right: download panel (fixed) */}
-                            <div style={{ display: 'grid', gap: 12 }}>
+                            {/* Right: download + re-upload panel */}
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, height: '100%', overflow: 'auto' }}>
                                 {/* Download Fehlerbericht */}
-                                <div style={{ background: '#EEF4FF', border: `2px solid ${MC_BLUE}`, borderRadius: 12, padding: '20px 24px' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-                                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2v10M6 9l3 3 3-3M2 15h14" stroke={MC_BLUE} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                        <span style={{ fontSize: 15, fontWeight: 800, color: '#111827' }}>{T.recDownloadTitle}</span>
+                                <div style={{ background: '#EEF4FF', border: `2px solid ${MC_BLUE}`, borderRadius: 12, padding: '16px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                                        <svg width="16" height="16" viewBox="0 0 18 18" fill="none"><path d="M9 2v10M6 9l3 3 3-3M2 15h14" stroke={MC_BLUE} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                        <span style={{ fontSize: 13, fontWeight: 800, color: '#111827' }}>{T.recDownloadTitle}</span>
                                     </div>
-                                    <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 14, lineHeight: 1.6 }}>{T.recDownloadDesc}</div>
+                                    <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 12, lineHeight: 1.5 }}>{T.recDownloadDesc}</div>
                                     <button type="button" onClick={csvOnClick}
-                                        style={{ width: '100%', padding: '13px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                                        <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 2v8M5 7l2.5 2.5L10 7M2 13h11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                        style={{ width: '100%', padding: '11px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
+                                        <svg width="13" height="13" viewBox="0 0 15 15" fill="none"><path d="M7.5 2v8M5 7l2.5 2.5L10 7M2 13h11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
                                         {T.recDownloadBtn}
                                     </button>
                                 </div>
 
+                                {/* Re-upload zone */}
+                                <div style={{ border: '2px dashed #D1D5DB', borderRadius: 12, padding: '16px', background: '#FAFAFA' }}>
+                                    <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', marginBottom: 3 }}>{T.reuploadTitle}</div>
+                                    <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 12, lineHeight: 1.5 }}>{T.reuploadSub}</div>
+                                    <div
+                                        onDragOver={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = MC_BLUE; e.currentTarget.style.background = '#EEF4FF'; }}
+                                        onDragLeave={(e) => { e.currentTarget.style.borderColor = '#D1D5DB'; e.currentTarget.style.background = '#F9FAFB'; }}
+                                        onDrop={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = '#D1D5DB'; e.currentTarget.style.background = '#F9FAFB'; const f = e.dataTransfer.files?.[0]; if (f) { resetToStart(); setTimeout(() => parseFile(f), 50); } }}
+                                        onClick={() => fileRef.current?.click()}
+                                        style={{ border: '1.5px dashed #D1D5DB', background: '#F9FAFB', borderRadius: 8, padding: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 10, transition: 'all 0.15s' }}>
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ color: '#9CA3AF' }}><path d="M7 18.5A4.5 4.5 0 017 9.5h.1A6.5 6.5 0 0120 11a4 4 0 010 8H7z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/><path d="M12 21v-7m0 0l-2.5 2.5M12 14l2.5 2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                        <span style={{ fontSize: 11, color: '#6B7280', fontWeight: 600 }}>{lang === 'de' ? 'Datei hierher ziehen oder klicken' : 'Drop file here or click'}</span>
+                                    </div>
+                                    <a href={`https://${T.portalUrl}`} target="_blank" rel="noopener noreferrer"
+                                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 7, textDecoration: 'none' }}>
+                                        <span style={{ fontSize: 10, color: '#6B7280' }}>{T.portalUrl}</span>
+                                        <span style={{ fontSize: 11, fontWeight: 700, color: MC_BLUE, whiteSpace: 'nowrap', marginLeft: 8 }}>{T.portalBtn}</span>
+                                    </a>
+                                </div>
+
                                 {/* Reset */}
                                 <button type="button" onClick={resetToStart}
-                                    style={{ width: '100%', padding: '11px', background: '#FFF', color: '#374151', border: '1px solid #D1D5DB', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                                    <svg width="13" height="13" viewBox="0 0 15 15" fill="none"><path d="M2 7.5h11M7 2.5l-5 5 5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                    style={{ width: '100%', padding: '9px', background: '#FFF', color: '#374151', border: '1px solid #D1D5DB', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
+                                    <svg width="11" height="11" viewBox="0 0 15 15" fill="none"><path d="M2 7.5h11M7 2.5l-5 5 5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
                                     {lang === 'de' ? 'Neuen Feed hochladen' : 'Upload New Feed'}
                                 </button>
                             </div>
@@ -1857,6 +2043,11 @@ export default function McAngebotsfeed() {
                 </div>
             </div>
         )}
+        {/* ── FOOTER ── */}
+        <footer style={{ background: '#FFF', borderTop: '1px solid #E5E7EB', padding: '5px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
+            <span style={{ fontSize: 10, color: '#9CA3AF' }}>{T.footerLeft}</span>
+            <span style={{ fontSize: 10, color: '#9CA3AF' }}>{T.footerRight}</span>
+        </footer>
         </div>
     );
 }
