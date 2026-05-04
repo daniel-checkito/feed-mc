@@ -1725,9 +1725,25 @@ export default function McAngebotsfeed() {
                                 const pct = isMapped ? Math.max(0, Math.round((1 - errs / issues.totalRows) * 100)) : null;
                                 const hasError = pct !== null && errs > 0;
                                 const barColor = pct === null ? '#E5E7EB' : pct === 100 ? '#16A34A' : pct >= 70 ? '#D97706' : '#DC2626';
+                                const mappedCol = key === 'availability'
+                                    ? (mcMapping.availability || mcMapping.stock_amount)
+                                    : key === 'image_url' ? mcImageColumns[0]
+                                    : mcMapping[key];
+                                const exampleVals = mappedCol
+                                    ? [...new Set(rows.slice(0, 30).map(r => String(r[mappedCol] ?? '').trim()).filter(Boolean))].slice(0, 3)
+                                    : [];
                                 return (
                                     <div key={key} style={{ display: 'grid', gridTemplateColumns: '1fr 90px 120px', padding: '7px 16px', borderBottom: '1px solid #F9FAFB', alignItems: 'center', background: hasError ? '#FFFBF5' : 'transparent', borderLeft: hasError ? '3px solid #D97706' : '3px solid transparent' }}>
-                                        <div style={{ fontSize: 11, color: hasError ? '#92400E' : '#374151', fontWeight: hasError ? 600 : 500 }}>{label}</div>
+                                        <div>
+                                            <div style={{ fontSize: 11, color: hasError ? '#92400E' : '#374151', fontWeight: hasError ? 600 : 500 }}>{label}</div>
+                                            {exampleVals.length > 0 && (
+                                                <div style={{ display: 'flex', gap: 4, marginTop: 3, flexWrap: 'wrap' }}>
+                                                    {exampleVals.map((v, i) => (
+                                                        <span key={i} style={{ fontSize: 9, color: '#6B7280', background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>{v}</span>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
                                         <div style={{ textAlign: 'right', fontSize: 10, fontWeight: 600, whiteSpace: 'nowrap' }}>
                                             {pct === null ? <span style={{ color: '#9CA3AF' }}>{T.notInFeed}</span>
                                                 : errs === 0 ? <span style={{ color: '#16A34A' }}>{T.complete}</span>
@@ -2018,26 +2034,20 @@ export default function McAngebotsfeed() {
                                 )}
                             </div>
 
-                            {/* Right: re-upload panel */}
+                            {/* Right: download + reset panel */}
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, height: '100%', overflow: 'auto' }}>
-                                {/* Re-upload zone */}
-                                <div style={{ border: '2px dashed #D1D5DB', borderRadius: 12, padding: '16px', background: '#FAFAFA' }}>
-                                    <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', marginBottom: 3 }}>{T.reuploadTitle}</div>
-                                    <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 12, lineHeight: 1.5 }}>{T.reuploadSub}</div>
-                                    <div
-                                        onDragOver={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = MC_BLUE; e.currentTarget.style.background = '#EEF4FF'; }}
-                                        onDragLeave={(e) => { e.currentTarget.style.borderColor = '#D1D5DB'; e.currentTarget.style.background = '#F9FAFB'; }}
-                                        onDrop={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = '#D1D5DB'; e.currentTarget.style.background = '#F9FAFB'; const f = e.dataTransfer.files?.[0]; if (f) { resetToStart(); setTimeout(() => parseFile(f), 50); } }}
-                                        onClick={() => fileRef.current?.click()}
-                                        style={{ border: '1.5px dashed #D1D5DB', background: '#F9FAFB', borderRadius: 8, padding: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 10, transition: 'all 0.15s' }}>
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ color: '#9CA3AF' }}><path d="M7 17A4.5 4.5 0 017 8h.1A6.5 6.5 0 0120 9.5a4 4 0 010 8H7z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/><path d="M12 17v-6m0 0l-2 2m2-2l2 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                        <span style={{ fontSize: 11, color: '#6B7280', fontWeight: 600 }}>{lang === 'de' ? 'Datei hierher ziehen oder klicken' : 'Drop file here or click'}</span>
+                                {/* Download Fehlerbericht */}
+                                <div style={{ background: '#EEF4FF', border: `2px solid ${MC_BLUE}`, borderRadius: 12, padding: '16px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                                        <svg width="16" height="16" viewBox="0 0 18 18" fill="none"><path d="M9 2v10M6 9l3 3 3-3M2 15h14" stroke={MC_BLUE} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                        <span style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{T.recDownloadTitle}</span>
                                     </div>
-                                    <a href={`https://${T.portalUrl}`} target="_blank" rel="noopener noreferrer"
-                                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 7, textDecoration: 'none' }}>
-                                        <span style={{ fontSize: 10, color: '#6B7280' }}>{T.portalUrl}</span>
-                                        <span style={{ fontSize: 11, fontWeight: 700, color: MC_BLUE, whiteSpace: 'nowrap', marginLeft: 8 }}>{T.portalBtn}</span>
-                                    </a>
+                                    <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 12, lineHeight: 1.5 }}>{T.recDownloadDesc}</div>
+                                    <button type="button" onClick={csvOnClick}
+                                        style={{ width: '100%', padding: '11px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
+                                        <svg width="13" height="13" viewBox="0 0 15 15" fill="none"><path d="M7.5 2v8M5 7l2.5 2.5L10 7M2 13h11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                        {T.recDownloadBtn}
+                                    </button>
                                 </div>
 
                                 {/* Reset */}
