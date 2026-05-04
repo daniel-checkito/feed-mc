@@ -1594,7 +1594,7 @@ export default function McAngebotsfeed() {
                     </div>
 
                     {/* Right column: Upload card */}
-                    <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E2E6EE', overflow: 'hidden' }}>
+                    <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E2E6EE', overflow: 'hidden', position: 'sticky', top: 20, alignSelf: 'flex-start' }}>
                         <div style={{ padding: '20px 24px 16px', borderBottom: '1px solid #F3F4F6' }}>
                             <div style={{ fontSize: 16, fontWeight: 700, color: '#111827', marginBottom: 2 }}>{T.s1Heading}</div>
                             <div style={{ fontSize: 12, color: '#9CA3AF' }}>{lang === 'de' ? 'CSV-Datei mit Ihren Angebotsdaten' : 'CSV file with your product data'}</div>
@@ -2217,7 +2217,7 @@ export default function McAngebotsfeed() {
                         </div>
 
                         {/* Right action panel */}
-                        <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                        <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'sticky', top: 20, alignSelf: 'flex-start' }}>
 
                             {/* Status state */}
                             {detailedErrors.length === 0 ? (
@@ -2597,7 +2597,7 @@ export default function McAngebotsfeed() {
                 };
 
                 return (
-                    <div style={{ width: '100%', maxWidth: 1200, display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
+                    <div style={{ width: '100%', maxWidth: 1200 }}>
 
                         {/* Header */}
                         <div style={{ marginBottom: 12, flexShrink: 0 }}>
@@ -2610,10 +2610,10 @@ export default function McAngebotsfeed() {
                         </div>
 
                         {/* Two-column layout: recommendations left, download panel right */}
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 20, alignItems: 'start', flex: 1, overflow: 'hidden' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 20, alignItems: 'start' }}>
 
-                            {/* Left: recommendations (scrollable) */}
-                            <div style={{ overflow: 'auto', height: '100%', paddingRight: 4 }}>
+                            {/* Left: recommendations */}
+                            <div>
                                 {/* No-errors state */}
                                 {recommendations.length === 0 && (
                                     <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 12, padding: '20px 24px', display: 'flex', alignItems: 'center', gap: 14 }}>
@@ -2664,7 +2664,7 @@ export default function McAngebotsfeed() {
                             </div>
 
                             {/* Right: download + reset panel */}
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, height: '100%', overflow: 'auto' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, position: 'sticky', top: 20, alignSelf: 'flex-start', maxHeight: 'calc(100vh - 120px)', overflowY: 'auto' }}>
                                 {/* Download Fehlerbericht */}
                                 <div style={{ background: '#EEF4FF', border: `2px solid ${MC_BLUE}`, borderRadius: 12, padding: '16px' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
