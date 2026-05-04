@@ -1103,12 +1103,6 @@ export default function McAngebotsfeed() {
         return !!mcMapping[f];
     }) && (!outsideGermany || !!mcMapping['hs_code']);
 
-    useEffect(() => {
-        if (step === 2 && allRequiredMapped) {
-            const t = setTimeout(() => setStep(3), 800);
-            return () => clearTimeout(t);
-        }
-    }, [step, allRequiredMapped]);
 
     return (
         <div style={{ background: '#F3F4F6', height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
@@ -1118,8 +1112,8 @@ export default function McAngebotsfeed() {
                     FEED CHECKER
                 </span>
 
-                {/* Header resource buttons */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+                    {/* Resource buttons */}
                     <button type="button" onClick={() => setShowLeitfaden(true)}
                         style={{ display: 'flex', alignItems: 'center', gap: 6, border: '1px solid rgba(255,255,255,0.3)', background: 'transparent', color: '#FFF', fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 6, cursor: 'pointer' }}>
                         <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 1.5h8.5l3 3v10h-11.5v-13z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M11 1.5v3h3" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M5 8h6M5 10.5h6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
@@ -1130,9 +1124,7 @@ export default function McAngebotsfeed() {
                         <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M5 7l3 3 3-3M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                         {T.feedTemplate}
                     </button>
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+                    <div style={{ width: 1, height: 18, background: 'rgba(255,255,255,0.2)', margin: '0 2px' }} />
                     {/* Language dropdown */}
                     <div style={{ position: 'relative' }}>
                         <button type="button" onClick={() => setLangOpen((v) => !v)}
@@ -1341,28 +1333,6 @@ export default function McAngebotsfeed() {
                                     <input ref={fileRef} type="file" accept=".csv,text/csv" style={{ display: 'none' }} onChange={(e) => parseFile(e.target.files?.[0] || null)} />
                                 </div>
                             )}
-
-                            {/* Warehouse location */}
-                            <div>
-                                <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.07em', marginBottom: 8, textTransform: 'uppercase' }}>{T.warehouseLabel}</div>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                                    {[
-                                        { value: 'germany', label: T.warehouseDE, sub: T.warehouseDEsub },
-                                        { value: 'outside_germany', label: T.warehouseNonDE, sub: T.warehouseNonDEsub },
-                                    ].map((opt) => {
-                                        const active = storeLocation === opt.value;
-                                        return (
-                                            <label key={opt.value} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 14px', borderRadius: 8, border: `1.5px solid ${active ? MC_BLUE : '#E2E6EE'}`, background: active ? '#EEF3FF' : '#FFF', cursor: 'pointer', transition: 'all 0.15s' }}>
-                                                <input type="radio" name="storeLocation" value={opt.value} checked={active} onChange={() => setStoreLocation(opt.value)} style={{ accentColor: MC_BLUE, flexShrink: 0 }} />
-                                                <div>
-                                                    <div style={{ fontSize: 14, fontWeight: 600, color: active ? MC_BLUE : '#111827' }}>{opt.label}</div>
-                                                    <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 1 }}>{opt.sub}</div>
-                                                </div>
-                                            </label>
-                                        );
-                                    })}
-                                </div>
-                            </div>
 
                             {/* Primary CTA */}
                             <button
