@@ -579,11 +579,11 @@ const DE_T = {
     reuploadTitle: 'Korrigierten Feed hochladen',
     reuploadSub: 'Datei hier ablegen oder direkt im Händlerportal hochladen.',
     footerLeft: 'CHECK24 Feed Checker · Stand: 04/2026 · Hinweise basieren auf dem aktuellen Feedleitfaden',
-    footerRight: 'v2.4.1 · haendler-support@check24.de',
+    footerRight: 'v2.4.1 · contentmanagement.moebel@check24.de',
     howTitle: 'So funktioniert der Feed Checker',
     howSummary: 'Laden Sie Ihren Angebotsfeed als CSV hoch – wir prüfen alle Pflichtfelder und zeigen genau, welche Artikel Fehler haben.',
     howSteps: [
-        { n: 1, title: 'Hochladen', desc: 'CSV-Datei per Drag & Drop oder Klick hochladen. Unterstützt UTF-8 und Windows-1252. Max. 64 MB.' },
+        { n: 1, title: 'Hochladen', desc: 'CSV-Datei per Drag & Drop oder Klick hochladen. Unterstützt .csv Dateien in UTF-8. Max. 64 MB.' },
         { n: 2, title: 'Zuordnung', desc: 'Wir ordnen Ihre Spalten automatisch den Feldern zu. Pflichtfelder links, optionale Felder rechts. Manuelle Korrekturen sind jederzeit möglich.' },
         { n: 3, title: 'Pflichtfeldanalyse', desc: 'Alle Pflichtfelder werden geprüft. Artikel mit Fehlern werden gezählt und angezeigt.' },
         { n: 4, title: 'Optionale Felder', desc: 'Completeness check für Felder wie Farbe, Material, Maße und Beschreibung – für bessere Sichtbarkeit.' },
@@ -819,12 +819,12 @@ const EN_T = {
     reuploadTitle: 'Upload corrected feed',
     reuploadSub: 'Drop file here or upload directly in the merchant portal.',
     footerLeft: 'CHECK24 Feed Checker · As of 04/2026 · Notes based on current feed guide',
-    footerRight: 'v2.4.1 · haendler-support@check24.de',
+    footerRight: 'v2.4.1 · contentmanagement.moebel@check24.de',
     // How it works
     howTitle: 'How Feed Checker works',
     howSummary: 'Upload your product feed as CSV – we check all required fields and show exactly which items have errors.',
     howSteps: [
-        { n: 1, title: 'Upload', desc: 'Upload your CSV file via drag & drop or click. Supports UTF-8 and Windows-1252. Max. 64 MB.' },
+        { n: 1, title: 'Upload', desc: 'Upload your CSV file via drag & drop or click. Supports .csv files in UTF-8. Max. 64 MB.' },
         { n: 2, title: 'Mapping', desc: 'We automatically map your columns to the required fields. Required fields left, optional fields right. Manual corrections are always possible.' },
         { n: 3, title: 'Required Field Analysis', desc: 'All required fields are validated. Items with errors are counted and displayed.' },
         { n: 4, title: 'Optional Fields', desc: 'Completeness check for fields like color, material, dimensions, and description – for better visibility.' },
@@ -1546,6 +1546,17 @@ export default function McAngebotsfeed() {
                                     </div>
                                 </div>
                             ))}
+                            {/* Quality = reach banner — inside the how-it-works card */}
+                            <div style={{ margin: '0 24px 20px', marginTop: 16, background: 'linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)', border: '1px solid #FDE68A', borderRadius: 10, padding: '12px 16px' }}>
+                                <div style={{ fontSize: 12, fontWeight: 700, color: '#92400E', marginBottom: 4 }}>
+                                    {lang === 'de' ? 'Besserer Feed = mehr Reichweite' : 'Better feed = more reach'}
+                                </div>
+                                <div style={{ fontSize: 11, color: '#78350F', lineHeight: 1.5 }}>
+                                    {lang === 'de'
+                                        ? 'Je vollständiger und hochwertiger Ihr Feed, desto besser die Platzierung auf unserem Marktplatz – und desto schneller werden Ihre Produkte freigeschaltet.'
+                                        : 'The more complete and high-quality your feed, the better the placement on our marketplace – and the faster your products go live.'}
+                                </div>
+                            </div>
                         </div>
 
                         {/* Resources card */}
@@ -1616,21 +1627,6 @@ export default function McAngebotsfeed() {
                             </div>
                         </div>
 
-                        {/* Quality = reach banner */}
-                        <div style={{ background: 'linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)', border: '1px solid #FDE68A', borderRadius: 12, padding: '14px 18px' }}>
-                            <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                                <div>
-                                    <div style={{ fontSize: 12, fontWeight: 700, color: '#92400E', marginBottom: 4 }}>
-                                        {lang === 'de' ? 'Besserer Feed = mehr Reichweite' : 'Better feed = more reach'}
-                                    </div>
-                                    <div style={{ fontSize: 11, color: '#78350F', lineHeight: 1.5 }}>
-                                        {lang === 'de'
-                                            ? 'Je vollständiger und hochwertiger Ihr Feed, desto besser die Platzierung auf unserem Marktplatz – und desto schneller werden Ihre Produkte freigeschaltet.'
-                                            : 'The more complete and high-quality your feed, the better the placement on our marketplace – and the faster your products go live.'}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
                     </div>
 
