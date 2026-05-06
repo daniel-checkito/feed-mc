@@ -583,9 +583,11 @@ const DE_T = {
     howTitle: 'So funktioniert der Feed Checker',
     howSummary: 'Laden Sie Ihren Angebotsfeed als CSV hoch – wir prüfen alle Pflichtfelder und zeigen genau, welche Artikel Fehler haben.',
     howSteps: [
-        { n: 1, title: 'Feed hochladen', desc: 'CSV-Datei per Drag & Drop oder Klick hochladen. Unterstützt UTF-8 und Windows-1252. Max. 64 MB.' },
-        { n: 2, title: 'Spalten automatisch erkennen', desc: 'Wir ordnen Ihre Spalten automatisch den Pflichtfeldern zu. Manuelle Korrekturen sind jederzeit möglich.' },
-        { n: 3, title: 'Fehler analysieren & beheben', desc: 'Alle Pflichtfelder werden geprüft. Fehlerbericht als CSV herunterladen, in Excel korrigieren und neu hochladen.' },
+        { n: 1, title: 'Hochladen', desc: 'CSV-Datei per Drag & Drop oder Klick hochladen. Unterstützt UTF-8 und Windows-1252. Max. 64 MB.' },
+        { n: 2, title: 'Zuordnung', desc: 'Wir ordnen Ihre Spalten automatisch den Feldern zu. Pflichtfelder links, optionale Felder rechts. Manuelle Korrekturen sind jederzeit möglich.' },
+        { n: 3, title: 'Pflichtfeldanalyse', desc: 'Alle Pflichtfelder werden geprüft. Artikel mit Fehlern werden gezählt und angezeigt.' },
+        { n: 4, title: 'Optionale Felder', desc: 'Completeness check für Felder wie Farbe, Material, Maße und Beschreibung – für bessere Sichtbarkeit.' },
+        { n: 5, title: 'Empfehlungen', desc: 'Fehlerbericht als CSV herunterladen, in Excel korrigieren und neu hochladen.' },
     ],
     warehouseDEsub: 'Kein HS-Code erforderlich',
     warehouseNonDEsub: 'HS-Code wird als Pflichtfeld geprüft',
@@ -822,9 +824,11 @@ const EN_T = {
     howTitle: 'How Feed Checker works',
     howSummary: 'Upload your product feed as CSV – we check all required fields and show exactly which items have errors.',
     howSteps: [
-        { n: 1, title: 'Upload feed', desc: 'Upload your CSV file via drag & drop or click. Supports UTF-8 and Windows-1252. Max. 64 MB.' },
-        { n: 2, title: 'Auto-detect columns', desc: 'We automatically map your columns to required fields. Manual corrections are always possible.' },
-        { n: 3, title: 'Analyse & fix errors', desc: 'All required fields are checked. Download the error report as CSV, correct in Excel, and re-upload.' },
+        { n: 1, title: 'Upload', desc: 'Upload your CSV file via drag & drop or click. Supports UTF-8 and Windows-1252. Max. 64 MB.' },
+        { n: 2, title: 'Mapping', desc: 'We automatically map your columns to the required fields. Required fields left, optional fields right. Manual corrections are always possible.' },
+        { n: 3, title: 'Required Field Analysis', desc: 'All required fields are validated. Items with errors are counted and displayed.' },
+        { n: 4, title: 'Optional Fields', desc: 'Completeness check for fields like color, material, dimensions, and description – for better visibility.' },
+        { n: 5, title: 'Recommendations', desc: 'Download the error report as CSV, fix in Excel, and re-upload.' },
     ],
     warehouseDEsub: 'No HS Code required',
     warehouseNonDEsub: 'HS Code validated as required field',
@@ -2965,7 +2969,7 @@ export default function McAngebotsfeed() {
             const totalShown = filteredGroups.reduce((s, g) => s + g.cols.length, 0);
             return (
                 <div onClick={() => { setShowVorlage(false); setVorlageSearch(''); }} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 24 }}>
-                    <div onClick={(e) => e.stopPropagation()} style={{ background: '#FFF', borderRadius: 12, width: '100%', maxWidth: 860, height: '90vh', display: 'flex', flexDirection: 'column', boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}>
+                    <div onClick={(e) => e.stopPropagation()} style={{ background: '#FFF', borderRadius: 12, width: '100%', maxWidth: '95vw', maxWidth: 860, height: '90vh', display: 'flex', flexDirection: 'column', boxShadow: '0 20px 60px rgba(0,0,0,0.3)', overflowX: 'hidden' }}>
                         {/* Header */}
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px', borderBottom: '1px solid #E5E7EB', flexShrink: 0 }}>
                             <div>
