@@ -2083,22 +2083,6 @@ export default function McAngebotsfeed() {
                     .sort((a, b) => b.count - a.count)
                     .slice(0, 7);
 
-                // Image count distribution
-                const imgStats = mcImageColumns.length > 0 ? (() => {
-                    const buckets = { none: 0, one: 0, two: 0, good: 0 };
-                    let total = 0, totalImgs = 0;
-                    rows.forEach((r) => {
-                        total++;
-                        const cnt = mcImageColumns.reduce((s, col) => s + (String(r[col] ?? '').trim() ? 1 : 0), 0);
-                        totalImgs += cnt;
-                        if (cnt === 0) buckets.none++;
-                        else if (cnt === 1) buckets.one++;
-                        else if (cnt === 2) buckets.two++;
-                        else buckets.good++;
-                    });
-                    return { total, avg: total ? +(totalImgs / total).toFixed(1) : 0, buckets };
-                })() : null;
-
                 // Description length distribution
                 const descCol = mcMapping['description'];
                 const descStats = descCol ? (() => {
@@ -2311,6 +2295,13 @@ export default function McAngebotsfeed() {
                         {/* Right action panel */}
                         <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'sticky', top: 20, alignSelf: 'flex-start' }}>
 
+                            {/* Sidebar heading */}
+                            <div style={{ padding: '12px 14px 8px', borderBottom: '1px solid #F3F4F6' }}>
+                                <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>
+                                    {lang === 'de' ? 'Pflichtfeld-Analyse' : 'Required Field Analysis'}
+                                </div>
+                            </div>
+
                             {/* Score donuts */}
                             <div style={{ padding: '12px 14px 10px', borderBottom: '1px solid #F3F4F6', display: 'flex', flexDirection: 'column', gap: 8 }}>
                                 {[
@@ -2402,50 +2393,6 @@ export default function McAngebotsfeed() {
 
                         </div>{/* end right panel */}
 
-
-                        {/* Image count distribution */}
-                        {imgStats && imgStats.total > 0 && (
-                            <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', padding: '14px 20px', gridColumn: 1 }}>
-                                <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 12 }}>
-                                    <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>
-                                        {lang === 'de' ? 'Bildanzahl – Verteilung' : 'Image Count – Distribution'}
-                                    </div>
-                                    <div style={{ fontSize: 10, color: '#9CA3AF' }}>
-                                        {lang === 'de' ? `Ø ${imgStats.avg.toLocaleString(numLocale)} Bilder · Empfehlung: 3+` : `Avg. ${imgStats.avg.toLocaleString(numLocale)} images · Recommended: 3+`}
-                                    </div>
-                                </div>
-                                <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end', height: 60, marginBottom: 8 }}>
-                                    {[
-                                        { key: 'none', label: lang === 'de' ? '0' : '0', color: '#EF4444', desc: lang === 'de' ? 'Kein Bild' : 'No image' },
-                                        { key: 'one',  label: lang === 'de' ? '1' : '1',  color: '#F59E0B', desc: lang === 'de' ? '1 Bild' : '1 image' },
-                                        { key: 'two',  label: lang === 'de' ? '2' : '2',  color: '#D97706', desc: lang === 'de' ? '2 Bilder' : '2 images' },
-                                        { key: 'good', label: lang === 'de' ? '3+' : '3+', color: '#16A34A', desc: lang === 'de' ? '3+ Bilder' : '3+ images' },
-                                    ].map(({ key, label, color, desc }) => {
-                                        const count = imgStats.buckets[key];
-                                        const pct = imgStats.total ? Math.round((count / imgStats.total) * 100) : 0;
-                                        return (
-                                            <div key={key} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
-                                                <div style={{ fontSize: 9, fontWeight: 700, color }}>{pct}%</div>
-                                                <div style={{ width: '100%', height: Math.max(4, pct * 0.44), background: color, borderRadius: 3, opacity: 0.85 }} />
-                                                <div style={{ fontSize: 8, color: '#9CA3AF', textAlign: 'center', lineHeight: 1.2 }}>{label}</div>
-                                                <div style={{ fontSize: 8, color: '#6B7280', fontWeight: 600, textAlign: 'center' }}>{desc}</div>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                                {imgStats.avg < 3 && (
-                                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, background: '#FFFBEB', borderRadius: 6, padding: '7px 10px' }}>
-                                        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 1 }}><circle cx="8" cy="8" r="6.5" stroke="#D97706" strokeWidth="1.4"/><path d="M8 7v4" stroke="#D97706" strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="5.5" r=".6" fill="#D97706"/></svg>
-                                        <span style={{ fontSize: 10, color: '#92400E', lineHeight: 1.5 }}>
-                                            {lang === 'de'
-                                                ? 'Durchschnittlich unter 3 Bilder pro Artikel. Mehr Bilder (Freisteller, Detail, Ambiente) erhöhen die Klickrate und Conversion deutlich.'
-                                                : 'Average under 3 images per item. More images (cut-out, detail, lifestyle) significantly increase click-through rate and conversion.'}
-                                        </span>
-                                    </div>
-                                )}
-                            </div>
-                        )}
-
                         </div>{/* end grid */}
 
                     </div>
@@ -2462,15 +2409,29 @@ export default function McAngebotsfeed() {
                     ? Math.round(optFieldStats.fields.reduce((s, f) => s + f.pct, 0) / optFieldStats.fields.length)
                     : 0;
                 const overallColor = overallPct >= 80 ? '#16A34A' : overallPct >= 50 ? '#D97706' : '#DC2626';
-                const r = 20, circ = 2 * Math.PI * r;
+
+                // Image count distribution (moved from step 3)
+                const imgStats = mcImageColumns.length > 0 ? (() => {
+                    const buckets = { none: 0, one: 0, two: 0, good: 0 };
+                    let total = 0, totalImgs = 0;
+                    rows.forEach((r) => {
+                        total++;
+                        const cnt = mcImageColumns.reduce((s, col) => s + (String(r[col] ?? '').trim() ? 1 : 0), 0);
+                        totalImgs += cnt;
+                        if (cnt === 0) buckets.none++;
+                        else if (cnt === 1) buckets.one++;
+                        else if (cnt === 2) buckets.two++;
+                        else buckets.good++;
+                    });
+                    return { total, avg: total ? +(totalImgs / total).toFixed(1) : 0, buckets };
+                })() : null;
+
+                const totalOptionalFields = optFieldStats.fields.length;
+                const completeOptionalFields = optFieldStats.fields.filter(f => !f.notMapped && f.pct === 100).length;
+                const errorOptionalFields = optFieldStats.fields.filter(f => !f.notMapped && f.pct < 100).length;
+
                 return (
                     <div style={{ width: '100%', maxWidth: 1100, display: 'flex', flexDirection: 'column', gap: 12 }}>
-
-                        {/* Header */}
-                        <div style={{ marginBottom: 4 }}>
-                            <div style={{ fontSize: 18, fontWeight: 800, color: '#111827', marginBottom: 2 }}>{T.optFieldsTitle}</div>
-                            <div style={{ fontSize: 12, color: '#6B7280' }}>{T.optFieldsSubtitle}</div>
-                        </div>
 
                         {/* Two-column layout */}
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 12, alignItems: 'start' }}>
@@ -2478,43 +2439,104 @@ export default function McAngebotsfeed() {
                             {/* Left: optional fields table */}
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
 
-                                {/* Per-field cards */}
-                                <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'hidden' }}>
-                                    {optFieldStats.fields.map((f, i) => {
+                                {/* Field analysis table - matches step 3 layout */}
+                                <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', overflow: 'hidden' }}>
+                                    <div style={{ padding: '10px 16px', borderBottom: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', background: '#FFF' }}>
+                                        <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{T.optFieldsTitle}</div>
+                                        <div style={{ fontSize: 10, color: '#6B7280' }}>
+                                            {T.analysisSummary(totalOptionalFields, completeOptionalFields, errorOptionalFields)}
+                                        </div>
+                                    </div>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 90px 120px', padding: '5px 16px', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB' }}>
+                                        <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.05em' }}>{T.colField}</div>
+                                        <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.05em', textAlign: 'right' }}>{T.colStatus}</div>
+                                        <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.05em', paddingLeft: 12 }}>{T.colCoverage}</div>
+                                    </div>
+                                    {optFieldStats.fields.map((f) => {
                                         const label = lang === 'de' ? f.labelDE : f.labelEN;
-                                        const barColor = f.pct >= 80 ? '#16A34A' : f.pct >= 50 ? '#D97706' : '#DC2626';
+                                        const isMapped = !f.notMapped;
+                                        const pct = isMapped ? f.pct : null;
+                                        const errs = isMapped ? Math.max(0, f.total - f.covered) : 0;
+                                        const hasError = pct !== null && errs > 0;
+                                        const barColor = pct === null ? '#E5E7EB' : pct === 100 ? '#16A34A' : pct >= 70 ? '#D97706' : '#DC2626';
                                         const mappedCol = mcMapping[f.field];
-                                        const examples = mappedCol
-                                            ? [...new Set(rows.map(r => String(r[mappedCol] ?? '').trim()).filter(Boolean))].slice(0, 3)
+                                        const exampleVals = mappedCol
+                                            ? [...new Set(rows.slice(0, 30).map(r => String(r[mappedCol] ?? '').trim()).filter(Boolean))].slice(0, 3)
                                             : [];
                                         return (
-                                            <div key={f.field} style={{ display: 'grid', gridTemplateColumns: '160px 1fr 80px 80px', alignItems: 'center', gap: 12, padding: '10px 16px', borderBottom: i < optFieldStats.fields.length - 1 ? '1px solid #F3F4F6' : 'none' }}>
-                                                <div>
-                                                    <div style={{ fontSize: 12, fontWeight: 600, color: '#374151' }}>{label}</div>
-                                                    {examples.length > 0 && (
-                                                        <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 4 }}>
-                                                            {examples.map((v, ei) => (
-                                                                <span key={ei} style={{ fontSize: 9, color: '#6B7280', background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>{v}</span>
+                                            <div key={f.field} style={{ display: 'grid', gridTemplateColumns: '1fr 90px 120px', padding: '5px 16px', borderBottom: '1px solid #F9FAFB', alignItems: 'center', background: hasError ? '#FFFBF5' : 'transparent', borderLeft: hasError ? '3px solid #D97706' : '3px solid transparent' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+                                                    <div style={{ fontSize: 11, color: hasError ? '#92400E' : '#374151', fontWeight: hasError ? 600 : 500, flexShrink: 0 }}>{label}</div>
+                                                    {exampleVals.length > 0 && (
+                                                        <div style={{ display: 'flex', gap: 4, flexWrap: 'nowrap', overflow: 'hidden', maxWidth: 220 }}>
+                                                            {exampleVals.slice(0, 2).map((v, i) => (
+                                                                <span key={i} style={{ fontSize: 9, color: '#6B7280', background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block', flexShrink: 0 }}>{v}</span>
                                                             ))}
                                                         </div>
                                                     )}
                                                 </div>
-                                                <div style={{ height: 6, background: '#F3F4F6', borderRadius: 3, overflow: 'hidden' }}>
-                                                    <div style={{ height: '100%', width: f.notMapped ? '0%' : `${f.pct}%`, background: barColor, borderRadius: 3 }}/>
+                                                <div style={{ textAlign: 'right', fontSize: 10, fontWeight: 600, whiteSpace: 'nowrap' }}>
+                                                    {pct === null ? <span style={{ color: '#9CA3AF' }}>{T.notInFeed}</span>
+                                                        : errs === 0 ? <span style={{ color: '#16A34A' }}>{T.complete}</span>
+                                                        : <span style={{ color: barColor }}>{T.missingCount(errs.toLocaleString(numLocale))}</span>}
                                                 </div>
-                                                <div style={{ fontSize: 11, color: '#6B7280', textAlign: 'right' }}>
-                                                    {f.notMapped
-                                                        ? <span style={{ color: '#9CA3AF', fontStyle: 'italic' }}>{lang === 'de' ? 'n. erkannt' : 'not mapped'}</span>
-                                                        : <span>{f.covered.toLocaleString(numLocale)} / {f.total.toLocaleString(numLocale)}</span>
-                                                    }
-                                                </div>
-                                                <div style={{ fontSize: 12, fontWeight: 700, color: barColor, textAlign: 'right' }}>
-                                                    {f.notMapped ? '–' : `${f.pct}%`}
+                                                <div style={{ paddingLeft: 12, display: 'flex', alignItems: 'center', gap: 5 }}>
+                                                    {pct !== null ? (
+                                                        <>
+                                                            <div style={{ flex: 1, height: 4, background: '#F3F4F6', borderRadius: 2, overflow: 'hidden' }}>
+                                                                <div style={{ height: '100%', width: `${pct}%`, background: barColor, borderRadius: 2, transition: 'width 0.4s' }} />
+                                                            </div>
+                                                            <span style={{ fontSize: 9, color: '#9CA3AF', width: 26, textAlign: 'right', flexShrink: 0 }}>{pct}%</span>
+                                                        </>
+                                                    ) : <span style={{ fontSize: 9, color: '#D1D5DB' }}>-</span>}
                                                 </div>
                                             </div>
                                         );
                                     })}
                                 </div>
+
+                                {/* Image count distribution (moved from step 3) */}
+                                {imgStats && imgStats.total > 0 && (
+                                    <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', padding: '14px 20px' }}>
+                                        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 12 }}>
+                                            <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>
+                                                {lang === 'de' ? 'Bildanzahl – Verteilung' : 'Image Count – Distribution'}
+                                            </div>
+                                            <div style={{ fontSize: 10, color: '#9CA3AF' }}>
+                                                {lang === 'de' ? `Ø ${imgStats.avg.toLocaleString(numLocale)} Bilder · Empfehlung: 3+` : `Avg. ${imgStats.avg.toLocaleString(numLocale)} images · Recommended: 3+`}
+                                            </div>
+                                        </div>
+                                        <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end', height: 60, marginBottom: 8 }}>
+                                            {[
+                                                { key: 'none', label: lang === 'de' ? '0' : '0', color: '#EF4444', desc: lang === 'de' ? 'Kein Bild' : 'No image' },
+                                                { key: 'one',  label: lang === 'de' ? '1' : '1',  color: '#F59E0B', desc: lang === 'de' ? '1 Bild' : '1 image' },
+                                                { key: 'two',  label: lang === 'de' ? '2' : '2',  color: '#D97706', desc: lang === 'de' ? '2 Bilder' : '2 images' },
+                                                { key: 'good', label: lang === 'de' ? '3+' : '3+', color: '#16A34A', desc: lang === 'de' ? '3+ Bilder' : '3+ images' },
+                                            ].map(({ key, label, color, desc }) => {
+                                                const count = imgStats.buckets[key];
+                                                const pct = imgStats.total ? Math.round((count / imgStats.total) * 100) : 0;
+                                                return (
+                                                    <div key={key} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+                                                        <div style={{ fontSize: 9, fontWeight: 700, color }}>{pct}%</div>
+                                                        <div style={{ width: '100%', height: Math.max(4, pct * 0.44), background: color, borderRadius: 3, opacity: 0.85 }} />
+                                                        <div style={{ fontSize: 8, color: '#9CA3AF', textAlign: 'center', lineHeight: 1.2 }}>{label}</div>
+                                                        <div style={{ fontSize: 8, color: '#6B7280', fontWeight: 600, textAlign: 'center' }}>{desc}</div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                        {imgStats.avg < 3 && (
+                                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, background: '#FFFBEB', borderRadius: 6, padding: '7px 10px' }}>
+                                                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 1 }}><circle cx="8" cy="8" r="6.5" stroke="#D97706" strokeWidth="1.4"/><path d="M8 7v4" stroke="#D97706" strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="5.5" r=".6" fill="#D97706"/></svg>
+                                                <span style={{ fontSize: 10, color: '#92400E', lineHeight: 1.5 }}>
+                                                    {lang === 'de'
+                                                        ? 'Durchschnittlich unter 3 Bilder pro Artikel. Mehr Bilder (Freisteller, Detail, Ambiente) erhöhen die Klickrate und Conversion deutlich.'
+                                                        : 'Average under 3 images per item. More images (cut-out, detail, lifestyle) significantly increase click-through rate and conversion.'}
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
 
                                 {/* Size hint */}
                                 {optFieldStats.sizeMissingCount > 0 && (
@@ -2599,35 +2621,59 @@ export default function McAngebotsfeed() {
                                 </div>
                             </div>
 
-                            {/* Right: score + nav */}
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, position: 'sticky', top: 20, alignSelf: 'flex-start' }}>
-                                {/* Score card */}
-                                <div style={{ background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 12, padding: '16px', display: 'flex', alignItems: 'center', gap: 14 }}>
-                                    <svg width="60" height="60" viewBox="0 0 52 52" style={{ flexShrink: 0 }}>
-                                        <circle cx="26" cy="26" r={r} fill="none" stroke="#F3F4F6" strokeWidth="5"/>
-                                        <circle cx="26" cy="26" r={r} fill="none" stroke={overallColor} strokeWidth="5"
-                                            strokeDasharray={`${(overallPct / 100) * circ} ${circ}`}
-                                            strokeLinecap="round"
-                                            transform="rotate(-90 26 26)"
-                                        />
-                                        <text x="26" y="31" textAnchor="middle" fontSize="14" fontWeight="900" fill={overallColor}>{overallPct}</text>
-                                    </svg>
-                                    <div>
-                                        <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{lang === 'de' ? 'Ø Vollständigkeit' : 'Avg. Completeness'}</div>
-                                        <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>{lang === 'de' ? 'Optionale Felder' : 'Optional fields'}</div>
+                            {/* Right: score + nav (matches step 3 layout) */}
+                            <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'sticky', top: 20, alignSelf: 'flex-start' }}>
+
+                                {/* Sidebar heading */}
+                                <div style={{ padding: '12px 14px 8px', borderBottom: '1px solid #F3F4F6' }}>
+                                    <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>
+                                        {lang === 'de' ? 'Optionale Felder' : 'Optional Fields'}
                                     </div>
                                 </div>
 
+                                {/* Score donut */}
+                                <div style={{ padding: '12px 14px 10px', borderBottom: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', gap: 10 }}>
+                                    <svg width="40" height="40" viewBox="0 0 40 40" style={{ flexShrink: 0 }}>
+                                        <circle cx="20" cy="20" r={16} fill="none" stroke="#F3F4F6" strokeWidth="4"/>
+                                        <circle cx="20" cy="20" r={16} fill="none" stroke={overallColor} strokeWidth="4"
+                                            strokeDasharray={`${(overallPct / 100) * (2 * Math.PI * 16)} ${2 * Math.PI * 16}`}
+                                            strokeLinecap="round"
+                                            transform="rotate(-90 20 20)"
+                                        />
+                                        <text x="20" y="24" textAnchor="middle" fontSize="11" fontWeight="900" fill={overallColor}>{overallPct}</text>
+                                    </svg>
+                                    <div>
+                                        <div style={{ fontSize: 11, fontWeight: 700, color: '#111827' }}>{lang === 'de' ? 'Ø Vollständigkeit' : 'Avg. Completeness'}</div>
+                                        <div style={{ fontSize: 9, color: '#9CA3AF' }}>{lang === 'de' ? 'Optionale Felder' : 'Optional fields'}</div>
+                                    </div>
+                                </div>
+
+                                {/* Stats strip */}
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', borderBottom: '1px solid #F3F4F6' }}>
+                                    {[
+                                        { val: completeOptionalFields, label: lang === 'de' ? 'Vollständig' : 'Complete', color: '#16A34A' },
+                                        { val: errorOptionalFields, label: lang === 'de' ? 'Lücken' : 'Gaps', color: '#D97706' },
+                                        { val: totalOptionalFields, label: lang === 'de' ? 'Gesamt' : 'Total', color: '#111827' },
+                                    ].map(({ val, label, color }, i) => (
+                                        <div key={label} style={{ padding: '10px 10px', borderRight: i < 2 ? '1px solid #F3F4F6' : 'none', textAlign: 'center' }}>
+                                            <div style={{ fontSize: 20, fontWeight: 900, color, lineHeight: 1, marginBottom: 2 }}>{val.toLocaleString(numLocale)}</div>
+                                            <div style={{ fontSize: 9, color: '#6B7280' }}>{label}</div>
+                                        </div>
+                                    ))}
+                                </div>
+
                                 {/* Nav buttons */}
-                                <div style={{ display: 'flex', gap: 6 }}>
-                                    <button type="button" onClick={() => setStep(3)}
-                                        style={{ flex: 1, padding: '10px 16px', background: '#FFF', color: '#374151', border: '1px solid #D1D5DB', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
-                                        {T.back}
-                                    </button>
-                                    <button type="button" onClick={() => setStep(5)}
-                                        style={{ flex: 2, padding: '10px 16px', background: MC_BLUE, border: 'none', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
-                                        {T.recNextStepFinal}
-                                    </button>
+                                <div style={{ padding: '10px 16px', borderTop: '1px solid #F3F4F6', display: 'flex', flexDirection: 'column', gap: 6 }}>
+                                    <div style={{ display: 'flex', gap: 6 }}>
+                                        <button type="button" onClick={() => setStep(3)}
+                                            style={{ flex: 1, padding: '10px 16px', background: '#FFF', color: '#374151', border: '1px solid #D1D5DB', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                                            {T.back}
+                                        </button>
+                                        <button type="button" onClick={() => setStep(5)}
+                                            style={{ flex: 2, padding: '10px 16px', background: MC_BLUE, border: 'none', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                                            {T.recNextStepFinal}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
 
