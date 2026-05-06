@@ -1587,42 +1587,52 @@ export default function McAngebotsfeed() {
                                 {/* Feedvorlage card */}
                                 <button type="button" onClick={() => setShowVorlage(true)}
                                     style={{ display: 'flex', flexDirection: 'column', borderRadius: 8, border: '1px solid #E2E6EE', background: '#FAFAFA', cursor: 'pointer', textAlign: 'left', overflow: 'hidden', padding: 0 }}>
-                                    <div style={{ width: '100%', height: 110, borderBottom: '1px solid #E2E6EE', overflow: 'hidden' }}>
-                                        <svg viewBox="0 0 220 110" width="100%" height="100%" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', width: '100%', height: '100%' }}>
+                                    <div style={{ width: '100%', height: 110, borderBottom: '1px solid #E2E6EE', overflow: 'hidden', background: '#F0FDF4', display: 'flex', alignItems: 'stretch' }}>
+                                        <svg viewBox="0 0 260 110" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block' }}>
                                             {/* Background */}
-                                            <rect width="220" height="110" fill="#F0FDF4"/>
+                                            <rect width="260" height="110" fill="#F0FDF4"/>
                                             {/* Top header bar */}
-                                            <rect width="220" height="24" fill="#16A34A"/>
-                                            {/* Header bar text */}
-                                            <text x="10" y="16" fontFamily="Arial,sans-serif" fontSize="9" fontWeight="700" fill="white">CHECK24 Feedvorlage 2026</text>
-                                            <text x="175" y="16" fontFamily="Arial,sans-serif" fontSize="8" fill="rgba(255,255,255,0.8)">XLSX</text>
+                                            <rect width="260" height="26" fill="#16A34A"/>
+                                            <text x="10" y="17" fontFamily="Arial,sans-serif" fontSize="9.5" fontWeight="700" fill="white">CHECK24 Feedvorlage 2026</text>
+                                            {/* 92 Felder badge */}
+                                            <rect x="194" y="5" width="56" height="16" rx="3" fill="rgba(255,255,255,0.18)"/>
+                                            <text x="222" y="16.5" fontFamily="Arial,sans-serif" fontSize="8" fontWeight="700" fill="white" textAnchor="middle">92 Felder</text>
                                             {/* Column header row */}
-                                            <rect y="24" width="220" height="14" fill="#DCFCE7"/>
-                                            {/* Column dividers + labels */}
-                                            {[['EAN', 8], ['offer_id', 38], ['name', 78], ['brand', 130], ['price', 168]].map(([label, x], i) => (
-                                                <g key={i}>
-                                                    <rect x={x} y="24" width={i < 4 ? (([38,78,130,168,220][i]) - x) : 52} height="14" fill="none" stroke="#BBF7D0" strokeWidth="0.5"/>
-                                                    <text x={x + 3} y="34" fontFamily="Arial,sans-serif" fontSize="7" fontWeight="600" fill="#166534">{label}</text>
+                                            <rect y="26" width="260" height="15" fill="#DCFCE7"/>
+                                            {/* Columns: EAN | offer_id | name | brand | price */}
+                                            {[
+                                                { label: 'EAN',      x: 0,   w: 46 },
+                                                { label: 'offer_id', x: 46,  w: 58 },
+                                                { label: 'name',     x: 104, w: 72 },
+                                                { label: 'brand',    x: 176, w: 48 },
+                                                { label: 'price',    x: 224, w: 36 },
+                                            ].map(({ label, x, w }) => (
+                                                <g key={label}>
+                                                    <rect x={x} y="26" width={w} height="15" fill="none" stroke="#BBF7D0" strokeWidth="0.5"/>
+                                                    <text x={x + 5} y="36.5" fontFamily="Arial,sans-serif" fontSize="7.5" fontWeight="600" fill="#166534">{label}</text>
                                                 </g>
                                             ))}
                                             {/* Data rows */}
-                                            {[38, 52, 66, 80].map((y, ri) => (
+                                            {[41, 56, 71, 86].map((y, ri) => (
                                                 <g key={ri}>
-                                                    <rect y={y} width="220" height="14" fill={ri % 2 === 0 ? '#F0FDF4' : '#FFFFFF'}/>
-                                                    {[8, 38, 78, 130, 168].map((x, ci) => (
-                                                        <g key={ci}>
-                                                            <rect x={x} y={y} width={ci < 4 ? ([38,78,130,168,220][ci] - x) : 52} height="14" fill="none" stroke="#BBF7D0" strokeWidth="0.5"/>
-                                                            <rect x={x + 3} y={y + 4} width={[22, 28, 38, 24, 20][ci]} height="5" rx="1" fill="#D1FAE5"/>
+                                                    <rect y={y} width="260" height="15" fill={ri % 2 === 0 ? '#F0FDF4' : '#FFFFFF'}/>
+                                                    {[
+                                                        { x: 0,   w: 46, bw: 30 },
+                                                        { x: 46,  w: 58, bw: 40 },
+                                                        { x: 104, w: 72, bw: 55 },
+                                                        { x: 176, w: 48, bw: 32 },
+                                                        { x: 224, w: 36, bw: 22 },
+                                                    ].map(({ x, w, bw }) => (
+                                                        <g key={x}>
+                                                            <rect x={x} y={y} width={w} height="15" fill="none" stroke="#BBF7D0" strokeWidth="0.5"/>
+                                                            <rect x={x + 5} y={y + 5} width={bw} height="5" rx="1.5" fill="#D1FAE5"/>
                                                         </g>
                                                     ))}
                                                 </g>
                                             ))}
-                                            {/* Pflichtangaben row (amber) */}
-                                            <rect y="94" width="220" height="16" fill="#FEF3C7"/>
-                                            <text x="10" y="105" fontFamily="Arial,sans-serif" fontSize="7" fontWeight="600" fill="#92400E">Pflichtangaben</text>
-                                            {/* File type badge */}
-                                            <rect x="178" y="4" width="34" height="14" rx="3" fill="rgba(255,255,255,0.2)"/>
-                                            <text x="195" y="14" fontFamily="Arial,sans-serif" fontSize="7.5" fontWeight="700" fill="white" textAnchor="middle">92 Felder</text>
+                                            {/* Pflichtangaben footer row */}
+                                            <rect y="101" width="260" height="9" fill="#FEF3C7"/>
+                                            <text x="8" y="108.5" fontFamily="Arial,sans-serif" fontSize="6.5" fontWeight="700" fill="#92400E">Pflichtangaben</text>
                                         </svg>
                                     </div>
                                     <div style={{ padding: '8px 12px' }}>
