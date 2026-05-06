@@ -2641,10 +2641,10 @@ export default function McAngebotsfeed() {
                             </div>
 
                             {/* Right: score + nav (matches step 3 layout) */}
-                            <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'sticky', top: 20, alignSelf: 'flex-start' }}>
+                            <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'sticky', top: 20, alignSelf: 'flex-start' }}>
 
                                 {/* Sidebar heading */}
-                                <div style={{ padding: '12px 14px 8px', borderBottom: '1px solid #F3F4F6' }}>
+                                <div style={{ padding: '14px 16px', borderBottom: '1px solid #F3F4F6' }}>
                                     <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>
                                         {lang === 'de' ? 'Ergebnis' : 'Result'}
                                     </div>
@@ -2654,7 +2654,7 @@ export default function McAngebotsfeed() {
                                 </div>
 
                                 {/* Score donut */}
-                                <div style={{ padding: '12px 14px 10px', borderBottom: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', gap: 10 }}>
+                                <div style={{ padding: '12px 16px', borderBottom: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', gap: 10 }}>
                                     <svg width="40" height="40" viewBox="0 0 40 40" style={{ flexShrink: 0 }}>
                                         <circle cx="20" cy="20" r={16} fill="none" stroke="#F3F4F6" strokeWidth="4"/>
                                         <circle cx="20" cy="20" r={16} fill="none" stroke={overallColor} strokeWidth="4"
@@ -2678,8 +2678,8 @@ export default function McAngebotsfeed() {
                                         { val: totalOptionalFields, label: lang === 'de' ? 'Gesamt' : 'Total', color: '#111827' },
                                     ].map(({ val, label, color }, i) => (
                                         <div key={label} style={{ padding: '10px 10px', borderRight: i < 2 ? '1px solid #F3F4F6' : 'none', textAlign: 'center' }}>
-                                            <div style={{ fontSize: 20, fontWeight: 900, color, lineHeight: 1, marginBottom: 2 }}>{val.toLocaleString(numLocale)}</div>
-                                            <div style={{ fontSize: 9, color: '#6B7280' }}>{label}</div>
+                                            <div style={{ fontSize: 18, fontWeight: 900, color, lineHeight: 1, marginBottom: 2 }}>{val.toLocaleString(numLocale)}</div>
+                                            <div style={{ fontSize: 10, color: '#6B7280' }}>{label}</div>
                                         </div>
                                     ))}
                                 </div>
@@ -2882,30 +2882,29 @@ export default function McAngebotsfeed() {
                 return (
                     <div style={{ width: '100%', maxWidth: 1100 }}>
 
-                        {/* Header */}
-                        <div style={{ marginBottom: 12, flexShrink: 0 }}>
-                            <div style={{ fontSize: 18, fontWeight: 800, color: '#111827', marginBottom: 4 }}>
-                                {recommendations.length > 0
-                                    ? (lang === 'de' ? 'Handlungsempfehlungen' : 'Recommendations')
-                                    : T.recNoErrorsTitle}
-                            </div>
-                            {recommendations.length > 0 && (
-                                <div style={{ fontSize: 12, color: '#6B7280' }}>
-                                    {lang === 'de'
-                                        ? `${criticalRecs.length} kritische Fehler${hinweisRecs.length > 0 ? ` · ${hinweisRecs.length} Hinweise` : ''}`
-                                        : `${criticalRecs.length} critical error${criticalRecs.length === 1 ? '' : 's'}${hinweisRecs.length > 0 ? ` · ${hinweisRecs.length} hint${hinweisRecs.length === 1 ? '' : 's'}` : ''}`}
-                                </div>
-                            )}
-                            {recommendations.length === 0 && (
-                                <div style={{ fontSize: 13, color: '#6B7280' }}>{T.recNoErrorsSub}</div>
-                            )}
-                        </div>
-
                         {/* Two-column layout: recommendations left, download panel right */}
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 20, alignItems: 'start' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 20, alignItems: 'start' }}>
 
                             {/* Left: recommendations */}
-                            <div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                                {/* Page header */}
+                                <div>
+                                    <div style={{ fontSize: 18, fontWeight: 800, color: '#111827', marginBottom: 4 }}>
+                                        {recommendations.length > 0
+                                            ? (lang === 'de' ? 'Handlungsempfehlungen' : 'Recommendations')
+                                            : T.recNoErrorsTitle}
+                                    </div>
+                                    {recommendations.length > 0 && (
+                                        <div style={{ fontSize: 12, color: '#6B7280' }}>
+                                            {lang === 'de'
+                                                ? `${criticalRecs.length} kritische Fehler${hinweisRecs.length > 0 ? ` · ${hinweisRecs.length} Hinweise` : ''}`
+                                                : `${criticalRecs.length} critical error${criticalRecs.length === 1 ? '' : 's'}${hinweisRecs.length > 0 ? ` · ${hinweisRecs.length} hint${hinweisRecs.length === 1 ? '' : 's'}` : ''}`}
+                                        </div>
+                                    )}
+                                    {recommendations.length === 0 && (
+                                        <div style={{ fontSize: 13, color: '#6B7280' }}>{T.recNoErrorsSub}</div>
+                                    )}
+                                </div>
                                 {/* No-errors state */}
                                 {recommendations.length === 0 && (
                                     <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 12, padding: '20px 24px', display: 'flex', alignItems: 'center', gap: 14 }}>
@@ -2936,7 +2935,7 @@ export default function McAngebotsfeed() {
                                             ? (lang === 'de' ? 'KRITISCH' : 'CRITICAL')
                                             : (lang === 'de' ? 'HINWEIS' : 'HINT');
                                         return (
-                                            <div key={key} style={{ background: '#FFF', border: '1px solid #E5E7EB', borderLeft: `4px solid ${accent}`, borderRadius: 10, padding: isCritical ? (isOpen ? '16px 20px' : '12px 20px') : '12px 16px', transition: 'padding 0.15s' }}>
+                                            <div key={key} style={{ background: '#FFF', border: '1px solid #E5E7EB', borderLeft: `4px solid ${accent}`, borderRadius: 12, padding: isCritical ? (isOpen ? '16px 20px' : '12px 20px') : '12px 16px', transition: 'padding 0.15s' }}>
                                                 <div
                                                     onClick={collapsible ? () => toggleRec(key) : undefined}
                                                     style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: isOpen ? 6 : 0, cursor: collapsible ? 'pointer' : 'default', userSelect: collapsible ? 'none' : 'auto' }}
@@ -2982,10 +2981,11 @@ export default function McAngebotsfeed() {
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                                             {criticalRecs.length > 0 && (
                                                 <div>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                                                        <span style={{ fontSize: 11, fontWeight: 800, color: '#DC2626', background: '#FEE2E2', border: '1px solid #FECACA', padding: '3px 8px', borderRadius: 4, letterSpacing: '0.05em' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+                                                        <span style={{ fontSize: 11, fontWeight: 700, color: '#DC2626', letterSpacing: '0.04em' }}>
                                                             {lang === 'de' ? 'KRITISCHE FEHLER' : 'CRITICAL ERRORS'}
                                                         </span>
+                                                        <span style={{ fontSize: 11, color: '#9CA3AF' }}>·</span>
                                                         <span style={{ fontSize: 11, color: '#6B7280' }}>
                                                             {lang === 'de' ? 'verhindern das Listing' : 'block listing'}
                                                         </span>
@@ -2997,10 +2997,11 @@ export default function McAngebotsfeed() {
                                             )}
                                             {hinweisRecs.length > 0 && (
                                                 <div>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                                                        <span style={{ fontSize: 11, fontWeight: 800, color: '#D97706', background: '#FEF3C7', border: '1px solid #FDE68A', padding: '3px 8px', borderRadius: 4, letterSpacing: '0.05em' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+                                                        <span style={{ fontSize: 11, fontWeight: 700, color: '#D97706', letterSpacing: '0.04em' }}>
                                                             {lang === 'de' ? 'HINWEISE' : 'HINTS'}
                                                         </span>
+                                                        <span style={{ fontSize: 11, color: '#9CA3AF' }}>·</span>
                                                         <span style={{ fontSize: 11, color: '#6B7280' }}>
                                                             {lang === 'de' ? 'Qualitätsverbesserungen, optional' : 'quality improvements, optional'}
                                                         </span>
