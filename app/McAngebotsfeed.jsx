@@ -1480,7 +1480,7 @@ export default function McAngebotsfeed() {
                     </div>
                     <a
                         href="mailto:contentmanagement.moebel@check24.de?subject=Feed%20Checker%20-%20Hilfe"
-                        style={{ border: '1px solid rgba(255,255,255,0.25)', background: 'rgba(255,255,255,0.08)', color: '#FFFFFF', fontSize: 12, fontWeight: 500, padding: '6px 14px', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}
+                        style={{ border: '1px solid rgba(255,255,255,0.25)', background: 'rgba(255,255,255,0.08)', color: '#FFFFFF', fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}
                     >
                         <svg width="13" height="13" viewBox="0 0 13 13" fill="none" style={{ flexShrink: 0 }}><rect x="1" y="2.5" width="11" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.3"/><path d="M1 4l5.5 3.5L12 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>
                         {T.helpContact}
@@ -1512,12 +1512,15 @@ export default function McAngebotsfeed() {
                                 else if (s.n === 2 && rows.length > 0) setStep(2);
                                 else if ((s.n === 3 || s.n === 4 || s.n === 5) && issues) setStep(s.n);
                             }}
-                            style={{ height: 50, display: 'flex', alignItems: 'center', gap: 8, padding: '0 20px', background: 'none', border: 'none', borderBottom: isActive ? `2px solid ${MC_BLUE}` : '2px solid transparent', cursor: isClickable ? 'pointer' : 'default', color: tabColor, opacity: isClickable ? 1 : 0.5, transition: 'all 0.15s', whiteSpace: 'nowrap' }}
+                            style={{ height: 50, display: 'flex', alignItems: 'center', gap: 8, padding: '0 24px', background: 'none', border: 'none', borderBottom: isActive ? `2px solid ${MC_BLUE}` : '2px solid transparent', cursor: isClickable ? 'pointer' : 'default', color: tabColor, opacity: isClickable ? 1 : 0.5, transition: 'all 0.15s', whiteSpace: 'nowrap', position: 'relative' }}
                         >
-                            <div style={{ width: 22, height: 22, borderRadius: '50%', border: `1.5px solid ${tabColor}`, background: (isActive || isDone) ? tabColor : 'transparent', color: (isActive || isDone) ? '#fff' : tabColor, fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'all 0.15s' }}>
+                            <div style={{ width: 22, height: 22, borderRadius: '50%', border: `1.5px solid ${tabColor}`, background: (isActive || isDone) ? tabColor : 'transparent', color: (isActive || isDone) ? '#fff' : tabColor, fontSize: 11, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'all 0.15s' }}>
                                 {isDone ? '✓' : s.n}
                             </div>
-                            <span style={{ fontSize: 13, fontWeight: isActive ? 600 : 400 }}>{s.label}</span>
+                            <span style={{ fontSize: 13, fontWeight: isActive ? 600 : 500, letterSpacing: 0.1 }}>{s.label}</span>
+                            {s.n < 5 && (
+                                <span style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)', height: 18, width: 1, background: '#E5E7EB' }} />
+                            )}
                         </button>
                     );
                 })}
@@ -1713,7 +1716,7 @@ export default function McAngebotsfeed() {
                                         },
                                     });
                                 }}
-                                    style={{ width: '100%', padding: '9px', background: '#FFF', color: '#374151', border: '1px dashed #D1D5DB', borderRadius: 8, fontSize: 12, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                                    style={{ width: '100%', padding: '9px', background: '#FFF', color: '#374151', border: '1px dashed #D1D5DB', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
                                     <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.5 3.5L13 6l-2.5 2.5.5 3.5L8 10.5 5 12l.5-3.5L3 6l3.5-.5L8 2z" stroke="#9CA3AF" strokeWidth="1.3" strokeLinejoin="round"/></svg>
                                     {lang === 'de' ? 'Beispiel-Feed laden (6 Artikel, inkl. Fehler)' : 'Load example feed (6 items, incl. errors)'}
                                 </button>
@@ -1724,7 +1727,7 @@ export default function McAngebotsfeed() {
                                 type="button"
                                 onClick={() => rows.length > 0 && setStep(2)}
                                 disabled={rows.length === 0}
-                                style={{ width: '100%', padding: '14px', background: rows.length > 0 ? MC_BLUE : '#D1D5DB', color: '#FFF', border: 'none', borderRadius: 8, fontSize: 15, fontWeight: 700, cursor: rows.length > 0 ? 'pointer' : 'default', transition: 'background 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
+                                style={{ width: '100%', padding: '14px', background: rows.length > 0 ? MC_BLUE : '#D1D5DB', color: '#FFF', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 700, cursor: rows.length > 0 ? 'pointer' : 'default', transition: 'background 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
                             >
                                 {rows.length > 0 ? T.continueMappingBtn : T.uploadPrompt}
                                 {rows.length > 0 && <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
@@ -2065,7 +2068,7 @@ export default function McAngebotsfeed() {
 
                                 {/* Bottom nav */}
                                 <div style={{ padding: '10px 20px', borderTop: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-                                    <div style={{ fontSize: 11, color: (issues?.missingPflichtCols?.length ?? 0) > 0 ? '#DC2626' : '#16A34A', fontWeight: 500 }}>
+                                    <div style={{ fontSize: 11, color: (issues?.missingPflichtCols?.length ?? 0) > 0 ? '#DC2626' : '#16A34A', fontWeight: 600 }}>
                                         {(issues?.missingPflichtCols?.length ?? 0) > 0
                                             ? (lang === 'de'
                                                 ? `${issues.missingPflichtCols.length} Pflichtfeld${issues.missingPflichtCols.length > 1 ? 'er' : ''} fehlen noch`
@@ -2575,8 +2578,8 @@ export default function McAngebotsfeed() {
                                                     <div key={key} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
                                                         <div style={{ fontSize: 9, fontWeight: 700, color }}>{pct}%</div>
                                                         <div style={{ width: '100%', height: Math.max(4, pct * 0.44), background: color, borderRadius: 3, opacity: 0.85 }} />
-                                                        <div style={{ fontSize: 8, color: '#9CA3AF', textAlign: 'center', lineHeight: 1.2 }}>{label}</div>
-                                                        <div style={{ fontSize: 8, color: '#6B7280', fontWeight: 600, textAlign: 'center' }}>{desc}</div>
+                                                        <div style={{ fontSize: 10, color: '#9CA3AF', textAlign: 'center', lineHeight: 1.2 }}>{label}</div>
+                                                        <div style={{ fontSize: 10, color: '#6B7280', fontWeight: 600, textAlign: 'center' }}>{desc}</div>
                                                     </div>
                                                 );
                                             })}
