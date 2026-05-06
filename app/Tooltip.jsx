@@ -2,38 +2,42 @@
 import React, { useState, useRef } from "react";
 
 export default function Tooltip({ text, children }) {
-  const [visible, setVisible] = useState(false);
+  const [pos, setPos] = useState(null);
   const ref = useRef(null);
 
   if (!text) return children;
 
+  const show = () => {
+    if (ref.current) {
+      const r = ref.current.getBoundingClientRect();
+      setPos({ top: r.top - 10, left: r.left + r.width / 2 });
+    }
+  };
+  const hide = () => setPos(null);
+
   return (
-    <div
-      ref={ref}
-      style={{ position: "relative", display: "inline-flex", alignItems: "center" }}
-      onMouseEnter={() => setVisible(true)}
-      onMouseLeave={() => setVisible(false)}
-    >
+    <div ref={ref} style={{ position: "relative", display: "inline-flex", alignItems: "center" }}
+      onMouseEnter={show} onMouseLeave={hide}>
       {children}
-      {visible && (
+      {pos && (
         <div style={{
-          position: "absolute",
-          bottom: "calc(100% + 10px)",
-          left: "50%",
-          transform: "translateX(-50%)",
+          position: "fixed",
+          top: pos.top,
+          left: pos.left,
+          transform: "translate(-50%, -100%)",
           background: "#1F2937",
           color: "#FFFFFF",
-          fontSize: 13,
+          fontSize: 12,
           fontWeight: 400,
-          lineHeight: "1.55",
-          padding: "10px 14px",
-          borderRadius: 10,
-          maxWidth: 240,
+          lineHeight: "1.5",
+          padding: "8px 12px",
+          borderRadius: 8,
+          maxWidth: 220,
           width: "max-content",
           whiteSpace: "normal",
           zIndex: 9999,
           pointerEvents: "none",
-          boxShadow: "0 6px 20px rgba(0,0,0,0.28)",
+          boxShadow: "0 4px 16px rgba(0,0,0,0.25)",
         }}>
           {text}
         </div>

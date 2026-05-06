@@ -602,11 +602,11 @@ const DE_T = {
     hsField: { key: 'hs_code', label: 'HS-Code' },
     qualityTitle: 'Tipps zur Feed-Qualität',
     qualityTips: [
-        { field: 'name', title: 'Artikelname', tips: ['Mindestens 2 Woerter, aussagekraeftig und spezifisch', 'Ideal: Marke + Produkt + Hauptattribut, z. B. "BRAND Sofa 3-Sitzer grau 180 cm"', 'Keine B-Ware-Hinweise oder generischen Begriffe wie "Produkt"', 'GTIN-konforme Bezeichnung, max. 255 Zeichen'] },
-        { field: 'description', title: 'Beschreibung', tips: ['Mindestens 100 Zeichen, besser 300-500 Zeichen', 'Wichtige Eigenschaften nennen: Material, Farbe, Masse, Besonderheiten', 'Keine reinen Aufzaehlungen - fliesender Text wirkt besser', 'Keine Werbefloskeln wie "guenstig" oder "Top-Qualitaet"'] },
-        { field: 'ean', title: 'EAN (GTIN14)', tips: ['Muss 13 oder 14 Stellen lang sein (EAN-13 oder GTIN-14)', 'Muss eindeutig pro Artikel sein - keine Duplikate', 'Nicht erfundene oder Test-EANs verwenden', 'Handelsuebliche GTIN aus GS1-Datenbank'] },
-        { field: 'image_url', title: 'Produktbild', tips: ['Freisteller auf weissem oder transparentem Hintergrund', 'Mindestens 600x600 Pixel, optimal 1000x1000+', 'Oeffentlich erreichbare URL (kein Login erforderlich)', 'Kein Wasserzeichen, keine Preise im Bild'] },
-        { field: 'price', title: 'Preis & Lieferung', tips: ['Preis im Format 19.99 (Punkt als Dezimaltrennzeichen)', 'Versandart muss einen gueltigen Wert enthalten', 'Lieferzeit als Werktage angeben, z. B. "3-5"', 'Verfuegbarkeit / Bestand stets aktuell halten'] },
+        { field: 'name', icon: '✏️', title: 'Artikelname', bad: 'Sofa grau', good: 'Mustermarke Sofa 3-Sitzer Cord grau 200 cm', tips: ['Mindestens 2 Wörter: Marke + Produkt + Hauptattribut', 'Keine B-Ware-Hinweise, max. 255 Zeichen', 'GTIN-konforme Bezeichnung'] },
+        { field: 'description', icon: '📝', title: 'Beschreibung', tips: ['Mindestens 100 Zeichen, besser 300–500 Zeichen', 'Wichtige Eigenschaften nennen: Material, Farbe, Maße, Besonderheiten', 'Keine reinen Aufzählungen – fließender Text wirkt besser', 'Keine Werbefloskeln wie „günstig" oder „Top-Qualität"'] },
+        { field: 'ean', icon: '🔢', title: 'EAN (GTIN14)', tips: ['Muss exakt 14 Stellen lang sein (führende Nullen ergänzen)', 'Muss eindeutig pro Artikel sein – keine Duplikate', 'Nicht erfundene oder Test-EANs verwenden', 'Handelsübliche GTIN aus GS1-Datenbank'] },
+        { field: 'image_url', icon: '🖼️', title: 'Produktbild', tips: ['Freisteller auf weißem oder transparentem Hintergrund', 'Mindestens 600×600 Pixel, optimal 1000×1000+', 'Öffentlich erreichbare URL (kein Login erforderlich)', 'Kein Wasserzeichen, keine Preise im Bild'] },
+        { field: 'price', icon: '💶', title: 'Preis & Lieferung', tips: ['Preis im Format 19.99 (Punkt als Dezimaltrennzeichen)', 'Versandart muss einen gültigen Wert enthalten', 'Lieferzeit als Werktage angeben, z. B. „3-5"', 'Verfügbarkeit / Bestand stets aktuell halten'] },
     ],
     qualityShowMore: 'Alle Tipps anzeigen',
     qualityShowLess: 'Weniger anzeigen',
@@ -735,11 +735,11 @@ const EN_T = {
     hsField: { key: 'hs_code', label: 'HS Code' },
     qualityTitle: 'Feed Quality Tips',
     qualityTips: [
-        { field: 'name', title: 'Item Name', tips: ['At least 2 words, descriptive and specific', 'Ideal: Brand + Product + Key Attribute, e.g. "BRAND Sofa 3-seater grey 180 cm"', 'No used-goods labels or generic terms like "product"', 'Max 255 characters'] },
-        { field: 'description', title: 'Description', tips: ['At least 100 characters, ideally 300-500', 'Include key attributes: material, color, dimensions, features', 'Flowing text works better than bullet lists alone', 'Avoid marketing phrases like "cheap" or "top quality"'] },
-        { field: 'ean', title: 'EAN (GTIN14)', tips: ['Must be 13 or 14 digits (EAN-13 or GTIN-14)', 'Must be unique per item - no duplicates', 'Do not use invented or test EANs', 'Use a valid GTIN from the GS1 database'] },
-        { field: 'image_url', title: 'Product Image', tips: ['White or transparent background (cut-out)', 'At least 600×600 pixels, ideally 1000×1000+', 'Publicly accessible URL (no login required)', 'No watermarks or prices in the image'] },
-        { field: 'price', title: 'Price & Delivery', tips: ['Price in format 19.99 (dot as decimal separator)', 'Shipping mode must contain a valid value', 'Delivery time in working days, e.g. "3-5"', 'Keep availability/stock always up to date'] },
+        { field: 'name', icon: '✏️', title: 'Item Name', bad: 'Sofa grey', good: 'BrandName Sofa 3-seater cord grey 200 cm', tips: ['At least 2 words: Brand + Product + Key Attribute', 'No used-goods labels, max 255 characters', 'GTIN-compliant name'] },
+        { field: 'description', icon: '📝', title: 'Description', tips: ['At least 100 characters, ideally 300–500', 'Include key attributes: material, color, dimensions, features', 'Flowing text works better than bullet lists alone', 'Avoid marketing phrases like "cheap" or "top quality"'] },
+        { field: 'ean', icon: '🔢', title: 'EAN (GTIN14)', tips: ['Must be exactly 14 digits (pad with leading zeros)', 'Must be unique per item — no duplicates', 'Do not use invented or test EANs', 'Use a valid GTIN from the GS1 database'] },
+        { field: 'image_url', icon: '🖼️', title: 'Product Image', tips: ['White or transparent background (cut-out)', 'At least 600×600 pixels, ideally 1000×1000+', 'Publicly accessible URL (no login required)', 'No watermarks or prices in the image'] },
+        { field: 'price', icon: '💶', title: 'Price & Delivery', tips: ['Price in format 19.99 (dot as decimal separator)', 'Shipping mode must contain a valid value', 'Delivery time in working days, e.g. "3-5"', 'Keep availability/stock always up to date'] },
     ],
     qualityShowMore: 'Show all tips',
     qualityShowLess: 'Show less',
@@ -1234,11 +1234,11 @@ export default function McAngebotsfeed() {
         const pflichtCategoryErrors = Object.fromEntries(Object.entries(catRows).map(([k, s]) => [k, s.size]));
 
         // Scoring (Stufe 2) – Pflichtfelder-Score (max. 70) + Empfohlene-Felder-Score (max. 30)
-        const pflichtScore = rows.length ? Math.round((pflichtOkCount / rows.length) * 70) : 0;
+        const pflichtScore = rows.length ? Math.round((livefaehigCount / rows.length) * 100) : 0;
         const optionalFillRatio =
             rows.length && optionalFieldCount > 0 ? totalOptionalFieldsPresent / (rows.length * optionalFieldCount) : 0;
-        const optionalScore = Math.round(optionalFillRatio * 30);
-        const totalScore = Math.max(0, Math.min(100, pflichtScore + optionalScore));
+        const optionalScore = Math.round(optionalFillRatio * 100);
+        const totalScore = Math.max(0, Math.min(100, Math.round((pflichtScore + optionalScore) / 2)));
 
         return {
             totalRows: rows.length,
@@ -1663,6 +1663,24 @@ export default function McAngebotsfeed() {
                                     {lang === 'de' ? 'Beispiel-Feed laden (6 Artikel, inkl. Fehler)' : 'Load example feed (6 items, incl. errors)'}
                                 </button>
                             )}
+
+                            {/* Warehouse toggle */}
+                            <div style={{ marginTop: 20 }}>
+                                <div style={{ fontSize: 11, fontWeight: 600, color: '#6B7280', marginBottom: 6 }}>{T.warehouseLabel}</div>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+                                    {[{ val: 'germany', label: T.warehouseDE }, { val: 'outside_germany', label: T.warehouseNonDE }].map(({ val, label }) => (
+                                        <button key={val} type="button" onClick={() => setStoreLocation(val)}
+                                            style={{ padding: '8px 10px', borderRadius: 7, border: `1.5px solid ${storeLocation === val ? MC_BLUE : '#E5E7EB'}`, background: storeLocation === val ? '#EEF4FF' : '#FFF', color: storeLocation === val ? MC_BLUE : '#374151', fontSize: 12, fontWeight: storeLocation === val ? 700 : 400, cursor: 'pointer' }}>
+                                            {label}
+                                        </button>
+                                    ))}
+                                </div>
+                                {storeLocation === 'outside_germany' && (
+                                    <div style={{ marginTop: 8, padding: '8px 12px', borderRadius: 7, background: '#FFFBEB', border: '1px solid #FDE68A', fontSize: 11, color: '#92400E' }}>
+                                        {T.hsNote}
+                                    </div>
+                                )}
+                            </div>
 
                             {/* Primary CTA */}
                             <button
@@ -2092,64 +2110,67 @@ export default function McAngebotsfeed() {
                 const listablePct = Math.round((issues.livefaehigCount / issues.totalRows) * 100);
 
                 const score = issues.totalScore;
-                const grade = score >= 85 ? 'A' : score >= 70 ? 'B' : score >= 50 ? 'C' : 'D';
-                const gradeColor = grade === 'A' ? '#16A34A' : grade === 'B' ? '#D97706' : grade === 'C' ? '#EA580C' : '#DC2626';
-                const gradeBg = grade === 'A' ? '#DCFCE7' : grade === 'B' ? '#FEF3C7' : grade === 'C' ? '#FFEDD5' : '#FEE2E2';
-                const gradeTip = lang === 'de'
-                    ? `Feed-Score: ${score}/100 · Pflichtfelder ${issues.pflichtScore}/70 · Optionale Felder ${issues.optionalScore}/30`
-                    : `Feed score: ${score}/100 · Required fields ${issues.pflichtScore}/70 · Optional fields ${issues.optionalScore}/30`;
+                const scoreColor = score >= 85 ? '#16A34A' : score >= 60 ? '#D97706' : '#DC2626';
+                const scoreBg = score >= 85 ? '#DCFCE7' : score >= 60 ? '#FEF3C7' : '#FEE2E2';
 
                 return (
                     <div style={{ width: '100%', maxWidth: 1000, display: 'flex', flexDirection: 'column', gap: 12 }}>
 
-                        {/* Status header */}
-                        <div style={{ borderRadius: 10, background: stufe1Passed ? '#F0FDF4' : '#FEF2F2', border: `1px solid ${stufe1Passed ? '#BBF7D0' : '#FECACA'}`, padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
-                            <div style={{ width: 28, height: 28, borderRadius: '50%', background: stufe1Passed ? '#DCFCE7' : '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                {stufe1Passed
-                                    ? <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4 6-6" stroke="#16A34A" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                    : <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 2L1 14h14L8 2z" stroke="#DC2626" strokeWidth="1.5" strokeLinejoin="round"/><path d="M8 7v3" stroke="#DC2626" strokeWidth="1.5" strokeLinecap="round"/><circle cx="8" cy="12" r=".6" fill="#DC2626"/></svg>}
-                            </div>
-                            <div style={{ flex: 1 }}>
-                                <div style={{ fontSize: 13, fontWeight: 700, color: stufe1Passed ? '#166534' : '#991B1B' }}>
-                                    {stufe1Passed ? T.statusOk : T.statusErr}
+                        {/* Header row: scores + navigation */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
+                            {/* Pflichtfeld score */}
+                            <div style={{ flex: 1, minWidth: 180, background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                                <div style={{ width: 44, height: 44, borderRadius: '50%', background: issues.pflichtScore >= 90 ? '#F0FDF4' : issues.pflichtScore >= 60 ? '#FFFBEB' : '#FEF2F2', border: `3px solid ${issues.pflichtScore >= 90 ? '#16A34A' : issues.pflichtScore >= 60 ? '#D97706' : '#DC2626'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                    <span style={{ fontSize: 13, fontWeight: 900, color: issues.pflichtScore >= 90 ? '#16A34A' : issues.pflichtScore >= 60 ? '#D97706' : '#DC2626' }}>{issues.pflichtScore}</span>
                                 </div>
-                                <div style={{ fontSize: 10, color: stufe1Passed ? '#4B7A5A' : '#B91C1C' }}>
-                                    {T.errorRateFmt(errorRate.toFixed(1))}
-                                    {file && <span style={{ color: '#9CA3AF', marginLeft: 8 }}>{file.name}</span>}
+                                <div>
+                                    <div style={{ fontSize: 11, color: '#6B7280' }}>{lang === 'de' ? 'Pflichtfelder' : 'Required Fields'}</div>
+                                    <div style={{ fontSize: 10, color: '#9CA3AF' }}>{lang === 'de' ? 'von 100 Punkten' : 'out of 100 pts'}</div>
                                 </div>
                             </div>
-                            {/* Inline stats */}
-                            {[
-                                { val: issues.livefaehigCount, label: T.statComplete, color: '#16A34A', tip: T.tipComplete },
-                                { val: issues.blockiertCount, label: T.statErrors, color: '#DC2626', tip: T.tipErrors },
-                                { val: issues.totalRows, label: T.statTotal, color: '#374151', tip: T.tipTotal },
-                            ].map(({ val, label, color, tip }) => (
-                                <Tooltip key={label} text={tip}>
-                                    <div style={{ textAlign: 'center', paddingLeft: 16, borderLeft: '1px solid rgba(0,0,0,0.08)', cursor: 'help' }}>
-                                        <div style={{ fontSize: 18, fontWeight: 900, color, lineHeight: 1 }}>{val.toLocaleString(numLocale)}</div>
-                                        <div style={{ fontSize: 9, color: '#6B7280', marginTop: 2 }}>{label}</div>
-                                    </div>
-                                </Tooltip>
-                            ))}
-                            {/* Progress bar */}
-                            <div style={{ paddingLeft: 16, borderLeft: '1px solid rgba(0,0,0,0.08)', minWidth: 120 }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
-                                    <span style={{ fontSize: 9, fontWeight: 600, color: '#374151' }}>{T.statComplete}</span>
-                                    <span style={{ fontSize: 9, fontWeight: 700, color: stufe1Passed ? '#16A34A' : '#DC2626' }}>{listablePct}%</span>
+                            {/* Optional score */}
+                            <div style={{ flex: 1, minWidth: 180, background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                                <div style={{ width: 44, height: 44, borderRadius: '50%', background: issues.optionalScore >= 70 ? '#F0FDF4' : issues.optionalScore >= 40 ? '#FFFBEB' : '#FEF2F2', border: `3px solid ${issues.optionalScore >= 70 ? '#16A34A' : issues.optionalScore >= 40 ? '#D97706' : '#DC2626'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                    <span style={{ fontSize: 13, fontWeight: 900, color: issues.optionalScore >= 70 ? '#16A34A' : issues.optionalScore >= 40 ? '#D97706' : '#DC2626' }}>{issues.optionalScore}</span>
                                 </div>
-                                <div style={{ height: 5, background: 'rgba(0,0,0,0.08)', borderRadius: 3, overflow: 'hidden' }}>
-                                    <div style={{ height: '100%', width: `${listablePct}%`, background: stufe1Passed ? '#16A34A' : '#DC2626', borderRadius: 3, transition: 'width 0.4s' }} />
+                                <div>
+                                    <div style={{ fontSize: 11, color: '#6B7280' }}>{lang === 'de' ? 'Optionale Felder' : 'Optional Fields'}</div>
+                                    <div style={{ fontSize: 10, color: '#9CA3AF' }}>{lang === 'de' ? 'von 100 Punkten' : 'out of 100 pts'}</div>
                                 </div>
-                                <div style={{ fontSize: 9, color: '#9CA3AF', marginTop: 2 }}>{T.listableCount(issues.livefaehigCount.toLocaleString(numLocale), issues.totalRows.toLocaleString(numLocale))}</div>
                             </div>
-                            {/* Feed grade badge */}
-                            <Tooltip text={gradeTip}>
-                                <div style={{ paddingLeft: 16, borderLeft: '1px solid rgba(0,0,0,0.08)', textAlign: 'center', cursor: 'help' }}>
-                                    <div style={{ fontSize: 28, fontWeight: 900, color: gradeColor, lineHeight: 1, fontFamily: 'monospace' }}>{grade}</div>
-                                    <div style={{ fontSize: 9, color: '#6B7280', marginTop: 2 }}>{lang === 'de' ? 'Feed-Note' : 'Feed Grade'}</div>
-                                    <div style={{ fontSize: 8, color: gradeColor, fontWeight: 700, background: gradeBg, borderRadius: 3, padding: '1px 5px', marginTop: 2 }}>{score}/100</div>
+                            {/* Stats strip */}
+                            <div style={{ flex: 2, minWidth: 220, background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr' }}>
+                                {[
+                                    { val: issues.livefaehigCount, label: T.statComplete, color: '#16A34A', tip: T.tipComplete },
+                                    { val: issues.blockiertCount, label: T.statErrors, color: '#DC2626', tip: T.tipErrors },
+                                    { val: issues.totalRows, label: T.statTotal, color: '#111827', tip: T.tipTotal },
+                                ].map(({ val, label, color, tip }, i) => (
+                                    <Tooltip key={label} text={tip}>
+                                        <div style={{ padding: '14px 20px', borderRight: i < 2 ? '1px solid #F3F4F6' : 'none', cursor: 'help' }}>
+                                            <div style={{ fontSize: 26, fontWeight: 900, color, lineHeight: 1, marginBottom: 2 }}>{val.toLocaleString(numLocale)}</div>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                                                <span style={{ fontSize: 11, color: '#6B7280' }}>{label}</span>
+                                                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style={{ color: '#9CA3AF', flexShrink: 0 }}><circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.3"/><path d="M8 7v4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="5" r="0.75" fill="currentColor"/></svg>
+                                            </div>
+                                        </div>
+                                    </Tooltip>
+                                ))}
+                            </div>
+                            {/* Filename + nav buttons */}
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6, flexShrink: 0 }}>
+                                {file && <span style={{ fontSize: 11, color: '#9CA3AF' }}>{file.name}</span>}
+                                <div style={{ display: 'flex', gap: 6 }}>
+                                    <button type="button" onClick={() => setStep(2)}
+                                        style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 12px', background: '#FFF', border: '1px solid #D1D5DB', borderRadius: 7, fontSize: 12, fontWeight: 600, color: '#374151', cursor: 'pointer' }}>
+                                        <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                        {T.back}
+                                    </button>
+                                    <button type="button" onClick={resetToStart}
+                                        style={{ padding: '7px 12px', background: '#FFF', border: '1px solid #D1D5DB', borderRadius: 7, fontSize: 12, fontWeight: 600, color: '#374151', cursor: 'pointer' }}>
+                                        {lang === 'de' ? 'Neuer Feed' : 'New Feed'}
+                                    </button>
                                 </div>
-                            </Tooltip>
+                            </div>
                         </div>
 
                         {/* 2-column: table | action panel */}
