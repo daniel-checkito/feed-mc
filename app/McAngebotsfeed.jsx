@@ -2277,33 +2277,29 @@ export default function McAngebotsfeed() {
                                 </div>
                             </div>
 
-                            {/* Score donuts */}
-                            <div style={{ padding: '12px 14px 10px', borderBottom: '1px solid #F3F4F6', display: 'flex', flexDirection: 'column', gap: 8 }}>
-                                {[
-                                    { s: issues.pflichtScore, label: lang === 'de' ? 'Pflichtfelder' : 'Required Fields', hi: 90, lo: 60 },
-                                    { s: issues.optionalScore, label: lang === 'de' ? 'Optionale Felder' : 'Optional Fields', hi: 70, lo: 40 },
-                                ].map(({ s, label, hi, lo }) => {
-                                    const c3 = s >= hi ? '#16A34A' : s >= lo ? '#D97706' : '#DC2626';
-                                    const r3 = 16, circ3 = 2 * Math.PI * r3;
-                                    return (
-                                        <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                                            <svg width="40" height="40" viewBox="0 0 40 40" style={{ flexShrink: 0 }}>
-                                                <circle cx="20" cy="20" r={r3} fill="none" stroke="#F3F4F6" strokeWidth="4"/>
-                                                <circle cx="20" cy="20" r={r3} fill="none" stroke={c3} strokeWidth="4"
-                                                    strokeDasharray={`${(s / 100) * circ3} ${circ3}`}
-                                                    strokeLinecap="round"
-                                                    transform="rotate(-90 20 20)"
-                                                />
-                                                <text x="20" y="24" textAnchor="middle" fontSize="11" fontWeight="900" fill={c3}>{s}</text>
-                                            </svg>
-                                            <div>
-                                                <div style={{ fontSize: 11, fontWeight: 700, color: '#111827' }}>{label}</div>
-                                                <div style={{ fontSize: 9, color: '#9CA3AF' }}>{lang === 'de' ? 'von 100 Punkten' : 'out of 100 pts'}</div>
-                                            </div>
+                            {/* Score donut - Pflichtfelder only */}
+                            {(() => {
+                                const s = issues.pflichtScore;
+                                const c3 = s >= 90 ? '#16A34A' : s >= 60 ? '#D97706' : '#DC2626';
+                                const r3 = 16, circ3 = 2 * Math.PI * r3;
+                                return (
+                                    <div style={{ padding: '12px 14px 10px', borderBottom: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', gap: 10 }}>
+                                        <svg width="40" height="40" viewBox="0 0 40 40" style={{ flexShrink: 0 }}>
+                                            <circle cx="20" cy="20" r={r3} fill="none" stroke="#F3F4F6" strokeWidth="4"/>
+                                            <circle cx="20" cy="20" r={r3} fill="none" stroke={c3} strokeWidth="4"
+                                                strokeDasharray={`${(s / 100) * circ3} ${circ3}`}
+                                                strokeLinecap="round"
+                                                transform="rotate(-90 20 20)"
+                                            />
+                                            <text x="20" y="24" textAnchor="middle" fontSize="11" fontWeight="900" fill={c3}>{s}</text>
+                                        </svg>
+                                        <div>
+                                            <div style={{ fontSize: 11, fontWeight: 700, color: '#111827' }}>{lang === 'de' ? 'Pflichtfelder' : 'Required Fields'}</div>
+                                            <div style={{ fontSize: 9, color: '#9CA3AF' }}>{lang === 'de' ? 'von 100 Punkten' : 'out of 100 pts'}</div>
                                         </div>
-                                    );
-                                })}
-                            </div>
+                                    </div>
+                                );
+                            })()}
 
                             {/* Stats strip */}
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', borderBottom: '1px solid #F3F4F6' }}>
@@ -2380,10 +2376,8 @@ export default function McAngebotsfeed() {
             {step === 4 && issues && (() => {
                 const { optFieldStats } = issues;
                 const numLocale = lang === 'de' ? 'de-DE' : 'en-US';
-                const overallPct = optFieldStats.fields.length
-                    ? Math.round(optFieldStats.fields.reduce((s, f) => s + f.pct, 0) / optFieldStats.fields.length)
-                    : 0;
-                const overallColor = overallPct >= 80 ? '#16A34A' : overallPct >= 50 ? '#D97706' : '#DC2626';
+                const overallPct = issues.optionalScore;
+                const overallColor = overallPct >= 70 ? '#16A34A' : overallPct >= 40 ? '#D97706' : '#DC2626';
 
                 // Image count distribution (moved from step 3)
                 const imgStats = mcImageColumns.length > 0 ? (() => {
@@ -2413,6 +2407,21 @@ export default function McAngebotsfeed() {
 
                             {/* Left: optional fields table */}
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+
+                                {/* Intro card */}
+                                <div style={{ background: '#EEF4FF', border: '1px solid #BFDBFE', borderRadius: 10, padding: '12px 16px', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 1 }}><circle cx="8" cy="8" r="6.5" stroke={MC_BLUE} strokeWidth="1.4"/><path d="M8 7v4" stroke={MC_BLUE} strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="5.5" r=".6" fill={MC_BLUE}/></svg>
+                                    <div>
+                                        <div style={{ fontSize: 12, fontWeight: 700, color: '#1e3a8a', marginBottom: 2 }}>
+                                            {lang === 'de' ? 'Mehr Felder = mehr Sichtbarkeit' : 'More fields = more visibility'}
+                                        </div>
+                                        <div style={{ fontSize: 11, color: '#1e40af', lineHeight: 1.5 }}>
+                                            {lang === 'de'
+                                                ? 'Diese Felder sind keine Pflicht, aber sie verbessern Filter, Suche und Conversion. Je vollständiger Ihr Feed, desto besser werden Ihre Artikel gefunden.'
+                                                : 'These fields are not mandatory, but they improve filters, search, and conversion. The more complete your feed, the better your items get found.'}
+                                        </div>
+                                    </div>
+                                </div>
 
                                 {/* Field analysis table - matches step 3 layout */}
                                 <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', overflow: 'hidden' }}>
@@ -2535,64 +2544,67 @@ export default function McAngebotsfeed() {
                                     </div>
                                 )}
 
-                                {/* Titelqualität card */}
-                                <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '16px 20px' }}>
-                                    <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', marginBottom: 12 }}>
-                                        {lang === 'de' ? 'Titelqualität' : 'Title Quality'}
-                                    </div>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
-                                        <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 8, padding: '10px 12px' }}>
-                                            <div style={{ fontSize: 10, fontWeight: 700, color: '#DC2626', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{lang === 'de' ? 'Schlecht' : 'Bad'}</div>
-                                            <div style={{ fontSize: 11, color: '#7F1D1D', fontFamily: 'monospace', lineHeight: 1.4 }}>"Sofa schwarz"</div>
+                                {/* Title + Description quality side-by-side */}
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                                    {/* Titelqualität card */}
+                                    <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '14px 16px' }}>
+                                        <div style={{ fontSize: 12, fontWeight: 700, color: '#111827', marginBottom: 10 }}>
+                                            {lang === 'de' ? 'Titelqualität' : 'Title Quality'}
                                         </div>
-                                        <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 8, padding: '10px 12px' }}>
-                                            <div style={{ fontSize: 10, fontWeight: 700, color: '#16A34A', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{lang === 'de' ? 'Gut' : 'Good'}</div>
-                                            <div style={{ fontSize: 11, color: '#166534', fontFamily: 'monospace', lineHeight: 1.4 }}>"Dreammöbel Dream Ecksofa 3-Sitzer, Kunstleder schwarz, 180 × 90 cm"</div>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 10 }}>
+                                            <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 6, padding: '7px 10px' }}>
+                                                <div style={{ fontSize: 9, fontWeight: 700, color: '#DC2626', marginBottom: 2, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{lang === 'de' ? 'Schlecht' : 'Bad'}</div>
+                                                <div style={{ fontSize: 10, color: '#7F1D1D', fontFamily: 'monospace', lineHeight: 1.4 }}>"Sofa schwarz"</div>
+                                            </div>
+                                            <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 6, padding: '7px 10px' }}>
+                                                <div style={{ fontSize: 9, fontWeight: 700, color: '#16A34A', marginBottom: 2, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{lang === 'de' ? 'Gut' : 'Good'}</div>
+                                                <div style={{ fontSize: 10, color: '#166534', fontFamily: 'monospace', lineHeight: 1.4 }}>"Dreammöbel Ecksofa 3-Sitzer, Kunstleder schwarz, 180 × 90 cm"</div>
+                                            </div>
                                         </div>
+                                        <ul style={{ margin: 0, padding: '0 0 0 14px', display: 'flex', flexDirection: 'column', gap: 3 }}>
+                                            {(lang === 'de' ? [
+                                                'Marke + Produktart + Farbe + Maße',
+                                                'Mind. 2 Wörter, max. 255 Zeichen',
+                                                'Keine B-Ware-Hinweise',
+                                            ] : [
+                                                'Brand + Product type + Color + Dimensions',
+                                                'Min. 2 words, max. 255 chars',
+                                                'No used-goods labels',
+                                            ]).map((tip, i) => (
+                                                <li key={i} style={{ fontSize: 10, color: '#374151', lineHeight: 1.5 }}>{tip}</li>
+                                            ))}
+                                        </ul>
                                     </div>
-                                    <ul style={{ margin: 0, padding: '0 0 0 16px', display: 'flex', flexDirection: 'column', gap: 4 }}>
-                                        {(lang === 'de' ? [
-                                            'Marke + Produktart + Haupteigenschaft + Farbe + Maße',
-                                            'Mind. 2 Wörter, max. 255 Zeichen',
-                                            'Keine B-Ware-Hinweise oder Werbephrasen',
-                                        ] : [
-                                            'Brand + Product type + Main attribute + Color + Dimensions',
-                                            'Min. 2 words, max. 255 characters',
-                                            'No used-goods labels or advertising phrases',
-                                        ]).map((tip, i) => (
-                                            <li key={i} style={{ fontSize: 11, color: '#374151', lineHeight: 1.5 }}>{tip}</li>
-                                        ))}
-                                    </ul>
-                                </div>
 
-                                {/* Beschreibungslänge card */}
-                                <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '16px 20px' }}>
-                                    <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', marginBottom: 12 }}>
-                                        {lang === 'de' ? 'Beschreibungslänge' : 'Description Length'}
-                                    </div>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
-                                        <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 8, padding: '10px 12px' }}>
-                                            <div style={{ fontSize: 10, fontWeight: 700, color: '#DC2626', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{lang === 'de' ? 'Schlecht' : 'Bad'}</div>
-                                            <div style={{ fontSize: 11, color: '#7F1D1D', fontFamily: 'monospace', lineHeight: 1.4 }}>"Schönes Sofa."</div>
+                                    {/* Beschreibungslänge card */}
+                                    <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '14px 16px' }}>
+                                        <div style={{ fontSize: 12, fontWeight: 700, color: '#111827', marginBottom: 10 }}>
+                                            {lang === 'de' ? 'Beschreibungslänge' : 'Description Length'}
                                         </div>
-                                        <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 8, padding: '10px 12px' }}>
-                                            <div style={{ fontSize: 10, fontWeight: 700, color: '#16A34A', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{lang === 'de' ? 'Gut' : 'Good'}</div>
-                                            <div style={{ fontSize: 11, color: '#166534', fontFamily: 'monospace', lineHeight: 1.4 }}>"Elegantes Ecksofa aus hochwertigem Kunstleder in Schwarz. Maße: B 200 cm × H 80 cm × T 120 cm. Material: Kunstleder. Inkl. Hocker."</div>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 10 }}>
+                                            <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 6, padding: '7px 10px' }}>
+                                                <div style={{ fontSize: 9, fontWeight: 700, color: '#DC2626', marginBottom: 2, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{lang === 'de' ? 'Schlecht' : 'Bad'}</div>
+                                                <div style={{ fontSize: 10, color: '#7F1D1D', fontFamily: 'monospace', lineHeight: 1.4 }}>"Schönes Sofa."</div>
+                                            </div>
+                                            <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 6, padding: '7px 10px' }}>
+                                                <div style={{ fontSize: 9, fontWeight: 700, color: '#16A34A', marginBottom: 2, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{lang === 'de' ? 'Gut' : 'Good'}</div>
+                                                <div style={{ fontSize: 10, color: '#166534', fontFamily: 'monospace', lineHeight: 1.4 }}>"Elegantes Ecksofa aus Kunstleder in Schwarz. Maße: 200 × 80 × 120 cm."</div>
+                                            </div>
                                         </div>
+                                        <ul style={{ margin: 0, padding: '0 0 0 14px', display: 'flex', flexDirection: 'column', gap: 3 }}>
+                                            {(lang === 'de' ? [
+                                                'Mind. 100, optimal 300-500 Zeichen',
+                                                'Material, Farbe, Maße nennen',
+                                                'Keine Werbephrasen',
+                                            ] : [
+                                                'Min. 100, ideally 300-500 chars',
+                                                'Mention material, color, dimensions',
+                                                'No advertising phrases',
+                                            ]).map((tip, i) => (
+                                                <li key={i} style={{ fontSize: 10, color: '#374151', lineHeight: 1.5 }}>{tip}</li>
+                                            ))}
+                                        </ul>
                                     </div>
-                                    <ul style={{ margin: 0, padding: '0 0 0 16px', display: 'flex', flexDirection: 'column', gap: 4 }}>
-                                        {(lang === 'de' ? [
-                                            'Mind. 100 Zeichen, optimal 300–500 Zeichen',
-                                            'Material, Farbe, Maße und Besonderheiten nennen',
-                                            'Kein "günstig" oder "Top-Qualität"',
-                                        ] : [
-                                            'Min. 100 characters, ideally 300–500 characters',
-                                            'Mention material, color, dimensions and features',
-                                            'No "cheap" or "top quality"',
-                                        ]).map((tip, i) => (
-                                            <li key={i} style={{ fontSize: 11, color: '#374151', lineHeight: 1.5 }}>{tip}</li>
-                                        ))}
-                                    </ul>
                                 </div>
                             </div>
 
@@ -2775,10 +2787,17 @@ export default function McAngebotsfeed() {
                     'category_path::wrong_category': { title: 'Category path: wrong category', action: 'Review the category path – it does not appear to be a furniture category.', tip: 'Use a CHECK24-compliant category, e.g. "Boxspringbett" or "Sofa".' },
                 };
 
-                const recommendations = Object.entries(errorsByType)
+                // Hinweise: quality issues that don't block listing
+                const HINWEIS_TYPES = new Set(['too_short', 'one_word', 'single', 'identical_to_title', 'advertising', 'external_link', 'template']);
+
+                const allRecommendations = Object.entries(errorsByType)
                     .sort((a, b) => b[1].count - a[1].count)
-                    .map(([key, { count }]) => ({ key, count, rule: recRules[key] || null }))
+                    .map(([key, { count, type }]) => ({ key, count, type, rule: recRules[key] || null }))
                     .filter(({ rule }) => rule !== null);
+
+                const criticalRecs = allRecommendations.filter(({ type }) => !HINWEIS_TYPES.has(type));
+                const hinweisRecs = allRecommendations.filter(({ type }) => HINWEIS_TYPES.has(type));
+                const recommendations = allRecommendations;
 
                 const csvOnClick = () => {
                     const pflichtByRow = {}, optionalByRow = {};
@@ -2874,8 +2893,17 @@ export default function McAngebotsfeed() {
                         {/* Header */}
                         <div style={{ marginBottom: 12, flexShrink: 0 }}>
                             <div style={{ fontSize: 18, fontWeight: 800, color: '#111827', marginBottom: 4 }}>
-                                {recommendations.length > 0 ? T.recTitle(recommendations.length) : T.recNoErrorsTitle}
+                                {recommendations.length > 0
+                                    ? (lang === 'de' ? 'Handlungsempfehlungen' : 'Recommendations')
+                                    : T.recNoErrorsTitle}
                             </div>
+                            {recommendations.length > 0 && (
+                                <div style={{ fontSize: 12, color: '#6B7280' }}>
+                                    {lang === 'de'
+                                        ? `${criticalRecs.length} kritische Fehler${hinweisRecs.length > 0 ? ` · ${hinweisRecs.length} Hinweise` : ''}`
+                                        : `${criticalRecs.length} critical error${criticalRecs.length === 1 ? '' : 's'}${hinweisRecs.length > 0 ? ` · ${hinweisRecs.length} hint${hinweisRecs.length === 1 ? '' : 's'}` : ''}`}
+                                </div>
+                            )}
                             {recommendations.length === 0 && (
                                 <div style={{ fontSize: 13, color: '#6B7280' }}>{T.recNoErrorsSub}</div>
                             )}
@@ -2899,40 +2927,81 @@ export default function McAngebotsfeed() {
                                     </div>
                                 )}
 
-                                {/* Recommendation cards */}
-                                {recommendations.length > 0 && (
-                                    <div style={{ display: 'grid', gap: 10 }}>
-                                        {recommendations.map(({ key, count, rule }) => (
-                                            <div key={key} style={{ background: '#FFF', border: '1px solid #E5E7EB', borderLeft: '4px solid #DC2626', borderRadius: 10, padding: '16px 20px' }}>
-                                                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 8 }}>
+                                {/* Recommendation cards - split into critical + hints */}
+                                {recommendations.length > 0 && (() => {
+                                    const renderCard = ({ key, count, rule }, severity) => {
+                                        const isCritical = severity === 'critical';
+                                        const accent = isCritical ? '#DC2626' : '#D97706';
+                                        const bgChip = isCritical ? '#FEE2E2' : '#FEF3C7';
+                                        const labelText = isCritical
+                                            ? (lang === 'de' ? 'KRITISCH' : 'CRITICAL')
+                                            : (lang === 'de' ? 'HINWEIS' : 'HINT');
+                                        return (
+                                            <div key={key} style={{ background: '#FFF', border: '1px solid #E5E7EB', borderLeft: `4px solid ${accent}`, borderRadius: 10, padding: isCritical ? '16px 20px' : '12px 16px' }}>
+                                                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 6 }}>
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                                                        <div style={{ width: 28, height: 28, borderRadius: 6, background: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                                        {fieldIcon(key.split('::')[0])}
+                                                        <div style={{ width: isCritical ? 28 : 24, height: isCritical ? 28 : 24, borderRadius: 6, background: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                                            {fieldIcon(key.split('::')[0])}
                                                         </div>
                                                         <div>
                                                             <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                                                                <span style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>{rule.title}</span>
-                                                                <span style={{ fontSize: 10, fontWeight: 700, color: '#DC2626', background: '#FEE2E2', padding: '2px 7px', borderRadius: 4, letterSpacing: '0.04em' }}>
-                                                                    {T.recPriority}
+                                                                <span style={{ fontSize: isCritical ? 14 : 13, fontWeight: 700, color: '#111827' }}>{rule.title}</span>
+                                                                <span style={{ fontSize: 9, fontWeight: 700, color: accent, background: bgChip, padding: '2px 7px', borderRadius: 4, letterSpacing: '0.04em' }}>
+                                                                    {labelText}
                                                                 </span>
                                                             </div>
-                                                            <div style={{ fontSize: 11, color: '#DC2626', fontWeight: 600, marginTop: 2 }}>
+                                                            <div style={{ fontSize: 11, color: accent, fontWeight: 600, marginTop: 2 }}>
                                                                 {T.recAffected(count.toLocaleString(numLocale))}
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div style={{ fontSize: 13, color: '#374151', lineHeight: 1.6, marginBottom: 6 }}>
+                                                <div style={{ fontSize: isCritical ? 13 : 12, color: '#374151', lineHeight: 1.6, marginBottom: 6 }}>
                                                     {rule.action}
                                                 </div>
-                                                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, background: '#F9FAFB', borderRadius: 6, padding: '8px 12px' }}>
+                                                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, background: '#F9FAFB', borderRadius: 6, padding: '7px 11px' }}>
                                                     <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 1 }}><circle cx="8" cy="8" r="6.5" stroke={MC_BLUE} strokeWidth="1.4"/><path d="M8 7v4" stroke={MC_BLUE} strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="5.5" r=".6" fill={MC_BLUE}/></svg>
                                                     <span style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.5 }}>{rule.tip}</span>
                                                 </div>
                                             </div>
-                                        ))}
-                                    </div>
-                                )}
+                                        );
+                                    };
+
+                                    return (
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                                            {criticalRecs.length > 0 && (
+                                                <div>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                                                        <span style={{ fontSize: 11, fontWeight: 800, color: '#DC2626', background: '#FEE2E2', border: '1px solid #FECACA', padding: '3px 8px', borderRadius: 4, letterSpacing: '0.05em' }}>
+                                                            {lang === 'de' ? 'KRITISCHE FEHLER' : 'CRITICAL ERRORS'}
+                                                        </span>
+                                                        <span style={{ fontSize: 11, color: '#6B7280' }}>
+                                                            {lang === 'de' ? 'verhindern das Listing' : 'block listing'}
+                                                        </span>
+                                                    </div>
+                                                    <div style={{ display: 'grid', gap: 10 }}>
+                                                        {criticalRecs.map((r) => renderCard(r, 'critical'))}
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {hinweisRecs.length > 0 && (
+                                                <div>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                                                        <span style={{ fontSize: 11, fontWeight: 800, color: '#D97706', background: '#FEF3C7', border: '1px solid #FDE68A', padding: '3px 8px', borderRadius: 4, letterSpacing: '0.05em' }}>
+                                                            {lang === 'de' ? 'HINWEISE' : 'HINTS'}
+                                                        </span>
+                                                        <span style={{ fontSize: 11, color: '#6B7280' }}>
+                                                            {lang === 'de' ? 'Qualitätsverbesserungen, optional' : 'quality improvements, optional'}
+                                                        </span>
+                                                    </div>
+                                                    <div style={{ display: 'grid', gap: 8 }}>
+                                                        {hinweisRecs.map((r) => renderCard(r, 'hint'))}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })()}
                             </div>
 
                             {/* Right: download + reset panel */}
