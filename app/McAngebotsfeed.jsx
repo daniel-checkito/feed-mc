@@ -845,7 +845,6 @@ export default function McAngebotsfeed() {
         setRows([]);
         setHeaders([]);
         setManualMapping({});
-        try { localStorage.removeItem('feedchecker_session_v1'); } catch (_) {}
         const tryParseMc = (encoding) => {
             const reader = new FileReader();
             reader.onload = (evt) => {
@@ -1290,36 +1289,7 @@ export default function McAngebotsfeed() {
         setHeaders([]);
         setManualMapping({});
         setStep(1);
-        try { localStorage.removeItem('feedchecker_session_v1'); } catch (_) {}
     }
-
-    // ── LocalStorage persistence ──
-    const LS_KEY = 'feedchecker_session_v1';
-
-    // Restore on mount
-    useEffect(() => {
-        try {
-            const saved = localStorage.getItem(LS_KEY);
-            if (!saved) return;
-            const { headers: h, rows: r, manualMapping: m, step: s, lang: l } = JSON.parse(saved);
-            if (Array.isArray(h) && h.length && Array.isArray(r) && r.length) {
-                setHeaders(h);
-                setRows(r);
-                if (m && typeof m === 'object') setManualMapping(m);
-                if (typeof s === 'number' && s >= 1 && s <= 4) setStep(s);
-                if (l === 'de' || l === 'en') setLang(l);
-            }
-        } catch (_) {}
-    }, []);
-
-    // Save on every relevant change (skip if empty)
-    useEffect(() => {
-        if (!headers.length || !rows.length) return;
-        try {
-            const payload = JSON.stringify({ headers, rows: rows.slice(0, 3000), manualMapping, step, lang });
-            if (payload.length < 5_000_000) localStorage.setItem(LS_KEY, payload);
-        } catch (_) {}
-    }, [headers, rows, manualMapping, step, lang]);
 
     const FIELD_LABELS = T.fields;
     const PFLICHT_TABLE_FIELDS = [...T.pflichtFields, ...(outsideGermany ? [T.hsField] : [])];
@@ -1360,7 +1330,7 @@ export default function McAngebotsfeed() {
         <div style={{ background: '#F3F4F6', height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
             {/* ── HEADER ── */}
             <header style={{ background: MC_BLUE, padding: '10px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
-                <span style={{ color: '#FFF', fontWeight: 900, fontSize: 22, letterSpacing: '-0.5px', fontStyle: 'italic', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                <span onClick={resetToStart} style={{ color: '#FFF', fontWeight: 900, fontSize: 22, letterSpacing: '-0.5px', fontStyle: 'italic', whiteSpace: 'nowrap', flexShrink: 0, cursor: 'pointer' }}>
                     FEED CHECKER
                 </span>
 
@@ -1578,7 +1548,6 @@ export default function McAngebotsfeed() {
                         {/* Quality = reach banner */}
                         <div style={{ background: 'linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)', border: '1px solid #FDE68A', borderRadius: 12, padding: '14px 18px' }}>
                             <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" style={{ flexShrink: 0, marginTop: 2 }}><path d="M10 2l2 5.5h5.5l-4.5 3.3 1.7 5.5L10 13l-4.7 3.3 1.7-5.5L2.5 7.5H8L10 2z" fill="#F59E0B" stroke="#D97706" strokeWidth="1"/></svg>
                                 <div>
                                     <div style={{ fontSize: 12, fontWeight: 700, color: '#92400E', marginBottom: 4 }}>
                                         {lang === 'de' ? 'Besserer Feed = mehr Reichweite' : 'Better feed = more reach'}
