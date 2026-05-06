@@ -852,6 +852,7 @@ export default function McAngebotsfeed() {
     const [mappingExpanded, setMappingExpanded] = useState(false);
     const [lang, setLang] = useState('de');
     const [langOpen, setLangOpen] = useState(false);
+    const [alwaysAvailable, setAlwaysAvailable] = useState(false);
     const fileRef = useRef(null);
 
     function parseFile(f) {
@@ -939,7 +940,7 @@ export default function McAngebotsfeed() {
         const missingPflichtCols = MC_PFLICHT_COLS.filter((c) => {
             if (c === 'image_url') return mcImageColumns.length === 0;
             if (c === 'stock_amount') return false; // handled together with availability
-            if (c === 'availability') return !mcMapping['availability'] && !mcMapping['stock_amount'];
+            if (c === 'availability') return !alwaysAvailable && !mcMapping['availability'] && !mcMapping['stock_amount'];
             return !mcMapping[c];
         });
         if (outsideGermany && !mcMapping['hs_code']) {
@@ -975,6 +976,10 @@ export default function McAngebotsfeed() {
                 if (key === 'image_url') continue;
                 if (key === 'stock_amount') continue;
                 if (key === 'availability') {
+                    if (alwaysAvailable) {
+                        // skip availability/stock_amount checks when alwaysAvailable is true
+                        continue;
+                    }
                     const avVal = mcMapping.availability ? String(row[mcMapping.availability] ?? '').trim() : '';
                     const stVal = mcMapping.stock_amount ? String(row[mcMapping.stock_amount] ?? '').trim() : '';
                     if (!avVal && !stVal) {
@@ -1337,7 +1342,7 @@ export default function McAngebotsfeed() {
             totalScore,
             optFieldStats,
         };
-    }, [rows, headers, mcMapping, mcImageColumns, storeLocation]);
+    }, [rows, headers, mcMapping, mcImageColumns, storeLocation, alwaysAvailable]);
 
     const mcIsWrongFile =
         rows.length > 0 && Object.values(mcMapping).filter(Boolean).length === 0 && mcImageColumns.length === 0;
@@ -1385,7 +1390,8 @@ export default function McAngebotsfeed() {
 
     const allRequiredMapped = MC_PFLICHT_COLS.every(f => {
         if (f === 'image_url') return mcImageColumns.length > 0;
-        if (f === 'availability') return !!(mcMapping.availability || mcMapping.stock_amount);
+        if (f === 'stock_amount') return true; // handled with availability
+        if (f === 'availability') return alwaysAvailable || !!(mcMapping.availability || mcMapping.stock_amount);
         return !!mcMapping[f];
     }) && (!outsideGermany || !!mcMapping['hs_code']);
 
@@ -1727,32 +1733,110 @@ export default function McAngebotsfeed() {
                 ];
                 const totalFields2 = allFields2.length + 1; // +1 for image
                 const foundFields2 = allFields2.filter((f) => mcMapping[f]).length + (mcImageColumns.length > 0 ? 1 : 0);
-                const pct2 = Math.round((foundFields2 / totalFields2) * 100);
-
-                // Detected pflicht fields (for summary list)
-                const detectedPflicht = MC_PFLICHT_COLS.filter((f) => f !== 'image_url' && mcMapping[f]);
-                if (mcImageColumns.length > 0) detectedPflicht.push('image_url');
-                const detectedOptional = MC_OPTIONAL_COLS.filter((f) => mcMapping[f]);
-                const detectedAll = [...detectedPflicht, ...detectedOptional];
-                const SHOW_DET = 5;
-                const moreDetected = Math.max(0, detectedAll.length - SHOW_DET);
 
                 // Missing pflicht fields
                 const missingPflicht2 = issues ? issues.missingPflichtCols : [];
-                const SHOW_MISS = 6;
-                const moreMissing = Math.max(0, missingPflicht2.length - SHOW_MISS);
-
-                // Full mapping fields (for expanded view)
-                const pflichtForFull = [
-                    ...MC_PFLICHT_COLS.filter((f) => f !== 'image_url'),
-                    ...(outsideGermany ? ['hs_code'] : []),
-                ];
-                const optionalForFull = MC_OPTIONAL_COLS.filter((f) => mcMapping[f]);
 
                 const langDE = lang === 'de';
 
+                // Fields for left (Pflicht) column: MC_PFLICHT_COLS minus image_url, plus hs_code if outside germany
+                // Hide stock_amount — merged into availability row
+                const pflichtFieldsLeft = [
+                    ...MC_PFLICHT_COLS.filter((f) => f !== 'image_url' && f !== 'stock_amount'),
+                    ...(outsideGermany ? ['hs_code'] : []),
+                ];
+
+                // Fields for middle (Optional) column: MC_OPTIONAL_COLS
+                const optionalFieldsMid = MC_OPTIONAL_COLS;
+
+                // Compute used columns for dedup (across all fields including image)
+                const usedCols = new Set(
+                    Object.entries(mcMapping)
+                        .filter(([, v]) => v)
+                        .map(([, v]) => v)
+                );
+
+                const MappingRow = ({ fieldKey, label, isPflicht, isImageRow }) => {
+                    if (isImageRow) {
+                        return (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 0' }}>
+                                <Tooltip text={(langDE ? FIELD_TOOLTIPS_DE : FIELD_TOOLTIPS_EN)['image_url'] || null}>
+                                    <span style={{ fontSize: 11, color: '#374151', width: 120, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 3, cursor: 'help', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                        {T.mainImageLabel}<span style={{ color: '#DC2626', fontWeight: 700 }}>*</span>
+                                        <span style={{ fontSize: 9, color: '#9CA3AF', borderRadius: '50%', border: '1px solid #D1D5DB', width: 12, height: 12, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>?</span>
+                                    </span>
+                                </Tooltip>
+                                <div style={{ flex: 1, minWidth: 0, fontSize: 11, padding: '4px 7px', borderRadius: 5, border: `1px solid ${mcImageColumns.length > 0 ? '#D1FAE5' : '#FCA5A5'}`, background: mcImageColumns.length > 0 ? '#F0FDF4' : '#FFF5F5', color: mcImageColumns.length > 0 ? '#166534' : '#DC2626', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                    {mcImageColumns.length > 0 ? mcImageColumns.join(', ') : T.notDetected}
+                                </div>
+                            </div>
+                        );
+                    }
+
+                    const isAvailability = fieldKey === 'availability';
+                    const col = mcMapping[fieldKey];
+                    const missing = !col && isPflicht && !(isAvailability && alwaysAvailable);
+                    const tooltipText = (langDE ? FIELD_TOOLTIPS_DE : FIELD_TOOLTIPS_EN)[fieldKey] || null;
+                    // Options excluding columns used by other fields
+                    const availableHeaders = headers.filter((h) => h === col || !usedCols.has(h));
+
+                    return (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '4px 0' }}>
+                            {isAvailability && (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 10, color: alwaysAvailable ? MC_BLUE : '#6B7280', cursor: 'pointer', userSelect: 'none' }}>
+                                        <input
+                                            type="checkbox"
+                                            checked={alwaysAvailable}
+                                            onChange={(e) => setAlwaysAvailable(e.target.checked)}
+                                            style={{ width: 12, height: 12, cursor: 'pointer', accentColor: MC_BLUE }}
+                                        />
+                                        <span style={{ fontWeight: alwaysAvailable ? 700 : 400 }}>
+                                            {langDE ? 'Immer verfügbar' : 'Always available'}
+                                        </span>
+                                    </label>
+                                </div>
+                            )}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                                <Tooltip text={tooltipText}>
+                                    <span style={{ fontSize: 11, color: '#374151', width: 120, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 3, cursor: tooltipText ? 'help' : 'default', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                        {label}
+                                        {isPflicht && <span style={{ color: '#DC2626', fontWeight: 700, flexShrink: 0 }}>*</span>}
+                                        {tooltipText && <span style={{ fontSize: 9, color: '#9CA3AF', borderRadius: '50%', border: '1px solid #D1D5DB', width: 12, height: 12, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>?</span>}
+                                    </span>
+                                </Tooltip>
+                                <select
+                                    value={col || ''}
+                                    disabled={isAvailability && alwaysAvailable}
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        setManualMapping((prev) => {
+                                            const next = { ...prev };
+                                            if (val === '') delete next[fieldKey];
+                                            else next[fieldKey] = val;
+                                            return next;
+                                        });
+                                    }}
+                                    style={{ flex: 1, minWidth: 0, fontSize: 11, padding: '4px 5px', borderRadius: 5, border: `1px solid ${(isAvailability && alwaysAvailable) ? '#D1FAE5' : missing ? '#FCA5A5' : col ? '#D1FAE5' : '#D1D5DB'}`, background: (isAvailability && alwaysAvailable) ? '#F0FDF4' : missing ? '#FFF5F5' : col ? '#F0FDF4' : '#FFF', cursor: (isAvailability && alwaysAvailable) ? 'not-allowed' : 'pointer', opacity: (isAvailability && alwaysAvailable) ? 0.6 : 1 }}
+                                >
+                                    <option value="">{isAvailability && alwaysAvailable ? (langDE ? '✓ Immer verfügbar' : '✓ Always available') : T.notAssigned}</option>
+                                    {availableHeaders.map((h) => <option key={h} value={h}>{h}</option>)}
+                                </select>
+                                {col && !(isAvailability && alwaysAvailable) && (
+                                    <button
+                                        type="button"
+                                        title={langDE ? 'Zuordnung entfernen' : 'Clear assignment'}
+                                        onClick={() => setManualMapping((prev) => { const next = { ...prev }; next[fieldKey] = ''; return next; })}
+                                        style={{ fontSize: 11, lineHeight: 1, padding: '3px 6px', borderRadius: 4, border: '1px solid #D1D5DB', background: '#F9FAFB', color: '#6B7280', cursor: 'pointer', flexShrink: 0 }}
+                                    >×</button>
+                                )}
+                            </div>
+                        </div>
+                    );
+                };
+
                 return (
-                    <div style={{ width: '100%', maxWidth: 720 }}>
+                    <div style={{ width: '100%', maxWidth: 1100, overflowX: 'hidden' }}>
                         {mcIsWrongFile ? (
                             <div style={{ padding: '20px', borderRadius: 12, border: '1px solid #FECACA', background: '#FEF2F2', display: 'flex', gap: 12 }}>
                                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ flexShrink: 0, color: '#DC2626' }}><path d="M10 3L2 17h16L10 3z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/><path d="M10 9v3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/><circle cx="10" cy="14.5" r="0.75" fill="currentColor"/></svg>
@@ -1765,142 +1849,118 @@ export default function McAngebotsfeed() {
                             <div style={{ background: '#FFF', borderRadius: 16, boxShadow: '0 2px 16px rgba(0,0,0,0.08)', overflow: 'hidden' }}>
 
                                 {/* Card header */}
-                                <div style={{ padding: '20px 24px 16px' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-                                        <div style={{ fontSize: 18, fontWeight: 800, color: '#111827' }}>{T.mappingTitle}</div>
+                                <div style={{ padding: '16px 20px 12px', borderBottom: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+                                    <div style={{ fontSize: 16, fontWeight: 800, color: '#111827' }}>{T.mappingTitle}</div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                                         <div style={{ fontSize: 12, color: '#6B7280' }}>
                                             {T.mappingFound(foundFields2, totalFields2)}
                                             {missingPflicht2.length > 0 && <span style={{ color: '#DC2626', fontWeight: 600 }}>{T.mappingMissing(missingPflicht2.length)}</span>}
                                         </div>
-                                    </div>
-                                    {/* Progress bar */}
-                                    <div style={{ height: 6, background: '#E5E7EB', borderRadius: 3, overflow: 'hidden' }}>
-                                        <div style={{ height: '100%', width: `${pct2}%`, background: MC_BLUE, borderRadius: 3, transition: 'width 0.4s' }} />
+                                        <div style={{ display: 'flex', gap: 8 }}>
+                                            <button type="button" onClick={() => setStep(1)}
+                                                style={{ padding: '6px 14px', background: '#fff', border: '1px solid #D0D5E0', borderRadius: 7, color: '#374151', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}>
+                                                {T.back}
+                                            </button>
+                                            <button type="button" onClick={() => setStep(3)}
+                                                style={{ padding: '6px 16px', background: MC_BLUE, border: 'none', borderRadius: 7, color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+                                                {T.startAnalysis}
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
 
-                                {/* Two-column summary */}
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0, borderTop: '1px solid #F3F4F6' }}>
-                                    {/* ERKANNT */}
-                                    <div style={{ padding: '14px 20px', borderRight: '1px solid #F3F4F6' }}>
-                                        <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.06em', marginBottom: 10 }}>
-                                            {langDE ? 'ERKANNT' : 'DETECTED'}
+                                {/* 3-column mapping layout */}
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 260px', gap: 0, borderTop: '1px solid #F3F4F6', minWidth: 0, overflowX: 'hidden' }}>
+
+                                    {/* LEFT: Pflichtfelder */}
+                                    <div style={{ padding: '12px 14px', borderRight: '1px solid #F3F4F6', minWidth: 0, overflowX: 'hidden' }}>
+                                        <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.06em', marginBottom: 8 }}>
+                                            {langDE ? 'PFLICHTFELDER' : 'REQUIRED FIELDS'}
                                         </div>
-                                        <div style={{ display: 'grid', gap: 5 }}>
-                                            {detectedAll.slice(0, SHOW_DET).map((f) => {
-                                                const col = f === 'image_url' ? mcImageColumns[0] : mcMapping[f];
-                                                const label = f === 'image_url' ? (langDE ? 'Hauptbild' : 'Main Image') : (FIELD_LABELS[f] || f);
-                                                return (
-                                                    <div key={f} style={{ fontSize: 12, color: '#166534', display: 'flex', alignItems: 'baseline', gap: 4 }}>
-                                                        <span style={{ color: '#16A34A', fontWeight: 700, flexShrink: 0 }}>✓</span>
-                                                        <span style={{ color: '#374151' }}>{label}</span>
-                                                        <span style={{ color: '#9CA3AF', fontSize: 11 }}>→ {col}</span>
-                                                    </div>
-                                                );
-                                            })}
-                                            {moreDetected > 0 && (
-                                                <div style={{ fontSize: 11, color: '#6B7280', marginTop: 2 }}>
-                                                    + {moreDetected} {langDE ? 'weitere Felder erkannt' : 'more fields detected'}
-                                                </div>
-                                            )}
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                            {pflichtFieldsLeft.map((f) => (
+                                                <MappingRow
+                                                    key={f}
+                                                    fieldKey={f}
+                                                    label={FIELD_LABELS[f] || f}
+                                                    isPflicht={true}
+                                                />
+                                            ))}
+                                            {/* Image row */}
+                                            <MappingRow isImageRow={true} fieldKey="image_url" label={T.mainImageLabel} isPflicht={true} />
                                         </div>
                                     </div>
 
-                                    {/* FEHLEND */}
-                                    <div style={{ padding: '14px 20px' }}>
-                                        <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.06em', marginBottom: 10 }}>
-                                            {langDE ? 'FEHLEND' : 'MISSING'}
+                                    {/* MIDDLE: Optionale Felder */}
+                                    <div style={{ padding: '12px 14px', borderRight: '1px solid #F3F4F6', minWidth: 0, overflowX: 'hidden', maxHeight: 520, overflowY: 'auto' }}>
+                                        <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.06em', marginBottom: 8 }}>
+                                            {langDE ? 'OPTIONALE FELDER' : 'OPTIONAL FIELDS'}
                                         </div>
-                                        <div style={{ display: 'grid', gap: 5 }}>
-                                            {missingPflicht2.length === 0 ? (
-                                                <div style={{ fontSize: 12, color: '#16A34A', fontWeight: 600 }}>
-                                                    {langDE ? '✓ Alle Pflichtfelder erkannt' : '✓ All required fields detected'}
-                                                </div>
-                                            ) : (
-                                                <>
-                                                    {missingPflicht2.slice(0, SHOW_MISS).map((f) => {
-                                                        const label = f === 'image_url' ? (langDE ? 'Hauptbild' : 'Main Image') : (FIELD_LABELS[f] || f);
-                                                        return (
-                                                            <div key={f} style={{ fontSize: 12, display: 'flex', alignItems: 'baseline', gap: 4 }}>
-                                                                <span style={{ color: '#DC2626', fontWeight: 700, flexShrink: 0 }}>✕</span>
-                                                                <span style={{ color: '#374151' }}>{label}</span>
-                                                                <span style={{ color: '#9CA3AF', fontSize: 11 }}>({f})</span>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                            {optionalFieldsMid.map((f) => (
+                                                <MappingRow
+                                                    key={f}
+                                                    fieldKey={f}
+                                                    label={FIELD_LABELS[f] || f}
+                                                    isPflicht={false}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* RIGHT: Warnings / unassigned pflicht fields */}
+                                    <div style={{ padding: '12px 14px', background: '#FAFAFA', minWidth: 0, overflowX: 'hidden' }}>
+                                        <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.06em', marginBottom: 8 }}>
+                                            {langDE ? 'FEHLER / HINWEISE' : 'ERRORS / HINTS'}
+                                        </div>
+                                        {missingPflicht2.length === 0 ? (
+                                            <div style={{ fontSize: 12, color: '#16A34A', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 5 }}>
+                                                <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4 6-6" stroke="#16A34A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                                {langDE ? 'Alle Pflichtfelder zugeordnet' : 'All required fields mapped'}
+                                            </div>
+                                        ) : (
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                                                {missingPflicht2.map((f) => {
+                                                    const label = f === 'image_url' ? (langDE ? 'Hauptbild' : 'Main Image') : (FIELD_LABELS[f] || f);
+                                                    return (
+                                                        <div key={f} style={{ fontSize: 11, display: 'flex', alignItems: 'flex-start', gap: 5, background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 5, padding: '5px 8px' }}>
+                                                            <span style={{ color: '#DC2626', fontWeight: 700, flexShrink: 0, marginTop: 1 }}>✕</span>
+                                                            <div>
+                                                                <div style={{ color: '#991B1B', fontWeight: 600 }}>{label}</div>
+                                                                <div style={{ color: '#B91C1C', fontSize: 10 }}>{langDE ? 'nicht zugeordnet' : 'not assigned'}</div>
                                                             </div>
-                                                        );
-                                                    })}
-                                                    {moreMissing > 0 && (
-                                                        <div style={{ fontSize: 11, color: '#6B7280', marginTop: 2 }}>
-                                                            + {moreMissing} {langDE ? 'weitere fehlende Felder' : 'more missing fields'}
                                                         </div>
-                                                    )}
-                                                </>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Expand full mapping */}
-                                <div style={{ borderTop: '1px solid #F3F4F6' }}>
-                                    <button type="button" onClick={() => setMappingExpanded((v) => !v)}
-                                        style={{ width: '100%', padding: '10px 20px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, color: '#6B7280', fontWeight: 500, display: 'flex', alignItems: 'center', gap: 6 }}>
-                                        <span style={{ fontSize: 10 }}>{mappingExpanded ? '▲' : '▼'}</span>
-                                        {mappingExpanded
-                                            ? (langDE ? 'Zuordnung ausblenden' : 'Hide mapping')
-                                            : (langDE ? 'Vollständige Spalten-Zuordnung anzeigen' : 'Show full column mapping')}
-                                    </button>
-
-                                    {mappingExpanded && (
-                                        <div style={{ padding: '0 20px 16px', display: 'grid', gap: 5 }}>
-                                            {missingPflicht2.length > 0 && (
-                                                <div style={{ padding: '8px 12px', borderRadius: 8, background: '#FEF2F2', border: '1px solid #FECACA', fontSize: 12, color: '#991B1B', marginBottom: 8 }}>
+                                                    );
+                                                })}
+                                                <div style={{ fontSize: 10, color: '#B45309', background: '#FFFBEB', border: '1px solid #FDE68A', borderRadius: 5, padding: '6px 8px', marginTop: 4, lineHeight: 1.5 }}>
                                                     {T.mappingWarning}
                                                 </div>
-                                            )}
-                                            {[...pflichtForFull, ...optionalForFull].map((f) => {
-                                                const isManual = f in manualMapping;
-                                                const col = mcMapping[f];
-                                                const isPflicht = MC_PFLICHT_COLS.includes(f) || (outsideGermany && f === 'hs_code');
-                                                const missing = !col && isPflicht;
-                                                return (
-                                                    <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                                        <Tooltip text={(langDE ? FIELD_TOOLTIPS_DE : FIELD_TOOLTIPS_EN)[f] || null}>
-                                                            <span style={{ fontSize: 11, color: '#374151', width: 160, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 4, cursor: (langDE ? FIELD_TOOLTIPS_DE : FIELD_TOOLTIPS_EN)[f] ? 'help' : 'default' }}>
-                                                                {FIELD_LABELS[f] || f}
-                                                                {isPflicht && <span style={{ color: '#DC2626', fontWeight: 700 }}>*</span>}
-                                                                {(langDE ? FIELD_TOOLTIPS_DE : FIELD_TOOLTIPS_EN)[f] && <span style={{ fontSize: 9, color: '#9CA3AF', borderRadius: '50%', border: '1px solid #D1D5DB', width: 13, height: 13, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>?</span>}
-                                                            </span>
-                                                        </Tooltip>
-                                                        <select value={col || ''} onChange={(e) => { const val = e.target.value; setManualMapping((prev) => { const next = { ...prev }; if (val === '') delete next[f]; else next[f] = val; return next; }); }}
-                                                            style={{ flex: 1, fontSize: 11, padding: '4px 7px', borderRadius: 6, border: `1px solid ${missing ? '#FCA5A5' : col ? '#D1FAE5' : '#D1D5DB'}`, background: missing ? '#FFF5F5' : col ? '#F0FDF4' : '#FFF', cursor: 'pointer' }}>
-                                                            <option value="">{T.notAssigned}</option>
-                                                            {headers.map((h) => <option key={h} value={h}>{h}</option>)}
-                                                        </select>
-                                                        {isManual && (
-                                                            <button type="button" onClick={() => setManualMapping((prev) => { const next = { ...prev }; delete next[f]; return next; })}
-                                                                style={{ fontSize: 10, padding: '3px 7px', borderRadius: 4, border: '1px solid #C4B5FD', background: '#FFF', color: '#7C3AED', cursor: 'pointer' }}>↩</button>
-                                                        )}
-                                                    </div>
-                                                );
-                                            })}
-                                            {/* Image row */}
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                                <Tooltip text={(langDE ? FIELD_TOOLTIPS_DE : FIELD_TOOLTIPS_EN)['image_url'] || null}>
-                                                    <span style={{ fontSize: 11, color: '#374151', width: 160, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 4, cursor: 'help' }}>
-                                                        {T.mainImageLabel}<span style={{ color: '#DC2626', fontWeight: 700 }}>*</span>
-                                                        <span style={{ fontSize: 9, color: '#9CA3AF', borderRadius: '50%', border: '1px solid #D1D5DB', width: 13, height: 13, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>?</span>
-                                                    </span>
-                                                </Tooltip>
-                                                <div style={{ flex: 1, fontSize: 11, padding: '5px 8px', borderRadius: 6, border: `1px solid ${mcImageColumns.length > 0 ? '#D1FAE5' : '#FCA5A5'}`, background: mcImageColumns.length > 0 ? '#F0FDF4' : '#FFF5F5', color: mcImageColumns.length > 0 ? '#166534' : '#DC2626', fontWeight: 600 }}>
-                                                    {mcImageColumns.length > 0 ? mcImageColumns.join(', ') : T.notDetected}
-                                                </div>
                                             </div>
-
+                                        )}
+                                        {/* Detected fields summary */}
+                                        <div style={{ marginTop: 14 }}>
+                                            <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.06em', marginBottom: 6 }}>
+                                                {langDE ? 'ERKANNT' : 'DETECTED'}
+                                            </div>
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                                                {MC_PFLICHT_COLS.filter((f) => f !== 'stock_amount' && (f === 'image_url' ? mcImageColumns.length > 0 : f === 'availability' ? (mcMapping.availability || mcMapping.stock_amount || alwaysAvailable) : mcMapping[f])).slice(0, 6).map((f) => {
+                                                    const col = f === 'image_url' ? mcImageColumns[0] : mcMapping[f];
+                                                    const lbl = f === 'image_url' ? (langDE ? 'Hauptbild' : 'Main Image') : (FIELD_LABELS[f] || f);
+                                                    return (
+                                                        <div key={f} style={{ fontSize: 10, color: '#166534', display: 'flex', alignItems: 'baseline', gap: 3 }}>
+                                                            <span style={{ color: '#16A34A', fontWeight: 700, flexShrink: 0 }}>✓</span>
+                                                            <span style={{ color: '#374151' }}>{lbl}</span>
+                                                            {col && <span style={{ color: '#9CA3AF', fontSize: 9 }}>→ {col}</span>}
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
                                         </div>
-                                    )}
+                                    </div>
                                 </div>
 
-                                {/* Nav buttons */}
-                                <div style={{ padding: '12px 24px', borderTop: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+                                {/* Bottom nav */}
+                                <div style={{ padding: '10px 20px', borderTop: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
                                     <div style={{ fontSize: 11, color: (issues?.missingPflichtCols?.length ?? 0) > 0 ? '#DC2626' : '#16A34A', fontWeight: 500 }}>
                                         {(issues?.missingPflichtCols?.length ?? 0) > 0
                                             ? (lang === 'de'
@@ -2200,10 +2260,10 @@ export default function McAngebotsfeed() {
                             </div>
                             {PFLICHT_TABLE_FIELDS.map(({ key, label }) => {
                                 const isMapped = key === 'availability'
-                                    ? !!(mcMapping.availability || mcMapping.stock_amount)
+                                    ? (alwaysAvailable || !!(mcMapping.availability || mcMapping.stock_amount))
                                     : key === 'image_url' ? mcImageColumns.length > 0
                                     : !!mcMapping[key];
-                                const errs = fieldErrorRows[key]?.size || 0;
+                                const errs = (key === 'availability' && alwaysAvailable) ? 0 : (fieldErrorRows[key]?.size || 0);
                                 const pct = isMapped ? Math.max(0, Math.round((1 - errs / issues.totalRows) * 100)) : null;
                                 const hasError = pct !== null && errs > 0;
                                 const barColor = pct === null ? '#E5E7EB' : pct === 100 ? '#16A34A' : pct >= 70 ? '#D97706' : '#DC2626';
@@ -2969,7 +3029,7 @@ export default function McAngebotsfeed() {
             const totalShown = filteredGroups.reduce((s, g) => s + g.cols.length, 0);
             return (
                 <div onClick={() => { setShowVorlage(false); setVorlageSearch(''); }} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 24 }}>
-                    <div onClick={(e) => e.stopPropagation()} style={{ background: '#FFF', borderRadius: 12, width: '100%', maxWidth: '95vw', maxWidth: 860, height: '90vh', display: 'flex', flexDirection: 'column', boxShadow: '0 20px 60px rgba(0,0,0,0.3)', overflowX: 'hidden' }}>
+                    <div onClick={(e) => e.stopPropagation()} style={{ background: '#FFF', borderRadius: 12, width: '100%', maxWidth: 'min(860px, 95vw)', height: '90vh', display: 'flex', flexDirection: 'column', boxShadow: '0 20px 60px rgba(0,0,0,0.3)', overflow: 'hidden' }}>
                         {/* Header */}
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px', borderBottom: '1px solid #E5E7EB', flexShrink: 0 }}>
                             <div>
@@ -3007,16 +3067,16 @@ export default function McAngebotsfeed() {
                                         <span style={{ fontSize: 12, fontWeight: 700, color: '#374151', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{grp.label}</span>
                                         <span style={{ fontSize: 11, color: '#9CA3AF' }}>({grp.cols.length})</span>
                                     </div>
-                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, minWidth: 0 }}>
                                         {grp.cols.filter(c => VORLAGE_HEADERS.includes(c)).map((col) => {
                                             const isPflicht = PFLICHT_SET.has(col);
                                             const ex = exMap[col] || '';
                                             const idx = VORLAGE_HEADERS.indexOf(col) + 1;
                                             return (
-                                                <div key={col} style={{ border: `1px solid ${isPflicht ? '#FDE68A' : '#E5E7EB'}`, borderRadius: 7, padding: '8px 10px', background: isPflicht ? '#FFFBEB' : '#FAFAFA', display: 'flex', flexDirection: 'column', gap: 3 }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                                                        <span style={{ fontSize: 10, color: '#9CA3AF', minWidth: 18, fontVariantNumeric: 'tabular-nums' }}>{idx}</span>
-                                                        <span style={{ fontSize: 12, fontWeight: 600, color: isPflicht ? '#92400E' : '#111827', fontFamily: 'monospace', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={col}>{col}</span>
+                                                <div key={col} style={{ border: `1px solid ${isPflicht ? '#FDE68A' : '#E5E7EB'}`, borderRadius: 7, padding: '8px 10px', background: isPflicht ? '#FFFBEB' : '#FAFAFA', display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0, overflow: 'hidden' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 5, minWidth: 0 }}>
+                                                        <span style={{ fontSize: 10, color: '#9CA3AF', minWidth: 18, fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>{idx}</span>
+                                                        <span style={{ fontSize: 12, fontWeight: 600, color: isPflicht ? '#92400E' : '#111827', fontFamily: 'monospace', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={col}>{col}</span>
                                                         {isPflicht && <span style={{ fontSize: 9, fontWeight: 700, color: '#92400E', background: '#FEF08A', border: '1px solid #EAB308', borderRadius: 3, padding: '1px 4px', flexShrink: 0 }}>P</span>}
                                                     </div>
                                                     <div style={{ fontSize: 11, color: '#6B7280', fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', paddingLeft: 23 }} title={ex}>{ex || '—'}</div>
