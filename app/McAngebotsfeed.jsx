@@ -419,7 +419,7 @@ const MC_OPTIONAL_ALIASES = {
 // ── Translations ──────────────────────────────────────────────────────────────
 const DE_T = {
     // Header
-    stepUpload: 'Hochladen', stepMapping: 'Zuordnung', stepResults: 'Ergebnis', stepRecommendations: 'Empfehlungen',
+    stepUpload: 'Hochladen', stepMapping: 'Zuordnung', stepResults: 'Ergebnis', stepOptional: 'Optionale Felder', stepRecommendations: 'Empfehlungen',
     helpContact: 'Hilfe & Kontakt',
     // Step 1
     s1Heading: 'Feed hochladen',
@@ -611,7 +611,8 @@ const DE_T = {
     qualityShowMore: 'Alle Tipps anzeigen',
     qualityShowLess: 'Weniger anzeigen',
     resourcesTitle: 'Ressourcen',
-    recNextStep: 'Weiter zu Empfehlungen →',
+    recNextStep: 'Optionale Felder →',
+    recNextStepFinal: 'Empfehlungen →',
     recTitle: (n) => `${n} Handlungsempfehlung${n !== 1 ? 'en' : ''} zur Fehlerbehebung`,
     recNoErrorsTitle: 'Feed fehlerfrei',
     recNoErrorsSub: 'Ihr Feed enthält keine Pflichtfeldfehler. Alle Artikel können gelistet werden.',
@@ -620,10 +621,16 @@ const DE_T = {
     recDownloadTitle: 'Fehlerbericht herunterladen',
     recDownloadDesc: 'CSV-Datei mit allen Fehlern je Zeile – importieren Sie diese in Excel, um gezielt die betroffenen Artikel zu korrigieren.',
     recDownloadBtn: 'Fehlerbericht als CSV herunterladen',
+    optFieldsTitle: 'Optionale Felder – Vollständigkeit',
+    optFieldsSubtitle: 'Empfohlene Felder für bessere Sichtbarkeit & Conversion',
+    sizeHintTitle: 'Maß-Attribut fehlt',
+    sizeHintDesc: (n) => `${n} Artikel haben kein Maß-Attribut (size, size_height, size_depth, Liegefläche o. ä.)`,
+    lightingHintTitle: 'Energie-Kennzeichnung für Leuchtprodukte',
+    lightingHintDesc: (total, energyMissing, eprelMissing) => `${total} Leuchtprodukte erkannt · ${energyMissing} ohne Energieeffizienzklasse · ${eprelMissing} ohne EPREL-Nummer`,
 };
 
 const EN_T = {
-    stepUpload: 'Upload', stepMapping: 'Mapping', stepResults: 'Results', stepRecommendations: 'Recommendations',
+    stepUpload: 'Upload', stepMapping: 'Mapping', stepResults: 'Results', stepOptional: 'Optional Fields', stepRecommendations: 'Recommendations',
     helpContact: 'Help & Contact',
     s1Heading: 'Upload Feed',
     s1Sub: 'Upload your product feed as a CSV file. We check all required fields and show exactly which items have errors.',
@@ -744,7 +751,8 @@ const EN_T = {
     qualityShowMore: 'Show all tips',
     qualityShowLess: 'Show less',
     resourcesTitle: 'Resources',
-    recNextStep: 'Continue to Recommendations →',
+    recNextStep: 'Optional Fields →',
+    recNextStepFinal: 'Recommendations →',
     recTitle: (n) => `${n} Recommendation${n !== 1 ? 's' : ''} to Fix Errors`,
     recNoErrorsTitle: 'Feed error-free',
     recNoErrorsSub: 'Your feed has no required field errors. All items can be listed.',
@@ -753,6 +761,12 @@ const EN_T = {
     recDownloadTitle: 'Download Error Report',
     recDownloadDesc: 'CSV file with all errors per row – import into Excel to fix the affected items directly.',
     recDownloadBtn: 'Download Error Report as CSV',
+    optFieldsTitle: 'Optional Fields – Completeness',
+    optFieldsSubtitle: 'Recommended fields for better visibility & conversion',
+    sizeHintTitle: 'Size attribute missing',
+    sizeHintDesc: (n) => `${n} items have no size attribute (size, size_height, size_depth, lying surface, etc.)`,
+    lightingHintTitle: 'Energy labelling for lighting products',
+    lightingHintDesc: (total, energyMissing, eprelMissing) => `${total} lighting products detected · ${energyMissing} without energy efficiency class · ${eprelMissing} without EPREL number`,
     listableCount: (l, t) => `${l} / ${t} items listable`,
     statusBanner: (n, t) => `Please fix the errors and re-upload the feed. ${n} of ${t} items affected`,
     hinweisTitle: 'Important Feed Requirements',
@@ -827,7 +841,6 @@ export default function McAngebotsfeed() {
     const [showVorlage, setShowVorlage] = useState(false);
     const [vorlageSearch, setVorlageSearch] = useState('');
     const [storeLocation] = useState('germany');
-    const [qualityTipsExpanded, setQualityTipsExpanded] = useState(false);
     const [step, setStep] = useState(1);
     const [rows, setRows] = useState([]);
     const [headers, setHeaders] = useState([]);
@@ -1240,6 +1253,52 @@ export default function McAngebotsfeed() {
         const optionalScore = Math.round(optionalFillRatio * 100);
         const totalScore = Math.max(0, Math.min(100, Math.round((pflichtScore + optionalScore) / 2)));
 
+        // Optional field stats for step 4
+        const OPT_FIELDS_TO_CHECK = ['color', 'material', 'brand', 'description', 'delivery_includes'];
+        const OPT_FIELD_LABELS_DE = { color: 'Farbe', material: 'Material', brand: 'Marke', description: 'Beschreibung', delivery_includes: 'Lieferumfang' };
+        const OPT_FIELD_LABELS_EN = { color: 'Color', material: 'Material', brand: 'Brand', description: 'Description', delivery_includes: 'Delivery Includes' };
+        const optFields = OPT_FIELDS_TO_CHECK.map((field) => {
+            const col = mcMapping[field];
+            if (!col) return { field, labelDE: OPT_FIELD_LABELS_DE[field], labelEN: OPT_FIELD_LABELS_EN[field], covered: 0, missing: rows.length, total: rows.length, pct: 0, notMapped: true };
+            let covered = 0;
+            rows.forEach((row) => { if (String(row[col] ?? '').trim()) covered++; });
+            const missing = rows.length - covered;
+            return { field, labelDE: OPT_FIELD_LABELS_DE[field], labelEN: OPT_FIELD_LABELS_EN[field], covered, missing, total: rows.length, pct: rows.length ? Math.round((covered / rows.length) * 100) : 0, notMapped: false };
+        });
+
+        // Size: at least one size field filled
+        const SIZE_FIELDS = ['size', 'size_height', 'size_depth', 'size_width', 'size_lying_surface', 'size_seat_height', 'size_seat_depth', 'size_diameter'];
+        let sizeMissingCount = 0;
+        rows.forEach((row) => {
+            const hasAnySize = SIZE_FIELDS.some((sf) => {
+                const col = mcMapping[sf];
+                return col && String(row[col] ?? '').trim();
+            });
+            if (!hasAnySize) sizeMissingCount++;
+        });
+
+        // Lighting products: name contains leuchte/lampe/led
+        const LIGHTING_OPT_RE = /leuchte|lampe|\bled\b/i;
+        const eprelCol = mcMapping['eprel_registration_number'] || (() => {
+            // fallback: check headers for eprel
+            const h = headers.find((h) => h.toLowerCase().includes('eprel'));
+            return h || null;
+        })();
+        const energyCol = mcMapping['energy_efficiency_category'];
+        const nameColOpt = mcMapping['name'];
+        let lightingCount = 0, lightingEnergyMissing = 0, lightingEprelMissing = 0;
+        if (nameColOpt) {
+            rows.forEach((row) => {
+                const nm = String(row[nameColOpt] ?? '').trim();
+                if (!LIGHTING_OPT_RE.test(nm)) return;
+                lightingCount++;
+                if (!energyCol || !String(row[energyCol] ?? '').trim()) lightingEnergyMissing++;
+                if (!eprelCol || !String(row[eprelCol] ?? '').trim()) lightingEprelMissing++;
+            });
+        }
+
+        const optFieldStats = { fields: optFields, sizeMissingCount, lightingCount, lightingEnergyMissing, lightingEprelMissing };
+
         return {
             totalRows: rows.length,
             pflichtMapping: MC_PFLICHT_COLS.reduce((m, k) => {
@@ -1272,6 +1331,7 @@ export default function McAngebotsfeed() {
             optionalScore,
             optionalFillRatio,
             totalScore,
+            optFieldStats,
         };
     }, [rows, headers, mcMapping, mcImageColumns, storeLocation]);
 
@@ -1419,11 +1479,12 @@ export default function McAngebotsfeed() {
                     { n: 1, label: T.stepUpload },
                     { n: 2, label: T.stepMapping },
                     { n: 3, label: T.stepResults },
-                    { n: 4, label: T.stepRecommendations },
+                    { n: 4, label: T.stepOptional },
+                    { n: 5, label: T.stepRecommendations },
                 ].map((s) => {
                     const isActive = step === s.n;
                     const isDone = step > s.n;
-                    const isClickable = s.n === 1 || (s.n === 2 && rows.length > 0) || ((s.n === 3 || s.n === 4) && issues);
+                    const isClickable = s.n === 1 || (s.n === 2 && rows.length > 0) || ((s.n === 3 || s.n === 4 || s.n === 5) && issues);
                     const tabColor = isDone ? '#166534' : isActive ? MC_BLUE : TEXT_HINT;
                     return (
                         <button
@@ -1432,7 +1493,7 @@ export default function McAngebotsfeed() {
                             onClick={() => {
                                 if (s.n === 1) setStep(1);
                                 else if (s.n === 2 && rows.length > 0) setStep(2);
-                                else if ((s.n === 3 || s.n === 4) && issues) setStep(s.n);
+                                else if ((s.n === 3 || s.n === 4 || s.n === 5) && issues) setStep(s.n);
                             }}
                             style={{ height: 50, display: 'flex', alignItems: 'center', gap: 8, padding: '0 20px', background: 'none', border: 'none', borderBottom: isActive ? `2px solid ${MC_BLUE}` : '2px solid transparent', cursor: isClickable ? 'pointer' : 'default', color: tabColor, opacity: isClickable ? 1 : 0.5, transition: 'all 0.15s', whiteSpace: 'nowrap' }}
                         >
@@ -2237,7 +2298,7 @@ export default function McAngebotsfeed() {
                                     </button>
                                     <button type="button" onClick={() => setStep(4)}
                                         style={{ flex: 2, padding: '8px', background: MC_BLUE, border: 'none', borderRadius: 8, color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
-                                        {stufe1Passed ? (lang === 'de' ? 'Zusammenfassung →' : 'Summary →') : T.recNextStep}
+                                        {T.recNextStep}
                                     </button>
                                 </div>
                             </div>
@@ -2390,9 +2451,120 @@ export default function McAngebotsfeed() {
             })()}
 
             {/* ══════════════════════════════════════════
-                STEP 4 - Empfehlungen & Download
+                STEP 4 - Optionale Felder
             ══════════════════════════════════════════ */}
             {step === 4 && issues && (() => {
+                const { optFieldStats } = issues;
+                const numLocale = lang === 'de' ? 'de-DE' : 'en-US';
+                const overallPct = optFieldStats.fields.length
+                    ? Math.round(optFieldStats.fields.reduce((s, f) => s + f.pct, 0) / optFieldStats.fields.length)
+                    : 0;
+                const overallColor = overallPct >= 80 ? '#16A34A' : overallPct >= 50 ? '#D97706' : '#DC2626';
+                const r = 20, circ = 2 * Math.PI * r;
+                return (
+                    <div style={{ width: '100%', maxWidth: 1000, display: 'flex', flexDirection: 'column', gap: 12 }}>
+
+                        {/* Header */}
+                        <div style={{ marginBottom: 4 }}>
+                            <div style={{ fontSize: 18, fontWeight: 800, color: '#111827', marginBottom: 2 }}>{T.optFieldsTitle}</div>
+                            <div style={{ fontSize: 12, color: '#6B7280' }}>{T.optFieldsSubtitle}</div>
+                        </div>
+
+                        {/* Two-column layout */}
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 12, alignItems: 'start' }}>
+
+                            {/* Left: optional fields table */}
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+
+                                {/* Per-field cards */}
+                                <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'hidden' }}>
+                                    {optFieldStats.fields.map((f, i) => {
+                                        const label = lang === 'de' ? f.labelDE : f.labelEN;
+                                        const barColor = f.pct >= 80 ? '#16A34A' : f.pct >= 50 ? '#D97706' : '#DC2626';
+                                        return (
+                                            <div key={f.field} style={{ display: 'grid', gridTemplateColumns: '160px 1fr 80px 80px', alignItems: 'center', gap: 12, padding: '10px 16px', borderBottom: i < optFieldStats.fields.length - 1 ? '1px solid #F3F4F6' : 'none' }}>
+                                                <div style={{ fontSize: 12, fontWeight: 600, color: '#374151' }}>{label}</div>
+                                                <div style={{ height: 6, background: '#F3F4F6', borderRadius: 3, overflow: 'hidden' }}>
+                                                    <div style={{ height: '100%', width: f.notMapped ? '0%' : `${f.pct}%`, background: barColor, borderRadius: 3 }}/>
+                                                </div>
+                                                <div style={{ fontSize: 11, color: '#6B7280', textAlign: 'right' }}>
+                                                    {f.notMapped
+                                                        ? <span style={{ color: '#9CA3AF', fontStyle: 'italic' }}>{lang === 'de' ? 'n. erkannt' : 'not mapped'}</span>
+                                                        : <span>{f.covered.toLocaleString(numLocale)} / {f.total.toLocaleString(numLocale)}</span>
+                                                    }
+                                                </div>
+                                                <div style={{ fontSize: 12, fontWeight: 700, color: barColor, textAlign: 'right' }}>
+                                                    {f.notMapped ? '–' : `${f.pct}%`}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+
+                                {/* Size hint */}
+                                {optFieldStats.sizeMissingCount > 0 && (
+                                    <div style={{ background: '#FFFBEB', border: '1px solid #FDE68A', borderRadius: 10, padding: '12px 16px', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 1 }}><path d="M8 2l6 11H2L8 2z" stroke="#D97706" strokeWidth="1.4" strokeLinejoin="round"/><path d="M8 7v3" stroke="#D97706" strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="11.5" r=".6" fill="#D97706"/></svg>
+                                        <div>
+                                            <div style={{ fontSize: 12, fontWeight: 700, color: '#92400E', marginBottom: 2 }}>{T.sizeHintTitle}</div>
+                                            <div style={{ fontSize: 11, color: '#78350F', lineHeight: 1.5 }}>{T.sizeHintDesc(optFieldStats.sizeMissingCount.toLocaleString(numLocale))}</div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Lighting hint */}
+                                {optFieldStats.lightingCount > 0 && (
+                                    <div style={{ background: '#EEF4FF', border: '1px solid #BFDBFE', borderRadius: 10, padding: '12px 16px', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 1 }}><circle cx="8" cy="8" r="6.5" stroke={MC_BLUE} strokeWidth="1.4"/><path d="M8 7v4" stroke={MC_BLUE} strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="5.5" r=".6" fill={MC_BLUE}/></svg>
+                                        <div>
+                                            <div style={{ fontSize: 12, fontWeight: 700, color: '#1e3a8a', marginBottom: 2 }}>{T.lightingHintTitle}</div>
+                                            <div style={{ fontSize: 11, color: '#1e40af', lineHeight: 1.5 }}>{T.lightingHintDesc(optFieldStats.lightingCount, optFieldStats.lightingEnergyMissing, optFieldStats.lightingEprelMissing)}</div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Right: score + nav */}
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, position: 'sticky', top: 20, alignSelf: 'flex-start' }}>
+                                {/* Score card */}
+                                <div style={{ background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 12, padding: '16px', display: 'flex', alignItems: 'center', gap: 14 }}>
+                                    <svg width="60" height="60" viewBox="0 0 52 52" style={{ flexShrink: 0 }}>
+                                        <circle cx="26" cy="26" r={r} fill="none" stroke="#F3F4F6" strokeWidth="5"/>
+                                        <circle cx="26" cy="26" r={r} fill="none" stroke={overallColor} strokeWidth="5"
+                                            strokeDasharray={`${(overallPct / 100) * circ} ${circ}`}
+                                            strokeLinecap="round"
+                                            transform="rotate(-90 26 26)"
+                                        />
+                                        <text x="26" y="31" textAnchor="middle" fontSize="14" fontWeight="900" fill={overallColor}>{overallPct}</text>
+                                    </svg>
+                                    <div>
+                                        <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{lang === 'de' ? 'Ø Vollständigkeit' : 'Avg. Completeness'}</div>
+                                        <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>{lang === 'de' ? 'Optionale Felder' : 'Optional fields'}</div>
+                                    </div>
+                                </div>
+
+                                {/* Nav buttons */}
+                                <div style={{ display: 'flex', gap: 6 }}>
+                                    <button type="button" onClick={() => setStep(3)}
+                                        style={{ flex: 1, padding: '9px', background: '#FFF', color: '#374151', border: '1px solid #D1D5DB', borderRadius: 8, fontSize: 12, fontWeight: 500, cursor: 'pointer' }}>
+                                        {T.back}
+                                    </button>
+                                    <button type="button" onClick={() => setStep(5)}
+                                        style={{ flex: 2, padding: '9px', background: MC_BLUE, border: 'none', borderRadius: 8, color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+                                        {T.recNextStepFinal}
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                );
+            })()}
+
+            {/* ══════════════════════════════════════════
+                STEP 5 - Empfehlungen & Download
+            ══════════════════════════════════════════ */}
+            {step === 5 && issues && (() => {
                 // Build grouped recommendations from errors
                 const errorsByType = {};
                 issues.pflichtErrors.forEach((e) => {
@@ -2686,7 +2858,7 @@ export default function McAngebotsfeed() {
 
                                 {/* Nav */}
                                 <div style={{ display: 'flex', gap: 6 }}>
-                                    <button type="button" onClick={() => setStep(3)}
+                                    <button type="button" onClick={() => setStep(4)}
                                         style={{ flex: 1, padding: '9px', background: '#FFF', color: '#374151', border: '1px solid #D1D5DB', borderRadius: 8, fontSize: 12, fontWeight: 500, cursor: 'pointer' }}>
                                         {T.back}
                                     </button>
@@ -2698,46 +2870,6 @@ export default function McAngebotsfeed() {
                                 </div>
                             </div>
 
-                        </div>
-
-                        {/* Quality Tips card */}
-                        <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '14px 20px', marginTop: 4 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: qualityTipsExpanded ? 14 : 0 }}>
-                                <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{T.qualityTitle}</div>
-                                <button type="button" onClick={() => setQualityTipsExpanded(v => !v)}
-                                    style={{ fontSize: 11, color: MC_BLUE, background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, padding: '2px 0' }}>
-                                    {qualityTipsExpanded ? T.qualityShowLess : T.qualityShowMore}
-                                </button>
-                            </div>
-                            {qualityTipsExpanded && (
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 10 }}>
-                                    {T.qualityTips.map((tip) => (
-                                        <div key={tip.field} style={{ background: '#F9FAFB', borderRadius: 8, border: '1px solid #E5E7EB', padding: '10px 12px' }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-                                                <span style={{ fontSize: 14 }}>{tip.icon}</span>
-                                                <span style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{tip.title}</span>
-                                            </div>
-                                            {tip.bad && tip.good && (
-                                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4, marginBottom: 6 }}>
-                                                    <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 5, padding: '4px 6px' }}>
-                                                        <div style={{ fontSize: 8, fontWeight: 700, color: '#DC2626', marginBottom: 2 }}>✗</div>
-                                                        <div style={{ fontSize: 9, color: '#991B1B', fontFamily: 'monospace', lineHeight: 1.4 }}>{tip.bad}</div>
-                                                    </div>
-                                                    <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 5, padding: '4px 6px' }}>
-                                                        <div style={{ fontSize: 8, fontWeight: 700, color: '#16A34A', marginBottom: 2 }}>✓</div>
-                                                        <div style={{ fontSize: 9, color: '#166534', fontFamily: 'monospace', lineHeight: 1.4 }}>{tip.good}</div>
-                                                    </div>
-                                                </div>
-                                            )}
-                                            <ul style={{ margin: 0, padding: '0 0 0 12px', display: 'grid', gap: 2 }}>
-                                                {tip.tips.map((t, i) => (
-                                                    <li key={i} style={{ fontSize: 10, color: '#374151', lineHeight: 1.4 }}>{t}</li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
                         </div>
 
                     </div>
