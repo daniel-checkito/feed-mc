@@ -1515,7 +1515,7 @@ export default function McAngebotsfeed() {
                             <div style={{ width: 22, height: 22, borderRadius: '50%', border: `1.5px solid ${tabColor}`, background: (isActive || isDone) ? tabColor : 'transparent', color: (isActive || isDone) ? '#fff' : tabColor, fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'all 0.15s' }}>
                                 {isDone ? '✓' : s.n}
                             </div>
-                            <span style={{ fontSize: 13, fontWeight: isActive ? 600 : 400 }}>{lang === 'de' ? `Schritt ${s.n} ` : `Step ${s.n} `}{s.label}</span>
+                            <span style={{ fontSize: 13, fontWeight: isActive ? 600 : 400 }}>{s.label}</span>
                         </button>
                     );
                 })}
