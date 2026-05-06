@@ -1854,48 +1854,34 @@ export default function McAngebotsfeed() {
                                     )}
                                 </div>
 
-                                {/* Summary always-on: missing required fields */}
-                                {missingPflicht2.length > 0 && (
-                                    <div style={{ padding: '14px 20px', borderTop: '1px solid #F3F4F6', background: '#FAFAFA' }}>
-                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 4 }}>
-                                            {missingPflicht2.map((f) => {
-                                                const label = f === 'image_url' ? (langDE ? 'Hauptbild' : 'Main Image') : (FIELD_LABELS[f] || f);
-                                                return (
-                                                    <span key={f} style={{ fontSize: 11, color: '#991B1B', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 4, padding: '2px 8px', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                                                        <span style={{ color: '#DC2626', fontWeight: 700 }}>✕</span>{label}
-                                                    </span>
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-                                )}
 
-                                {/* Collapsed: simple check overview */}
+                                {/* Collapsed: pflicht-only checklist */}
                                 {!mappingExpanded && (
-                                    <div style={{ padding: '14px 20px', borderTop: '1px solid #F3F4F6' }}>
-                                        <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.06em', marginBottom: 10 }}>
-                                            {langDE ? 'ÜBERSICHT' : 'OVERVIEW'}
-                                        </div>
-                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6 }}>
+                                    <div style={{ padding: '16px 20px 14px', borderTop: '1px solid #F3F4F6' }}>
+                                        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 14 }}>
                                             {[
-                                                ...pflichtFieldsLeft.map((f) => ({ key: f, label: FIELD_LABELS[f] || f, isPflicht: true, mapped: f === 'availability' ? (!!mcMapping[f] || !!mcMapping['stock_amount'] || alwaysAvailable) : !!mcMapping[f] })),
-                                                { key: 'image_url', label: langDE ? 'Hauptbild' : 'Main Image', isPflicht: true, mapped: mcImageColumns.length > 0 },
-                                                ...optionalFieldsMid.map((f) => ({ key: f, label: FIELD_LABELS[f] || f, isPflicht: false, mapped: !!mcMapping[f] })),
-                                            ].map(({ key, label, isPflicht, mapped }) => (
-                                                <div key={key} style={{ fontSize: 11, display: 'flex', alignItems: 'center', gap: 5, padding: '3px 6px', borderRadius: 4, background: mapped ? '#F0FDF4' : (isPflicht ? '#FEF2F2' : '#F9FAFB'), border: `1px solid ${mapped ? '#D1FAE5' : (isPflicht ? '#FECACA' : '#E5E7EB')}` }}>
-                                                    <span style={{ color: mapped ? '#16A34A' : (isPflicht ? '#DC2626' : '#9CA3AF'), fontWeight: 700, flexShrink: 0 }}>{mapped ? '✓' : '✗'}</span>
-                                                    <span style={{ color: '#374151', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                                        {label}{isPflicht && <span style={{ color: '#DC2626', fontWeight: 700 }}>*</span>}
-                                                    </span>
+                                                { key: 'name',           label: langDE ? 'Produktname' : 'Product Name',    mapped: !!mcMapping['name'] },
+                                                { key: 'ean',            label: 'EAN',                                       mapped: !!mcMapping['ean'] },
+                                                { key: 'brand',          label: langDE ? 'Marke' : 'Brand',                  mapped: !!mcMapping['brand'] },
+                                                { key: 'price',          label: langDE ? 'Preis' : 'Price',                  mapped: !!mcMapping['price'] },
+                                                { key: 'description',    label: langDE ? 'Beschreibung' : 'Description',     mapped: !!mcMapping['description'] },
+                                                { key: 'image_url',      label: langDE ? 'Hauptbild' : 'Main Image',         mapped: mcImageColumns.length > 0 },
+                                                { key: 'delivery_time',  label: langDE ? 'Lieferzeit' : 'Delivery Time',     mapped: !!mcMapping['delivery_time'] },
+                                                { key: 'shipping_mode',  label: langDE ? 'Versandart' : 'Shipping Mode',     mapped: !!mcMapping['shipping_mode'] },
+                                                { key: 'availability',   label: langDE ? 'Verfügbarkeit' : 'Availability',   mapped: !!mcMapping['availability'] || !!mcMapping['stock_amount'] || alwaysAvailable },
+                                                { key: 'seller_offer_id',label: langDE ? 'Angebots-ID' : 'Offer ID',         mapped: !!mcMapping['seller_offer_id'] },
+                                                ...(outsideGermany ? [{ key: 'hs_code', label: 'HS-Code', mapped: !!mcMapping['hs_code'] }] : []),
+                                            ].map(({ key, label, mapped }) => (
+                                                <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '5px 10px', borderRadius: 6, background: mapped ? '#F0FDF4' : '#FEF2F2', border: `1px solid ${mapped ? '#BBF7D0' : '#FECACA'}` }}>
+                                                    <span style={{ fontSize: 14, fontWeight: 700, color: mapped ? '#16A34A' : '#DC2626', lineHeight: 1 }}>{mapped ? '✓' : '✗'}</span>
+                                                    <span style={{ fontSize: 12, color: '#374151', fontWeight: mapped ? 500 : 600, whiteSpace: 'nowrap' }}>{label}</span>
                                                 </div>
                                             ))}
                                         </div>
-                                        <div style={{ marginTop: 14, display: 'flex', justifyContent: 'center' }}>
-                                            <button type="button" onClick={() => setMappingExpanded(true)}
-                                                style={{ fontSize: 12, fontWeight: 600, color: MC_BLUE, background: 'none', border: `1px solid ${MC_BLUE}`, borderRadius: 6, padding: '6px 14px', cursor: 'pointer' }}>
-                                                {langDE ? 'Manuelle Zuordnung anzeigen' : 'Show manual mapping'}
-                                            </button>
-                                        </div>
+                                        <button type="button" onClick={() => setMappingExpanded(true)}
+                                            style={{ fontSize: 12, fontWeight: 600, color: '#6B7280', background: 'none', border: '1px solid #D1D5DB', borderRadius: 6, padding: '5px 12px', cursor: 'pointer' }}>
+                                            {langDE ? 'Zuordnung manuell anpassen' : 'Adjust mapping manually'}
+                                        </button>
                                     </div>
                                 )}
 
