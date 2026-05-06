@@ -1844,7 +1844,7 @@ export default function McAngebotsfeed() {
                                 </div>
                             </div>
                         ) : (
-                            <div style={{ background: '#FFF', borderRadius: 16, boxShadow: '0 2px 16px rgba(0,0,0,0.08)', overflow: 'hidden' }}>
+                            <div style={{ background: '#FFF', borderRadius: 12, overflow: 'hidden' }}>
 
                                 {/* Card header */}
                                 <div style={{ padding: '16px 20px 12px', borderBottom: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
@@ -1895,7 +1895,7 @@ export default function McAngebotsfeed() {
                                     </div>
 
                                     {/* RIGHT: Warnings / unassigned pflicht fields */}
-                                    <div style={{ padding: '12px 14px', background: '#FAFAFA', minWidth: 0, overflowX: 'hidden' }}>
+                                    <div style={{ padding: '12px 14px', background: '#FFF', minWidth: 0, overflowX: 'hidden' }}>
                                         <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.06em', marginBottom: 8 }}>
                                             {langDE ? 'FEHLER / HINWEISE' : 'ERRORS / HINTS'}
                                         </div>
@@ -2164,10 +2164,10 @@ export default function McAngebotsfeed() {
                     <div style={{ width: '100%', maxWidth: 1100, display: 'flex', flexDirection: 'column', gap: 12 }}>
 
                         {/* 2-column: table | action panel */}
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 12, alignItems: 'start' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 16, alignItems: 'start' }}>
 
                         {/* Field analysis table */}
-                        <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', overflow: 'auto', maxHeight: 'calc(100vh - 200px)' }}>
+                        <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'auto', maxHeight: 'calc(100vh - 200px)' }}>
                             <div style={{ padding: '12px 16px 10px', borderBottom: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'sticky', top: 0, background: '#FFF', zIndex: 1, gap: 12 }}>
                                 <div style={{ minWidth: 0 }}>
                                     <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{T.analysisTitle}</div>
@@ -2231,10 +2231,10 @@ export default function McAngebotsfeed() {
                         </div>
 
                         {/* Right action panel */}
-                        <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'sticky', top: 20, alignSelf: 'flex-start' }}>
+                        <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'sticky', top: 20, alignSelf: 'flex-start' }}>
 
                             {/* Sidebar heading */}
-                            <div style={{ padding: '12px 14px 8px', borderBottom: '1px solid #F3F4F6' }}>
+                            <div style={{ padding: '14px 16px', borderBottom: '1px solid #F3F4F6' }}>
                                 <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>
                                     {lang === 'de' ? 'Ergebnis' : 'Result'}
                                 </div>
@@ -2249,7 +2249,7 @@ export default function McAngebotsfeed() {
                                 const c3 = s >= 90 ? '#16A34A' : s >= 60 ? '#D97706' : '#DC2626';
                                 const r3 = 16, circ3 = 2 * Math.PI * r3;
                                 return (
-                                    <div style={{ padding: '12px 14px 10px', borderBottom: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', gap: 10 }}>
+                                    <div style={{ padding: '12px 16px', borderBottom: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', gap: 10 }}>
                                         <svg width="40" height="40" viewBox="0 0 40 40" style={{ flexShrink: 0 }}>
                                             <circle cx="20" cy="20" r={r3} fill="none" stroke="#F3F4F6" strokeWidth="4"/>
                                             <circle cx="20" cy="20" r={r3} fill="none" stroke={c3} strokeWidth="4"
@@ -2276,9 +2276,9 @@ export default function McAngebotsfeed() {
                                 ].map(({ val, label, color, tip }, i) => (
                                     <Tooltip key={label} text={tip}>
                                         <div style={{ padding: '10px 10px', borderRight: i < 2 ? '1px solid #F3F4F6' : 'none', cursor: 'help', textAlign: 'center' }}>
-                                            <div style={{ fontSize: 20, fontWeight: 900, color, lineHeight: 1, marginBottom: 2 }}>{val.toLocaleString(numLocale)}</div>
+                                            <div style={{ fontSize: 18, fontWeight: 900, color, lineHeight: 1, marginBottom: 2 }}>{val.toLocaleString(numLocale)}</div>
                                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 3 }}>
-                                                <span style={{ fontSize: 9, color: '#6B7280' }}>{label}</span>
+                                                <span style={{ fontSize: 10, color: '#6B7280' }}>{label}</span>
                                                 <svg width="10" height="10" viewBox="0 0 16 16" fill="none" style={{ color: '#9CA3AF', flexShrink: 0 }}><circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.3"/><path d="M8 7v4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="5" r="0.75" fill="currentColor"/></svg>
                                             </div>
                                         </div>
@@ -2385,13 +2385,13 @@ export default function McAngebotsfeed() {
                     <div style={{ width: '100%', maxWidth: 1100, display: 'flex', flexDirection: 'column', gap: 12 }}>
 
                         {/* Two-column layout */}
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 12, alignItems: 'start' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 16, alignItems: 'start' }}>
 
                             {/* Left: optional fields table */}
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
 
                                 {/* Field analysis table - matches step 3 layout */}
-                                <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', overflow: 'hidden' }}>
+                                <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'hidden' }}>
                                     <div style={{ padding: '12px 16px 10px', borderBottom: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', background: '#FFF', gap: 12 }}>
                                         <div style={{ minWidth: 0 }}>
                                             <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{T.optFieldsTitle}</div>
@@ -2460,7 +2460,7 @@ export default function McAngebotsfeed() {
                                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                                         {/* Image count distribution */}
                                         {imgStats && imgStats.total > 0 && (
-                                            <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', padding: '14px 16px' }}>
+                                            <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '14px 16px' }}>
                                                 <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 12 }}>
                                                     <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>
                                                         {lang === 'de' ? 'Bildanzahl: Verteilung' : 'Image Count: Distribution'}
@@ -2500,7 +2500,7 @@ export default function McAngebotsfeed() {
                                         )}
                                         {/* Description length distribution */}
                                         {descStats && descStats.total > 0 && (
-                                            <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', padding: '14px 16px' }}>
+                                            <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '14px 16px' }}>
                                                 <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 12 }}>
                                                     <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>
                                                         {lang === 'de' ? 'Beschreibungslänge: Verteilung' : 'Description Length: Distribution'}
