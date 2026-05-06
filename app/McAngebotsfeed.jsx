@@ -1491,9 +1491,6 @@ export default function McAngebotsfeed() {
                     const isDone = step > s.n;
                     const isClickable = s.n === 1 || (s.n === 2 && rows.length > 0) || ((s.n === 3 || s.n === 4 || s.n === 5) && issues);
                     const tabColor = isDone ? '#166534' : isActive ? MC_BLUE : TEXT_HINT;
-                    const badge3 = issues ? (issues.pflichtErrors.length + issues.eanDupRows.size + issues.nameDupRows.size + (issues.offerIdDupRows?.size || 0)) : 0;
-                    const badge4 = issues ? issues.optionalHints.length : 0;
-                    const badgeCount = s.n === 3 ? badge3 : s.n === 4 ? badge4 : 0;
                     return (
                         <button
                             key={s.n}
@@ -1509,11 +1506,6 @@ export default function McAngebotsfeed() {
                                 {isDone ? '✓' : s.n}
                             </div>
                             <span style={{ fontSize: 13, fontWeight: isActive ? 600 : 500, letterSpacing: 0.1 }}>{s.label}</span>
-                            {badgeCount > 0 && (
-                                <span style={{ fontSize: 9, fontWeight: 700, color: '#fff', background: '#DC2626', borderRadius: 10, padding: '1px 5px', lineHeight: 1.4, minWidth: 16, textAlign: 'center' }}>
-                                    {badgeCount > 999 ? '999+' : badgeCount}
-                                </span>
-                            )}
                             {s.n < 5 && (
                                 <span style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)', height: 18, width: 1, background: '#E5E7EB' }} />
                             )}
@@ -3149,46 +3141,44 @@ export default function McAngebotsfeed() {
                                     <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.06em', marginBottom: 12, textTransform: 'uppercase' }}>
                                         {lang === 'de' ? 'Feed-Übersicht' : 'Feed Overview'}
                                     </div>
-                                    <div style={{ display: 'flex', gap: 12 }}>
-                                        {(() => {
-                                            const s = issues.pflichtScore;
-                                            const label = lang === 'de' ? 'Pflichtfelder' : 'Required Fields';
-                                            const c = s >= 90 ? '#16A34A' : s >= 60 ? '#D97706' : '#DC2626';
-                                            const r = 18, circ = 2 * Math.PI * r;
-                                            return (
-                                                <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 10 }}>
-                                                    <svg width="44" height="44" viewBox="0 0 44 44" style={{ flexShrink: 0 }}>
-                                                        <circle cx="22" cy="22" r={r} fill="none" stroke="#F3F4F6" strokeWidth="4"/>
-                                                        <circle cx="22" cy="22" r={r} fill="none" stroke={c} strokeWidth="4"
+                                    {(() => {
+                                        const s = issues.pflichtScore;
+                                        const sc = s >= 90 ? '#16A34A' : s >= 60 ? '#D97706' : '#DC2626';
+                                        const r = 16, circ = 2 * Math.PI * r;
+                                        const lc = issues.livefaehigCount;
+                                        const tc = issues.totalRows;
+                                        const lColor = lc === tc ? '#16A34A' : lc > 0 ? '#D97706' : '#DC2626';
+                                        return (
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: 12, paddingBottom: 12 }}>
+                                                    <svg width="40" height="40" viewBox="0 0 40 40" style={{ flexShrink: 0 }}>
+                                                        <circle cx="20" cy="20" r={r} fill="none" stroke="#F3F4F6" strokeWidth="4"/>
+                                                        <circle cx="20" cy="20" r={r} fill="none" stroke={sc} strokeWidth="4"
                                                             strokeDasharray={`${(s / 100) * circ} ${circ}`}
-                                                            strokeLinecap="round" transform="rotate(-90 22 22)"
+                                                            strokeLinecap="round" transform="rotate(-90 20 20)"
                                                         />
-                                                        <text x="22" y="27" textAnchor="middle" fontSize="11" fontWeight="900" fill={c}>{s}</text>
+                                                        <text x="20" y="25" textAnchor="middle" fontSize="10" fontWeight="900" fill={sc}>{s}</text>
                                                     </svg>
                                                     <div>
-                                                        <div style={{ fontSize: 11, fontWeight: 700, color: '#111827' }}>{label}</div>
-                                                        <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 1 }}>{lang === 'de' ? 'von 100 Punkten' : 'out of 100 pts'}</div>
+                                                        <div style={{ fontSize: 13, fontWeight: 700, color: sc }}>{s} <span style={{ fontSize: 10, fontWeight: 500, color: '#9CA3AF' }}>{lang === 'de' ? '/ 100 Punkte' : '/ 100 pts'}</span></div>
+                                                        <div style={{ fontSize: 11, color: '#374151', marginTop: 1 }}>{lang === 'de' ? 'Pflichtfeld-Score' : 'Required field score'}</div>
                                                     </div>
                                                 </div>
-                                            );
-                                        })()}
-                                        {(() => {
-                                            const lc = issues.livefaehigCount;
-                                            const tc = issues.totalRows;
-                                            const lColor = lc === tc ? '#16A34A' : lc > 0 ? '#D97706' : '#DC2626';
-                                            return (
-                                                <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 10 }}>
-                                                    <div style={{ fontSize: 26, fontWeight: 900, color: lColor, lineHeight: 1, flexShrink: 0 }}>{lc.toLocaleString(numLocale)}</div>
+                                                <div style={{ height: 1, background: '#F3F4F6', marginBottom: 12 }} />
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                                                    <div style={{ width: 40, textAlign: 'center', flexShrink: 0 }}>
+                                                        <span style={{ fontSize: 26, fontWeight: 900, color: lColor, lineHeight: 1 }}>{lc.toLocaleString(numLocale)}</span>
+                                                    </div>
                                                     <div>
-                                                        <div style={{ fontSize: 11, fontWeight: 700, color: '#111827' }}>{lang === 'de' ? 'Listbar' : 'Listable'}</div>
-                                                        <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 1 }}>
+                                                        <div style={{ fontSize: 13, fontWeight: 700, color: lColor }}>{lang === 'de' ? 'Listbar' : 'Listable'}</div>
+                                                        <div style={{ fontSize: 11, color: '#374151', marginTop: 1 }}>
                                                             {lang === 'de' ? `von ${tc.toLocaleString(numLocale)} Artikeln` : `of ${tc.toLocaleString(numLocale)} items`}
                                                         </div>
                                                     </div>
                                                 </div>
-                                            );
-                                        })()}
-                                    </div>
+                                            </div>
+                                        );
+                                    })()}
                                 </div>
 
                                 {/* Download Fehlerbericht — primary CTA, shown first */}
