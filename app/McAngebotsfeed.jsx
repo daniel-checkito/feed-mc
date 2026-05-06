@@ -1479,7 +1479,7 @@ export default function McAngebotsfeed() {
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
             {/* Step tabs bar */}
-            <div style={{ background: '#fff', borderBottom: '1px solid #E2E6EE', padding: '0 32px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0, flexShrink: 0 }}>
+            <div style={{ background: '#fff', borderBottom: '1px solid #E2E6EE', padding: '0 32px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0, flexShrink: 0, position: 'relative' }}>
                 {[
                     { n: 1, label: T.stepUpload },
                     { n: 2, label: T.stepMapping },
@@ -1520,10 +1520,10 @@ export default function McAngebotsfeed() {
                         </button>
                     );
                 })}
-                {/* Start over link — visible when a file is loaded */}
+                {/* Start over link — absolutely positioned so tabs stay centered */}
                 {rows.length > 0 && (
                     <button type="button" onClick={resetToStart}
-                        style={{ marginLeft: 'auto', height: 50, display: 'flex', alignItems: 'center', gap: 5, padding: '0 20px', background: 'none', border: 'none', cursor: 'pointer', color: '#9CA3AF', fontSize: 11, fontWeight: 500, whiteSpace: 'nowrap', flexShrink: 0 }}>
+                        style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', display: 'flex', alignItems: 'center', gap: 5, padding: '6px 12px', background: 'none', border: 'none', cursor: 'pointer', color: '#9CA3AF', fontSize: 11, fontWeight: 500, whiteSpace: 'nowrap' }}>
                         <svg width="11" height="11" viewBox="0 0 14 14" fill="none"><path d="M2 7a5 5 0 105-5H5m0 0l2-2M5 2L3 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                         {lang === 'de' ? 'Neu starten' : 'Start over'}
                     </button>
@@ -2041,6 +2041,17 @@ export default function McAngebotsfeed() {
                 }).length;
 
                 // Build per-type error breakdown for sidebar
+                const eanCol3 = mcMapping.ean;
+                const getEansFromRowSet = (rowNumSet, max = 5) => {
+                    if (!eanCol3 || !rowNumSet) return [];
+                    const result = [];
+                    for (const rn of rowNumSet) {
+                        const ean = String(rows[rn - 1]?.[eanCol3] ?? '').trim();
+                        if (ean && !result.includes(ean)) result.push(ean);
+                        if (result.length >= max) break;
+                    }
+                    return result;
+                };
                 const errorsByType = {};
                 issues.pflichtErrors.forEach((e) => {
                     const fieldLabel = T.csvFieldLabels[e.field] || e.field;
@@ -2062,12 +2073,15 @@ export default function McAngebotsfeed() {
                     else if (e.type === 'wrong_category') label = T.csvWrongCategory;
                     else label = T.csvErrFallback(fieldLabel);
                     const key = `${e.field}::${e.type}`;
-                    if (!errorsByType[key]) errorsByType[key] = { label, count: 0 };
+                    if (!errorsByType[key]) errorsByType[key] = { label, count: 0, sampleEans: [] };
                     errorsByType[key].count++;
+                    if (e.ean && errorsByType[key].sampleEans.length < 5 && !errorsByType[key].sampleEans.includes(e.ean)) {
+                        errorsByType[key].sampleEans.push(e.ean);
+                    }
                 });
-                if (issues.eanDupRows.size > 0) errorsByType['ean::dup'] = { label: T.csvEanDup, count: issues.eanDupRows.size };
-                if (issues.nameDupRows.size > 0) errorsByType['name::dup'] = { label: T.csvNameDup, count: issues.nameDupRows.size };
-                if (issues.offerIdDupRows && issues.offerIdDupRows.size > 0) errorsByType['seller_offer_id::dup'] = { label: T.csvOfferIdDup, count: issues.offerIdDupRows.size };
+                if (issues.eanDupRows.size > 0) errorsByType['ean::dup'] = { label: T.csvEanDup, count: issues.eanDupRows.size, sampleEans: getEansFromRowSet(issues.eanDupRows) };
+                if (issues.nameDupRows.size > 0) errorsByType['name::dup'] = { label: T.csvNameDup, count: issues.nameDupRows.size, sampleEans: getEansFromRowSet(issues.nameDupRows) };
+                if (issues.offerIdDupRows && issues.offerIdDupRows.size > 0) errorsByType['seller_offer_id::dup'] = { label: T.csvOfferIdDup, count: issues.offerIdDupRows.size, sampleEans: getEansFromRowSet(issues.offerIdDupRows) };
                 const detailedErrors = Object.values(errorsByType)
                     .sort((a, b) => b.count - a.count)
                     .slice(0, 7);
@@ -2249,27 +2263,42 @@ export default function McAngebotsfeed() {
                                     ? (mcMapping.availability || mcMapping.stock_amount)
                                     : key === 'image_url' ? mcImageColumns[0]
                                     : mcMapping[key];
-                                const exampleVals = mappedCol
+                                const errorEans3 = hasError ? getEansFromRowSet(fieldErrorRows[key]) : [];
+                                const exampleVals = !hasError && mappedCol
                                     ? [...new Set(rows.slice(0, 30).map(r => String(r[mappedCol] ?? '').trim()).filter(Boolean))].slice(0, 3)
                                     : [];
+                                const totalErrCount = fieldErrorRows[key]?.size || 0;
                                 return (
-                                    <div key={key} style={{ display: 'grid', gridTemplateColumns: '1fr 90px 120px', padding: '5px 16px', borderBottom: '1px solid #F9FAFB', alignItems: 'center', background: hasError ? (barColor === '#DC2626' ? '#FEF2F2' : '#FFFBF5') : 'transparent', borderLeft: hasError ? `3px solid ${barColor}` : '3px solid transparent' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-                                            <div style={{ fontSize: 11, color: hasError ? '#92400E' : '#374151', fontWeight: hasError ? 600 : 500, flexShrink: 0 }}>{label}</div>
-                                            {exampleVals.length > 0 && (
-                                                <div style={{ display: 'flex', gap: 4, flexWrap: 'nowrap', overflow: 'hidden', maxWidth: 220 }}>
-                                                    {exampleVals.slice(0, 2).map((v, i) => (
-                                                        <span key={i} style={{ fontSize: 9, color: '#6B7280', background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block', flexShrink: 0 }}>{v}</span>
+                                    <div key={key} style={{ display: 'grid', gridTemplateColumns: '1fr 90px 120px', padding: '5px 16px', borderBottom: '1px solid #F9FAFB', alignItems: 'start', background: hasError ? (barColor === '#DC2626' ? '#FEF2F2' : '#FFFBF5') : 'transparent', borderLeft: hasError ? `3px solid ${barColor}` : '3px solid transparent' }}>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0, paddingTop: 2, paddingBottom: hasError && errorEans3.length > 0 ? 4 : 0 }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                                <div style={{ fontSize: 11, color: hasError ? '#92400E' : '#374151', fontWeight: hasError ? 600 : 500, flexShrink: 0 }}>{label}</div>
+                                                {exampleVals.length > 0 && (
+                                                    <div style={{ display: 'flex', gap: 4, flexWrap: 'nowrap', overflow: 'hidden', maxWidth: 220 }}>
+                                                        {exampleVals.slice(0, 2).map((v, i) => (
+                                                            <span key={i} style={{ fontSize: 9, color: '#6B7280', background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block', flexShrink: 0 }}>{v}</span>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            {hasError && errorEans3.length > 0 && (
+                                                <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 3 }}>
+                                                    <span style={{ fontSize: 9, color: '#9CA3AF', fontWeight: 600 }}>EAN:</span>
+                                                    {errorEans3.map((ean) => (
+                                                        <span key={ean} style={{ fontSize: 9, color: '#374151', background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', fontFamily: 'monospace', flexShrink: 0 }}>{ean}</span>
                                                     ))}
+                                                    {totalErrCount > errorEans3.length && (
+                                                        <span style={{ fontSize: 9, color: '#9CA3AF' }}>+{totalErrCount - errorEans3.length} {lang === 'de' ? 'weitere' : 'more'}</span>
+                                                    )}
                                                 </div>
                                             )}
                                         </div>
-                                        <div style={{ textAlign: 'right', fontSize: 10, fontWeight: 600, whiteSpace: 'nowrap' }}>
+                                        <div style={{ textAlign: 'right', fontSize: 10, fontWeight: 600, whiteSpace: 'nowrap', paddingTop: 2 }}>
                                             {pct === null ? <span style={{ color: '#9CA3AF' }}>{T.notInFeed}</span>
                                                 : errs === 0 ? <span style={{ color: '#16A34A' }}>{T.complete}</span>
                                                 : <span style={{ color: barColor }}>{T.missingCount(errs.toLocaleString(numLocale))}</span>}
                                         </div>
-                                        <div style={{ paddingLeft: 12, display: 'flex', alignItems: 'center', gap: 5 }}>
+                                        <div style={{ paddingLeft: 12, paddingTop: 2, display: 'flex', alignItems: 'center', gap: 5 }}>
                                             {pct !== null ? (
                                                 <>
                                                     <div style={{ flex: 1, height: 4, background: '#F3F4F6', borderRadius: 2, overflow: 'hidden' }}>
@@ -2435,6 +2464,15 @@ export default function McAngebotsfeed() {
                 const completeOptionalFields = optFieldStats.fields.filter(f => !f.notMapped && f.pct === 100).length;
                 const errorOptionalFields = optFieldStats.fields.filter(f => !f.notMapped && f.pct < 100).length;
 
+                // Build EAN lookup per optional field from optionalHints
+                const optHintsByField = {};
+                issues.optionalHints.forEach(({ field, ean }) => {
+                    if (!optHintsByField[field]) optHintsByField[field] = [];
+                    if (ean && optHintsByField[field].length < 5 && !optHintsByField[field].includes(ean)) {
+                        optHintsByField[field].push(ean);
+                    }
+                });
+
                 return (
                     <div style={{ width: '100%', maxWidth: 1100, display: 'flex', flexDirection: 'column', gap: 12 }}>
 
@@ -2468,27 +2506,41 @@ export default function McAngebotsfeed() {
                                         const hasError = pct !== null && errs > 0;
                                         const barColor = pct === null ? '#E5E7EB' : pct === 100 ? '#16A34A' : pct >= 70 ? '#D97706' : '#DC2626';
                                         const mappedCol = mcMapping[f.field];
-                                        const exampleVals = mappedCol
+                                        const exampleVals = !hasError && mappedCol
                                             ? [...new Set(rows.slice(0, 30).map(r => String(r[mappedCol] ?? '').trim()).filter(Boolean))].slice(0, 3)
                                             : [];
+                                        const errorEans4 = hasError ? (optHintsByField[f.field] || []) : [];
                                         return (
-                                            <div key={f.field} style={{ display: 'grid', gridTemplateColumns: '1fr 90px 120px', padding: '5px 16px', borderBottom: '1px solid #F9FAFB', alignItems: 'center', background: hasError ? (barColor === '#DC2626' ? '#FEF2F2' : '#FFFBF5') : 'transparent', borderLeft: hasError ? `3px solid ${barColor}` : '3px solid transparent' }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-                                                    <div style={{ fontSize: 11, color: hasError ? '#92400E' : '#374151', fontWeight: hasError ? 600 : 500, flexShrink: 0 }}>{label}</div>
-                                                    {exampleVals.length > 0 && (
-                                                        <div style={{ display: 'flex', gap: 4, flexWrap: 'nowrap', overflow: 'hidden', maxWidth: 220 }}>
-                                                            {exampleVals.slice(0, 2).map((v, i) => (
-                                                                <span key={i} style={{ fontSize: 9, color: '#6B7280', background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block', flexShrink: 0 }}>{v}</span>
+                                            <div key={f.field} style={{ display: 'grid', gridTemplateColumns: '1fr 90px 120px', padding: '5px 16px', borderBottom: '1px solid #F9FAFB', alignItems: 'start', background: hasError ? (barColor === '#DC2626' ? '#FEF2F2' : '#FFFBF5') : 'transparent', borderLeft: hasError ? `3px solid ${barColor}` : '3px solid transparent' }}>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0, paddingTop: 2, paddingBottom: hasError && errorEans4.length > 0 ? 4 : 0 }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                                        <div style={{ fontSize: 11, color: hasError ? '#92400E' : '#374151', fontWeight: hasError ? 600 : 500, flexShrink: 0 }}>{label}</div>
+                                                        {exampleVals.length > 0 && (
+                                                            <div style={{ display: 'flex', gap: 4, flexWrap: 'nowrap', overflow: 'hidden', maxWidth: 220 }}>
+                                                                {exampleVals.slice(0, 2).map((v, i) => (
+                                                                    <span key={i} style={{ fontSize: 9, color: '#6B7280', background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block', flexShrink: 0 }}>{v}</span>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    {hasError && errorEans4.length > 0 && (
+                                                        <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 3 }}>
+                                                            <span style={{ fontSize: 9, color: '#9CA3AF', fontWeight: 600 }}>EAN:</span>
+                                                            {errorEans4.map((ean) => (
+                                                                <span key={ean} style={{ fontSize: 9, color: '#374151', background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', fontFamily: 'monospace', flexShrink: 0 }}>{ean}</span>
                                                             ))}
+                                                            {errs > errorEans4.length && (
+                                                                <span style={{ fontSize: 9, color: '#9CA3AF' }}>+{errs - errorEans4.length} {lang === 'de' ? 'weitere' : 'more'}</span>
+                                                            )}
                                                         </div>
                                                     )}
                                                 </div>
-                                                <div style={{ textAlign: 'right', fontSize: 10, fontWeight: 600, whiteSpace: 'nowrap' }}>
+                                                <div style={{ textAlign: 'right', fontSize: 10, fontWeight: 600, whiteSpace: 'nowrap', paddingTop: 2 }}>
                                                     {pct === null ? <span style={{ color: '#9CA3AF' }}>{T.notInFeed}</span>
                                                         : errs === 0 ? <span style={{ color: '#16A34A' }}>{T.complete}</span>
                                                         : <span style={{ color: barColor }}>{T.missingCount(errs.toLocaleString(numLocale))}</span>}
                                                 </div>
-                                                <div style={{ paddingLeft: 12, display: 'flex', alignItems: 'center', gap: 5 }}>
+                                                <div style={{ paddingLeft: 12, paddingTop: 2, display: 'flex', alignItems: 'center', gap: 5 }}>
                                                     {pct !== null ? (
                                                         <>
                                                             <div style={{ flex: 1, height: 4, background: '#F3F4F6', borderRadius: 2, overflow: 'hidden' }}>
