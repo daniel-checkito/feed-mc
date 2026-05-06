@@ -844,6 +844,7 @@ export default function McAngebotsfeed() {
     const [lang, setLang] = useState('de');
     const [langOpen, setLangOpen] = useState(false);
     const [alwaysAvailable, setAlwaysAvailable] = useState(false);
+    const [optionalExpanded, setOptionalExpanded] = useState(false);
     const fileRef = useRef(null);
 
     function parseFile(f) {
@@ -1905,21 +1906,47 @@ export default function McAngebotsfeed() {
                                     </div>
 
                                     {/* MIDDLE: Optionale Felder */}
-                                    <div style={{ padding: '12px 14px', borderRight: '1px solid #F3F4F6', minWidth: 0, overflowX: 'hidden', maxHeight: 520, overflowY: 'auto' }}>
-                                        <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.06em', marginBottom: 8 }}>
-                                            {langDE ? 'OPTIONALE FELDER' : 'OPTIONAL FIELDS'}
-                                        </div>
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                                            {optionalFieldsMid.map((f) => (
-                                                <MappingRow
-                                                    key={f}
-                                                    fieldKey={f}
-                                                    label={FIELD_LABELS[f] || f}
-                                                    isPflicht={false}
-                                                />
-                                            ))}
-                                        </div>
-                                    </div>
+                                    {(() => {
+                                        const matchedOpt = optionalFieldsMid.filter((f) => !!mcMapping[f]);
+                                        const unmatchedOpt = optionalFieldsMid.filter((f) => !mcMapping[f]);
+                                        return (
+                                            <div style={{ padding: '12px 14px', borderRight: '1px solid #F3F4F6', minWidth: 0, overflowX: 'hidden' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                                                    <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.06em' }}>
+                                                        {langDE ? 'OPTIONALE FELDER' : 'OPTIONAL FIELDS'}
+                                                    </div>
+                                                    <div style={{ fontSize: 10, color: '#9CA3AF' }}>
+                                                        {matchedOpt.length}/{optionalFieldsMid.length} {langDE ? 'zugeordnet' : 'mapped'}
+                                                    </div>
+                                                </div>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                                    {matchedOpt.length === 0 && !optionalExpanded && (
+                                                        <div style={{ fontSize: 11, color: '#9CA3AF', padding: '6px 2px' }}>
+                                                            {langDE ? 'Keine optionalen Felder erkannt.' : 'No optional fields detected.'}
+                                                        </div>
+                                                    )}
+                                                    {matchedOpt.map((f) => (
+                                                        <MappingRow key={f} fieldKey={f} label={FIELD_LABELS[f] || f} isPflicht={false} />
+                                                    ))}
+                                                    {optionalExpanded && unmatchedOpt.map((f) => (
+                                                        <MappingRow key={f} fieldKey={f} label={FIELD_LABELS[f] || f} isPflicht={false} />
+                                                    ))}
+                                                </div>
+                                                {unmatchedOpt.length > 0 && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setOptionalExpanded((v) => !v)}
+                                                        style={{ marginTop: 8, width: '100%', padding: '5px 8px', background: 'none', border: '1px dashed #D1D5DB', borderRadius: 5, fontSize: 11, color: '#6B7280', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}
+                                                    >
+                                                        <svg width="10" height="10" viewBox="0 0 12 12" fill="none" style={{ transform: optionalExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }}><path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                                        {optionalExpanded
+                                                            ? (langDE ? 'Weniger anzeigen' : 'Show less')
+                                                            : (langDE ? `${unmatchedOpt.length} weitere anzeigen` : `Show ${unmatchedOpt.length} more`)}
+                                                    </button>
+                                                )}
+                                            </div>
+                                        );
+                                    })()}
 
                                     {/* RIGHT: Warnings / unassigned pflicht fields */}
                                     <div style={{ padding: '12px 14px', background: '#FFF', minWidth: 0, overflowX: 'hidden' }}>
@@ -2499,21 +2526,22 @@ export default function McAngebotsfeed() {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end', height: 60, marginBottom: 8 }}>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 8 }}>
                                                     {[
-                                                        { key: 'none', label: '0', color: '#EF4444', desc: lang === 'de' ? 'Kein Bild' : 'No image' },
-                                                        { key: 'one',  label: '1', color: '#F59E0B', desc: lang === 'de' ? '1 Bild' : '1 image' },
-                                                        { key: 'two',  label: '2', color: '#D97706', desc: lang === 'de' ? '2 Bilder' : '2 images' },
-                                                        { key: 'good', label: '3+', color: '#16A34A', desc: lang === 'de' ? '3+ Bilder' : '3+ images' },
-                                                    ].map(({ key, label, color, desc }) => {
+                                                        { key: 'none', label: lang === 'de' ? '0 Bilder' : '0 images', color: '#EF4444' },
+                                                        { key: 'one',  label: lang === 'de' ? '1 Bild' : '1 image',   color: '#F59E0B' },
+                                                        { key: 'two',  label: lang === 'de' ? '2 Bilder' : '2 images', color: '#D97706' },
+                                                        { key: 'good', label: lang === 'de' ? '3+ Bilder' : '3+ images', color: '#16A34A' },
+                                                    ].map(({ key, label, color }) => {
                                                         const cnt = imgStats.buckets[key];
                                                         const pct = imgStats.total ? Math.round((cnt / imgStats.total) * 100) : 0;
                                                         return (
-                                                            <div key={key} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
-                                                                <div style={{ fontSize: 9, fontWeight: 700, color }}>{pct}%</div>
-                                                                <div style={{ width: '100%', height: Math.max(4, pct * 0.44), background: color, borderRadius: 3, opacity: 0.85 }} />
-                                                                <div style={{ fontSize: 10, color: '#9CA3AF', textAlign: 'center', lineHeight: 1.2 }}>{label}</div>
-                                                                <div style={{ fontSize: 10, color: '#6B7280', fontWeight: 600, textAlign: 'center' }}>{desc}</div>
+                                                            <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                                                                <div style={{ width: 56, fontSize: 10, color: '#374151', fontWeight: 500, textAlign: 'right', flexShrink: 0 }}>{label}</div>
+                                                                <div style={{ flex: 1, height: 10, background: '#F3F4F6', borderRadius: 5, overflow: 'hidden' }}>
+                                                                    <div style={{ height: '100%', width: `${pct}%`, background: color, borderRadius: 5, transition: 'width 0.4s' }} />
+                                                                </div>
+                                                                <div style={{ width: 30, fontSize: 10, fontWeight: 700, color, textAlign: 'left', flexShrink: 0 }}>{pct}%</div>
                                                             </div>
                                                         );
                                                     })}
