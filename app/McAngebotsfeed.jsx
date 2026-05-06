@@ -2296,10 +2296,6 @@ export default function McAngebotsfeed() {
                                         {stufe1Passed ? (lang === 'de' ? 'Zusammenfassung →' : 'Summary →') : T.recNextStep}
                                     </button>
                                 </div>
-                                <button type="button" onClick={resetToStart}
-                                    style={{ width: '100%', padding: '5px', background: 'none', color: '#9CA3AF', border: 'none', borderRadius: 6, fontSize: 10, cursor: 'pointer' }}>
-                                    {lang === 'de' ? 'Neuen Feed hochladen' : 'Upload New Feed'}
-                                </button>
                             </div>
 
                         </div>{/* end right panel */}
@@ -2442,6 +2438,38 @@ export default function McAngebotsfeed() {
                                 )}
                             </div>
                         )}
+
+                        {/* Quality Tips card */}
+                        <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', padding: '14px 20px', gridColumn: 1 }}>
+                            <div style={{ fontSize: 12, fontWeight: 700, color: '#111827', marginBottom: 12 }}>{T.qualityTitle}</div>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 10 }}>
+                                {T.qualityTips.map((tip) => (
+                                    <div key={tip.field} style={{ background: '#F9FAFB', borderRadius: 8, border: '1px solid #E5E7EB', padding: '10px 12px' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                                            <span style={{ fontSize: 14 }}>{tip.icon}</span>
+                                            <span style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{tip.title}</span>
+                                        </div>
+                                        {tip.bad && tip.good && (
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4, marginBottom: 6 }}>
+                                                <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 5, padding: '4px 6px' }}>
+                                                    <div style={{ fontSize: 8, fontWeight: 700, color: '#DC2626', marginBottom: 2 }}>✗</div>
+                                                    <div style={{ fontSize: 9, color: '#991B1B', fontFamily: 'monospace', lineHeight: 1.4 }}>{tip.bad}</div>
+                                                </div>
+                                                <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 5, padding: '4px 6px' }}>
+                                                    <div style={{ fontSize: 8, fontWeight: 700, color: '#16A34A', marginBottom: 2 }}>✓</div>
+                                                    <div style={{ fontSize: 9, color: '#166534', fontFamily: 'monospace', lineHeight: 1.4 }}>{tip.good}</div>
+                                                </div>
+                                            </div>
+                                        )}
+                                        <ul style={{ margin: 0, padding: '0 0 0 12px', display: 'grid', gap: 2 }}>
+                                            {tip.tips.map((t, i) => (
+                                                <li key={i} style={{ fontSize: 10, color: '#374151', lineHeight: 1.4 }}>{t}</li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
 
                         </div>{/* end grid */}
 
