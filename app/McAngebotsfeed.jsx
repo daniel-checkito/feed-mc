@@ -981,7 +981,10 @@ export default function McAngebotsfeed() {
                             pflichtErrors.push({ row: rn, ean, field: 'availability', type: 'placeholder', value: avVal });
                             pflichtOk = false;
                         }
-                        if (stVal && !/^\d+$/.test(stVal)) {
+                        // Only flag stock_amount as invalid when it's the sole availability signal;
+                        // if a valid avVal is already present, a non-numeric stVal is just a secondary field issue
+                        const avOk = avVal && !isPlaceholder(avVal);
+                        if (stVal && !/^\d+$/.test(stVal) && !avOk) {
                             pflichtErrors.push({ row: rn, ean, field: 'stock_amount', type: 'invalid', value: stVal });
                             pflichtOk = false;
                         }
@@ -1487,6 +1490,9 @@ export default function McAngebotsfeed() {
                     const isDone = step > s.n;
                     const isClickable = s.n === 1 || (s.n === 2 && rows.length > 0) || ((s.n === 3 || s.n === 4 || s.n === 5) && issues);
                     const tabColor = isDone ? '#166534' : isActive ? MC_BLUE : TEXT_HINT;
+                    const badge3 = issues ? (issues.pflichtErrors.length + issues.eanDupRows.size + issues.nameDupRows.size + (issues.offerIdDupRows?.size || 0)) : 0;
+                    const badge4 = issues ? issues.optionalHints.length : 0;
+                    const badgeCount = s.n === 3 ? badge3 : s.n === 4 ? badge4 : 0;
                     return (
                         <button
                             key={s.n}
@@ -1502,12 +1508,25 @@ export default function McAngebotsfeed() {
                                 {isDone ? '✓' : s.n}
                             </div>
                             <span style={{ fontSize: 13, fontWeight: isActive ? 600 : 500, letterSpacing: 0.1 }}>{s.label}</span>
+                            {badgeCount > 0 && (
+                                <span style={{ fontSize: 9, fontWeight: 700, color: '#fff', background: '#DC2626', borderRadius: 10, padding: '1px 5px', lineHeight: 1.4, minWidth: 16, textAlign: 'center' }}>
+                                    {badgeCount > 999 ? '999+' : badgeCount}
+                                </span>
+                            )}
                             {s.n < 5 && (
                                 <span style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)', height: 18, width: 1, background: '#E5E7EB' }} />
                             )}
                         </button>
                     );
                 })}
+                {/* Start over link — visible when a file is loaded */}
+                {rows.length > 0 && (
+                    <button type="button" onClick={resetToStart}
+                        style={{ marginLeft: 'auto', height: 50, display: 'flex', alignItems: 'center', gap: 5, padding: '0 20px', background: 'none', border: 'none', cursor: 'pointer', color: '#9CA3AF', fontSize: 11, fontWeight: 500, whiteSpace: 'nowrap', flexShrink: 0 }}>
+                        <svg width="11" height="11" viewBox="0 0 14 14" fill="none"><path d="M2 7a5 5 0 105-5H5m0 0l2-2M5 2L3 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                        {lang === 'de' ? 'Neu starten' : 'Start over'}
+                    </button>
+                )}
             </div>
 
             {/* Scrollable area: step content + sticky bars */}
@@ -1847,10 +1866,18 @@ export default function McAngebotsfeed() {
                             <div style={{ background: '#FFF', borderRadius: 12, overflow: 'hidden' }}>
 
                                 {/* Card header */}
-                                <div style={{ padding: '16px 20px 12px', borderBottom: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
-                                    <div style={{ fontSize: 16, fontWeight: 800, color: '#111827' }}>{T.mappingTitle}</div>
+                                <div style={{ padding: '16px 20px 12px', borderBottom: '1px solid #F3F4F6' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, marginBottom: missingPflicht2.length > 0 ? 6 : 0 }}>
+                                        <div style={{ fontSize: 16, fontWeight: 800, color: '#111827' }}>{T.mappingTitle}</div>
+                                        {missingPflicht2.length > 0 && (
+                                            <div style={{ fontSize: 12, color: '#DC2626', fontWeight: 600 }}>{T.mappingMissing(missingPflicht2.length)}</div>
+                                        )}
+                                    </div>
                                     {missingPflicht2.length > 0 && (
-                                        <div style={{ fontSize: 12, color: '#DC2626', fontWeight: 600 }}>{T.mappingMissing(missingPflicht2.length)}</div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: '#DC2626' }}>
+                                            <span style={{ color: '#DC2626', fontWeight: 700 }}>*</span>
+                                            <span>{langDE ? 'Rot markierte Felder sind Pflichtfelder und müssen zugeordnet werden.' : 'Fields marked red are required and must be mapped before continuing.'}</span>
+                                        </div>
                                     )}
                                 </div>
 
@@ -2465,8 +2492,11 @@ export default function McAngebotsfeed() {
                                                     <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>
                                                         {lang === 'de' ? 'Bildanzahl: Verteilung' : 'Image Count: Distribution'}
                                                     </div>
-                                                    <div style={{ fontSize: 10, color: '#9CA3AF' }}>
-                                                        {lang === 'de' ? `Ø ${imgStats.avg.toLocaleString(numLocale)}` : `Avg. ${imgStats.avg.toLocaleString(numLocale)}`}
+                                                    <div style={{ display: 'flex', gap: 8 }}>
+                                                        <div style={{ fontSize: 10, color: '#16A34A', fontWeight: 600 }}>{lang === 'de' ? 'Ziel: 3+' : 'Target: 3+'}</div>
+                                                        <div style={{ fontSize: 10, color: '#9CA3AF' }}>
+                                                            {lang === 'de' ? `Ø ${imgStats.avg.toLocaleString(numLocale)}` : `Avg. ${imgStats.avg.toLocaleString(numLocale)}`}
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end', height: 60, marginBottom: 8 }}>
@@ -3080,6 +3110,20 @@ export default function McAngebotsfeed() {
                                     </div>
                                 </div>
 
+                                {/* Download Fehlerbericht — primary CTA, shown first */}
+                                <div style={{ background: '#EEF4FF', border: `2px solid ${MC_BLUE}`, borderRadius: 12, padding: '16px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                                        <svg width="16" height="16" viewBox="0 0 18 18" fill="none"><path d="M9 2v10M6 9l3 3 3-3M2 15h14" stroke={MC_BLUE} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                        <span style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{T.recDownloadTitle}</span>
+                                    </div>
+                                    <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 12, lineHeight: 1.5 }}>{T.recDownloadDesc}</div>
+                                    <button type="button" onClick={csvOnClick}
+                                        style={{ width: '100%', padding: '11px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
+                                        <svg width="13" height="13" viewBox="0 0 15 15" fill="none"><path d="M7.5 2v8M5 7l2.5 2.5L10 7M2 13h11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                        {T.recDownloadBtn}
+                                    </button>
+                                </div>
+
                                 {/* Next steps workflow */}
                                 <div style={{ background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 12, padding: '14px 16px' }}>
                                     <div style={{ fontSize: 11, fontWeight: 700, color: '#374151', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
@@ -3110,20 +3154,6 @@ export default function McAngebotsfeed() {
                                             </div>
                                         </div>
                                     ))}
-                                </div>
-
-                                {/* Download Fehlerbericht */}
-                                <div style={{ background: '#EEF4FF', border: `2px solid ${MC_BLUE}`, borderRadius: 12, padding: '16px' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                                        <svg width="16" height="16" viewBox="0 0 18 18" fill="none"><path d="M9 2v10M6 9l3 3 3-3M2 15h14" stroke={MC_BLUE} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                        <span style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{T.recDownloadTitle}</span>
-                                    </div>
-                                    <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 12, lineHeight: 1.5 }}>{T.recDownloadDesc}</div>
-                                    <button type="button" onClick={csvOnClick}
-                                        style={{ width: '100%', padding: '11px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
-                                        <svg width="13" height="13" viewBox="0 0 15 15" fill="none"><path d="M7.5 2v8M5 7l2.5 2.5L10 7M2 13h11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                        {T.recDownloadBtn}
-                                    </button>
                                 </div>
 
                                 {/* Nav */}
