@@ -2145,20 +2145,7 @@ export default function McAngebotsfeed() {
                                 ))}
                             </div>
                             {/* Filename + nav buttons */}
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6, flexShrink: 0 }}>
-                                {file && <span style={{ fontSize: 11, color: '#9CA3AF' }}>{file.name}</span>}
-                                <div style={{ display: 'flex', gap: 6 }}>
-                                    <button type="button" onClick={() => setStep(2)}
-                                        style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 12px', background: '#FFF', border: '1px solid #D1D5DB', borderRadius: 7, fontSize: 12, fontWeight: 600, color: '#374151', cursor: 'pointer' }}>
-                                        <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                        {T.back}
-                                    </button>
-                                    <button type="button" onClick={resetToStart}
-                                        style={{ padding: '7px 12px', background: '#FFF', border: '1px solid #D1D5DB', borderRadius: 7, fontSize: 12, fontWeight: 600, color: '#374151', cursor: 'pointer' }}>
-                                        {lang === 'de' ? 'Neuer Feed' : 'New Feed'}
-                                    </button>
-                                </div>
-                            </div>
+                            {file && <span style={{ fontSize: 11, color: '#9CA3AF', flexShrink: 0 }}>{file.name}</span>}
                         </div>
 
                         {/* 2-column: table | action panel */}
