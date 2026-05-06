@@ -2615,25 +2615,26 @@ export default function McAngebotsfeed() {
                                                     <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>
                                                         {lang === 'de' ? 'Beschreibungslänge: Verteilung' : 'Description Length: Distribution'}
                                                     </div>
-                                                    <div style={{ fontSize: 10, color: '#9CA3AF' }}>
+                                                    <div style={{ fontSize: 10, color: '#16A34A', fontWeight: 600 }}>
                                                         {lang === 'de' ? 'Ziel: 300+ Zeichen' : 'Target: 300+ chars'}
                                                     </div>
                                                 </div>
-                                                <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end', height: 60, marginBottom: 8 }}>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 8 }}>
                                                     {[
-                                                        { key: 'none',  label: lang === 'de' ? 'Leer' : 'Empty', color: '#EF4444', desc: '0' },
-                                                        { key: 'short', label: lang === 'de' ? 'Kurz' : 'Short', color: '#F59E0B', desc: '<100' },
-                                                        { key: 'ok',    label: lang === 'de' ? 'OK' : 'OK',     color: '#60A5FA', desc: '100-299' },
-                                                        { key: 'good',  label: lang === 'de' ? 'Gut' : 'Good',  color: '#16A34A', desc: '300+' },
-                                                    ].map(({ key, label, color, desc }) => {
+                                                        { key: 'none',  label: lang === 'de' ? 'Leer (0)' : 'Empty (0)',       color: '#EF4444' },
+                                                        { key: 'short', label: lang === 'de' ? 'Kurz (<100)' : 'Short (<100)', color: '#F59E0B' },
+                                                        { key: 'ok',    label: lang === 'de' ? 'OK (100–299)' : 'OK (100–299)', color: '#60A5FA' },
+                                                        { key: 'good',  label: lang === 'de' ? 'Gut (300+)' : 'Good (300+)',   color: '#16A34A' },
+                                                    ].map(({ key, label, color }) => {
                                                         const cnt = descStats.buckets[key];
                                                         const pct = descStats.total ? Math.round((cnt / descStats.total) * 100) : 0;
                                                         return (
-                                                            <div key={key} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
-                                                                <div style={{ fontSize: 9, fontWeight: 700, color }}>{pct}%</div>
-                                                                <div style={{ width: '100%', height: Math.max(4, pct * 0.44), background: color, borderRadius: 3, opacity: 0.85 }} />
-                                                                <div style={{ fontSize: 10, color: '#9CA3AF', textAlign: 'center', lineHeight: 1.2 }}>{desc}</div>
-                                                                <div style={{ fontSize: 10, color: '#6B7280', fontWeight: 600, textAlign: 'center' }}>{label}</div>
+                                                            <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                                                                <div style={{ width: 68, fontSize: 10, color: '#374151', fontWeight: 500, textAlign: 'right', flexShrink: 0 }}>{label}</div>
+                                                                <div style={{ flex: 1, height: 10, background: '#F3F4F6', borderRadius: 5, overflow: 'hidden' }}>
+                                                                    <div style={{ height: '100%', width: `${pct}%`, background: color, borderRadius: 5, transition: 'width 0.4s' }} />
+                                                                </div>
+                                                                <div style={{ width: 30, fontSize: 10, fontWeight: 700, color, textAlign: 'left', flexShrink: 0 }}>{pct}%</div>
                                                             </div>
                                                         );
                                                     })}
