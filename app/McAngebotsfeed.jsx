@@ -411,12 +411,12 @@ const DE_T = {
     stepUpload: 'Hochladen', stepMapping: 'Zuordnung', stepResults: 'Pflichtfeldanalyse', stepOptional: 'Optionale Felder', stepRecommendations: 'Empfehlungen',
     helpContact: 'Hilfe & Kontakt',
     // Step 1
-    s1Heading: 'Feed hochladen',
-    s1Sub: 'Laden Sie Ihren Angebotsfeed als CSV hoch. Wir prüfen alle Pflichtfelder und zeigen genau, welche Artikel Fehler haben.',
+    s1Heading: 'Ihren Feed prüfen',
+    s1Sub: 'CSV hochladen - wir analysieren Pflicht- und optionale Felder und zeigen, welche Artikel listingfähig sind.',
     fileReading: 'Wird gelesen…',
     fileLoaded: (n) => `${n} Artikel erkannt`,
-    fileChange: 'Ändern',
-    dropHeading: 'CSV-Datei hochladen',
+    fileChange: 'Andere Datei',
+    dropHeading: 'CSV-Datei auswählen',
     dropSub: 'Hierher ziehen oder klicken',
     warehouseLabel: 'Lagerstandort des Händlers',
     warehouseDE: 'Deutschland', warehouseNonDE: 'Außerhalb Deutschland',
@@ -429,9 +429,9 @@ const DE_T = {
     back: 'Zurück',
     wrongFileTitle: 'Diese Datei sieht nicht wie ein gültiger Produkt-Feed aus.',
     wrongFileDesc: 'Es konnten keine bekannten Spalten erkannt werden. Erwartete Spalten: ean, name, price, shipping_mode o. ä.',
-    mappingTitle: 'Spalten-Zuordnung prüfen',
+    mappingTitle: 'Spalten-Zuordnung',
     mappingFound: (f, t) => `${f} von ${t} Feldern automatisch erkannt.`,
-    mappingMissing: (n) => ` ${n} Pflichtfeld${n > 1 ? 'er' : ''} nicht gefunden.`,
+    mappingMissing: (n) => `${n} Pflichtfeld${n > 1 ? 'er' : ''} fehlt`,
     mappingWarning: 'Bitte ordnen Sie die rot markierten Pflichtfelder manuell zu, bevor Sie fortfahren.',
     notAssigned: '-- Nicht zugeordnet --',
     mainImageLabel: 'Hauptbild (+ Zusatzb.)',
@@ -440,10 +440,11 @@ const DE_T = {
     startAnalysis: 'Analyse starten →',
     // Step 3
     newFeed: 'Neuen Feed prüfen',
-    statusOk: 'Feed fehlerfrei - alle Artikel koennen gelistet werden.',
+    statusOk: 'Feed fehlerfrei - alle Artikel können gelistet werden.',
     statusErr: 'Fehler gefunden - bitte beheben und Feed erneut hochladen.',
     errorRateFmt: (r) => `Fehlerquote: ${r.replace('.', ',')}%`,
-    analysisTitle: 'Pflichtfeldanalyse',
+    analysisTitle: 'Pflichtfelder',
+    analysisSubtitle: 'Diese Felder müssen für jeden Artikel ausgefüllt sein',
     analysisSummary: (t, v, e) => `${t} Felder · ${v} vollständig · ${e} fehlerhaft`,
     colField: 'FELD', colStatus: 'STATUS', colCoverage: 'ABDECKUNG',
     notInFeed: 'Nicht im Feed', complete: '✓ Vollständig',
@@ -569,14 +570,14 @@ const DE_T = {
     reuploadSub: 'Datei hier ablegen oder direkt im Händlerportal hochladen.',
     footerLeft: 'CHECK24 Feed Checker · Stand: 04/2026 · Hinweise basieren auf dem aktuellen Feedleitfaden',
     footerRight: 'v2.4.1 · contentmanagement.moebel@check24.de',
-    howTitle: 'So funktioniert der Feed Checker',
-    howSummary: 'Laden Sie Ihren Angebotsfeed als CSV hoch – wir prüfen alle Pflichtfelder und zeigen genau, welche Artikel Fehler haben.',
+    howTitle: 'In 5 Schritten zum perfekten Feed',
+    howSummary: 'CSV hochladen, Spalten zuordnen, Fehler beheben - direkt im Browser, ohne Anmeldung.',
     howSteps: [
-        { n: 1, title: 'Hochladen', desc: 'CSV-Datei per Drag & Drop oder Klick hochladen. Unterstützt .csv Dateien in UTF-8.' },
-        { n: 2, title: 'Zuordnung', desc: 'Ordnen Sie Ihre Spalten den passenden Pflichtfeldern und optionalen Feldern zu.' },
-        { n: 3, title: 'Pflichtfeldanalyse', desc: 'Alle Pflichtfelder werden geprüft und Optimierungsmöglichkeiten werden angezeigt.' },
-        { n: 4, title: 'Optionale Felder', desc: 'Felder wie Farbe, Material, Maße und Beschreibung werden geprüft – für bessere Sichtbarkeit.' },
-        { n: 5, title: 'Empfehlungen', desc: 'Fehlerbericht als CSV herunterladen, in Excel korrigieren und neu hochladen.' },
+        { n: 1, title: 'Hochladen', desc: 'CSV-Datei per Drag & Drop hochladen.' },
+        { n: 2, title: 'Zuordnung', desc: 'Spalten den passenden Feldern zuordnen.' },
+        { n: 3, title: 'Pflichtfelder', desc: 'Alle Pflichtfelder werden geprüft.' },
+        { n: 4, title: 'Optionale Felder', desc: 'Empfohlene Felder für bessere Sichtbarkeit.' },
+        { n: 5, title: 'Empfehlungen', desc: 'Fehlerbericht als CSV herunterladen und korrigieren.' },
     ],
     warehouseDEsub: 'Kein HS-Code erforderlich',
     warehouseNonDEsub: 'HS-Code wird als Pflichtfeld geprüft',
@@ -605,15 +606,15 @@ const DE_T = {
     recNextStep: 'Optionale Felder →',
     recNextStepFinal: 'Empfehlungen →',
     recTitle: (n) => `${n} Handlungsempfehlung${n !== 1 ? 'en' : ''} zur Fehlerbehebung`,
-    recNoErrorsTitle: 'Feed fehlerfrei',
-    recNoErrorsSub: 'Ihr Feed enthält keine Pflichtfeldfehler. Alle Artikel können gelistet werden.',
+    recNoErrorsTitle: 'Alles in Ordnung',
+    recNoErrorsSub: 'Ihr Feed enthält keine kritischen Fehler. Alle Artikel können gelistet werden.',
     recPriority: 'Kritisch',
     recAffected: (n) => `${n} Artikel betroffen`,
-    recDownloadTitle: 'Fehlerbericht herunterladen',
-    recDownloadDesc: 'CSV-Datei mit allen Fehlern je Zeile – importieren Sie diese in Excel, um gezielt die betroffenen Artikel zu korrigieren.',
-    recDownloadBtn: 'Fehlerbericht als CSV herunterladen',
-    optFieldsTitle: 'Optionale Feldanalyse',
-    optFieldsSubtitle: 'Empfohlene Felder für bessere Sichtbarkeit & Conversion',
+    recDownloadTitle: 'Fehlerbericht als CSV',
+    recDownloadDesc: 'Pro Artikel werden alle Fehler in einer Spalte aufgelistet - direkt in Excel korrigierbar.',
+    recDownloadBtn: 'Fehlerbericht herunterladen',
+    optFieldsTitle: 'Optionale Felder',
+    optFieldsSubtitle: 'Keine Pflicht - aber sie verbessern Filter, Suche und Conversion',
     sizeHintTitle: 'Maß-Attribut fehlt',
     sizeHintDesc: (n) => `${n} Artikel haben kein Maß-Attribut (size, size_height, size_depth, Liegefläche o. ä.)`,
     lightingHintTitle: 'Energie-Kennzeichnung für Leuchtprodukte',
@@ -623,12 +624,12 @@ const DE_T = {
 const EN_T = {
     stepUpload: 'Upload', stepMapping: 'Mapping', stepResults: 'Results', stepOptional: 'Optional Fields', stepRecommendations: 'Recommendations',
     helpContact: 'Help & Contact',
-    s1Heading: 'Upload Feed',
-    s1Sub: 'Upload your product feed as a CSV file. We check all required fields and show exactly which items have errors.',
+    s1Heading: 'Check Your Feed',
+    s1Sub: 'Upload a CSV - we analyze required and optional fields and show which items are ready to list.',
     fileReading: 'Reading…',
     fileLoaded: (n) => `${n} items detected`,
-    fileChange: 'Change',
-    dropHeading: 'Upload CSV file',
+    fileChange: 'Different file',
+    dropHeading: 'Select CSV file',
     dropSub: 'Drag here or click',
     warehouseLabel: 'Warehouse Location',
     warehouseDE: 'Germany', warehouseNonDE: 'Outside Germany',
@@ -640,9 +641,9 @@ const EN_T = {
     back: 'Back',
     wrongFileTitle: 'This file does not look like a valid product feed.',
     wrongFileDesc: 'No known columns could be detected. Expected columns: ean, name, price, shipping_mode etc.',
-    mappingTitle: 'Review Column Mapping',
+    mappingTitle: 'Column Mapping',
     mappingFound: (f, t) => `${f} of ${t} fields automatically detected.`,
-    mappingMissing: (n) => ` ${n} required field${n > 1 ? 's' : ''} not found.`,
+    mappingMissing: (n) => `${n} required field${n > 1 ? 's' : ''} missing`,
     mappingWarning: 'Please manually assign the red-highlighted required fields before continuing.',
     notAssigned: '-- Not assigned --',
     mainImageLabel: 'Main Image (+ Add.)',
@@ -653,7 +654,8 @@ const EN_T = {
     statusOk: 'Feed is error-free - all items can be listed.',
     statusErr: 'Errors found - please fix and re-upload the feed.',
     errorRateFmt: (r) => `Error rate: ${r}%`,
-    analysisTitle: 'Required Field Analysis',
+    analysisTitle: 'Required Fields',
+    analysisSubtitle: 'These fields must be filled for every item',
     analysisSummary: (t, v, e) => `${t} fields · ${v} complete · ${e} with errors`,
     colField: 'FIELD', colStatus: 'STATUS', colCoverage: 'COVERAGE',
     notInFeed: 'Not in feed', complete: '✓ Complete',
@@ -745,15 +747,15 @@ const EN_T = {
     recNextStep: 'Optional Fields →',
     recNextStepFinal: 'Recommendations →',
     recTitle: (n) => `${n} Recommendation${n !== 1 ? 's' : ''} to Fix Errors`,
-    recNoErrorsTitle: 'Feed error-free',
-    recNoErrorsSub: 'Your feed has no required field errors. All items can be listed.',
+    recNoErrorsTitle: 'All clear',
+    recNoErrorsSub: 'Your feed has no critical errors. All items can be listed.',
     recPriority: 'Critical',
     recAffected: (n) => `${n} item${n !== 1 ? 's' : ''} affected`,
-    recDownloadTitle: 'Download Error Report',
-    recDownloadDesc: 'CSV file with all errors per row – import into Excel to fix the affected items directly.',
-    recDownloadBtn: 'Download Error Report as CSV',
-    optFieldsTitle: 'Optional Field Analysis',
-    optFieldsSubtitle: 'Recommended fields for better visibility & conversion',
+    recDownloadTitle: 'Error report as CSV',
+    recDownloadDesc: 'All errors per item in one column - directly fixable in Excel.',
+    recDownloadBtn: 'Download error report',
+    optFieldsTitle: 'Optional Fields',
+    optFieldsSubtitle: 'Not required - but they boost filters, search and conversion',
     sizeHintTitle: 'Size attribute missing',
     sizeHintDesc: (n) => `${n} items have no size attribute (size, size_height, size_depth, lying surface, etc.)`,
     lightingHintTitle: 'Energy labelling for lighting products',
@@ -810,14 +812,14 @@ const EN_T = {
     footerLeft: 'CHECK24 Feed Checker · As of 04/2026 · Notes based on current feed guide',
     footerRight: 'v2.4.1 · contentmanagement.moebel@check24.de',
     // How it works
-    howTitle: 'How Feed Checker works',
-    howSummary: 'Upload your product feed as CSV – we check all required fields and show exactly which items have errors.',
+    howTitle: 'From CSV to perfect feed in 5 steps',
+    howSummary: 'Upload, map, fix - all in your browser, no sign-in needed.',
     howSteps: [
-        { n: 1, title: 'Upload', desc: 'Upload your CSV file via drag & drop or click. Supports .csv files in UTF-8.' },
-        { n: 2, title: 'Mapping', desc: 'Map your columns to the matching required and optional fields.' },
-        { n: 3, title: 'Required Field Analysis', desc: 'All required fields are validated and optimization opportunities are shown.' },
-        { n: 4, title: 'Optional Fields', desc: 'Fields like color, material, dimensions, and description are checked - for better visibility.' },
-        { n: 5, title: 'Recommendations', desc: 'Download the error report as CSV, fix in Excel, and re-upload.' },
+        { n: 1, title: 'Upload', desc: 'Drag & drop your CSV file.' },
+        { n: 2, title: 'Mapping', desc: 'Map columns to the matching feed fields.' },
+        { n: 3, title: 'Required Fields', desc: 'All required fields are validated.' },
+        { n: 4, title: 'Optional Fields', desc: 'Recommended fields for better visibility.' },
+        { n: 5, title: 'Recommendations', desc: 'Download the error report and fix in Excel.' },
     ],
     warehouseDEsub: 'No HS Code required',
     warehouseNonDEsub: 'HS Code validated as required field',
@@ -1650,7 +1652,7 @@ export default function McAngebotsfeed() {
                     <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E2E6EE', overflow: 'hidden', position: 'sticky', top: 20, alignSelf: 'flex-start' }}>
                         <div style={{ padding: '20px 24px 16px', borderBottom: '1px solid #F3F4F6' }}>
                             <div style={{ fontSize: 16, fontWeight: 700, color: '#111827', marginBottom: 2 }}>{T.s1Heading}</div>
-                            <div style={{ fontSize: 12, color: '#9CA3AF' }}>{lang === 'de' ? 'CSV-Datei mit Ihren Angebotsdaten' : 'CSV file with your product data'}</div>
+                            <div style={{ fontSize: 12, color: '#9CA3AF', lineHeight: 1.45 }}>{T.s1Sub}</div>
                         </div>
 
                         <div style={{ padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -2265,9 +2267,12 @@ export default function McAngebotsfeed() {
 
                         {/* Field analysis table */}
                         <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', overflow: 'auto', maxHeight: 'calc(100vh - 200px)' }}>
-                            <div style={{ padding: '10px 16px', borderBottom: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', position: 'sticky', top: 0, background: '#FFF', zIndex: 1 }}>
-                                <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{T.analysisTitle}</div>
-                                <div style={{ fontSize: 10, color: '#6B7280' }}>
+                            <div style={{ padding: '12px 16px 10px', borderBottom: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'sticky', top: 0, background: '#FFF', zIndex: 1, gap: 12 }}>
+                                <div style={{ minWidth: 0 }}>
+                                    <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{T.analysisTitle}</div>
+                                    <div style={{ fontSize: 11, color: '#6B7280', marginTop: 1 }}>{T.analysisSubtitle}</div>
+                                </div>
+                                <div style={{ fontSize: 10, color: '#6B7280', textAlign: 'right', flexShrink: 0, marginTop: 2 }}>
                                     {T.analysisSummary(totalPflichtFields, vollstaendigFields, totalPflichtFields - vollstaendigFields)}
                                 </div>
                             </div>
@@ -2330,7 +2335,10 @@ export default function McAngebotsfeed() {
                             {/* Sidebar heading */}
                             <div style={{ padding: '12px 14px 8px', borderBottom: '1px solid #F3F4F6' }}>
                                 <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>
-                                    {lang === 'de' ? 'Pflichtfeld-Analyse' : 'Required Field Analysis'}
+                                    {lang === 'de' ? 'Ergebnis' : 'Result'}
+                                </div>
+                                <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 1 }}>
+                                    {lang === 'de' ? 'Pflichtfeld-Score & Status' : 'Required field score & status'}
                                 </div>
                             </div>
 
@@ -2467,9 +2475,12 @@ export default function McAngebotsfeed() {
 
                                 {/* Field analysis table - matches step 3 layout */}
                                 <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', overflow: 'hidden' }}>
-                                    <div style={{ padding: '10px 16px', borderBottom: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', background: '#FFF' }}>
-                                        <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{T.optFieldsTitle}</div>
-                                        <div style={{ fontSize: 10, color: '#6B7280' }}>
+                                    <div style={{ padding: '12px 16px 10px', borderBottom: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', background: '#FFF', gap: 12 }}>
+                                        <div style={{ minWidth: 0 }}>
+                                            <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{T.optFieldsTitle}</div>
+                                            <div style={{ fontSize: 11, color: '#6B7280', marginTop: 1 }}>{T.optFieldsSubtitle}</div>
+                                        </div>
+                                        <div style={{ fontSize: 10, color: '#6B7280', textAlign: 'right', flexShrink: 0, marginTop: 2 }}>
                                             {T.analysisSummary(totalOptionalFields, completeOptionalFields, errorOptionalFields)}
                                         </div>
                                     </div>
@@ -2682,7 +2693,10 @@ export default function McAngebotsfeed() {
                                 {/* Sidebar heading */}
                                 <div style={{ padding: '12px 14px 8px', borderBottom: '1px solid #F3F4F6' }}>
                                     <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>
-                                        {lang === 'de' ? 'Optionale Felder' : 'Optional Fields'}
+                                        {lang === 'de' ? 'Ergebnis' : 'Result'}
+                                    </div>
+                                    <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 1 }}>
+                                        {lang === 'de' ? 'Score & Vollständigkeit' : 'Score & completeness'}
                                     </div>
                                 </div>
 
@@ -2698,8 +2712,8 @@ export default function McAngebotsfeed() {
                                         <text x="20" y="24" textAnchor="middle" fontSize="11" fontWeight="900" fill={overallColor}>{overallPct}</text>
                                     </svg>
                                     <div>
-                                        <div style={{ fontSize: 11, fontWeight: 700, color: '#111827' }}>{lang === 'de' ? 'Ø Vollständigkeit' : 'Avg. Completeness'}</div>
-                                        <div style={{ fontSize: 9, color: '#9CA3AF' }}>{lang === 'de' ? 'Optionale Felder' : 'Optional fields'}</div>
+                                        <div style={{ fontSize: 11, fontWeight: 700, color: '#111827' }}>{lang === 'de' ? 'Optionale Felder' : 'Optional Fields'}</div>
+                                        <div style={{ fontSize: 9, color: '#9CA3AF' }}>{lang === 'de' ? 'von 100 Punkten' : 'out of 100 pts'}</div>
                                     </div>
                                 </div>
 
