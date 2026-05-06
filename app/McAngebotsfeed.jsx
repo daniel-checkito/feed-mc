@@ -419,7 +419,7 @@ const MC_OPTIONAL_ALIASES = {
 // ── Translations ──────────────────────────────────────────────────────────────
 const DE_T = {
     // Header
-    stepUpload: 'Hochladen', stepMapping: 'Zuordnung', stepResults: 'Ergebnis', stepOptional: 'Optionale Felder', stepRecommendations: 'Empfehlungen',
+    stepUpload: 'Hochladen', stepMapping: 'Zuordnung', stepResults: 'Pflichtfeldanalyse', stepOptional: 'Optionale Felder', stepRecommendations: 'Empfehlungen',
     helpContact: 'Hilfe & Kontakt',
     // Step 1
     s1Heading: 'Feed hochladen',
@@ -1526,7 +1526,7 @@ export default function McAngebotsfeed() {
                             <div style={{ width: 22, height: 22, borderRadius: '50%', border: `1.5px solid ${tabColor}`, background: (isActive || isDone) ? tabColor : 'transparent', color: (isActive || isDone) ? '#fff' : tabColor, fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'all 0.15s' }}>
                                 {isDone ? '✓' : s.n}
                             </div>
-                            <span style={{ fontSize: 13, fontWeight: isActive ? 600 : 400 }}>{s.label}</span>
+                            <span style={{ fontSize: 13, fontWeight: isActive ? 600 : 400 }}>{lang === 'de' ? `Schritt ${s.n} ` : `Step ${s.n} `}{s.label}</span>
                         </button>
                     );
                 })}
@@ -1792,23 +1792,9 @@ export default function McAngebotsfeed() {
                     // Options excluding columns used by other fields
                     const availableHeaders = headers.filter((h) => h === col || !usedCols.has(h));
 
+                    const selectValue = (isAvailability && alwaysAvailable) ? '__always_available__' : (col || '');
                     return (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '4px 0' }}>
-                            {isAvailability && (
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
-                                    <label style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 10, color: alwaysAvailable ? MC_BLUE : '#6B7280', cursor: 'pointer', userSelect: 'none' }}>
-                                        <input
-                                            type="checkbox"
-                                            checked={alwaysAvailable}
-                                            onChange={(e) => setAlwaysAvailable(e.target.checked)}
-                                            style={{ width: 12, height: 12, cursor: 'pointer', accentColor: MC_BLUE }}
-                                        />
-                                        <span style={{ fontWeight: alwaysAvailable ? 700 : 400 }}>
-                                            {langDE ? 'Immer verfügbar' : 'Always available'}
-                                        </span>
-                                    </label>
-                                </div>
-                            )}
                             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                                 <Tooltip text={tooltipText}>
                                     <span style={{ fontSize: 11, color: '#374151', width: 120, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 3, cursor: tooltipText ? 'help' : 'default', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -1818,10 +1804,15 @@ export default function McAngebotsfeed() {
                                     </span>
                                 </Tooltip>
                                 <select
-                                    value={col || ''}
-                                    disabled={isAvailability && alwaysAvailable}
+                                    value={selectValue}
                                     onChange={(e) => {
                                         const val = e.target.value;
+                                        if (isAvailability && val === '__always_available__') {
+                                            setAlwaysAvailable(true);
+                                            setManualMapping((prev) => { const next = { ...prev }; delete next[fieldKey]; return next; });
+                                            return;
+                                        }
+                                        if (isAvailability) setAlwaysAvailable(false);
                                         setManualMapping((prev) => {
                                             const next = { ...prev };
                                             if (val === '') delete next[fieldKey];
@@ -1829,9 +1820,15 @@ export default function McAngebotsfeed() {
                                             return next;
                                         });
                                     }}
-                                    style={{ flex: 1, minWidth: 0, fontSize: 11, padding: '4px 5px', borderRadius: 5, border: `1px solid ${(isAvailability && alwaysAvailable) ? '#D1FAE5' : missing ? '#FCA5A5' : col ? '#D1FAE5' : '#D1D5DB'}`, background: (isAvailability && alwaysAvailable) ? '#F0FDF4' : missing ? '#FFF5F5' : col ? '#F0FDF4' : '#FFF', cursor: (isAvailability && alwaysAvailable) ? 'not-allowed' : 'pointer', opacity: (isAvailability && alwaysAvailable) ? 0.6 : 1 }}
+                                    style={{ flex: 1, minWidth: 0, fontSize: 11, padding: '4px 5px', borderRadius: 5, border: `1px solid ${(isAvailability && alwaysAvailable) ? '#D1FAE5' : missing ? '#FCA5A5' : col ? '#D1FAE5' : '#D1D5DB'}`, background: (isAvailability && alwaysAvailable) ? '#F0FDF4' : missing ? '#FFF5F5' : col ? '#F0FDF4' : '#FFF', cursor: 'pointer' }}
                                 >
-                                    <option value="">{isAvailability && alwaysAvailable ? (langDE ? '✓ Immer verfügbar' : '✓ Always available') : T.notAssigned}</option>
+                                    <option value="">{T.notAssigned}</option>
+                                    {isAvailability && (
+                                        <>
+                                            <option value="__always_available__">{langDE ? 'Immer verfügbar' : 'Always available'}</option>
+                                            <option value="" disabled>──────────────</option>
+                                        </>
+                                    )}
                                     {availableHeaders.map((h) => <option key={h} value={h}>{h}</option>)}
                                 </select>
                                 {col && !(isAvailability && alwaysAvailable) && (
@@ -1863,32 +1860,14 @@ export default function McAngebotsfeed() {
                                 {/* Card header */}
                                 <div style={{ padding: '16px 20px 12px', borderBottom: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
                                     <div style={{ fontSize: 16, fontWeight: 800, color: '#111827' }}>{T.mappingTitle}</div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                                        <div style={{ fontSize: 12, color: '#6B7280' }}>
-                                            {T.mappingFound(foundFields2, totalFields2)}
-                                            {missingPflicht2.length > 0 && <span style={{ color: '#DC2626', fontWeight: 600 }}>{T.mappingMissing(missingPflicht2.length)}</span>}
-                                        </div>
-                                        <div style={{ display: 'flex', gap: 8 }}>
-                                            <button type="button" onClick={() => setStep(1)}
-                                                style={{ padding: '10px 16px', background: '#fff', border: '1px solid #D0D5E0', borderRadius: 8, color: '#374151', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
-                                                {T.back}
-                                            </button>
-                                            <button type="button" onClick={() => setStep(3)}
-                                                style={{ padding: '10px 16px', background: MC_BLUE, border: 'none', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
-                                                {T.startAnalysis}
-                                            </button>
-                                        </div>
-                                    </div>
+                                    {missingPflicht2.length > 0 && (
+                                        <div style={{ fontSize: 12, color: '#DC2626', fontWeight: 600 }}>{T.mappingMissing(missingPflicht2.length)}</div>
+                                    )}
                                 </div>
 
-                                {/* Summary always-on: detected count + missing required fields */}
-                                <div style={{ padding: '14px 20px', borderTop: '1px solid #F3F4F6', background: '#FAFAFA' }}>
-                                    <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', marginBottom: 8 }}>
-                                        {langDE
-                                            ? `${foundFields2} von ${totalFields2} Feldern automatisch erkannt`
-                                            : `${foundFields2} of ${totalFields2} fields automatically detected`}
-                                    </div>
-                                    {missingPflicht2.length > 0 && (
+                                {/* Summary always-on: missing required fields */}
+                                {missingPflicht2.length > 0 && (
+                                    <div style={{ padding: '14px 20px', borderTop: '1px solid #F3F4F6', background: '#FAFAFA' }}>
                                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 4 }}>
                                             {missingPflicht2.map((f) => {
                                                 const label = f === 'image_url' ? (langDE ? 'Hauptbild' : 'Main Image') : (FIELD_LABELS[f] || f);
@@ -1899,8 +1878,8 @@ export default function McAngebotsfeed() {
                                                 );
                                             })}
                                         </div>
-                                    )}
-                                </div>
+                                    </div>
+                                )}
 
                                 {/* Collapsed: simple check overview */}
                                 {!mappingExpanded && (
@@ -2265,14 +2244,6 @@ export default function McAngebotsfeed() {
                 return (
                     <div style={{ width: '100%', maxWidth: 1100, display: 'flex', flexDirection: 'column', gap: 12 }}>
 
-                        {/* Header row: filename only */}
-                        {file && (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                                <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 1.5h8.5l3 3v10h-11.5v-13z" stroke="#9CA3AF" strokeWidth="1.4" strokeLinejoin="round"/><path d="M11 1.5v3h3" stroke="#9CA3AF" strokeWidth="1.4" strokeLinejoin="round"/></svg>
-                                <span style={{ fontSize: 11, color: '#9CA3AF' }}>{file.name}</span>
-                            </div>
-                        )}
-
                         {/* 2-column: table | action panel */}
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 12, alignItems: 'start' }}>
 
@@ -2306,13 +2277,13 @@ export default function McAngebotsfeed() {
                                     ? [...new Set(rows.slice(0, 30).map(r => String(r[mappedCol] ?? '').trim()).filter(Boolean))].slice(0, 3)
                                     : [];
                                 return (
-                                    <div key={key} style={{ display: 'grid', gridTemplateColumns: '1fr 90px 120px', padding: '7px 16px', borderBottom: '1px solid #F9FAFB', alignItems: 'center', background: hasError ? '#FFFBF5' : 'transparent', borderLeft: hasError ? '3px solid #D97706' : '3px solid transparent' }}>
-                                        <div>
-                                            <div style={{ fontSize: 11, color: hasError ? '#92400E' : '#374151', fontWeight: hasError ? 600 : 500 }}>{label}</div>
+                                    <div key={key} style={{ display: 'grid', gridTemplateColumns: '1fr 90px 120px', padding: '5px 16px', borderBottom: '1px solid #F9FAFB', alignItems: 'center', background: hasError ? '#FFFBF5' : 'transparent', borderLeft: hasError ? '3px solid #D97706' : '3px solid transparent' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+                                            <div style={{ fontSize: 11, color: hasError ? '#92400E' : '#374151', fontWeight: hasError ? 600 : 500, flexShrink: 0 }}>{label}</div>
                                             {exampleVals.length > 0 && (
-                                                <div style={{ display: 'flex', gap: 4, marginTop: 3, flexWrap: 'wrap' }}>
-                                                    {exampleVals.map((v, i) => (
-                                                        <span key={i} style={{ fontSize: 9, color: '#6B7280', background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>{v}</span>
+                                                <div style={{ display: 'flex', gap: 4, flexWrap: 'nowrap', overflow: 'hidden', maxWidth: 220 }}>
+                                                    {exampleVals.slice(0, 2).map((v, i) => (
+                                                        <span key={i} style={{ fontSize: 9, color: '#6B7280', background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block', flexShrink: 0 }}>{v}</span>
                                                     ))}
                                                 </div>
                                             )}
