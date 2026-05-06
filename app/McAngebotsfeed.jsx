@@ -412,7 +412,7 @@ const DE_T = {
     helpContact: 'Hilfe & Kontakt',
     // Step 1
     s1Heading: 'Ihren Feed prüfen',
-    s1Sub: 'CSV hochladen - wir analysieren Pflicht- und optionale Felder und zeigen, welche Artikel listingfähig sind.',
+    s1Sub: 'CSV hochladen - wir analysieren Pflicht- und optionale Felder und zeigen, welche Artikel sofort veröffentlicht werden können.',
     fileReading: 'Wird gelesen…',
     fileLoaded: (n) => `${n} Artikel erkannt`,
     fileChange: 'Andere Datei',
@@ -531,7 +531,7 @@ const DE_T = {
             'EAN (GTIN) je Produkt, nur 1 EAN je Produkt, keine Duplikate',
             'Bestand oder Availability muss gesetzt sein',
             'HS-Code notwendig, wenn Lager außerhalb Deutschlands',
-            'Eindeutige Seller_Offer_ID je Produkt',
+            'Eindeutige Eigene Artikel-ID (Seller_Offer_ID) je Produkt',
             'Preis, Versandart und Lieferzeit vollständig angegeben',
             'Vollständige Herstellerangaben: Marke, Name, Adresse, E-Mail',
         ],
@@ -772,7 +772,7 @@ const EN_T = {
             'EAN (GTIN) per product, only 1 EAN per product, no duplicates',
             'Stock or Availability must be set',
             'HS Code required if warehouse is outside Germany',
-            'Unique Seller_Offer_ID per product',
+            'Unique Own Item ID (Seller_Offer_ID) per product',
             'Price, shipping mode, and delivery time fully provided',
             'Complete manufacturer info: brand, name, address, email',
         ],
@@ -2088,7 +2088,7 @@ export default function McAngebotsfeed() {
                     issues.eanDupRows.forEach((rn) => { if (!pflichtByRow[rn]) pflichtByRow[rn] = []; pflichtByRow[rn].push(T.csvEanDup); });
                     issues.nameDupRows.forEach((rn) => { if (!pflichtByRow[rn]) pflichtByRow[rn] = []; pflichtByRow[rn].push(T.csvNameDup); });
                     if (issues.offerIdDupRows) issues.offerIdDupRows.forEach((rn) => { if (!pflichtByRow[rn]) pflichtByRow[rn] = []; pflichtByRow[rn].push(T.csvOfferIdDup); });
-                    issues.optionalHints.forEach((e) => { if (!optionalByRow[e.row]) optionalByRow[e.row] = []; optionalByRow[e.row].push(T.csvErrMissing(e.field)); });
+                    issues.optionalHints.forEach((e) => { if (!optionalByRow[e.row]) optionalByRow[e.row] = []; optionalByRow[e.row].push(T.csvErrMissing(T.csvFieldLabels[e.field] || e.field)); });
                     const esc = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
                     const sep = ';';
                     const headerRow = [T.csvColPflicht, T.csvColOptional, ...headers].map(esc).join(sep);
@@ -2712,8 +2712,11 @@ export default function McAngebotsfeed() {
                 const errorsByType = {};
                 issues.pflichtErrors.forEach((e) => {
                     const key = `${e.field}::${e.type}`;
-                    if (!errorsByType[key]) errorsByType[key] = { field: e.field, type: e.type, count: 0 };
+                    if (!errorsByType[key]) errorsByType[key] = { field: e.field, type: e.type, count: 0, sampleEans: [] };
                     errorsByType[key].count++;
+                    if (e.ean && errorsByType[key].sampleEans.length < 5 && !errorsByType[key].sampleEans.includes(e.ean)) {
+                        errorsByType[key].sampleEans.push(e.ean);
+                    }
                 });
                 if (issues.eanDupRows.size > 0) errorsByType['ean::dup'] = { field: 'ean', type: 'dup', count: issues.eanDupRows.size };
                 if (issues.nameDupRows.size > 0) errorsByType['name::dup'] = { field: 'name', type: 'dup', count: issues.nameDupRows.size };
@@ -2735,7 +2738,7 @@ export default function McAngebotsfeed() {
                     return <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={s}><circle cx="8" cy="8" r="6" stroke={color} strokeWidth="1.3"/><path d="M5 8a3 3 0 006 0" stroke={color} strokeWidth="1.2"/><path d="M2 8h12" stroke={color} strokeWidth="1.2"/></svg>;
                 };
                 const recRules = lang === 'de' ? {
-                    'name::missing':       { title: 'Artikelname fehlt',               action: 'Tragen Sie für jeden betroffenen Artikel einen vollständigen Namen ein.',         tip: 'Format: Marke + Produkttyp + Hauptattribut, z. B. „BRAND Sofa 3-Sitzer grau 180 cm" · mind. 2 Wörter und 10 Zeichen.' },
+                    'name::missing':       { title: 'Artikelname fehlt',               action: 'Tragen Sie für jeden betroffenen Artikel einen vollständigen Namen ein. Format: Marke + Produkttyp + Hauptattribut, z. B. „BRAND Sofa 3-Sitzer grau 180 cm".',         tip: 'Mind. 2 Wörter und 10 Zeichen. Ein guter Name erhöht die Auffindbarkeit deutlich.' },
                     'name::too_short':     { title: 'Artikelname zu kurz',              action: 'Verlängern Sie den Artikelnamen auf mindestens 10 Zeichen.',                     tip: 'Ergänzen Sie Produkttyp, Farbe oder Material für einen aussagekräftigen Namen.' },
                     'name::one_word':      { title: 'Artikelname: nur ein Wort',        action: 'Der Name muss aus mindestens 2 Wörtern bestehen.',                              tip: 'Kombinieren Sie Marke + Produktname, z. B. „BRAND Tisch" oder „Hersteller Sofa grau".' },
                     'name::placeholder':   { title: 'Artikelname: Platzhalterwert',     action: 'Ersetzen Sie Platzhalter wie „n/a" oder „test" durch echte Artikelnamen.',       tip: 'Verwenden Sie produktspezifische, eindeutige Namen.' },
@@ -2752,18 +2755,18 @@ export default function McAngebotsfeed() {
                     'price::missing':      { title: 'Preis fehlt',                      action: 'Ergänzen Sie den Preis für alle betroffenen Artikel.',                          tip: 'Format: 19.99 (Punkt als Dezimaltrennzeichen, ohne €-Zeichen).' },
                     'price::invalid':      { title: 'Preis: ungültiges Format',         action: 'Korrigieren Sie das Preisformat auf 19.99.',                                    tip: 'Nur positive Zahlen mit Punkt als Dezimaltrennzeichen, z. B. 29.99.' },
                     'price::placeholder':  { title: 'Preis: Platzhalterwert',           action: 'Ersetzen Sie Platzhalterwerte durch den korrekten Artikelpreis.',               tip: 'Der Preis muss eine positive Zahl größer als 0 sein.' },
-                    'shipping_mode::missing':  { title: 'Versandart fehlt',              action: 'Tragen Sie die Versandart für alle betroffenen Artikel ein.',                   tip: 'Erlaubte Werte: „paket" oder „spedition" (Groß-/Kleinschreibung egal).' },
-                    'shipping_mode::invalid':  { title: 'Versandart: ungültiger Wert',   action: 'Korrigieren Sie die Versandart auf „paket" oder „spedition".',                  tip: 'Keine anderen Werte zulässig, prüfen Sie Leerzeichen oder Tippfehler.' },
-                    'shipping_mode::placeholder': { title: 'Versandart: Platzhalterwert', action: 'Ersetzen Sie Platzhalterwerte durch „paket" oder „spedition".',              tip: 'Erlaubte Werte: „paket" für Paketversand, „spedition" für Speditionslieferung.' },
+                    'shipping_mode::missing':  { title: 'Versandart fehlt',              action: 'Tragen Sie die Versandart ein: „paket" für normale Paketlieferung oder „spedition" für Speditionsversand.',                   tip: 'Schwere oder sperrige Möbel zählen in der Regel als „spedition".' },
+                    'shipping_mode::invalid':  { title: 'Versandart: ungültiger Wert',   action: 'Ersetzen Sie den Wert durch „paket" oder „spedition" – diese sind die einzigen gültigen Optionen.',                  tip: 'Prüfen Sie auf Leerzeichen, Groß-/Kleinschreibung oder Tippfehler.' },
+                    'shipping_mode::placeholder': { title: 'Versandart: Platzhalterwert', action: 'Ersetzen Sie Platzhalterwerte durch „paket" (Paketversand) oder „spedition" (Speditionslieferung).',              tip: 'Wählen Sie anhand von Gewicht und Größe: Pakete bis ca. 30 kg → „paket", größer/schwerer → „spedition".' },
                     'image_url::missing':  { title: 'Bild-URL fehlt',                  action: 'Fügen Sie für jeden Artikel eine öffentlich erreichbare Bild-URL ein.',         tip: 'Freigestelltes Bild auf weißem Hintergrund, mind. 600×600 px, kein Login nötig.' },
                     'image_url::invalid':  { title: 'Bild-URL: ungültiger Wert',       action: 'Prüfen Sie, ob die Bild-URL korrekt und öffentlich erreichbar ist.',            tip: 'URL muss mit http:// oder https:// beginnen und direkt auf eine Bilddatei zeigen.' },
                     'availability::missing':   { title: 'Bestand / Verfügbarkeit fehlt', action: 'Geben Sie Lagerbestand oder Verfügbarkeitsstatus für alle Artikel an.',        tip: 'Entweder numerischer Bestand (z. B. 10) oder einen Verfügbarkeitsstatus.' },
                     'stock_amount::missing':   { title: 'Bestand fehlt',                 action: 'Ergänzen Sie den numerischen Lagerbestand.',                                   tip: 'Tragen Sie den aktuellen Bestand als Zahl ein, z. B. 5 oder 100.' },
                     'brand::missing':      { title: 'Marke fehlt',                      action: 'Ergänzen Sie den Markennamen für alle betroffenen Artikel.',                   tip: 'Verwenden Sie den offiziellen Markennamen, mind. 2 Zeichen.' },
-                    'brand::too_short':    { title: 'Marke: zu kurz',                   action: 'Der Markenname muss mindestens 2 Zeichen haben.',                              tip: 'Verwenden Sie den vollständigen, offiziellen Markennamen.' },
+                    'brand::too_short':    { title: 'Marke: zu kurz',                   action: 'Ergänzen Sie den vollständigen Markennamen (mind. 2 Zeichen).',                              tip: 'Abkürzungen vermeiden – verwenden Sie den offiziellen Namen, z. B. „Müller Möbel" statt „MM".' },
                     'brand::placeholder':  { title: 'Marke: Platzhalterwert',           action: 'Ersetzen Sie Platzhalter durch den echten Markennamen.',                       tip: 'Der Markenname muss für jeden Artikel ausgefüllt sein.' },
-                    'delivery_time::missing':  { title: 'Lieferzeit fehlt',              action: 'Ergänzen Sie die Lieferzeit für alle betroffenen Artikel.',                   tip: 'Format: Zahl + Einheit, z. B. „3-5 Werktage" oder „2 Tage".' },
-                    'delivery_time::invalid':  { title: 'Lieferzeit: ungültiges Format', action: 'Korrigieren Sie das Format der Lieferzeit.',                                   tip: 'Beispiele: „3-5 Werktage", „1 Woche", „2 Tage". Einheit muss erkennbar sein.' },
+                    'delivery_time::missing':  { title: 'Lieferzeit fehlt',              action: 'Tragen Sie die Lieferzeit ein, z. B. „3-5 Werktage" oder „2 Tage". Kunden erwarten diese Angabe vor dem Kauf.',                   tip: 'Format: Zahl + Einheit. Werktage-Angaben (z. B. „3-5 Werktage") werden bevorzugt.' },
+                    'delivery_time::invalid':  { title: 'Lieferzeit: ungültiges Format', action: 'Schreiben Sie die Lieferzeit im Format „Zahl + Einheit", z. B. „3-5 Werktage", „1 Woche" oder „2 Tage".',                                   tip: 'Die Einheit (Tage/Werktage/Woche) muss lesbar sein. Nur eine Zahl ohne Einheit wird abgelehnt.' },
                     'delivery_time::placeholder': { title: 'Lieferzeit: Platzhalterwert', action: 'Ersetzen Sie Platzhalter durch reale Lieferzeitangaben.',                   tip: 'Geben Sie die tatsächliche Lieferzeit an, z. B. „3-5 Werktage".' },
                     'seller_offer_id::missing':{ title: 'Eigene Artikel-ID fehlt',       action: 'Ergänzen Sie Ihre interne Artikel-ID für alle betroffenen Zeilen.',            tip: 'Die Artikel-ID muss eindeutig pro Artikel sein.' },
                     'seller_offer_id::placeholder':{ title: 'Artikel-ID: Platzhalterwert', action: 'Ersetzen Sie Platzhalter durch echte, eindeutige Artikel-IDs.',            tip: 'Verwenden Sie Ihre internen SKU oder Artikelnummern.' },
@@ -2773,12 +2776,12 @@ export default function McAngebotsfeed() {
                     'description::external_link': { title: 'Beschreibung: externe URL',   action: 'Entfernen Sie alle externen Links aus der Produktbeschreibung.',                tip: 'Keine www.- oder http(s)-Links in der Beschreibung erlaubt.' },
                     'description::template': { title: 'Beschreibung: Vorlagentext',       action: 'Ersetzen Sie Mustertexte wie „Lorem Ipsum" durch echte Produktbeschreibungen.', tip: 'Jedes Produkt braucht eine einzigartige, informative Beschreibung.' },
                     'description::advertising': { title: 'Beschreibung: Werbephrasen',    action: 'Entfernen Sie Werbephrasen wie „Jetzt kaufen" oder „Rabatt" aus der Beschreibung.', tip: 'Die Beschreibung soll Produkteigenschaften darstellen, keine Werbetexte.' },
-                    'description::identical_to_title': { title: 'Beschreibung = Artikelname', action: 'Verfassen Sie eine eigenständige Beschreibung statt den Artikelnamen zu wiederholen.', tip: 'Die Beschreibung soll die Vorteile und Details des Produkts erläutern.' },
+                    'description::identical_to_title': { title: 'Beschreibung = Artikelname', action: 'Verfassen Sie eine eigenständige Beschreibung mit Material, Maßen und Besonderheiten – nicht einfach den Artikelnamen wiederholen.', tip: 'Beispiel: Statt „BRAND Sofa grau" → „Gepolstertes 3-Sitzer-Sofa aus Strukturstoff, 230 cm breit, mit Kaltschaum-Polsterung und abnehmbaren Bezügen."' },
                     'image_url::single':   { title: 'Nur 1 Produktbild',                  action: 'Fügen Sie mindestens 3 Bilder pro Artikel hinzu (Hauptbild + 2 Zusatzbilder).', tip: 'Mehr Bilder erhöhen die Klickrate und Conversion deutlich.' },
                     'seller_offer_id::dup':{ title: 'Eigene Artikel-ID: Duplikate',       action: 'Jede Artikel-ID (seller_offer_id) muss eindeutig sein. Korrigieren Sie Duplikate.', tip: 'Verwenden Sie Ihre interne SKU oder eine eindeutige Bestellnummer.' },
-                    'category_path::wrong_category': { title: 'Kategoriepfad: falsche Kategorie', action: 'Prüfen Sie den Kategoriepfad, dieser scheint keine Möbel-Kategorie zu sein.', tip: 'Verwenden Sie eine CHECK24-konforme Kategorie, z. B. „Boxspringbett" oder „Sofa".' },
+                    'category_path::wrong_category': { title: 'Kategoriepfad: falsche Kategorie', action: 'Ersetzen Sie die Kategorie durch eine gültige Möbelkategorie, z. B. „Sofa", „Boxspringbett", „Esstisch" oder „Kleiderschrank".', tip: 'CHECK24 Möbel akzeptiert nur Kategorien aus dem Möbel-Sortiment. Allgemeine Kategorien wie „Haushalt" oder „Sonstiges" werden abgelehnt.' },
                 } : {
-                    'name::missing':       { title: 'Item name missing',              action: 'Add a full product name for every affected item.',                              tip: 'Format: Brand + Product type + Key attribute, e.g. "BRAND Sofa 3-seater grey 180 cm" · min. 2 words and 10 chars.' },
+                    'name::missing':       { title: 'Item name missing',              action: 'Add a full product name for every affected item. Format: Brand + Product type + Key attribute, e.g. "BRAND Sofa 3-seater grey 180 cm".',                              tip: 'Min. 2 words and 10 characters. A descriptive name significantly improves search visibility.' },
                     'name::too_short':     { title: 'Item name too short',            action: 'Extend the item name to at least 10 characters.',                               tip: 'Add product type, color, or material to create a descriptive name.' },
                     'name::one_word':      { title: 'Item name: single word only',   action: 'The name must consist of at least 2 words.',                                    tip: 'Combine brand + product name, e.g. "BRAND Table" or "Brand Sofa grey".' },
                     'name::placeholder':   { title: 'Item name: placeholder value',  action: 'Replace placeholders like "n/a" or "test" with real item names.',               tip: 'Use product-specific, unique names.' },
@@ -2795,18 +2798,18 @@ export default function McAngebotsfeed() {
                     'price::missing':      { title: 'Price missing',                  action: 'Add the price for all affected items.',                                         tip: 'Format: 19.99 (dot as decimal separator, no currency symbol).' },
                     'price::invalid':      { title: 'Price: invalid format',          action: 'Correct the price format to 19.99.',                                            tip: 'Only positive numbers with dot as decimal separator, e.g. 29.99.' },
                     'price::placeholder':  { title: 'Price: placeholder value',       action: 'Replace placeholder values with the correct item price.',                       tip: 'The price must be a positive number greater than 0.' },
-                    'shipping_mode::missing':  { title: 'Shipping mode missing',      action: 'Set the shipping mode for all affected items.',                                 tip: 'Allowed values: "paket" or "spedition" (case-insensitive).' },
-                    'shipping_mode::invalid':  { title: 'Shipping mode: invalid value', action: 'Fix the shipping mode to "paket" or "spedition".',                           tip: 'No other values allowed, check for spaces or typos.' },
-                    'shipping_mode::placeholder':{ title: 'Shipping mode: placeholder', action: 'Replace placeholders with "paket" or "spedition".',                          tip: '"paket" for parcel delivery, "spedition" for freight delivery.' },
+                    'shipping_mode::missing':  { title: 'Shipping mode missing',      action: 'Set the shipping mode to "paket" (parcel delivery) or "spedition" (freight delivery) for every affected item.',                                 tip: 'Heavy or bulky furniture typically qualifies as "spedition".' },
+                    'shipping_mode::invalid':  { title: 'Shipping mode: invalid value', action: 'Replace the value with "paket" or "spedition" — these are the only accepted options.',                           tip: 'Check for extra spaces, capitalisation, or typos.' },
+                    'shipping_mode::placeholder':{ title: 'Shipping mode: placeholder', action: 'Replace placeholder values with "paket" (parcel) or "spedition" (freight delivery).',                          tip: 'Choose based on weight and size: items up to ~30 kg → "paket", larger/heavier → "spedition".' },
                     'image_url::missing':  { title: 'Image URL missing',             action: 'Add a publicly accessible image URL for every item.',                           tip: 'Cut-out on white background, min. 600×600 px, no login required.' },
                     'image_url::invalid':  { title: 'Image URL: invalid value',      action: 'Check that the image URL is correct and publicly accessible.',                  tip: 'URL must start with http:// or https:// and point directly to an image file.' },
                     'availability::missing':   { title: 'Stock / Availability missing', action: 'Provide stock count or availability status for every item.',                   tip: 'Either a numeric stock count (e.g. 10) or an availability status.' },
                     'stock_amount::missing':   { title: 'Stock missing',              action: 'Add the numeric stock count.',                                                  tip: 'Enter the current stock as a number, e.g. 5 or 100.' },
                     'brand::missing':      { title: 'Brand missing',                 action: 'Add the brand name for all affected items.',                                   tip: 'Use the official brand name, min. 2 characters.' },
-                    'brand::too_short':    { title: 'Brand: too short',              action: 'Brand name must be at least 2 characters.',                                    tip: 'Use the full, official brand name.' },
+                    'brand::too_short':    { title: 'Brand: too short',              action: 'Enter the full brand name (at least 2 characters).',                                    tip: 'Avoid abbreviations — use the official name, e.g. "Müller Möbel" instead of "MM".' },
                     'brand::placeholder':  { title: 'Brand: placeholder value',      action: 'Replace placeholders with the real brand name.',                               tip: 'Brand name must be filled in for every item.' },
-                    'delivery_time::missing':  { title: 'Delivery time missing',     action: 'Add the delivery time for all affected items.',                                 tip: 'Format: number + unit, e.g. "3-5 working days" or "2 days".' },
-                    'delivery_time::invalid':  { title: 'Delivery time: invalid format', action: 'Fix the delivery time format.',                                              tip: 'Examples: "3-5 working days", "1 week", "2 days". Unit must be recognizable.' },
+                    'delivery_time::missing':  { title: 'Delivery time missing',     action: 'Enter the delivery time, e.g. "3-5 working days" or "2 days". Customers check this before purchasing.',                                 tip: 'Format: number + unit. Working-day ranges (e.g. "3-5 working days") are preferred.' },
+                    'delivery_time::invalid':  { title: 'Delivery time: invalid format', action: 'Write the delivery time as "number + unit", e.g. "3-5 working days", "1 week", or "2 days".',                                              tip: 'The unit (days / working days / week) must be present. A number alone without a unit will be rejected.' },
                     'delivery_time::placeholder':{ title: 'Delivery time: placeholder', action: 'Replace placeholders with actual delivery time information.',                 tip: 'Enter the real delivery time, e.g. "3-5 working days".' },
                     'seller_offer_id::missing':{ title: 'Own item ID missing',        action: 'Add your internal item ID for all affected rows.',                              tip: 'The item ID must be unique per item.' },
                     'seller_offer_id::placeholder':{ title: 'Item ID: placeholder value', action: 'Replace placeholders with real, unique item IDs.',                         tip: 'Use your internal SKUs or item numbers.' },
@@ -2816,10 +2819,10 @@ export default function McAngebotsfeed() {
                     'description::external_link': { title: 'Description: external URL', action: 'Remove all external links from the product description.',                      tip: 'www. or http(s) links are not allowed in the description.' },
                     'description::template': { title: 'Description: template text',    action: 'Replace template text (Lorem Ipsum etc.) with real product descriptions.',       tip: 'Every product needs a unique, informative description.' },
                     'description::advertising': { title: 'Description: advertising phrases', action: 'Remove advertising phrases like "Buy now" or "Discount" from the description.', tip: 'Descriptions should present product features, not advertising copy.' },
-                    'description::identical_to_title': { title: 'Description = Item name', action: 'Write an independent description rather than repeating the item name.',      tip: 'The description should explain the benefits and details of the product.' },
+                    'description::identical_to_title': { title: 'Description = Item name', action: 'Write a proper description covering material, dimensions, and features — do not just copy the item name.',      tip: 'Example: instead of "BRAND Sofa grey" → "Upholstered 3-seater sofa in structured fabric, 230 cm wide, cold-foam padding, removable covers."' },
                     'image_url::single':   { title: 'Only 1 product image',            action: 'Add at least 3 images per item (main image + 2 additional images).',            tip: 'More images significantly increase click-through rate and conversion.' },
                     'seller_offer_id::dup':{ title: 'Own item ID: duplicates',         action: 'Each seller_offer_id must be unique. Fix the duplicate entries.',               tip: 'Use your internal SKU or a unique order number.' },
-                    'category_path::wrong_category': { title: 'Category path: wrong category', action: 'Review the category path, it does not appear to be a furniture category.', tip: 'Use a CHECK24-compliant category, e.g. "Boxspringbett" or "Sofa".' },
+                    'category_path::wrong_category': { title: 'Category path: wrong category', action: 'Replace the category with a valid furniture category, e.g. "Sofa", "Boxspringbett", "Esstisch", or "Kleiderschrank".', tip: 'CHECK24 Furniture only accepts categories from the furniture assortment. Generic categories like "Household" or "Other" will be rejected.' },
                 };
 
                 // Hinweise: quality issues that don't block listing
@@ -2827,7 +2830,7 @@ export default function McAngebotsfeed() {
 
                 const allRecommendations = Object.entries(errorsByType)
                     .sort((a, b) => b[1].count - a[1].count)
-                    .map(([key, { count, type }]) => ({ key, count, type, rule: recRules[key] || null }))
+                    .map(([key, { count, type, sampleEans }]) => ({ key, count, type, sampleEans: sampleEans || [], rule: recRules[key] || null }))
                     .filter(({ rule }) => rule !== null);
 
                 const criticalRecs = allRecommendations.filter(({ type }) => !HINWEIS_TYPES.has(type));
@@ -2859,7 +2862,7 @@ export default function McAngebotsfeed() {
                     issues.eanDupRows.forEach((rn) => { if (!pflichtByRow[rn]) pflichtByRow[rn] = []; pflichtByRow[rn].push(T.csvEanDup); });
                     issues.nameDupRows.forEach((rn) => { if (!pflichtByRow[rn]) pflichtByRow[rn] = []; pflichtByRow[rn].push(T.csvNameDup); });
                     if (issues.offerIdDupRows) issues.offerIdDupRows.forEach((rn) => { if (!pflichtByRow[rn]) pflichtByRow[rn] = []; pflichtByRow[rn].push(T.csvOfferIdDup); });
-                    issues.optionalHints.forEach((e) => { if (!optionalByRow[e.row]) optionalByRow[e.row] = []; optionalByRow[e.row].push(T.csvErrMissing(e.field)); });
+                    issues.optionalHints.forEach((e) => { if (!optionalByRow[e.row]) optionalByRow[e.row] = []; optionalByRow[e.row].push(T.csvErrMissing(T.csvFieldLabels[e.field] || e.field)); });
                     const esc = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
                     const sep = ';';
                     const headerRow = [T.csvColPflicht, T.csvColOptional, ...headers].map(esc).join(sep);
@@ -2925,7 +2928,7 @@ export default function McAngebotsfeed() {
                                         if (next.has(key)) next.delete(key); else next.add(key);
                                         return next;
                                     });
-                                    const renderCard = ({ key, count, rule }, severity) => {
+                                    const renderCard = ({ key, count, rule, sampleEans }, severity) => {
                                         const isCritical = severity === 'critical';
                                         const collapsible = true;
                                         const isOpen = collapsible ? expandedRecs.has(key) : true;
@@ -2967,6 +2970,17 @@ export default function McAngebotsfeed() {
                                                         <div style={{ fontSize: isCritical ? 13 : 12, color: '#374151', lineHeight: 1.6, marginTop: 8, marginBottom: 6 }}>
                                                             {rule.action}
                                                         </div>
+                                                        {sampleEans && sampleEans.length > 0 && (
+                                                            <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 4, marginBottom: 6 }}>
+                                                                <span style={{ fontSize: 10, color: '#9CA3AF', fontWeight: 600, marginRight: 2 }}>EAN:</span>
+                                                                {sampleEans.map((ean) => (
+                                                                    <span key={ean} style={{ fontSize: 10, color: '#374151', background: '#F3F4F6', borderRadius: 4, padding: '1px 6px', fontFamily: 'monospace' }}>{ean}</span>
+                                                                ))}
+                                                                {count > sampleEans.length && (
+                                                                    <span style={{ fontSize: 10, color: '#9CA3AF' }}>+{count - sampleEans.length} {lang === 'de' ? 'weitere' : 'more'}</span>
+                                                                )}
+                                                            </div>
+                                                        )}
                                                         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, background: '#F9FAFB', borderRadius: 6, padding: '7px 11px' }}>
                                                             <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 1 }}><circle cx="8" cy="8" r="6.5" stroke={MC_BLUE} strokeWidth="1.4"/><path d="M8 7v4" stroke={MC_BLUE} strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="5.5" r=".6" fill={MC_BLUE}/></svg>
                                                             <span style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.5 }}>{rule.tip}</span>
