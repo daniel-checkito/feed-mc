@@ -435,7 +435,7 @@ const DE_T = {
     mappingWarning: 'Bitte ordnen Sie die rot markierten Pflichtfelder manuell zu, bevor Sie fortfahren.',
     notAssigned: '-- Nicht zugeordnet --',
     mainImageLabel: 'Hauptbild (+ Zusatzb.)',
-    notDetected: '– nicht erkannt –',
+    notDetected: '(nicht erkannt)',
     hiddenFields: (n) => `${n} weitere optionale Felder nicht im Feed erkannt`,
     startAnalysis: 'Analyse starten →',
     // Step 3
@@ -470,13 +470,13 @@ const DE_T = {
     csvErrLength: (l) => `${l}: muss 13 oder 14 Zeichen haben`,
     csvErrInvalid: (l) => `${l}: ungültiger Wert`,
     csvErrFallback: (l) => `${l} fehlerhaft`,
-    csvErrScientific: (l) => `${l}: wissenschaftliche Notation (z. B. 1.23e+13) – als Zahl speichern`,
-    csvErrSieheOben: (l) => `${l}: enthält "siehe oben" – ungültig`,
-    csvErrExternalLink: (l) => `${l}: enthält externe URL – nicht erlaubt`,
+    csvErrScientific: (l) => `${l}: wissenschaftliche Notation (z. B. 1.23e+13), als Zahl speichern`,
+    csvErrSieheOben: (l) => `${l}: enthält "siehe oben", ungültig`,
+    csvErrExternalLink: (l) => `${l}: enthält externe URL, nicht erlaubt`,
     csvErrTemplate: (l) => `${l}: enthält Musterwert / Lorem-Ipsum`,
     csvErrAdvertising: (l) => `${l}: enthält Werbephrasen`,
     csvErrIdentical: (l) => `${l}: identisch mit Artikelname`,
-    csvErrSingleImage: 'Bild: nur 1 Bild vorhanden – mindestens 3 empfohlen',
+    csvErrSingleImage: 'Bild: nur 1 Bild vorhanden, mindestens 3 empfohlen',
     csvEanDup: 'EAN: doppelt vorhanden',
     csvNameDup: 'Artikelname: doppelt vorhanden',
     csvOfferIdDup: 'Eigene Artikel-ID: doppelt vorhanden',
@@ -528,7 +528,7 @@ const DE_T = {
         title: 'Kritische Anforderungen', sub: 'Bei Verstoß keine Listing',
         items: [
             'Ausschließlich Neuware zulässig im Feed',
-            'EAN (GTIN) je Produkt – nur 1 EAN je Produkt, keine Duplikate',
+            'EAN (GTIN) je Produkt, nur 1 EAN je Produkt, keine Duplikate',
             'Bestand oder Availability muss gesetzt sein',
             'HS-Code notwendig, wenn Lager außerhalb Deutschlands',
             'Eindeutige Seller_Offer_ID je Produkt',
@@ -543,7 +543,7 @@ const DE_T = {
             'Titelformat: Marke + Produktname + Produktart + Material + Farbe + Maße',
             'Beispiel: Dreammöbel „Dream" Boxspringbett, Kunstleder, schwarz, 180×200 cm',
             'Guter Titel = bessere Auffindbarkeit, höhere Klickrate & korrekte Produktgruppe',
-            'Bilder mind. 800 × 600 px – kein Logo/Wasserzeichen, Freisteller',
+            'Bilder mind. 800 × 600 px, kein Logo/Wasserzeichen, Freisteller',
             'Nur YouTube-Links als Produkt-/Montagevideo zulässig',
             'Maße im Format HxTxB (cm) · Gewicht in kg oder g',
             '3D-Modelle (optional): GLB für Android & USDZ für iOS',
@@ -560,7 +560,7 @@ const DE_T = {
             'Keine Werbung, kein Cross-Selling, keine Variantenauswahl ("erhältlich in 3 Größen")',
             'Keine externen Links, kein Hinweis auf eigenen Kundenservice oder Lieferdienst',
             'Lieferumfang im Format „1x Tisch, 4x Stuhl"',
-            'Leere Spalten leer lassen – kein „0", „X", „nicht vorhanden"',
+            'Leere Spalten leer lassen, kein „0", „X", „nicht vorhanden"',
             'Category_Path korrekt zugeordnet (z. B. Boxspringbett)',
         ],
     },
@@ -582,7 +582,7 @@ const DE_T = {
     warehouseDEsub: 'Kein HS-Code erforderlich',
     warehouseNonDEsub: 'HS-Code wird als Pflichtfeld geprüft',
     continueMappingBtn: 'Weiter zur Spalten-Zuordnung',
-    feedTemplateSub2: 'Alle Pflichtfelder vorbefüllt',
+    feedTemplateSub2: 'Excel-Datei mit allen Pflichtfeldern',
     // Pflicht table field labels
     pflichtFields: [
         { key: 'name', label: 'Artikelname' }, { key: 'price', label: 'Preis' },
@@ -595,8 +595,8 @@ const DE_T = {
     qualityTitle: 'Tipps zur Feed-Qualität',
     qualityTips: [
         { field: 'name', icon: '✏️', title: 'Artikelname', bad: 'Sofa grau', good: 'Mustermarke Sofa 3-Sitzer Cord grau 200 cm', tips: ['Mindestens 2 Wörter: Marke + Produkt + Hauptattribut', 'Keine B-Ware-Hinweise, max. 255 Zeichen', 'GTIN-konforme Bezeichnung'] },
-        { field: 'description', icon: '📝', title: 'Beschreibung', tips: ['Mindestens 100 Zeichen, besser 300–500 Zeichen', 'Wichtige Eigenschaften nennen: Material, Farbe, Maße, Besonderheiten', 'Keine reinen Aufzählungen – fließender Text wirkt besser', 'Keine Werbefloskeln wie „günstig" oder „Top-Qualität"'] },
-        { field: 'ean', icon: '🔢', title: 'EAN (GTIN14)', tips: ['Muss exakt 14 Stellen lang sein (führende Nullen ergänzen)', 'Muss eindeutig pro Artikel sein – keine Duplikate', 'Nicht erfundene oder Test-EANs verwenden', 'Handelsübliche GTIN aus GS1-Datenbank'] },
+        { field: 'description', icon: '📝', title: 'Beschreibung', tips: ['Mindestens 100 Zeichen, besser 300–500 Zeichen', 'Wichtige Eigenschaften nennen: Material, Farbe, Maße, Besonderheiten', 'Keine reinen Aufzählungen, fließender Text wirkt besser', 'Keine Werbefloskeln wie „günstig" oder „Top-Qualität"'] },
+        { field: 'ean', icon: '🔢', title: 'EAN (GTIN14)', tips: ['Muss exakt 14 Stellen lang sein (führende Nullen ergänzen)', 'Muss eindeutig pro Artikel sein, keine Duplikate', 'Nicht erfundene oder Test-EANs verwenden', 'Handelsübliche GTIN aus GS1-Datenbank'] },
         { field: 'image_url', icon: '🖼️', title: 'Produktbild', tips: ['Freisteller auf weißem oder transparentem Hintergrund', 'Mindestens 600×600 Pixel, optimal 1000×1000+', 'Öffentlich erreichbare URL (kein Login erforderlich)', 'Kein Wasserzeichen, keine Preise im Bild'] },
         { field: 'price', icon: '💶', title: 'Preis & Lieferung', tips: ['Preis im Format 19.99 (Punkt als Dezimaltrennzeichen)', 'Versandart muss einen gültigen Wert enthalten', 'Lieferzeit als Werktage angeben, z. B. „3-5"', 'Verfügbarkeit / Bestand stets aktuell halten'] },
     ],
@@ -647,7 +647,7 @@ const EN_T = {
     mappingWarning: 'Please manually assign the red-highlighted required fields before continuing.',
     notAssigned: '-- Not assigned --',
     mainImageLabel: 'Main Image (+ Add.)',
-    notDetected: '– not detected –',
+    notDetected: '(not detected)',
     hiddenFields: (n) => `${n} more optional fields not detected in feed`,
     startAnalysis: 'Start Analysis →',
     newFeed: 'Check New Feed',
@@ -679,13 +679,13 @@ const EN_T = {
     csvErrLength: (l) => `${l}: must be 13 or 14 characters`,
     csvErrInvalid: (l) => `${l}: invalid value`,
     csvErrFallback: (l) => `${l} error`,
-    csvErrScientific: (l) => `${l}: scientific notation (e.g. 1.23e+13) – save as plain number`,
-    csvErrSieheOben: (l) => `${l}: contains "siehe oben" – invalid`,
-    csvErrExternalLink: (l) => `${l}: contains external URL – not allowed`,
+    csvErrScientific: (l) => `${l}: scientific notation (e.g. 1.23e+13), save as plain number`,
+    csvErrSieheOben: (l) => `${l}: contains "siehe oben", invalid`,
+    csvErrExternalLink: (l) => `${l}: contains external URL, not allowed`,
     csvErrTemplate: (l) => `${l}: contains template/lorem-ipsum text`,
     csvErrAdvertising: (l) => `${l}: contains advertising phrases`,
     csvErrIdentical: (l) => `${l}: identical to item name`,
-    csvErrSingleImage: 'Image: only 1 image – at least 3 recommended',
+    csvErrSingleImage: 'Image: only 1 image, at least 3 recommended',
     csvEanDup: 'EAN: duplicate',
     csvNameDup: 'Item Name: duplicate',
     csvOfferIdDup: 'Own Item ID: duplicate',
@@ -769,7 +769,7 @@ const EN_T = {
         title: 'Critical Requirements', sub: 'Violations prevent listing',
         items: [
             'Only new goods allowed in the feed',
-            'EAN (GTIN) per product – only 1 EAN per product, no duplicates',
+            'EAN (GTIN) per product, only 1 EAN per product, no duplicates',
             'Stock or Availability must be set',
             'HS Code required if warehouse is outside Germany',
             'Unique Seller_Offer_ID per product',
@@ -784,7 +784,7 @@ const EN_T = {
             'Title format: Brand + Product name + Type + Material + Color + Size',
             'Example: Dreammöbel "Dream" Boxspring bed, faux leather, black, 180×200 cm',
             'Good title = better findability, higher CTR & correct product category',
-            'Images min. 800 × 600 px – no logos/watermarks, cut-out preferred',
+            'Images min. 800 × 600 px, no logos/watermarks, cut-out preferred',
             'Only YouTube links for product/assembly videos',
             'Dimensions in HxDxW (cm) · Weight in kg or g',
             '3D models (optional): GLB for Android & USDZ for iOS',
@@ -801,7 +801,7 @@ const EN_T = {
             'No advertising, no cross-selling, no variant selection text ("available in 3 sizes")',
             'No external links, no mention of own customer service or delivery',
             'Delivery scope in format "1x Table, 4x Chair"',
-            'Leave empty fields blank – no "0", "X", "not available"',
+            'Leave empty fields blank, no "0", "X", "not available"',
             'Category_Path correctly mapped (e.g. Boxspring bed)',
         ],
     },
@@ -824,7 +824,7 @@ const EN_T = {
     warehouseDEsub: 'No HS Code required',
     warehouseNonDEsub: 'HS Code validated as required field',
     continueMappingBtn: 'Continue to Column Mapping',
-    feedTemplateSub2: 'All required fields pre-filled',
+    feedTemplateSub2: 'Excel file with all required fields',
 };
 
 export default function McAngebotsfeed() {
@@ -1549,7 +1549,7 @@ export default function McAngebotsfeed() {
                                     <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#EEF3FF', color: MC_BLUE, fontSize: 11, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{s.n}</div>
                                     <div style={{ minWidth: 0, flex: 1 }}>
                                         <div style={{ fontSize: 12, fontWeight: 600, color: '#111827', display: 'inline' }}>{s.title}</div>
-                                        <span style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.4 }}> – {s.desc}</span>
+                                        <span style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.4 }}> · {s.desc}</span>
                                     </div>
                                 </div>
                             ))}
@@ -1638,7 +1638,7 @@ export default function McAngebotsfeed() {
                                         </svg>
                                     </div>
                                     <div style={{ padding: '8px 12px' }}>
-                                        <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>{lang === 'de' ? 'Feedvorlage XLSX' : 'Feed Template XLSX'}</div>
+                                        <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>{lang === 'de' ? 'Feedvorlage herunterladen' : 'Download Feed Template'}</div>
                                         <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2, lineHeight: 1.4 }}>{T.feedTemplateSub2}</div>
                                     </div>
                                 </button>
@@ -1887,23 +1887,19 @@ export default function McAngebotsfeed() {
                                     const missing = checklistFields.filter(f => !f.mapped);
                                     return (
                                         <div style={{ padding: '16px 20px 16px', borderTop: '1px solid #F3F4F6' }}>
-                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                                                {/* Erkannt column */}
+                                            {missing.length === 0 ? (
                                                 <div>
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
                                                         <div style={{ width: 18, height: 18, borderRadius: '50%', background: '#DCFCE7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                                             <span style={{ color: '#16A34A', fontSize: 11, fontWeight: 800, lineHeight: 1 }}>✓</span>
                                                         </div>
                                                         <div style={{ fontSize: 12, fontWeight: 700, color: '#166534' }}>
-                                                            {langDE ? `Erkannt (${detected.length})` : `Detected (${detected.length})`}
+                                                            {langDE ? `Alle ${detected.length} Pflichtfelder erkannt` : `All ${detected.length} required fields detected`}
                                                         </div>
                                                     </div>
-                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                                                        {detected.length === 0 && (
-                                                            <div style={{ fontSize: 11, color: '#9CA3AF', fontStyle: 'italic' }}>{langDE ? 'Noch keine Felder zugeordnet' : 'No fields assigned yet'}</div>
-                                                        )}
+                                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2px 24px' }}>
                                                         {detected.map(({ key, label, col }) => (
-                                                            <div key={key} style={{ display: 'flex', alignItems: 'baseline', gap: 6, padding: '4px 0' }}>
+                                                            <div key={key} style={{ display: 'flex', alignItems: 'baseline', gap: 5, padding: '3px 0', minWidth: 160 }}>
                                                                 <span style={{ color: '#16A34A', fontSize: 11, fontWeight: 700, lineHeight: 1, flexShrink: 0 }}>✓</span>
                                                                 <span style={{ fontSize: 12, color: '#374151', fontWeight: 600 }}>{label}</span>
                                                                 {col && <span style={{ fontSize: 10, color: '#9CA3AF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>→ {col}</span>}
@@ -1911,29 +1907,52 @@ export default function McAngebotsfeed() {
                                                         ))}
                                                     </div>
                                                 </div>
-                                                {/* Fehlt column */}
-                                                <div>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
-                                                        <div style={{ width: 18, height: 18, borderRadius: '50%', background: missing.length === 0 ? '#DCFCE7' : '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                            <span style={{ color: missing.length === 0 ? '#16A34A' : '#DC2626', fontSize: 11, fontWeight: 800, lineHeight: 1 }}>{missing.length === 0 ? '✓' : '✗'}</span>
+                                            ) : (
+                                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, alignItems: 'flex-start' }}>
+                                                    {/* Erkannt column */}
+                                                    <div>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+                                                            <div style={{ width: 18, height: 18, borderRadius: '50%', background: '#DCFCE7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                                <span style={{ color: '#16A34A', fontSize: 11, fontWeight: 800, lineHeight: 1 }}>✓</span>
+                                                            </div>
+                                                            <div style={{ fontSize: 12, fontWeight: 700, color: '#166534' }}>
+                                                                {langDE ? `Erkannt (${detected.length})` : `Detected (${detected.length})`}
+                                                            </div>
                                                         </div>
-                                                        <div style={{ fontSize: 12, fontWeight: 700, color: missing.length === 0 ? '#166534' : '#991B1B' }}>
-                                                            {langDE ? `Fehlt (${missing.length})` : `Missing (${missing.length})`}
+                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                                                            {detected.length === 0 && (
+                                                                <div style={{ fontSize: 11, color: '#9CA3AF', fontStyle: 'italic' }}>{langDE ? 'Noch keine Felder zugeordnet' : 'No fields assigned yet'}</div>
+                                                            )}
+                                                            {detected.map(({ key, label, col }) => (
+                                                                <div key={key} style={{ display: 'flex', alignItems: 'baseline', gap: 6, padding: '3px 0' }}>
+                                                                    <span style={{ color: '#16A34A', fontSize: 11, fontWeight: 700, lineHeight: 1, flexShrink: 0 }}>✓</span>
+                                                                    <span style={{ fontSize: 12, color: '#374151', fontWeight: 600 }}>{label}</span>
+                                                                    {col && <span style={{ fontSize: 10, color: '#9CA3AF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>→ {col}</span>}
+                                                                </div>
+                                                            ))}
                                                         </div>
                                                     </div>
-                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                                                        {missing.length === 0 && (
-                                                            <div style={{ fontSize: 11, color: '#16A34A', fontWeight: 600 }}>{langDE ? 'Alle Pflichtfelder zugeordnet' : 'All required fields mapped'}</div>
-                                                        )}
-                                                        {missing.map(({ key, label }) => (
-                                                            <div key={key} style={{ display: 'flex', alignItems: 'baseline', gap: 6, padding: '4px 0' }}>
-                                                                <span style={{ color: '#DC2626', fontSize: 11, fontWeight: 700, lineHeight: 1, flexShrink: 0 }}>✗</span>
-                                                                <span style={{ fontSize: 12, color: '#991B1B', fontWeight: 600 }}>{label}</span>
+                                                    {/* Fehlt column */}
+                                                    <div>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+                                                            <div style={{ width: 18, height: 18, borderRadius: '50%', background: '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                                <span style={{ color: '#DC2626', fontSize: 11, fontWeight: 800, lineHeight: 1 }}>✗</span>
                                                             </div>
-                                                        ))}
+                                                            <div style={{ fontSize: 12, fontWeight: 700, color: '#991B1B' }}>
+                                                                {langDE ? `Fehlt (${missing.length})` : `Missing (${missing.length})`}
+                                                            </div>
+                                                        </div>
+                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                                                            {missing.map(({ key, label }) => (
+                                                                <div key={key} style={{ display: 'flex', alignItems: 'baseline', gap: 6, padding: '3px 0' }}>
+                                                                    <span style={{ color: '#DC2626', fontSize: 11, fontWeight: 700, lineHeight: 1, flexShrink: 0 }}>✗</span>
+                                                                    <span style={{ fontSize: 12, color: '#991B1B', fontWeight: 600 }}>{label}</span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            )}
                                             <div style={{ marginTop: 16, paddingTop: 12, borderTop: '1px solid #F3F4F6' }}>
                                                 <button type="button" onClick={() => setMappingExpanded(true)}
                                                     style={{ fontSize: 12, fontWeight: 600, color: '#6B7280', background: 'none', border: '1px solid #D1D5DB', borderRadius: 6, padding: '5px 12px', cursor: 'pointer' }}>
@@ -2298,7 +2317,7 @@ export default function McAngebotsfeed() {
                                     ? [...new Set(rows.slice(0, 30).map(r => String(r[mappedCol] ?? '').trim()).filter(Boolean))].slice(0, 3)
                                     : [];
                                 return (
-                                    <div key={key} style={{ display: 'grid', gridTemplateColumns: '1fr 90px 120px', padding: '5px 16px', borderBottom: '1px solid #F9FAFB', alignItems: 'center', background: hasError ? '#FFFBF5' : 'transparent', borderLeft: hasError ? '3px solid #D97706' : '3px solid transparent' }}>
+                                    <div key={key} style={{ display: 'grid', gridTemplateColumns: '1fr 90px 120px', padding: '5px 16px', borderBottom: '1px solid #F9FAFB', alignItems: 'center', background: hasError ? (barColor === '#DC2626' ? '#FEF2F2' : '#FFFBF5') : 'transparent', borderLeft: hasError ? `3px solid ${barColor}` : '3px solid transparent' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
                                             <div style={{ fontSize: 11, color: hasError ? '#92400E' : '#374151', fontWeight: hasError ? 600 : 500, flexShrink: 0 }}>{label}</div>
                                             {exampleVals.length > 0 && (
@@ -2501,7 +2520,7 @@ export default function McAngebotsfeed() {
                                             ? [...new Set(rows.slice(0, 30).map(r => String(r[mappedCol] ?? '').trim()).filter(Boolean))].slice(0, 3)
                                             : [];
                                         return (
-                                            <div key={f.field} style={{ display: 'grid', gridTemplateColumns: '1fr 90px 120px', padding: '5px 16px', borderBottom: '1px solid #F9FAFB', alignItems: 'center', background: hasError ? '#FFFBF5' : 'transparent', borderLeft: hasError ? '3px solid #D97706' : '3px solid transparent' }}>
+                                            <div key={f.field} style={{ display: 'grid', gridTemplateColumns: '1fr 90px 120px', padding: '5px 16px', borderBottom: '1px solid #F9FAFB', alignItems: 'center', background: hasError ? (barColor === '#DC2626' ? '#FEF2F2' : '#FFFBF5') : 'transparent', borderLeft: hasError ? `3px solid ${barColor}` : '3px solid transparent' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
                                                     <div style={{ fontSize: 11, color: hasError ? '#92400E' : '#374151', fontWeight: hasError ? 600 : 500, flexShrink: 0 }}>{label}</div>
                                                     {exampleVals.length > 0 && (
@@ -2537,7 +2556,7 @@ export default function McAngebotsfeed() {
                                     <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', padding: '14px 20px' }}>
                                         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 12 }}>
                                             <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>
-                                                {lang === 'de' ? 'Bildanzahl – Verteilung' : 'Image Count – Distribution'}
+                                                {lang === 'de' ? 'Bildanzahl: Verteilung' : 'Image Count: Distribution'}
                                             </div>
                                             <div style={{ fontSize: 10, color: '#9CA3AF' }}>
                                                 {lang === 'de' ? `Ø ${imgStats.avg.toLocaleString(numLocale)} Bilder · Empfehlung: 3+` : `Avg. ${imgStats.avg.toLocaleString(numLocale)} images · Recommended: 3+`}
@@ -2789,7 +2808,7 @@ export default function McAngebotsfeed() {
                     'name::dup':           { title: 'Artikelname: Duplikate',           action: 'Jeder Artikel muss einen eindeutigen Namen haben. Korrigieren oder entfernen Sie Duplikate.', tip: 'Unterscheiden Sie Varianten durch Farbe, Größe oder Modellbezeichnung.' },
                     'ean::missing':        { title: 'EAN fehlt',                        action: 'Ergänzen Sie die EAN (GTIN14) für alle betroffenen Artikel.',                   tip: 'Verwenden Sie die offizielle GTIN aus der GS1-Datenbank.' },
                     'ean::wrong_length':   { title: 'EAN: falsche Länge',               action: 'Die EAN muss 13 oder 14 Stellen haben (EAN-13 oder GTIN-14).',                   tip: 'Beispiel: EAN-13 „4012345678901" (13-stellig) oder GTIN-14 „04012345678901" (14-stellig).' },
-                    'ean::invalid':        { title: 'EAN: ungültiger Wert',             action: 'Entfernen Sie Sonderzeichen – die EAN darf nur Ziffern enthalten.',              tip: 'Keine Buchstaben, Leerzeichen oder Bindestriche erlaubt.' },
+                    'ean::invalid':        { title: 'EAN: ungültiger Wert',             action: 'Entfernen Sie Sonderzeichen, die EAN darf nur Ziffern enthalten.',              tip: 'Keine Buchstaben, Leerzeichen oder Bindestriche erlaubt.' },
                     'ean::placeholder':    { title: 'EAN: Platzhalterwert',             action: 'Ersetzen Sie Test-EANs durch gültige GTIN14-Nummern.',                          tip: 'Erfundene oder Test-EANs werden blockiert.' },
                     'ean::dup':            { title: 'EAN: Duplikate',                   action: 'Jede EAN darf nur einmal vorkommen. Korrigieren Sie die doppelten Einträge.',   tip: 'Prüfen Sie, ob Artikel versehentlich mehrfach exportiert wurden.' },
                     'description::missing':    { title: 'Beschreibung fehlt',               action: 'Ergänzen Sie eine Produktbeschreibung für alle betroffenen Artikel.',           tip: 'Mindestens 20 Zeichen, empfohlen 100–500 Zeichen mit Material, Maßen und Features.' },
@@ -2800,7 +2819,7 @@ export default function McAngebotsfeed() {
                     'price::invalid':      { title: 'Preis: ungültiges Format',         action: 'Korrigieren Sie das Preisformat auf 19.99.',                                    tip: 'Nur positive Zahlen mit Punkt als Dezimaltrennzeichen, z. B. 29.99.' },
                     'price::placeholder':  { title: 'Preis: Platzhalterwert',           action: 'Ersetzen Sie Platzhalterwerte durch den korrekten Artikelpreis.',               tip: 'Der Preis muss eine positive Zahl größer als 0 sein.' },
                     'shipping_mode::missing':  { title: 'Versandart fehlt',              action: 'Tragen Sie die Versandart für alle betroffenen Artikel ein.',                   tip: 'Erlaubte Werte: „paket" oder „spedition" (Groß-/Kleinschreibung egal).' },
-                    'shipping_mode::invalid':  { title: 'Versandart: ungültiger Wert',   action: 'Korrigieren Sie die Versandart auf „paket" oder „spedition".',                  tip: 'Keine anderen Werte zulässig – prüfen Sie Leerzeichen oder Tippfehler.' },
+                    'shipping_mode::invalid':  { title: 'Versandart: ungültiger Wert',   action: 'Korrigieren Sie die Versandart auf „paket" oder „spedition".',                  tip: 'Keine anderen Werte zulässig, prüfen Sie Leerzeichen oder Tippfehler.' },
                     'shipping_mode::placeholder': { title: 'Versandart: Platzhalterwert', action: 'Ersetzen Sie Platzhalterwerte durch „paket" oder „spedition".',              tip: 'Erlaubte Werte: „paket" für Paketversand, „spedition" für Speditionslieferung.' },
                     'image_url::missing':  { title: 'Bild-URL fehlt',                  action: 'Fügen Sie für jeden Artikel eine öffentlich erreichbare Bild-URL ein.',         tip: 'Freigestelltes Bild auf weißem Hintergrund, mind. 600×600 px, kein Login nötig.' },
                     'image_url::invalid':  { title: 'Bild-URL: ungültiger Wert',       action: 'Prüfen Sie, ob die Bild-URL korrekt und öffentlich erreichbar ist.',            tip: 'URL muss mit http:// oder https:// beginnen und direkt auf eine Bilddatei zeigen.' },
@@ -2823,7 +2842,7 @@ export default function McAngebotsfeed() {
                     'description::identical_to_title': { title: 'Beschreibung = Artikelname', action: 'Verfassen Sie eine eigenständige Beschreibung statt den Artikelnamen zu wiederholen.', tip: 'Die Beschreibung soll die Vorteile und Details des Produkts erläutern.' },
                     'image_url::single':   { title: 'Nur 1 Produktbild',                  action: 'Fügen Sie mindestens 3 Bilder pro Artikel hinzu (Hauptbild + 2 Zusatzbilder).', tip: 'Mehr Bilder erhöhen die Klickrate und Conversion deutlich.' },
                     'seller_offer_id::dup':{ title: 'Eigene Artikel-ID: Duplikate',       action: 'Jede Artikel-ID (seller_offer_id) muss eindeutig sein. Korrigieren Sie Duplikate.', tip: 'Verwenden Sie Ihre interne SKU oder eine eindeutige Bestellnummer.' },
-                    'category_path::wrong_category': { title: 'Kategoriepfad: falsche Kategorie', action: 'Prüfen Sie den Kategoriepfad – dieser scheint keine Möbel-Kategorie zu sein.', tip: 'Verwenden Sie eine CHECK24-konforme Kategorie, z. B. „Boxspringbett" oder „Sofa".' },
+                    'category_path::wrong_category': { title: 'Kategoriepfad: falsche Kategorie', action: 'Prüfen Sie den Kategoriepfad, dieser scheint keine Möbel-Kategorie zu sein.', tip: 'Verwenden Sie eine CHECK24-konforme Kategorie, z. B. „Boxspringbett" oder „Sofa".' },
                 } : {
                     'name::missing':       { title: 'Item name missing',              action: 'Add a full product name for every affected item.',                              tip: 'Format: Brand + Product type + Key attribute, e.g. "BRAND Sofa 3-seater grey 180 cm" · min. 2 words and 10 chars.' },
                     'name::too_short':     { title: 'Item name too short',            action: 'Extend the item name to at least 10 characters.',                               tip: 'Add product type, color, or material to create a descriptive name.' },
@@ -2832,7 +2851,7 @@ export default function McAngebotsfeed() {
                     'name::dup':           { title: 'Item name: duplicates',         action: 'Every item must have a unique name. Fix or remove duplicates.',                  tip: 'Differentiate variants by color, size, or model designation.' },
                     'ean::missing':        { title: 'EAN missing',                   action: 'Add the EAN (GTIN14) for all affected items.',                                  tip: 'Use the official GTIN from the GS1 database.' },
                     'ean::wrong_length':   { title: 'EAN: wrong length',             action: 'EAN must be 13 or 14 digits (EAN-13 or GTIN-14).',                              tip: 'Example: EAN-13 "4012345678901" (13 digits) or GTIN-14 "04012345678901" (14 digits).' },
-                    'ean::invalid':        { title: 'EAN: invalid value',            action: 'Remove special characters – EAN must contain digits only.',                     tip: 'No letters, spaces, or hyphens allowed.' },
+                    'ean::invalid':        { title: 'EAN: invalid value',            action: 'Remove special characters; EAN must contain digits only.',                     tip: 'No letters, spaces, or hyphens allowed.' },
                     'ean::placeholder':    { title: 'EAN: placeholder value',        action: 'Replace test EANs with valid GTIN14 numbers.',                                  tip: 'Invented or test EANs will be blocked.' },
                     'ean::dup':            { title: 'EAN: duplicates',               action: 'Each EAN may only appear once. Fix the duplicate entries.',                     tip: 'Check whether items were accidentally exported multiple times.' },
                     'description::missing':    { title: 'Description missing',           action: 'Add a product description for all affected items.',                             tip: 'Min. 20 characters, ideally 100–500 with material, dimensions, and features.' },
@@ -2843,7 +2862,7 @@ export default function McAngebotsfeed() {
                     'price::invalid':      { title: 'Price: invalid format',          action: 'Correct the price format to 19.99.',                                            tip: 'Only positive numbers with dot as decimal separator, e.g. 29.99.' },
                     'price::placeholder':  { title: 'Price: placeholder value',       action: 'Replace placeholder values with the correct item price.',                       tip: 'The price must be a positive number greater than 0.' },
                     'shipping_mode::missing':  { title: 'Shipping mode missing',      action: 'Set the shipping mode for all affected items.',                                 tip: 'Allowed values: "paket" or "spedition" (case-insensitive).' },
-                    'shipping_mode::invalid':  { title: 'Shipping mode: invalid value', action: 'Fix the shipping mode to "paket" or "spedition".',                           tip: 'No other values allowed – check for spaces or typos.' },
+                    'shipping_mode::invalid':  { title: 'Shipping mode: invalid value', action: 'Fix the shipping mode to "paket" or "spedition".',                           tip: 'No other values allowed, check for spaces or typos.' },
                     'shipping_mode::placeholder':{ title: 'Shipping mode: placeholder', action: 'Replace placeholders with "paket" or "spedition".',                          tip: '"paket" for parcel delivery, "spedition" for freight delivery.' },
                     'image_url::missing':  { title: 'Image URL missing',             action: 'Add a publicly accessible image URL for every item.',                           tip: 'Cut-out on white background, min. 600×600 px, no login required.' },
                     'image_url::invalid':  { title: 'Image URL: invalid value',      action: 'Check that the image URL is correct and publicly accessible.',                  tip: 'URL must start with http:// or https:// and point directly to an image file.' },
@@ -2866,7 +2885,7 @@ export default function McAngebotsfeed() {
                     'description::identical_to_title': { title: 'Description = Item name', action: 'Write an independent description rather than repeating the item name.',      tip: 'The description should explain the benefits and details of the product.' },
                     'image_url::single':   { title: 'Only 1 product image',            action: 'Add at least 3 images per item (main image + 2 additional images).',            tip: 'More images significantly increase click-through rate and conversion.' },
                     'seller_offer_id::dup':{ title: 'Own item ID: duplicates',         action: 'Each seller_offer_id must be unique. Fix the duplicate entries.',               tip: 'Use your internal SKU or a unique order number.' },
-                    'category_path::wrong_category': { title: 'Category path: wrong category', action: 'Review the category path – it does not appear to be a furniture category.', tip: 'Use a CHECK24-compliant category, e.g. "Boxspringbett" or "Sofa".' },
+                    'category_path::wrong_category': { title: 'Category path: wrong category', action: 'Review the category path, it does not appear to be a furniture category.', tip: 'Use a CHECK24-compliant category, e.g. "Boxspringbett" or "Sofa".' },
                 };
 
                 // Hinweise: quality issues that don't block listing
@@ -3246,7 +3265,7 @@ export default function McAngebotsfeed() {
                         {/* Header */}
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px', borderBottom: '1px solid #E5E7EB', flexShrink: 0 }}>
                             <div>
-                                <span style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>{lang === 'de' ? 'Feedvorlage 2026 – Spaltenübersicht' : 'Feed Template 2026 – Column Reference'}</span>
+                                <span style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>{lang === 'de' ? 'Feedvorlage 2026: Spaltenübersicht' : 'Feed Template 2026: Column Reference'}</span>
                                 <span style={{ fontSize: 12, color: '#9CA3AF', marginLeft: 10 }}>{totalShown} {lang === 'de' ? 'Spalten' : 'columns'}</span>
                             </div>
                             <div style={{ display: 'flex', gap: 8 }}>
