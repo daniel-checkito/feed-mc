@@ -306,40 +306,29 @@ const MC_OPTIONAL_COLS = [
     'manufacturer_city',
     'manufacturer_country',
     'manufacturer_email',
+    'manufacturer_phone_number',
     // Informationen (2)
     'deeplink',
     'model',
-    // Produktmerkmale (7)
+    // Produktmerkmale
     'size_lying_surface',
     'size_seat_height',
     'ausrichtung',
     'style',
     'temper',
     'weight',
-    'weight_capacity',
-    // Medien extra (4 non-image)
-    'youtube_link',
-    'bild_3d_glb',
-    'bild_3d_usdz',
+    // Medien extra
     'assembly_instructions',
-    // Funktion & Ausstattung (7)
+    // Funktion & Ausstattung
     'illuminant_included',
     'incl_mattress',
     'incl_slatted_frame',
-    'led_verbaut',
-    'lighting_included',
-    'set_includes',
     'socket',
-    // Textilien & Polster (4)
-    'care_instructions',
-    'filling',
+    // Textilien & Polster
     'removable_cover',
-    'suitable_for_allergic',
     // Nachweise (2)
     'energy_efficiency_category',
     'product_data_sheet',
-    // Herstellerangaben (1)
-    'manufacturer_phone_number',
 ];
 const MC_PFLICHT_ALIASES = {
     ean: ['ean', 'gtin', 'gtin14', 'ean13', 'barcode'],
@@ -623,7 +612,7 @@ const DE_T = {
     recDownloadTitle: 'Fehlerbericht herunterladen',
     recDownloadDesc: 'CSV-Datei mit allen Fehlern je Zeile – importieren Sie diese in Excel, um gezielt die betroffenen Artikel zu korrigieren.',
     recDownloadBtn: 'Fehlerbericht als CSV herunterladen',
-    optFieldsTitle: 'Optionale Felder – Vollständigkeit',
+    optFieldsTitle: 'Optionale Feldanalyse',
     optFieldsSubtitle: 'Empfohlene Felder für bessere Sichtbarkeit & Conversion',
     sizeHintTitle: 'Maß-Attribut fehlt',
     sizeHintDesc: (n) => `${n} Artikel haben kein Maß-Attribut (size, size_height, size_depth, Liegefläche o. ä.)`,
@@ -763,7 +752,7 @@ const EN_T = {
     recDownloadTitle: 'Download Error Report',
     recDownloadDesc: 'CSV file with all errors per row – import into Excel to fix the affected items directly.',
     recDownloadBtn: 'Download Error Report as CSV',
-    optFieldsTitle: 'Optional Fields – Completeness',
+    optFieldsTitle: 'Optional Field Analysis',
     optFieldsSubtitle: 'Recommended fields for better visibility & conversion',
     sizeHintTitle: 'Size attribute missing',
     sizeHintDesc: (n) => `${n} items have no size attribute (size, size_height, size_depth, lying surface, etc.)`,
