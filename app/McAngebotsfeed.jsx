@@ -1672,7 +1672,7 @@ export default function McAngebotsfeed() {
                                         <div style={{ fontSize: 12, color: '#9CA3AF' }}>{lang === 'de' ? 'Hierher ziehen oder klicken · max. 64 MB' : 'Drag here or click · max. 64 MB'}</div>
                                     </div>
                                     <div style={{ fontSize: 11, color: '#9CA3AF', background: '#F3F4F6', borderRadius: 20, padding: '3px 12px' }}>
-                                        {lang === 'de' ? 'CSV · UTF-8 oder Windows-1252' : 'CSV · UTF-8 or Windows-1252'}
+                                        {lang === 'de' ? 'CSV · UTF-8' : 'CSV · UTF-8'}
                                     </div>
                                     <input ref={fileRef} type="file" accept=".csv,text/csv" style={{ display: 'none' }} onChange={(e) => parseFile(e.target.files?.[0] || null)} />
                                 </div>
@@ -1854,11 +1854,11 @@ export default function McAngebotsfeed() {
                                         </div>
                                         <div style={{ display: 'flex', gap: 8 }}>
                                             <button type="button" onClick={() => setStep(1)}
-                                                style={{ padding: '6px 14px', background: '#fff', border: '1px solid #D0D5E0', borderRadius: 7, color: '#374151', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}>
+                                                style={{ padding: '10px 16px', background: '#fff', border: '1px solid #D0D5E0', borderRadius: 8, color: '#374151', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                                                 {T.back}
                                             </button>
                                             <button type="button" onClick={() => setStep(3)}
-                                                style={{ padding: '6px 16px', background: MC_BLUE, border: 'none', borderRadius: 7, color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+                                                style={{ padding: '10px 16px', background: MC_BLUE, border: 'none', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                                                 {T.startAnalysis}
                                             </button>
                                         </div>
@@ -1967,11 +1967,11 @@ export default function McAngebotsfeed() {
                                     </div>
                                     <div style={{ display: 'flex', gap: 8 }}>
                                         <button type="button" onClick={() => setStep(1)}
-                                            style={{ padding: '8px 16px', background: '#fff', border: '1px solid #D0D5E0', borderRadius: 8, color: '#374151', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}>
+                                            style={{ padding: '10px 16px', background: '#fff', border: '1px solid #D0D5E0', borderRadius: 8, color: '#374151', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                                             {T.back}
                                         </button>
                                         <button type="button" onClick={() => setStep(3)}
-                                            style={{ padding: '8px 18px', background: MC_BLUE, border: 'none', borderRadius: 8, color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+                                            style={{ padding: '10px 16px', background: MC_BLUE, border: 'none', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                                             {T.startAnalysis}
                                         </button>
                                     </div>
@@ -2187,56 +2187,15 @@ export default function McAngebotsfeed() {
                 const scoreBg = score >= 85 ? '#DCFCE7' : score >= 60 ? '#FEF3C7' : '#FEE2E2';
 
                 return (
-                    <div style={{ width: '100%', maxWidth: 1000, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    <div style={{ width: '100%', maxWidth: 1100, display: 'flex', flexDirection: 'column', gap: 12 }}>
 
-                        {/* Header row: scores + navigation */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
-                            {/* Pflichtfeld score — donut chart */}
-                            {[
-                                { s: issues.pflichtScore, label: lang === 'de' ? 'Pflichtfelder' : 'Required Fields', hi: 90, lo: 60 },
-                                { s: issues.optionalScore, label: lang === 'de' ? 'Optionale Felder' : 'Optional Fields', hi: 70, lo: 40 },
-                            ].map(({ s, label, hi, lo }) => {
-                                const c = s >= hi ? '#16A34A' : s >= lo ? '#D97706' : '#DC2626';
-                                const r = 20, circ = 2 * Math.PI * r;
-                                return (
-                                    <div key={label} style={{ flex: 1, minWidth: 180, background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
-                                        <svg width="52" height="52" viewBox="0 0 52 52" style={{ flexShrink: 0 }}>
-                                            <circle cx="26" cy="26" r={r} fill="none" stroke="#F3F4F6" strokeWidth="5"/>
-                                            <circle cx="26" cy="26" r={r} fill="none" stroke={c} strokeWidth="5"
-                                                strokeDasharray={`${(s / 100) * circ} ${circ}`}
-                                                strokeLinecap="round"
-                                                transform="rotate(-90 26 26)"
-                                            />
-                                            <text x="26" y="31" textAnchor="middle" fontSize="14" fontWeight="900" fill={c}>{s}</text>
-                                        </svg>
-                                        <div>
-                                            <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{label}</div>
-                                            <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>{lang === 'de' ? 'von 100 Punkten' : 'out of 100 pts'}</div>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                            {/* Stats strip */}
-                            <div style={{ flex: 2, minWidth: 220, background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr' }}>
-                                {[
-                                    { val: issues.livefaehigCount, label: T.statComplete, color: '#16A34A', tip: T.tipComplete },
-                                    { val: issues.blockiertCount, label: T.statErrors, color: '#DC2626', tip: T.tipErrors },
-                                    { val: issues.totalRows, label: T.statTotal, color: '#111827', tip: T.tipTotal },
-                                ].map(({ val, label, color, tip }, i) => (
-                                    <Tooltip key={label} text={tip}>
-                                        <div style={{ padding: '14px 20px', borderRight: i < 2 ? '1px solid #F3F4F6' : 'none', cursor: 'help' }}>
-                                            <div style={{ fontSize: 26, fontWeight: 900, color, lineHeight: 1, marginBottom: 2 }}>{val.toLocaleString(numLocale)}</div>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                                                <span style={{ fontSize: 11, color: '#6B7280' }}>{label}</span>
-                                                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style={{ color: '#9CA3AF', flexShrink: 0 }}><circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.3"/><path d="M8 7v4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="5" r="0.75" fill="currentColor"/></svg>
-                                            </div>
-                                        </div>
-                                    </Tooltip>
-                                ))}
+                        {/* Header row: filename only */}
+                        {file && (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                                <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 1.5h8.5l3 3v10h-11.5v-13z" stroke="#9CA3AF" strokeWidth="1.4" strokeLinejoin="round"/><path d="M11 1.5v3h3" stroke="#9CA3AF" strokeWidth="1.4" strokeLinejoin="round"/></svg>
+                                <span style={{ fontSize: 11, color: '#9CA3AF' }}>{file.name}</span>
                             </div>
-                            {/* Filename + nav buttons */}
-                            {file && <span style={{ fontSize: 11, color: '#9CA3AF', flexShrink: 0 }}>{file.name}</span>}
-                        </div>
+                        )}
 
                         {/* 2-column: table | action panel */}
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 12, alignItems: 'start' }}>
@@ -2285,7 +2244,7 @@ export default function McAngebotsfeed() {
                                         <div style={{ textAlign: 'right', fontSize: 10, fontWeight: 600, whiteSpace: 'nowrap' }}>
                                             {pct === null ? <span style={{ color: '#9CA3AF' }}>{T.notInFeed}</span>
                                                 : errs === 0 ? <span style={{ color: '#16A34A' }}>{T.complete}</span>
-                                                : <span style={{ color: pct < 30 ? '#DC2626' : '#D97706' }}>{T.missingCount(errs.toLocaleString(numLocale))}</span>}
+                                                : <span style={{ color: barColor }}>{T.missingCount(errs.toLocaleString(numLocale))}</span>}
                                         </div>
                                         <div style={{ paddingLeft: 12, display: 'flex', alignItems: 'center', gap: 5 }}>
                                             {pct !== null ? (
@@ -2304,6 +2263,53 @@ export default function McAngebotsfeed() {
 
                         {/* Right action panel */}
                         <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'sticky', top: 20, alignSelf: 'flex-start' }}>
+
+                            {/* Score donuts */}
+                            <div style={{ padding: '12px 14px 10px', borderBottom: '1px solid #F3F4F6', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                                {[
+                                    { s: issues.pflichtScore, label: lang === 'de' ? 'Pflichtfelder' : 'Required Fields', hi: 90, lo: 60 },
+                                    { s: issues.optionalScore, label: lang === 'de' ? 'Optionale Felder' : 'Optional Fields', hi: 70, lo: 40 },
+                                ].map(({ s, label, hi, lo }) => {
+                                    const c3 = s >= hi ? '#16A34A' : s >= lo ? '#D97706' : '#DC2626';
+                                    const r3 = 16, circ3 = 2 * Math.PI * r3;
+                                    return (
+                                        <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                                            <svg width="40" height="40" viewBox="0 0 40 40" style={{ flexShrink: 0 }}>
+                                                <circle cx="20" cy="20" r={r3} fill="none" stroke="#F3F4F6" strokeWidth="4"/>
+                                                <circle cx="20" cy="20" r={r3} fill="none" stroke={c3} strokeWidth="4"
+                                                    strokeDasharray={`${(s / 100) * circ3} ${circ3}`}
+                                                    strokeLinecap="round"
+                                                    transform="rotate(-90 20 20)"
+                                                />
+                                                <text x="20" y="24" textAnchor="middle" fontSize="11" fontWeight="900" fill={c3}>{s}</text>
+                                            </svg>
+                                            <div>
+                                                <div style={{ fontSize: 11, fontWeight: 700, color: '#111827' }}>{label}</div>
+                                                <div style={{ fontSize: 9, color: '#9CA3AF' }}>{lang === 'de' ? 'von 100 Punkten' : 'out of 100 pts'}</div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+
+                            {/* Stats strip */}
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', borderBottom: '1px solid #F3F4F6' }}>
+                                {[
+                                    { val: issues.livefaehigCount, label: T.statComplete, color: '#16A34A', tip: T.tipComplete },
+                                    { val: issues.blockiertCount, label: T.statErrors, color: '#DC2626', tip: T.tipErrors },
+                                    { val: issues.totalRows, label: T.statTotal, color: '#111827', tip: T.tipTotal },
+                                ].map(({ val, label, color, tip }, i) => (
+                                    <Tooltip key={label} text={tip}>
+                                        <div style={{ padding: '10px 10px', borderRight: i < 2 ? '1px solid #F3F4F6' : 'none', cursor: 'help', textAlign: 'center' }}>
+                                            <div style={{ fontSize: 20, fontWeight: 900, color, lineHeight: 1, marginBottom: 2 }}>{val.toLocaleString(numLocale)}</div>
+                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 3 }}>
+                                                <span style={{ fontSize: 9, color: '#6B7280' }}>{label}</span>
+                                                <svg width="10" height="10" viewBox="0 0 16 16" fill="none" style={{ color: '#9CA3AF', flexShrink: 0 }}><circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.3"/><path d="M8 7v4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="5" r="0.75" fill="currentColor"/></svg>
+                                            </div>
+                                        </div>
+                                    </Tooltip>
+                                ))}
+                            </div>
 
                             {/* Status state */}
                             {detailedErrors.length === 0 ? (
@@ -2332,32 +2338,16 @@ export default function McAngebotsfeed() {
                                 </div>
                             )}
 
-                            {/* Top errors */}
-                            {detailedErrors.length > 0 && (
-                                <div style={{ padding: '12px 16px', borderBottom: '1px solid #F3F4F6' }}>
-                                    <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{T.topErrorsTitle}</div>
-                                    <div style={{ display: 'grid', gap: 6 }}>
-                                        {detailedErrors.map((e, i) => (
-                                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-                                                <div style={{ minWidth: 32, height: 18, background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                                    <span style={{ fontSize: 10, fontWeight: 800, color: '#DC2626' }}>{e.count.toLocaleString(numLocale)}</span>
-                                                </div>
-                                                <span style={{ fontSize: 10, color: '#374151', lineHeight: 1.3 }}>{e.label}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
 
                             {/* Nav buttons */}
                             <div style={{ padding: '10px 16px', borderTop: '1px solid #F3F4F6', display: 'flex', flexDirection: 'column', gap: 6 }}>
                                 <div style={{ display: 'flex', gap: 6 }}>
                                     <button type="button" onClick={() => setStep(2)}
-                                        style={{ flex: 1, padding: '8px', background: '#fff', border: '1px solid #D0D5E0', borderRadius: 8, color: '#374151', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}>
+                                        style={{ flex: 1, padding: '10px 16px', background: '#fff', border: '1px solid #D0D5E0', borderRadius: 8, color: '#374151', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                                         {T.back}
                                     </button>
                                     <button type="button" onClick={() => setStep(4)}
-                                        style={{ flex: 2, padding: '8px', background: MC_BLUE, border: 'none', borderRadius: 8, color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+                                        style={{ flex: 2, padding: '10px 16px', background: MC_BLUE, border: 'none', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                                         {T.recNextStep}
                                     </button>
                                 </div>
@@ -2365,101 +2355,6 @@ export default function McAngebotsfeed() {
 
                         </div>{/* end right panel */}
 
-                        {/* Title structure analysis card */}
-                        {titleAnalysis && titleAnalysis.total > 0 && (
-                            <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', padding: '14px 20px', gridColumn: 1 }}>
-                                <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 12 }}>
-                                    <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>
-                                        {lang === 'de' ? 'Titelqualität – Strukturanalyse' : 'Title Quality – Structure Analysis'}
-                                    </div>
-                                    <div style={{ fontSize: 10, color: '#9CA3AF' }}>
-                                        {lang === 'de' ? `Empfehlung: Marke + Produktart + Material + Farbe + Maße` : `Recommended: Brand + Type + Material + Color + Dimensions`}
-                                    </div>
-                                </div>
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 12 }}>
-                                    {[
-                                        { label: lang === 'de' ? 'Farbe fehlt' : 'Color missing', count: titleAnalysis.missingColor, tip: lang === 'de' ? 'z. B. „schwarz", „beige", „grau"' : 'e.g. "black", "beige", "grey"' },
-                                        { label: lang === 'de' ? 'Material fehlt' : 'Material missing', count: titleAnalysis.missingMaterial, tip: lang === 'de' ? 'z. B. „Eiche", „Kunstleder", „Metall"' : 'e.g. "oak", "faux leather", "metal"' },
-                                        { label: lang === 'de' ? 'Maße fehlen' : 'Dimensions missing', count: titleAnalysis.missingDimension, tip: lang === 'de' ? 'z. B. „180 cm", „80×200 cm"' : 'e.g. "180 cm", "80×200 cm"' },
-                                        ...(titleAnalysis.missingBrand !== null ? [{ label: lang === 'de' ? 'Marke fehlt' : 'Brand missing', count: titleAnalysis.missingBrand, tip: lang === 'de' ? 'Markenname sollte im Titel stehen' : 'Brand name should appear in title' }] : []),
-                                    ].map(({ label, count, tip }) => {
-                                        const pct = Math.round((count / titleAnalysis.total) * 100);
-                                        const isOk = pct === 0;
-                                        return (
-                                            <Tooltip key={label} text={tip}>
-                                                <div style={{ background: isOk ? '#F0FDF4' : '#FFFBF5', border: `1px solid ${isOk ? '#BBF7D0' : '#FDE68A'}`, borderRadius: 8, padding: '10px 14px', cursor: 'help', width: '100%' }}>
-                                                    <div style={{ fontSize: 18, fontWeight: 800, color: isOk ? '#16A34A' : count > titleAnalysis.total * 0.5 ? '#DC2626' : '#D97706', lineHeight: 1 }}>{pct}%</div>
-                                                    <div style={{ fontSize: 10, color: '#374151', fontWeight: 600, marginTop: 4 }}>{label}</div>
-                                                    <div style={{ fontSize: 9, color: '#9CA3AF', marginTop: 2 }}>{count.toLocaleString(numLocale)} {lang === 'de' ? 'Artikel' : 'items'}</div>
-                                                </div>
-                                            </Tooltip>
-                                        );
-                                    })}
-                                </div>
-                                {titleAnalysis.sampleBad.length > 0 && (
-                                    <div>
-                                        <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{lang === 'de' ? 'Beispiele zur Verbesserung' : 'Examples to improve'}</div>
-                                        {titleAnalysis.sampleBad.map(({ title, hasColor, hasMaterial, hasDimension }, i) => (
-                                            <div key={i} style={{ background: '#F9FAFB', borderRadius: 6, padding: '8px 12px', marginBottom: 4, display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                                                <div style={{ flex: 1, fontSize: 11, color: '#374151', lineHeight: 1.4, fontStyle: 'italic' }}>„{title}"</div>
-                                                <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
-                                                    {[
-                                                        { ok: hasColor, lbl: lang === 'de' ? 'Farbe' : 'Color' },
-                                                        { ok: hasMaterial, lbl: lang === 'de' ? 'Material' : 'Material' },
-                                                        { ok: hasDimension, lbl: lang === 'de' ? 'Maße' : 'Dim.' },
-                                                    ].map(({ ok, lbl }) => (
-                                                        <span key={lbl} style={{ fontSize: 9, fontWeight: 600, padding: '2px 6px', borderRadius: 4, background: ok ? '#DCFCE7' : '#FEE2E2', color: ok ? '#166534' : '#991B1B' }}>{lbl}</span>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        )}
-
-                        {/* Description length distribution */}
-                        {descStats && descStats.total > 0 && (
-                            <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', padding: '14px 20px', gridColumn: 1 }}>
-                                <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 12 }}>
-                                    <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>
-                                        {lang === 'de' ? 'Beschreibungslänge – Verteilung' : 'Description Length – Distribution'}
-                                    </div>
-                                    <div style={{ fontSize: 10, color: '#9CA3AF' }}>
-                                        {lang === 'de' ? `Ø ${descStats.avg.toLocaleString(numLocale)} Zeichen · Empfehlung: 150–500+` : `Avg. ${descStats.avg.toLocaleString(numLocale)} chars · Recommended: 150–500+`}
-                                    </div>
-                                </div>
-                                <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end', height: 60, marginBottom: 8 }}>
-                                    {[
-                                        { key: 'short', label: lang === 'de' ? '<50' : '<50', color: '#EF4444', bg: '#FEF2F2', desc: lang === 'de' ? 'Zu kurz' : 'Too short' },
-                                        { key: 'ok', label: '50–149', color: '#F59E0B', bg: '#FFFBEB', desc: lang === 'de' ? 'Ausbaufähig' : 'Could improve' },
-                                        { key: 'good', label: '150–499', color: '#16A34A', bg: '#F0FDF4', desc: lang === 'de' ? 'Gut' : 'Good' },
-                                        { key: 'great', label: '500+', color: '#1553B6', bg: '#EEF4FF', desc: lang === 'de' ? 'Sehr gut' : 'Excellent' },
-                                    ].map(({ key, label, color, bg, desc }) => {
-                                        const count = descStats.buckets[key];
-                                        const pct = descStats.total ? Math.round((count / descStats.total) * 100) : 0;
-                                        return (
-                                            <div key={key} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
-                                                <div style={{ fontSize: 9, fontWeight: 700, color }}>{pct}%</div>
-                                                <div style={{ width: '100%', height: Math.max(4, pct * 0.44), background: color, borderRadius: 3, opacity: 0.85 }} />
-                                                <div style={{ fontSize: 8, color: '#9CA3AF', textAlign: 'center', lineHeight: 1.2 }}>{label}</div>
-                                                <div style={{ fontSize: 8, color: '#6B7280', fontWeight: 600, textAlign: 'center' }}>{desc}</div>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                                {descStats.avg < 150 && (
-                                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, background: '#FFFBEB', borderRadius: 6, padding: '7px 10px' }}>
-                                        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 1 }}><circle cx="8" cy="8" r="6.5" stroke="#D97706" strokeWidth="1.4"/><path d="M8 7v4" stroke="#D97706" strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="5.5" r=".6" fill="#D97706"/></svg>
-                                        <span style={{ fontSize: 10, color: '#92400E', lineHeight: 1.5 }}>
-                                            {lang === 'de'
-                                                ? 'Durchschnittliche Beschreibung unter 150 Zeichen. Längere Beschreibungen mit Material, Maßen und Besonderheiten verbessern die Conversion.'
-                                                : 'Average description under 150 characters. Longer descriptions including material, dimensions and features improve conversion.'}
-                                        </span>
-                                    </div>
-                                )}
-                            </div>
-                        )}
 
                         {/* Image count distribution */}
                         {imgStats && imgStats.total > 0 && (
@@ -2522,7 +2417,7 @@ export default function McAngebotsfeed() {
                 const overallColor = overallPct >= 80 ? '#16A34A' : overallPct >= 50 ? '#D97706' : '#DC2626';
                 const r = 20, circ = 2 * Math.PI * r;
                 return (
-                    <div style={{ width: '100%', maxWidth: 1000, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    <div style={{ width: '100%', maxWidth: 1100, display: 'flex', flexDirection: 'column', gap: 12 }}>
 
                         {/* Header */}
                         <div style={{ marginBottom: 4 }}>
@@ -2582,6 +2477,66 @@ export default function McAngebotsfeed() {
                                         </div>
                                     </div>
                                 )}
+
+                                {/* Titelqualität card */}
+                                <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '16px 20px' }}>
+                                    <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', marginBottom: 12 }}>
+                                        {lang === 'de' ? 'Titelqualität' : 'Title Quality'}
+                                    </div>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
+                                        <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 8, padding: '10px 12px' }}>
+                                            <div style={{ fontSize: 10, fontWeight: 700, color: '#DC2626', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{lang === 'de' ? 'Schlecht' : 'Bad'}</div>
+                                            <div style={{ fontSize: 11, color: '#7F1D1D', fontFamily: 'monospace', lineHeight: 1.4 }}>"Sofa schwarz"</div>
+                                        </div>
+                                        <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 8, padding: '10px 12px' }}>
+                                            <div style={{ fontSize: 10, fontWeight: 700, color: '#16A34A', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{lang === 'de' ? 'Gut' : 'Good'}</div>
+                                            <div style={{ fontSize: 11, color: '#166534', fontFamily: 'monospace', lineHeight: 1.4 }}>"Dreammöbel Dream Ecksofa 3-Sitzer, Kunstleder schwarz, 180 × 90 cm"</div>
+                                        </div>
+                                    </div>
+                                    <ul style={{ margin: 0, padding: '0 0 0 16px', display: 'flex', flexDirection: 'column', gap: 4 }}>
+                                        {(lang === 'de' ? [
+                                            'Marke + Produktart + Haupteigenschaft + Farbe + Maße',
+                                            'Mind. 2 Wörter, max. 255 Zeichen',
+                                            'Keine B-Ware-Hinweise oder Werbephrasen',
+                                        ] : [
+                                            'Brand + Product type + Main attribute + Color + Dimensions',
+                                            'Min. 2 words, max. 255 characters',
+                                            'No used-goods labels or advertising phrases',
+                                        ]).map((tip, i) => (
+                                            <li key={i} style={{ fontSize: 11, color: '#374151', lineHeight: 1.5 }}>{tip}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+
+                                {/* Beschreibungslänge card */}
+                                <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '16px 20px' }}>
+                                    <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', marginBottom: 12 }}>
+                                        {lang === 'de' ? 'Beschreibungslänge' : 'Description Length'}
+                                    </div>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
+                                        <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 8, padding: '10px 12px' }}>
+                                            <div style={{ fontSize: 10, fontWeight: 700, color: '#DC2626', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{lang === 'de' ? 'Schlecht' : 'Bad'}</div>
+                                            <div style={{ fontSize: 11, color: '#7F1D1D', fontFamily: 'monospace', lineHeight: 1.4 }}>"Schönes Sofa."</div>
+                                        </div>
+                                        <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 8, padding: '10px 12px' }}>
+                                            <div style={{ fontSize: 10, fontWeight: 700, color: '#16A34A', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{lang === 'de' ? 'Gut' : 'Good'}</div>
+                                            <div style={{ fontSize: 11, color: '#166534', fontFamily: 'monospace', lineHeight: 1.4 }}>"Elegantes Ecksofa aus hochwertigem Kunstleder in Schwarz. Maße: B 200 cm × H 80 cm × T 120 cm. Material: Kunstleder. Inkl. Hocker."</div>
+                                        </div>
+                                    </div>
+                                    <ul style={{ margin: 0, padding: '0 0 0 16px', display: 'flex', flexDirection: 'column', gap: 4 }}>
+                                        {(lang === 'de' ? [
+                                            'Mind. 100 Zeichen, optimal 300–500 Zeichen',
+                                            'Material, Farbe, Maße und Besonderheiten nennen',
+                                            'Kein "günstig" oder "Top-Qualität"',
+                                        ] : [
+                                            'Min. 100 characters, ideally 300–500 characters',
+                                            'Mention material, color, dimensions and features',
+                                            'No "cheap" or "top quality"',
+                                        ]).map((tip, i) => (
+                                            <li key={i} style={{ fontSize: 11, color: '#374151', lineHeight: 1.5 }}>{tip}</li>
+                                        ))}
+                                    </ul>
+                                </div>
                             </div>
 
                             {/* Right: score + nav */}
@@ -2606,11 +2561,11 @@ export default function McAngebotsfeed() {
                                 {/* Nav buttons */}
                                 <div style={{ display: 'flex', gap: 6 }}>
                                     <button type="button" onClick={() => setStep(3)}
-                                        style={{ flex: 1, padding: '9px', background: '#FFF', color: '#374151', border: '1px solid #D1D5DB', borderRadius: 8, fontSize: 12, fontWeight: 500, cursor: 'pointer' }}>
+                                        style={{ flex: 1, padding: '10px 16px', background: '#FFF', color: '#374151', border: '1px solid #D1D5DB', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                                         {T.back}
                                     </button>
                                     <button type="button" onClick={() => setStep(5)}
-                                        style={{ flex: 2, padding: '9px', background: MC_BLUE, border: 'none', borderRadius: 8, color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+                                        style={{ flex: 2, padding: '10px 16px', background: MC_BLUE, border: 'none', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                                         {T.recNextStepFinal}
                                     </button>
                                 </div>
@@ -2790,7 +2745,50 @@ export default function McAngebotsfeed() {
                 };
 
                 return (
-                    <div style={{ width: '100%', maxWidth: 1200 }}>
+                    <div style={{ width: '100%', maxWidth: 1100 }}>
+
+                        {/* Summary score row */}
+                        <div style={{ display: 'flex', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
+                            {[
+                                { s: issues.pflichtScore, label: lang === 'de' ? 'Pflichtfelder' : 'Required Fields', hi: 90, lo: 60 },
+                                { s: issues.optionalScore, label: lang === 'de' ? 'Optionale Felder' : 'Optional Fields', hi: 70, lo: 40 },
+                            ].map(({ s, label, hi, lo }) => {
+                                const c = s >= hi ? '#16A34A' : s >= lo ? '#D97706' : '#DC2626';
+                                const r5 = 20, circ5 = 2 * Math.PI * r5;
+                                return (
+                                    <div key={label} style={{ flex: 1, minWidth: 160, background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                                        <svg width="52" height="52" viewBox="0 0 52 52" style={{ flexShrink: 0 }}>
+                                            <circle cx="26" cy="26" r={r5} fill="none" stroke="#F3F4F6" strokeWidth="5"/>
+                                            <circle cx="26" cy="26" r={r5} fill="none" stroke={c} strokeWidth="5"
+                                                strokeDasharray={`${(s / 100) * circ5} ${circ5}`}
+                                                strokeLinecap="round"
+                                                transform="rotate(-90 26 26)"
+                                            />
+                                            <text x="26" y="31" textAnchor="middle" fontSize="14" fontWeight="900" fill={c}>{s}</text>
+                                        </svg>
+                                        <div>
+                                            <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{label}</div>
+                                            <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>{lang === 'de' ? 'von 100 Punkten' : 'out of 100 pts'}</div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                            {/* Listbare Produkte */}
+                            {(() => {
+                                const lc = issues.livefaehigCount;
+                                const tc = issues.totalRows;
+                                const lColor = lc === tc ? '#16A34A' : lc > 0 ? '#D97706' : '#DC2626';
+                                return (
+                                    <div style={{ flex: 1, minWidth: 160, background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                                        <div style={{ fontSize: 32, fontWeight: 900, color: lColor, lineHeight: 1, flexShrink: 0 }}>{lc.toLocaleString(numLocale)}</div>
+                                        <div>
+                                            <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{lang === 'de' ? 'Listbare Produkte' : 'Listable Products'}</div>
+                                            <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>{lang === 'de' ? `können gelistet werden (/ ${tc})` : `can be listed (/ ${tc})`}</div>
+                                        </div>
+                                    </div>
+                                );
+                            })()}
+                        </div>
 
                         {/* Header */}
                         <div style={{ marginBottom: 12, flexShrink: 0 }}>
@@ -2919,11 +2917,11 @@ export default function McAngebotsfeed() {
                                 {/* Nav */}
                                 <div style={{ display: 'flex', gap: 6 }}>
                                     <button type="button" onClick={() => setStep(4)}
-                                        style={{ flex: 1, padding: '9px', background: '#FFF', color: '#374151', border: '1px solid #D1D5DB', borderRadius: 8, fontSize: 12, fontWeight: 500, cursor: 'pointer' }}>
+                                        style={{ flex: 1, padding: '10px 16px', background: '#FFF', color: '#374151', border: '1px solid #D1D5DB', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                                         {T.back}
                                     </button>
                                     <button type="button" onClick={resetToStart}
-                                        style={{ flex: 1, padding: '9px', background: '#FFF', color: '#374151', border: '1px solid #D1D5DB', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                                        style={{ flex: 1, padding: '10px 16px', background: '#FFF', color: '#374151', border: '1px solid #D1D5DB', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
                                         <svg width="11" height="11" viewBox="0 0 15 15" fill="none"><path d="M2 7.5h11M7 2.5l-5 5 5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
                                         {lang === 'de' ? 'Neu hochladen' : 'Upload new'}
                                     </button>
