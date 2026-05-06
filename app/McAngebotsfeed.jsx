@@ -840,27 +840,11 @@ export default function McAngebotsfeed() {
     const [rows, setRows] = useState([]);
     const [headers, setHeaders] = useState([]);
     const [manualMapping, setManualMapping] = useState({});
-    const [mappingExpanded, setMappingExpanded] = useState(false);
+    const [expandedRecs, setExpandedRecs] = useState(() => new Set());
     const [lang, setLang] = useState('de');
     const [langOpen, setLangOpen] = useState(false);
     const [alwaysAvailable, setAlwaysAvailable] = useState(false);
     const fileRef = useRef(null);
-    // Auto-expand manual mapping when entering step 2 with missing required fields
-    useEffect(() => {
-        if (step === 2 && rows.length > 0 && headers.length > 0) {
-            // Re-evaluate missing pflicht; cannot easily access `issues` here yet, so derive
-            const outside = storeLocation === 'outside_germany';
-            const missing = MC_PFLICHT_COLS.filter((c) => {
-                if (c === 'image_url') return mcImageColumns.length === 0;
-                if (c === 'stock_amount') return false;
-                if (c === 'availability') return !alwaysAvailable && !mcMapping['availability'] && !mcMapping['stock_amount'];
-                return !mcMapping[c];
-            });
-            if (outside && !mcMapping['hs_code']) missing.push('hs_code');
-            setMappingExpanded(missing.length > 0);
-        }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [step]);
 
     function parseFile(f) {
         if (!f) return;
@@ -1871,111 +1855,8 @@ export default function McAngebotsfeed() {
                                 </div>
 
 
-                                {/* Collapsed: 2-column Erkannt vs Fehlt */}
-                                {!mappingExpanded && (() => {
-                                    const checklistFields = [
-                                        { key: 'name',           label: langDE ? 'Produktname' : 'Product Name',    mapped: !!mcMapping['name'],         col: mcMapping['name'] },
-                                        { key: 'ean',            label: 'EAN',                                       mapped: !!mcMapping['ean'],          col: mcMapping['ean'] },
-                                        { key: 'brand',          label: langDE ? 'Marke' : 'Brand',                  mapped: !!mcMapping['brand'],        col: mcMapping['brand'] },
-                                        { key: 'price',          label: langDE ? 'Preis' : 'Price',                  mapped: !!mcMapping['price'],        col: mcMapping['price'] },
-                                        { key: 'description',    label: langDE ? 'Beschreibung' : 'Description',     mapped: !!mcMapping['description'],  col: mcMapping['description'] },
-                                        { key: 'image_url',      label: langDE ? 'Hauptbild' : 'Main Image',         mapped: mcImageColumns.length > 0,   col: mcImageColumns[0] },
-                                        { key: 'delivery_time',  label: langDE ? 'Lieferzeit' : 'Delivery Time',     mapped: !!mcMapping['delivery_time'],col: mcMapping['delivery_time'] },
-                                        { key: 'shipping_mode',  label: langDE ? 'Versandart' : 'Shipping Mode',     mapped: !!mcMapping['shipping_mode'],col: mcMapping['shipping_mode'] },
-                                        { key: 'availability',   label: langDE ? 'Verfügbarkeit' : 'Availability',   mapped: !!mcMapping['availability'] || !!mcMapping['stock_amount'] || alwaysAvailable, col: alwaysAvailable ? (langDE ? 'Immer verfügbar' : 'Always available') : (mcMapping['availability'] || mcMapping['stock_amount']) },
-                                        { key: 'seller_offer_id',label: langDE ? 'Angebots-ID' : 'Offer ID',         mapped: !!mcMapping['seller_offer_id'], col: mcMapping['seller_offer_id'] },
-                                        ...(outsideGermany ? [{ key: 'hs_code', label: 'HS-Code', mapped: !!mcMapping['hs_code'], col: mcMapping['hs_code'] }] : []),
-                                    ];
-                                    const detected = checklistFields.filter(f => f.mapped);
-                                    const missing = checklistFields.filter(f => !f.mapped);
-                                    return (
-                                        <div style={{ padding: '16px 20px 16px', borderTop: '1px solid #F3F4F6' }}>
-                                            {missing.length === 0 ? (
-                                                <div>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
-                                                        <div style={{ width: 18, height: 18, borderRadius: '50%', background: '#DCFCE7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                            <span style={{ color: '#16A34A', fontSize: 11, fontWeight: 800, lineHeight: 1 }}>✓</span>
-                                                        </div>
-                                                        <div style={{ fontSize: 12, fontWeight: 700, color: '#166534' }}>
-                                                            {langDE ? `Alle ${detected.length} Pflichtfelder erkannt` : `All ${detected.length} required fields detected`}
-                                                        </div>
-                                                    </div>
-                                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2px 24px' }}>
-                                                        {detected.map(({ key, label, col }) => (
-                                                            <div key={key} style={{ display: 'flex', alignItems: 'baseline', gap: 5, padding: '3px 0', minWidth: 160 }}>
-                                                                <span style={{ color: '#16A34A', fontSize: 11, fontWeight: 700, lineHeight: 1, flexShrink: 0 }}>✓</span>
-                                                                <span style={{ fontSize: 12, color: '#374151', fontWeight: 600 }}>{label}</span>
-                                                                {col && <span style={{ fontSize: 10, color: '#9CA3AF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>→ {col}</span>}
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            ) : (
-                                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, alignItems: 'flex-start' }}>
-                                                    {/* Erkannt column */}
-                                                    <div>
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
-                                                            <div style={{ width: 18, height: 18, borderRadius: '50%', background: '#DCFCE7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                                <span style={{ color: '#16A34A', fontSize: 11, fontWeight: 800, lineHeight: 1 }}>✓</span>
-                                                            </div>
-                                                            <div style={{ fontSize: 12, fontWeight: 700, color: '#166534' }}>
-                                                                {langDE ? `Erkannt (${detected.length})` : `Detected (${detected.length})`}
-                                                            </div>
-                                                        </div>
-                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                                                            {detected.length === 0 && (
-                                                                <div style={{ fontSize: 11, color: '#9CA3AF', fontStyle: 'italic' }}>{langDE ? 'Noch keine Felder zugeordnet' : 'No fields assigned yet'}</div>
-                                                            )}
-                                                            {detected.map(({ key, label, col }) => (
-                                                                <div key={key} style={{ display: 'flex', alignItems: 'baseline', gap: 6, padding: '3px 0' }}>
-                                                                    <span style={{ color: '#16A34A', fontSize: 11, fontWeight: 700, lineHeight: 1, flexShrink: 0 }}>✓</span>
-                                                                    <span style={{ fontSize: 12, color: '#374151', fontWeight: 600 }}>{label}</span>
-                                                                    {col && <span style={{ fontSize: 10, color: '#9CA3AF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>→ {col}</span>}
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    </div>
-                                                    {/* Fehlt column */}
-                                                    <div>
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
-                                                            <div style={{ width: 18, height: 18, borderRadius: '50%', background: '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                                <span style={{ color: '#DC2626', fontSize: 11, fontWeight: 800, lineHeight: 1 }}>✗</span>
-                                                            </div>
-                                                            <div style={{ fontSize: 12, fontWeight: 700, color: '#991B1B' }}>
-                                                                {langDE ? `Fehlt (${missing.length})` : `Missing (${missing.length})`}
-                                                            </div>
-                                                        </div>
-                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                                                            {missing.map(({ key, label }) => (
-                                                                <div key={key} style={{ display: 'flex', alignItems: 'baseline', gap: 6, padding: '3px 0' }}>
-                                                                    <span style={{ color: '#DC2626', fontSize: 11, fontWeight: 700, lineHeight: 1, flexShrink: 0 }}>✗</span>
-                                                                    <span style={{ fontSize: 12, color: '#991B1B', fontWeight: 600 }}>{label}</span>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )}
-                                            <div style={{ marginTop: 16, paddingTop: 12, borderTop: '1px solid #F3F4F6' }}>
-                                                <button type="button" onClick={() => setMappingExpanded(true)}
-                                                    style={{ fontSize: 12, fontWeight: 600, color: '#6B7280', background: 'none', border: '1px solid #D1D5DB', borderRadius: 6, padding: '5px 12px', cursor: 'pointer' }}>
-                                                    {langDE ? 'Zuordnung manuell anpassen' : 'Adjust mapping manually'}
-                                                </button>
-                                            </div>
-                                        </div>
-                                    );
-                                })()}
-
-                                {/* Expanded: 3-column mapping layout */}
-                                {mappingExpanded && (
-                                    <>
-                                    <div style={{ padding: '8px 20px', borderTop: '1px solid #F3F4F6', display: 'flex', justifyContent: 'flex-end' }}>
-                                        <button type="button" onClick={() => setMappingExpanded(false)}
-                                            style={{ fontSize: 11, fontWeight: 600, color: '#6B7280', background: 'none', border: '1px solid #D1D5DB', borderRadius: 6, padding: '4px 10px', cursor: 'pointer' }}>
-                                            {langDE ? 'Manuelle Zuordnung ausblenden' : 'Hide manual mapping'}
-                                        </button>
-                                    </div>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 260px', gap: 0, borderTop: '1px solid #F3F4F6', minWidth: 0, overflowX: 'hidden' }}>
+                                {/* 3-column mapping layout (always visible) */}
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 260px', gap: 0, borderTop: '1px solid #F3F4F6', minWidth: 0, overflowX: 'hidden' }}>
 
                                     {/* LEFT: Pflichtfelder */}
                                     <div style={{ padding: '12px 14px', borderRight: '1px solid #F3F4F6', minWidth: 0, overflowX: 'hidden' }}>
@@ -2062,9 +1943,7 @@ export default function McAngebotsfeed() {
                                             </div>
                                         </div>
                                     </div>
-                                    </div>
-                                    </>
-                                )}
+                                </div>
 
                                 {/* Bottom nav */}
                                 <div style={{ padding: '10px 20px', borderTop: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
@@ -3032,40 +2911,59 @@ export default function McAngebotsfeed() {
 
                                 {/* Recommendation cards - split into critical + hints */}
                                 {recommendations.length > 0 && (() => {
+                                    const toggleRec = (key) => setExpandedRecs((prev) => {
+                                        const next = new Set(prev);
+                                        if (next.has(key)) next.delete(key); else next.add(key);
+                                        return next;
+                                    });
                                     const renderCard = ({ key, count, rule }, severity) => {
                                         const isCritical = severity === 'critical';
+                                        const collapsible = isCritical;
+                                        const isOpen = collapsible ? expandedRecs.has(key) : true;
                                         const accent = isCritical ? '#DC2626' : '#D97706';
                                         const bgChip = isCritical ? '#FEE2E2' : '#FEF3C7';
                                         const labelText = isCritical
                                             ? (lang === 'de' ? 'KRITISCH' : 'CRITICAL')
                                             : (lang === 'de' ? 'HINWEIS' : 'HINT');
                                         return (
-                                            <div key={key} style={{ background: '#FFF', border: '1px solid #E5E7EB', borderLeft: `4px solid ${accent}`, borderRadius: 10, padding: isCritical ? '16px 20px' : '12px 16px' }}>
-                                                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 6 }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                                            <div key={key} style={{ background: '#FFF', border: '1px solid #E5E7EB', borderLeft: `4px solid ${accent}`, borderRadius: 10, padding: isCritical ? (isOpen ? '16px 20px' : '12px 20px') : '12px 16px', transition: 'padding 0.15s' }}>
+                                                <div
+                                                    onClick={collapsible ? () => toggleRec(key) : undefined}
+                                                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: isOpen ? 6 : 0, cursor: collapsible ? 'pointer' : 'default', userSelect: collapsible ? 'none' : 'auto' }}
+                                                >
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
                                                         <div style={{ width: isCritical ? 28 : 24, height: isCritical ? 28 : 24, borderRadius: 6, background: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                                                             {fieldIcon(key.split('::')[0])}
                                                         </div>
-                                                        <div>
+                                                        <div style={{ minWidth: 0 }}>
                                                             <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                                                                 <span style={{ fontSize: isCritical ? 14 : 13, fontWeight: 700, color: '#111827' }}>{rule.title}</span>
                                                                 <span style={{ fontSize: 9, fontWeight: 700, color: accent, background: bgChip, padding: '2px 7px', borderRadius: 4, letterSpacing: '0.04em' }}>
                                                                     {labelText}
                                                                 </span>
-                                                            </div>
-                                                            <div style={{ fontSize: 11, color: accent, fontWeight: 600, marginTop: 2 }}>
-                                                                {T.recAffected(count.toLocaleString(numLocale))}
+                                                                <span style={{ fontSize: 11, color: accent, fontWeight: 600 }}>
+                                                                    {T.recAffected(count.toLocaleString(numLocale))}
+                                                                </span>
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    {collapsible && (
+                                                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: '#9CA3AF', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }}>
+                                                            <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                                                        </svg>
+                                                    )}
                                                 </div>
-                                                <div style={{ fontSize: isCritical ? 13 : 12, color: '#374151', lineHeight: 1.6, marginBottom: 6 }}>
-                                                    {rule.action}
-                                                </div>
-                                                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, background: '#F9FAFB', borderRadius: 6, padding: '7px 11px' }}>
-                                                    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 1 }}><circle cx="8" cy="8" r="6.5" stroke={MC_BLUE} strokeWidth="1.4"/><path d="M8 7v4" stroke={MC_BLUE} strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="5.5" r=".6" fill={MC_BLUE}/></svg>
-                                                    <span style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.5 }}>{rule.tip}</span>
-                                                </div>
+                                                {isOpen && (
+                                                    <>
+                                                        <div style={{ fontSize: isCritical ? 13 : 12, color: '#374151', lineHeight: 1.6, marginTop: 8, marginBottom: 6 }}>
+                                                            {rule.action}
+                                                        </div>
+                                                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, background: '#F9FAFB', borderRadius: 6, padding: '7px 11px' }}>
+                                                            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 1 }}><circle cx="8" cy="8" r="6.5" stroke={MC_BLUE} strokeWidth="1.4"/><path d="M8 7v4" stroke={MC_BLUE} strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="5.5" r=".6" fill={MC_BLUE}/></svg>
+                                                            <span style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.5 }}>{rule.tip}</span>
+                                                        </div>
+                                                    </>
+                                                )}
                                             </div>
                                         );
                                     };
