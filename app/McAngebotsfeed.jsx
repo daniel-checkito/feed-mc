@@ -2361,6 +2361,22 @@ export default function McAngebotsfeed() {
                     return { total, avg: total ? +(totalImgs / total).toFixed(1) : 0, buckets };
                 })() : null;
 
+                // Description length distribution
+                const descCol = mcMapping['description'];
+                const descStats = descCol ? (() => {
+                    const buckets = { none: 0, short: 0, ok: 0, good: 0 };
+                    let total = 0;
+                    rows.forEach((r) => {
+                        total++;
+                        const len = String(r[descCol] ?? '').trim().length;
+                        if (len === 0) buckets.none++;
+                        else if (len < 100) buckets.short++;
+                        else if (len < 300) buckets.ok++;
+                        else buckets.good++;
+                    });
+                    return { total, buckets };
+                })() : null;
+
                 const totalOptionalFields = optFieldStats.fields.length;
                 const completeOptionalFields = optFieldStats.fields.filter(f => !f.notMapped && f.pct === 100).length;
                 const errorOptionalFields = optFieldStats.fields.filter(f => !f.notMapped && f.pct < 100).length;
@@ -2432,71 +2448,107 @@ export default function McAngebotsfeed() {
                                         );
                                     })}
                                 </div>
+                                {optFieldStats.sizeMissingCount > 0 && (
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 4px' }}>
+                                        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: '#9CA3AF' }}><circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.4"/><path d="M8 7v4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="5.5" r=".6" fill="currentColor"/></svg>
+                                        <span style={{ fontSize: 10, color: '#9CA3AF' }}>{T.sizeHintDesc(optFieldStats.sizeMissingCount.toLocaleString(numLocale))}</span>
+                                    </div>
+                                )}
 
-                                {/* Image count distribution (moved from step 3) */}
-                                {imgStats && imgStats.total > 0 && (
-                                    <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', padding: '14px 20px' }}>
-                                        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 12 }}>
-                                            <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>
-                                                {lang === 'de' ? 'Bildanzahl: Verteilung' : 'Image Count: Distribution'}
-                                            </div>
-                                            <div style={{ fontSize: 10, color: '#9CA3AF' }}>
-                                                {lang === 'de' ? `Ø ${imgStats.avg.toLocaleString(numLocale)} Bilder · Empfehlung: 3+` : `Avg. ${imgStats.avg.toLocaleString(numLocale)} images · Recommended: 3+`}
-                                            </div>
-                                        </div>
-                                        <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end', height: 60, marginBottom: 8 }}>
-                                            {[
-                                                { key: 'none', label: lang === 'de' ? '0' : '0', color: '#EF4444', desc: lang === 'de' ? 'Kein Bild' : 'No image' },
-                                                { key: 'one',  label: lang === 'de' ? '1' : '1',  color: '#F59E0B', desc: lang === 'de' ? '1 Bild' : '1 image' },
-                                                { key: 'two',  label: lang === 'de' ? '2' : '2',  color: '#D97706', desc: lang === 'de' ? '2 Bilder' : '2 images' },
-                                                { key: 'good', label: lang === 'de' ? '3+' : '3+', color: '#16A34A', desc: lang === 'de' ? '3+ Bilder' : '3+ images' },
-                                            ].map(({ key, label, color, desc }) => {
-                                                const count = imgStats.buckets[key];
-                                                const pct = imgStats.total ? Math.round((count / imgStats.total) * 100) : 0;
-                                                return (
-                                                    <div key={key} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
-                                                        <div style={{ fontSize: 9, fontWeight: 700, color }}>{pct}%</div>
-                                                        <div style={{ width: '100%', height: Math.max(4, pct * 0.44), background: color, borderRadius: 3, opacity: 0.85 }} />
-                                                        <div style={{ fontSize: 10, color: '#9CA3AF', textAlign: 'center', lineHeight: 1.2 }}>{label}</div>
-                                                        <div style={{ fontSize: 10, color: '#6B7280', fontWeight: 600, textAlign: 'center' }}>{desc}</div>
+                                {/* Image count + description length charts side by side */}
+                                {(imgStats?.total > 0 || descStats?.total > 0) && (
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                                        {/* Image count distribution */}
+                                        {imgStats && imgStats.total > 0 && (
+                                            <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', padding: '14px 16px' }}>
+                                                <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 12 }}>
+                                                    <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>
+                                                        {lang === 'de' ? 'Bildanzahl: Verteilung' : 'Image Count: Distribution'}
                                                     </div>
-                                                );
-                                            })}
-                                        </div>
-                                        {imgStats.avg < 3 && (
-                                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, background: '#FFFBEB', borderRadius: 6, padding: '7px 10px' }}>
-                                                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 1 }}><circle cx="8" cy="8" r="6.5" stroke="#D97706" strokeWidth="1.4"/><path d="M8 7v4" stroke="#D97706" strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="5.5" r=".6" fill="#D97706"/></svg>
-                                                <span style={{ fontSize: 10, color: '#92400E', lineHeight: 1.5 }}>
-                                                    {lang === 'de'
-                                                        ? 'Durchschnittlich unter 3 Bilder pro Artikel. Mehr Bilder (Freisteller, Detail, Ambiente) erhöhen die Klickrate und Conversion deutlich.'
-                                                        : 'Average under 3 images per item. More images (cut-out, detail, lifestyle) significantly increase click-through rate and conversion.'}
-                                                </span>
+                                                    <div style={{ fontSize: 10, color: '#9CA3AF' }}>
+                                                        {lang === 'de' ? `Ø ${imgStats.avg.toLocaleString(numLocale)}` : `Avg. ${imgStats.avg.toLocaleString(numLocale)}`}
+                                                    </div>
+                                                </div>
+                                                <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end', height: 60, marginBottom: 8 }}>
+                                                    {[
+                                                        { key: 'none', label: '0', color: '#EF4444', desc: lang === 'de' ? 'Kein Bild' : 'No image' },
+                                                        { key: 'one',  label: '1', color: '#F59E0B', desc: lang === 'de' ? '1 Bild' : '1 image' },
+                                                        { key: 'two',  label: '2', color: '#D97706', desc: lang === 'de' ? '2 Bilder' : '2 images' },
+                                                        { key: 'good', label: '3+', color: '#16A34A', desc: lang === 'de' ? '3+ Bilder' : '3+ images' },
+                                                    ].map(({ key, label, color, desc }) => {
+                                                        const cnt = imgStats.buckets[key];
+                                                        const pct = imgStats.total ? Math.round((cnt / imgStats.total) * 100) : 0;
+                                                        return (
+                                                            <div key={key} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+                                                                <div style={{ fontSize: 9, fontWeight: 700, color }}>{pct}%</div>
+                                                                <div style={{ width: '100%', height: Math.max(4, pct * 0.44), background: color, borderRadius: 3, opacity: 0.85 }} />
+                                                                <div style={{ fontSize: 10, color: '#9CA3AF', textAlign: 'center', lineHeight: 1.2 }}>{label}</div>
+                                                                <div style={{ fontSize: 10, color: '#6B7280', fontWeight: 600, textAlign: 'center' }}>{desc}</div>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                                {imgStats.avg < 3 && (
+                                                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 5, background: '#FFFBEB', borderRadius: 6, padding: '6px 8px' }}>
+                                                        <svg width="11" height="11" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 1 }}><circle cx="8" cy="8" r="6.5" stroke="#D97706" strokeWidth="1.4"/><path d="M8 7v4" stroke="#D97706" strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="5.5" r=".6" fill="#D97706"/></svg>
+                                                        <span style={{ fontSize: 10, color: '#92400E', lineHeight: 1.4 }}>
+                                                            {lang === 'de' ? 'Mehr Bilder erhöhen Klickrate und Conversion.' : 'More images improve CTR and conversion.'}
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                        {/* Description length distribution */}
+                                        {descStats && descStats.total > 0 && (
+                                            <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', padding: '14px 16px' }}>
+                                                <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 12 }}>
+                                                    <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>
+                                                        {lang === 'de' ? 'Beschreibungslänge: Verteilung' : 'Description Length: Distribution'}
+                                                    </div>
+                                                    <div style={{ fontSize: 10, color: '#9CA3AF' }}>
+                                                        {lang === 'de' ? 'Ziel: 300+ Zeichen' : 'Target: 300+ chars'}
+                                                    </div>
+                                                </div>
+                                                <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end', height: 60, marginBottom: 8 }}>
+                                                    {[
+                                                        { key: 'none',  label: lang === 'de' ? 'Leer' : 'Empty', color: '#EF4444', desc: '0' },
+                                                        { key: 'short', label: lang === 'de' ? 'Kurz' : 'Short', color: '#F59E0B', desc: '<100' },
+                                                        { key: 'ok',    label: lang === 'de' ? 'OK' : 'OK',     color: '#60A5FA', desc: '100-299' },
+                                                        { key: 'good',  label: lang === 'de' ? 'Gut' : 'Good',  color: '#16A34A', desc: '300+' },
+                                                    ].map(({ key, label, color, desc }) => {
+                                                        const cnt = descStats.buckets[key];
+                                                        const pct = descStats.total ? Math.round((cnt / descStats.total) * 100) : 0;
+                                                        return (
+                                                            <div key={key} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+                                                                <div style={{ fontSize: 9, fontWeight: 700, color }}>{pct}%</div>
+                                                                <div style={{ width: '100%', height: Math.max(4, pct * 0.44), background: color, borderRadius: 3, opacity: 0.85 }} />
+                                                                <div style={{ fontSize: 10, color: '#9CA3AF', textAlign: 'center', lineHeight: 1.2 }}>{desc}</div>
+                                                                <div style={{ fontSize: 10, color: '#6B7280', fontWeight: 600, textAlign: 'center' }}>{label}</div>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                                {(descStats.buckets.none + descStats.buckets.short) / descStats.total > 0.2 && (
+                                                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 5, background: '#FFFBEB', borderRadius: 6, padding: '6px 8px' }}>
+                                                        <svg width="11" height="11" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 1 }}><circle cx="8" cy="8" r="6.5" stroke="#D97706" strokeWidth="1.4"/><path d="M8 7v4" stroke="#D97706" strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="5.5" r=".6" fill="#D97706"/></svg>
+                                                        <span style={{ fontSize: 10, color: '#92400E', lineHeight: 1.4 }}>
+                                                            {lang === 'de' ? 'Kurze Beschreibungen senken die Conversion. Ziel: 300+ Zeichen.' : 'Short descriptions hurt conversion. Target: 300+ characters.'}
+                                                        </span>
+                                                    </div>
+                                                )}
                                             </div>
                                         )}
                                     </div>
                                 )}
 
-                                {/* Combined hints row (size + lighting) */}
-                                {(optFieldStats.sizeMissingCount > 0 || optFieldStats.lightingCount > 0) && (
-                                    <div style={{ display: 'grid', gridTemplateColumns: optFieldStats.sizeMissingCount > 0 && optFieldStats.lightingCount > 0 ? '1fr 1fr' : '1fr', gap: 10 }}>
-                                        {optFieldStats.sizeMissingCount > 0 && (
-                                            <div style={{ background: '#FFFBEB', border: '1px solid #FDE68A', borderRadius: 10, padding: '10px 14px', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                                                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 2 }}><path d="M8 2l6 11H2L8 2z" stroke="#D97706" strokeWidth="1.4" strokeLinejoin="round"/><path d="M8 7v3" stroke="#D97706" strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="11.5" r=".6" fill="#D97706"/></svg>
-                                                <div>
-                                                    <div style={{ fontSize: 11, fontWeight: 700, color: '#92400E', marginBottom: 2 }}>{T.sizeHintTitle}</div>
-                                                    <div style={{ fontSize: 10, color: '#78350F', lineHeight: 1.45 }}>{T.sizeHintDesc(optFieldStats.sizeMissingCount.toLocaleString(numLocale))}</div>
-                                                </div>
-                                            </div>
-                                        )}
-                                        {optFieldStats.lightingCount > 0 && (
-                                            <div style={{ background: '#EEF4FF', border: '1px solid #BFDBFE', borderRadius: 10, padding: '10px 14px', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                                                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 2 }}><path d="M6 1h4l-1 5h3l-5 9 1-6H5l1-8z" stroke={MC_BLUE} strokeWidth="1.3" strokeLinejoin="round"/></svg>
-                                                <div>
-                                                    <div style={{ fontSize: 11, fontWeight: 700, color: '#1e3a8a', marginBottom: 2 }}>{T.lightingHintTitle}</div>
-                                                    <div style={{ fontSize: 10, color: '#1e40af', lineHeight: 1.45 }}>{T.lightingHintDesc(optFieldStats.lightingCount, optFieldStats.lightingEnergyMissing, optFieldStats.lightingEprelMissing)}</div>
-                                                </div>
-                                            </div>
-                                        )}
+                                {/* Lighting hint */}
+                                {optFieldStats.lightingCount > 0 && (
+                                    <div style={{ background: '#EEF4FF', border: '1px solid #BFDBFE', borderRadius: 10, padding: '10px 14px', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 2 }}><path d="M6 1h4l-1 5h3l-5 9 1-6H5l1-8z" stroke={MC_BLUE} strokeWidth="1.3" strokeLinejoin="round"/></svg>
+                                        <div>
+                                            <div style={{ fontSize: 11, fontWeight: 700, color: '#1e3a8a', marginBottom: 2 }}>{T.lightingHintTitle}</div>
+                                            <div style={{ fontSize: 10, color: '#1e40af', lineHeight: 1.45 }}>{T.lightingHintDesc(optFieldStats.lightingCount, optFieldStats.lightingEnergyMissing, optFieldStats.lightingEprelMissing)}</div>
+                                        </div>
                                     </div>
                                 )}
 
@@ -2830,48 +2882,6 @@ export default function McAngebotsfeed() {
                 return (
                     <div style={{ width: '100%', maxWidth: 1100 }}>
 
-                        {/* Summary score row */}
-                        <div style={{ display: 'flex', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
-                            {[
-                                { s: issues.pflichtScore, label: lang === 'de' ? 'Pflichtfelder' : 'Required Fields', hi: 90, lo: 60 },
-                            ].map(({ s, label, hi, lo }) => {
-                                const c = s >= hi ? '#16A34A' : s >= lo ? '#D97706' : '#DC2626';
-                                const r5 = 20, circ5 = 2 * Math.PI * r5;
-                                return (
-                                    <div key={label} style={{ flex: 1, minWidth: 160, background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
-                                        <svg width="52" height="52" viewBox="0 0 52 52" style={{ flexShrink: 0 }}>
-                                            <circle cx="26" cy="26" r={r5} fill="none" stroke="#F3F4F6" strokeWidth="5"/>
-                                            <circle cx="26" cy="26" r={r5} fill="none" stroke={c} strokeWidth="5"
-                                                strokeDasharray={`${(s / 100) * circ5} ${circ5}`}
-                                                strokeLinecap="round"
-                                                transform="rotate(-90 26 26)"
-                                            />
-                                            <text x="26" y="31" textAnchor="middle" fontSize="14" fontWeight="900" fill={c}>{s}</text>
-                                        </svg>
-                                        <div>
-                                            <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{label}</div>
-                                            <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>{lang === 'de' ? 'von 100 Punkten' : 'out of 100 pts'}</div>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                            {/* Listbare Produkte */}
-                            {(() => {
-                                const lc = issues.livefaehigCount;
-                                const tc = issues.totalRows;
-                                const lColor = lc === tc ? '#16A34A' : lc > 0 ? '#D97706' : '#DC2626';
-                                return (
-                                    <div style={{ flex: 1, minWidth: 160, background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
-                                        <div style={{ fontSize: 32, fontWeight: 900, color: lColor, lineHeight: 1, flexShrink: 0 }}>{lc.toLocaleString(numLocale)}</div>
-                                        <div>
-                                            <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{lang === 'de' ? 'Listbare Produkte' : 'Listable Products'}</div>
-                                            <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>{lang === 'de' ? `können gelistet werden (/ ${tc})` : `can be listed (/ ${tc})`}</div>
-                                        </div>
-                                    </div>
-                                );
-                            })()}
-                        </div>
-
                         {/* Header */}
                         <div style={{ marginBottom: 12, flexShrink: 0 }}>
                             <div style={{ fontSize: 18, fontWeight: 800, color: '#111827', marginBottom: 4 }}>
@@ -3007,6 +3017,54 @@ export default function McAngebotsfeed() {
 
                             {/* Right: download + reset panel */}
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, position: 'sticky', top: 20, alignSelf: 'flex-start', maxHeight: 'calc(100vh - 120px)', overflowY: 'auto' }}>
+
+                                {/* Feed summary stats */}
+                                <div style={{ background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 12, padding: '14px 16px' }}>
+                                    <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.06em', marginBottom: 12, textTransform: 'uppercase' }}>
+                                        {lang === 'de' ? 'Feed-Übersicht' : 'Feed Overview'}
+                                    </div>
+                                    <div style={{ display: 'flex', gap: 12 }}>
+                                        {(() => {
+                                            const s = issues.pflichtScore;
+                                            const label = lang === 'de' ? 'Pflichtfelder' : 'Required Fields';
+                                            const c = s >= 90 ? '#16A34A' : s >= 60 ? '#D97706' : '#DC2626';
+                                            const r = 18, circ = 2 * Math.PI * r;
+                                            return (
+                                                <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 10 }}>
+                                                    <svg width="44" height="44" viewBox="0 0 44 44" style={{ flexShrink: 0 }}>
+                                                        <circle cx="22" cy="22" r={r} fill="none" stroke="#F3F4F6" strokeWidth="4"/>
+                                                        <circle cx="22" cy="22" r={r} fill="none" stroke={c} strokeWidth="4"
+                                                            strokeDasharray={`${(s / 100) * circ} ${circ}`}
+                                                            strokeLinecap="round" transform="rotate(-90 22 22)"
+                                                        />
+                                                        <text x="22" y="27" textAnchor="middle" fontSize="11" fontWeight="900" fill={c}>{s}</text>
+                                                    </svg>
+                                                    <div>
+                                                        <div style={{ fontSize: 11, fontWeight: 700, color: '#111827' }}>{label}</div>
+                                                        <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 1 }}>{lang === 'de' ? 'von 100 Punkten' : 'out of 100 pts'}</div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })()}
+                                        {(() => {
+                                            const lc = issues.livefaehigCount;
+                                            const tc = issues.totalRows;
+                                            const lColor = lc === tc ? '#16A34A' : lc > 0 ? '#D97706' : '#DC2626';
+                                            return (
+                                                <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 10 }}>
+                                                    <div style={{ fontSize: 26, fontWeight: 900, color: lColor, lineHeight: 1, flexShrink: 0 }}>{lc.toLocaleString(numLocale)}</div>
+                                                    <div>
+                                                        <div style={{ fontSize: 11, fontWeight: 700, color: '#111827' }}>{lang === 'de' ? 'Listbar' : 'Listable'}</div>
+                                                        <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 1 }}>
+                                                            {lang === 'de' ? `von ${tc.toLocaleString(numLocale)} Artikeln` : `of ${tc.toLocaleString(numLocale)} items`}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })()}
+                                    </div>
+                                </div>
+
                                 {/* Next steps workflow */}
                                 <div style={{ background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 12, padding: '14px 16px' }}>
                                     <div style={{ fontSize: 11, fontWeight: 700, color: '#374151', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
