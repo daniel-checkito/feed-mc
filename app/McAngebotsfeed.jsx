@@ -746,7 +746,7 @@ const EN_T = {
     qualityTips: [
         { field: 'name', icon: '✏️', title: 'Item Name', bad: 'Sofa grey', good: 'BrandName Sofa 3-seater cord grey 200 cm', tips: ['At least 2 words: Brand + Product + Key Attribute', 'No used-goods labels, max 255 characters', 'GTIN-compliant name'] },
         { field: 'description', icon: '📝', title: 'Description', tips: ['At least 100 characters, ideally 300–500', 'Include key attributes: material, color, dimensions, features', 'Flowing text works better than bullet lists alone', 'Avoid marketing phrases like "cheap" or "top quality"'] },
-        { field: 'ean', icon: '🔢', title: 'EAN (GTIN14)', tips: ['Must be exactly 14 digits (pad with leading zeros)', 'Must be unique per item — no duplicates', 'Do not use invented or test EANs', 'Use a valid GTIN from the GS1 database'] },
+        { field: 'ean', icon: '🔢', title: 'EAN (GTIN14)', tips: ['Must be exactly 14 digits (pad with leading zeros)', 'Must be unique per item - no duplicates', 'Do not use invented or test EANs', 'Use a valid GTIN from the GS1 database'] },
         { field: 'image_url', icon: '🖼️', title: 'Product Image', tips: ['White or transparent background (cut-out)', 'At least 600×600 pixels, ideally 1000×1000+', 'Publicly accessible URL (no login required)', 'No watermarks or prices in the image'] },
         { field: 'price', icon: '💶', title: 'Price & Delivery', tips: ['Price in format 19.99 (dot as decimal separator)', 'Shipping mode must contain a valid value', 'Delivery time in working days, e.g. "3-5"', 'Keep availability/stock always up to date'] },
     ],
@@ -854,6 +854,22 @@ export default function McAngebotsfeed() {
     const [langOpen, setLangOpen] = useState(false);
     const [alwaysAvailable, setAlwaysAvailable] = useState(false);
     const fileRef = useRef(null);
+    // Auto-expand manual mapping when entering step 2 with missing required fields
+    useEffect(() => {
+        if (step === 2 && rows.length > 0 && headers.length > 0) {
+            // Re-evaluate missing pflicht; cannot easily access `issues` here yet, so derive
+            const outside = storeLocation === 'outside_germany';
+            const missing = MC_PFLICHT_COLS.filter((c) => {
+                if (c === 'image_url') return mcImageColumns.length === 0;
+                if (c === 'stock_amount') return false;
+                if (c === 'availability') return !alwaysAvailable && !mcMapping['availability'] && !mcMapping['stock_amount'];
+                return !mcMapping[c];
+            });
+            if (outside && !mcMapping['hs_code']) missing.push('hs_code');
+            setMappingExpanded(missing.length > 0);
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [step]);
 
     function parseFile(f) {
         if (!f) return;
@@ -1031,7 +1047,7 @@ export default function McAngebotsfeed() {
                         pflichtOk = false;
                     } else if (/siehe oben/i.test(val)) {
                         pflichtErrors.push({ row: rn, ean, field: 'name', type: 'siehe_oben', value: val });
-                        // warning only — does not block listing
+                        // warning only - does not block listing
                     }
                 }
                 if (key === 'brand' && val.length < 2) {
@@ -1546,7 +1562,7 @@ export default function McAngebotsfeed() {
                                     </div>
                                 </div>
                             ))}
-                            {/* Quality = reach banner — inside the how-it-works card */}
+                            {/* Quality = reach banner - inside the how-it-works card */}
                             <div style={{ margin: '0 24px 20px', marginTop: 16, background: 'linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)', border: '1px solid #FDE68A', borderRadius: 10, padding: '12px 16px' }}>
                                 <div style={{ fontSize: 12, fontWeight: 700, color: '#92400E', marginBottom: 4 }}>
                                     {lang === 'de' ? 'Besserer Feed = mehr Reichweite' : 'Better feed = more reach'}
@@ -1736,7 +1752,7 @@ export default function McAngebotsfeed() {
                 const langDE = lang === 'de';
 
                 // Fields for left (Pflicht) column: MC_PFLICHT_COLS minus image_url, plus hs_code if outside germany
-                // Hide stock_amount — merged into availability row
+                // Hide stock_amount - merged into availability row
                 const pflichtFieldsLeft = [
                     ...MC_PFLICHT_COLS.filter((f) => f !== 'image_url' && f !== 'stock_amount'),
                     ...(outsideGermany ? ['hs_code'] : []),
@@ -1865,8 +1881,66 @@ export default function McAngebotsfeed() {
                                     </div>
                                 </div>
 
-                                {/* 3-column mapping layout */}
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 260px', gap: 0, borderTop: '1px solid #F3F4F6', minWidth: 0, overflowX: 'hidden' }}>
+                                {/* Summary always-on: detected count + missing required fields */}
+                                <div style={{ padding: '14px 20px', borderTop: '1px solid #F3F4F6', background: '#FAFAFA' }}>
+                                    <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', marginBottom: 8 }}>
+                                        {langDE
+                                            ? `${foundFields2} von ${totalFields2} Feldern automatisch erkannt`
+                                            : `${foundFields2} of ${totalFields2} fields automatically detected`}
+                                    </div>
+                                    {missingPflicht2.length > 0 && (
+                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 4 }}>
+                                            {missingPflicht2.map((f) => {
+                                                const label = f === 'image_url' ? (langDE ? 'Hauptbild' : 'Main Image') : (FIELD_LABELS[f] || f);
+                                                return (
+                                                    <span key={f} style={{ fontSize: 11, color: '#991B1B', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 4, padding: '2px 8px', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                                                        <span style={{ color: '#DC2626', fontWeight: 700 }}>✕</span>{label}
+                                                    </span>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Collapsed: simple check overview */}
+                                {!mappingExpanded && (
+                                    <div style={{ padding: '14px 20px', borderTop: '1px solid #F3F4F6' }}>
+                                        <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.06em', marginBottom: 10 }}>
+                                            {langDE ? 'ÜBERSICHT' : 'OVERVIEW'}
+                                        </div>
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6 }}>
+                                            {[
+                                                ...pflichtFieldsLeft.map((f) => ({ key: f, label: FIELD_LABELS[f] || f, isPflicht: true, mapped: f === 'availability' ? (!!mcMapping[f] || !!mcMapping['stock_amount'] || alwaysAvailable) : !!mcMapping[f] })),
+                                                { key: 'image_url', label: langDE ? 'Hauptbild' : 'Main Image', isPflicht: true, mapped: mcImageColumns.length > 0 },
+                                                ...optionalFieldsMid.map((f) => ({ key: f, label: FIELD_LABELS[f] || f, isPflicht: false, mapped: !!mcMapping[f] })),
+                                            ].map(({ key, label, isPflicht, mapped }) => (
+                                                <div key={key} style={{ fontSize: 11, display: 'flex', alignItems: 'center', gap: 5, padding: '3px 6px', borderRadius: 4, background: mapped ? '#F0FDF4' : (isPflicht ? '#FEF2F2' : '#F9FAFB'), border: `1px solid ${mapped ? '#D1FAE5' : (isPflicht ? '#FECACA' : '#E5E7EB')}` }}>
+                                                    <span style={{ color: mapped ? '#16A34A' : (isPflicht ? '#DC2626' : '#9CA3AF'), fontWeight: 700, flexShrink: 0 }}>{mapped ? '✓' : '✗'}</span>
+                                                    <span style={{ color: '#374151', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                        {label}{isPflicht && <span style={{ color: '#DC2626', fontWeight: 700 }}>*</span>}
+                                                    </span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <div style={{ marginTop: 14, display: 'flex', justifyContent: 'center' }}>
+                                            <button type="button" onClick={() => setMappingExpanded(true)}
+                                                style={{ fontSize: 12, fontWeight: 600, color: MC_BLUE, background: 'none', border: `1px solid ${MC_BLUE}`, borderRadius: 6, padding: '6px 14px', cursor: 'pointer' }}>
+                                                {langDE ? 'Manuelle Zuordnung anzeigen' : 'Show manual mapping'}
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Expanded: 3-column mapping layout */}
+                                {mappingExpanded && (
+                                    <>
+                                    <div style={{ padding: '8px 20px', borderTop: '1px solid #F3F4F6', display: 'flex', justifyContent: 'flex-end' }}>
+                                        <button type="button" onClick={() => setMappingExpanded(false)}
+                                            style={{ fontSize: 11, fontWeight: 600, color: '#6B7280', background: 'none', border: '1px solid #D1D5DB', borderRadius: 6, padding: '4px 10px', cursor: 'pointer' }}>
+                                            {langDE ? 'Manuelle Zuordnung ausblenden' : 'Hide manual mapping'}
+                                        </button>
+                                    </div>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 260px', gap: 0, borderTop: '1px solid #F3F4F6', minWidth: 0, overflowX: 'hidden' }}>
 
                                     {/* LEFT: Pflichtfelder */}
                                     <div style={{ padding: '12px 14px', borderRight: '1px solid #F3F4F6', minWidth: 0, overflowX: 'hidden' }}>
@@ -1953,7 +2027,9 @@ export default function McAngebotsfeed() {
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                    </div>
+                                    </>
+                                )}
 
                                 {/* Bottom nav */}
                                 <div style={{ padding: '10px 20px', borderTop: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
@@ -2436,9 +2512,22 @@ export default function McAngebotsfeed() {
                                     {optFieldStats.fields.map((f, i) => {
                                         const label = lang === 'de' ? f.labelDE : f.labelEN;
                                         const barColor = f.pct >= 80 ? '#16A34A' : f.pct >= 50 ? '#D97706' : '#DC2626';
+                                        const mappedCol = mcMapping[f.field];
+                                        const examples = mappedCol
+                                            ? [...new Set(rows.map(r => String(r[mappedCol] ?? '').trim()).filter(Boolean))].slice(0, 3)
+                                            : [];
                                         return (
                                             <div key={f.field} style={{ display: 'grid', gridTemplateColumns: '160px 1fr 80px 80px', alignItems: 'center', gap: 12, padding: '10px 16px', borderBottom: i < optFieldStats.fields.length - 1 ? '1px solid #F3F4F6' : 'none' }}>
-                                                <div style={{ fontSize: 12, fontWeight: 600, color: '#374151' }}>{label}</div>
+                                                <div>
+                                                    <div style={{ fontSize: 12, fontWeight: 600, color: '#374151' }}>{label}</div>
+                                                    {examples.length > 0 && (
+                                                        <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 4 }}>
+                                                            {examples.map((v, ei) => (
+                                                                <span key={ei} style={{ fontSize: 9, color: '#6B7280', background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>{v}</span>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
                                                 <div style={{ height: 6, background: '#F3F4F6', borderRadius: 3, overflow: 'hidden' }}>
                                                     <div style={{ height: '100%', width: f.notMapped ? '0%' : `${f.pct}%`, background: barColor, borderRadius: 3 }}/>
                                                 </div>
@@ -2856,20 +2945,6 @@ export default function McAngebotsfeed() {
 
                             {/* Right: download + reset panel */}
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, position: 'sticky', top: 20, alignSelf: 'flex-start', maxHeight: 'calc(100vh - 120px)', overflowY: 'auto' }}>
-                                {/* Download Fehlerbericht */}
-                                <div style={{ background: '#EEF4FF', border: `2px solid ${MC_BLUE}`, borderRadius: 12, padding: '16px' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                                        <svg width="16" height="16" viewBox="0 0 18 18" fill="none"><path d="M9 2v10M6 9l3 3 3-3M2 15h14" stroke={MC_BLUE} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                        <span style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{T.recDownloadTitle}</span>
-                                    </div>
-                                    <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 12, lineHeight: 1.5 }}>{T.recDownloadDesc}</div>
-                                    <button type="button" onClick={csvOnClick}
-                                        style={{ width: '100%', padding: '11px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
-                                        <svg width="13" height="13" viewBox="0 0 15 15" fill="none"><path d="M7.5 2v8M5 7l2.5 2.5L10 7M2 13h11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                        {T.recDownloadBtn}
-                                    </button>
-                                </div>
-
                                 {/* Next steps workflow */}
                                 <div style={{ background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 12, padding: '14px 16px' }}>
                                     <div style={{ fontSize: 11, fontWeight: 700, color: '#374151', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
@@ -2900,6 +2975,20 @@ export default function McAngebotsfeed() {
                                             </div>
                                         </div>
                                     ))}
+                                </div>
+
+                                {/* Download Fehlerbericht */}
+                                <div style={{ background: '#EEF4FF', border: `2px solid ${MC_BLUE}`, borderRadius: 12, padding: '16px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                                        <svg width="16" height="16" viewBox="0 0 18 18" fill="none"><path d="M9 2v10M6 9l3 3 3-3M2 15h14" stroke={MC_BLUE} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                        <span style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{T.recDownloadTitle}</span>
+                                    </div>
+                                    <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 12, lineHeight: 1.5 }}>{T.recDownloadDesc}</div>
+                                    <button type="button" onClick={csvOnClick}
+                                        style={{ width: '100%', padding: '11px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
+                                        <svg width="13" height="13" viewBox="0 0 15 15" fill="none"><path d="M7.5 2v8M5 7l2.5 2.5L10 7M2 13h11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                        {T.recDownloadBtn}
+                                    </button>
                                 </div>
 
                                 {/* Nav */}
@@ -3061,7 +3150,7 @@ export default function McAngebotsfeed() {
                                                         <span style={{ fontSize: 12, fontWeight: 600, color: isPflicht ? '#92400E' : '#111827', fontFamily: 'monospace', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={col}>{col}</span>
                                                         {isPflicht && <span style={{ fontSize: 9, fontWeight: 700, color: '#92400E', background: '#FEF08A', border: '1px solid #EAB308', borderRadius: 3, padding: '1px 4px', flexShrink: 0 }}>P</span>}
                                                     </div>
-                                                    <div style={{ fontSize: 11, color: '#6B7280', fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', paddingLeft: 23 }} title={ex}>{ex || '—'}</div>
+                                                    <div style={{ fontSize: 11, color: '#6B7280', fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', paddingLeft: 23 }} title={ex}>{ex || '-'}</div>
                                                 </div>
                                             );
                                         })}
