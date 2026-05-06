@@ -826,7 +826,8 @@ export default function McAngebotsfeed() {
     const [showLeitfaden, setShowLeitfaden] = useState(false);
     const [showVorlage, setShowVorlage] = useState(false);
     const [vorlageSearch, setVorlageSearch] = useState('');
-    const [storeLocation, setStoreLocation] = useState('germany');
+    const [storeLocation] = useState('germany');
+    const [qualityTipsExpanded, setQualityTipsExpanded] = useState(false);
     const [step, setStep] = useState(1);
     const [rows, setRows] = useState([]);
     const [headers, setHeaders] = useState([]);
@@ -1233,7 +1234,7 @@ export default function McAngebotsfeed() {
         nameDupRows.forEach((rn) => catRows.informationen.add(rn));
         const pflichtCategoryErrors = Object.fromEntries(Object.entries(catRows).map(([k, s]) => [k, s.size]));
 
-        // Scoring (Stufe 2) – Pflichtfelder-Score (max. 70) + Empfohlene-Felder-Score (max. 30)
+        // Scoring – Pflichtfelder-Score (0–100) + Optionale-Felder-Score (0–100) → Gesamt = Durchschnitt
         const pflichtScore = rows.length ? Math.round((livefaehigCount / rows.length) * 100) : 0;
         const optionalFillRatio =
             rows.length && optionalFieldCount > 0 ? totalOptionalFieldsPresent / (rows.length * optionalFieldCount) : 0;
@@ -1663,24 +1664,6 @@ export default function McAngebotsfeed() {
                                     {lang === 'de' ? 'Beispiel-Feed laden (6 Artikel, inkl. Fehler)' : 'Load example feed (6 items, incl. errors)'}
                                 </button>
                             )}
-
-                            {/* Warehouse toggle */}
-                            <div style={{ marginTop: 20 }}>
-                                <div style={{ fontSize: 11, fontWeight: 600, color: '#6B7280', marginBottom: 6 }}>{T.warehouseLabel}</div>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
-                                    {[{ val: 'germany', label: T.warehouseDE }, { val: 'outside_germany', label: T.warehouseNonDE }].map(({ val, label }) => (
-                                        <button key={val} type="button" onClick={() => setStoreLocation(val)}
-                                            style={{ padding: '8px 10px', borderRadius: 7, border: `1.5px solid ${storeLocation === val ? MC_BLUE : '#E5E7EB'}`, background: storeLocation === val ? '#EEF4FF' : '#FFF', color: storeLocation === val ? MC_BLUE : '#374151', fontSize: 12, fontWeight: storeLocation === val ? 700 : 400, cursor: 'pointer' }}>
-                                            {label}
-                                        </button>
-                                    ))}
-                                </div>
-                                {storeLocation === 'outside_germany' && (
-                                    <div style={{ marginTop: 8, padding: '8px 12px', borderRadius: 7, background: '#FFFBEB', border: '1px solid #FDE68A', fontSize: 11, color: '#92400E' }}>
-                                        {T.hsNote}
-                                    </div>
-                                )}
-                            </div>
 
                             {/* Primary CTA */}
                             <button
@@ -2118,26 +2101,31 @@ export default function McAngebotsfeed() {
 
                         {/* Header row: scores + navigation */}
                         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
-                            {/* Pflichtfeld score */}
-                            <div style={{ flex: 1, minWidth: 180, background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
-                                <div style={{ width: 44, height: 44, borderRadius: '50%', background: issues.pflichtScore >= 90 ? '#F0FDF4' : issues.pflichtScore >= 60 ? '#FFFBEB' : '#FEF2F2', border: `3px solid ${issues.pflichtScore >= 90 ? '#16A34A' : issues.pflichtScore >= 60 ? '#D97706' : '#DC2626'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                    <span style={{ fontSize: 13, fontWeight: 900, color: issues.pflichtScore >= 90 ? '#16A34A' : issues.pflichtScore >= 60 ? '#D97706' : '#DC2626' }}>{issues.pflichtScore}</span>
-                                </div>
-                                <div>
-                                    <div style={{ fontSize: 11, color: '#6B7280' }}>{lang === 'de' ? 'Pflichtfelder' : 'Required Fields'}</div>
-                                    <div style={{ fontSize: 10, color: '#9CA3AF' }}>{lang === 'de' ? 'von 100 Punkten' : 'out of 100 pts'}</div>
-                                </div>
-                            </div>
-                            {/* Optional score */}
-                            <div style={{ flex: 1, minWidth: 180, background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
-                                <div style={{ width: 44, height: 44, borderRadius: '50%', background: issues.optionalScore >= 70 ? '#F0FDF4' : issues.optionalScore >= 40 ? '#FFFBEB' : '#FEF2F2', border: `3px solid ${issues.optionalScore >= 70 ? '#16A34A' : issues.optionalScore >= 40 ? '#D97706' : '#DC2626'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                    <span style={{ fontSize: 13, fontWeight: 900, color: issues.optionalScore >= 70 ? '#16A34A' : issues.optionalScore >= 40 ? '#D97706' : '#DC2626' }}>{issues.optionalScore}</span>
-                                </div>
-                                <div>
-                                    <div style={{ fontSize: 11, color: '#6B7280' }}>{lang === 'de' ? 'Optionale Felder' : 'Optional Fields'}</div>
-                                    <div style={{ fontSize: 10, color: '#9CA3AF' }}>{lang === 'de' ? 'von 100 Punkten' : 'out of 100 pts'}</div>
-                                </div>
-                            </div>
+                            {/* Pflichtfeld score — donut chart */}
+                            {[
+                                { s: issues.pflichtScore, label: lang === 'de' ? 'Pflichtfelder' : 'Required Fields', hi: 90, lo: 60 },
+                                { s: issues.optionalScore, label: lang === 'de' ? 'Optionale Felder' : 'Optional Fields', hi: 70, lo: 40 },
+                            ].map(({ s, label, hi, lo }) => {
+                                const c = s >= hi ? '#16A34A' : s >= lo ? '#D97706' : '#DC2626';
+                                const r = 20, circ = 2 * Math.PI * r;
+                                return (
+                                    <div key={label} style={{ flex: 1, minWidth: 180, background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                                        <svg width="52" height="52" viewBox="0 0 52 52" style={{ flexShrink: 0 }}>
+                                            <circle cx="26" cy="26" r={r} fill="none" stroke="#F3F4F6" strokeWidth="5"/>
+                                            <circle cx="26" cy="26" r={r} fill="none" stroke={c} strokeWidth="5"
+                                                strokeDasharray={`${(s / 100) * circ} ${circ}`}
+                                                strokeLinecap="round"
+                                                transform="rotate(-90 26 26)"
+                                            />
+                                            <text x="26" y="31" textAnchor="middle" fontSize="14" fontWeight="900" fill={c}>{s}</text>
+                                        </svg>
+                                        <div>
+                                            <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{label}</div>
+                                            <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>{lang === 'de' ? 'von 100 Punkten' : 'out of 100 pts'}</div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
                             {/* Stats strip */}
                             <div style={{ flex: 2, minWidth: 220, background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr' }}>
                                 {[
@@ -2439,38 +2427,6 @@ export default function McAngebotsfeed() {
                             </div>
                         )}
 
-                        {/* Quality Tips card */}
-                        <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', padding: '14px 20px', gridColumn: 1 }}>
-                            <div style={{ fontSize: 12, fontWeight: 700, color: '#111827', marginBottom: 12 }}>{T.qualityTitle}</div>
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 10 }}>
-                                {T.qualityTips.map((tip) => (
-                                    <div key={tip.field} style={{ background: '#F9FAFB', borderRadius: 8, border: '1px solid #E5E7EB', padding: '10px 12px' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-                                            <span style={{ fontSize: 14 }}>{tip.icon}</span>
-                                            <span style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{tip.title}</span>
-                                        </div>
-                                        {tip.bad && tip.good && (
-                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4, marginBottom: 6 }}>
-                                                <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 5, padding: '4px 6px' }}>
-                                                    <div style={{ fontSize: 8, fontWeight: 700, color: '#DC2626', marginBottom: 2 }}>✗</div>
-                                                    <div style={{ fontSize: 9, color: '#991B1B', fontFamily: 'monospace', lineHeight: 1.4 }}>{tip.bad}</div>
-                                                </div>
-                                                <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 5, padding: '4px 6px' }}>
-                                                    <div style={{ fontSize: 8, fontWeight: 700, color: '#16A34A', marginBottom: 2 }}>✓</div>
-                                                    <div style={{ fontSize: 9, color: '#166534', fontFamily: 'monospace', lineHeight: 1.4 }}>{tip.good}</div>
-                                                </div>
-                                            </div>
-                                        )}
-                                        <ul style={{ margin: 0, padding: '0 0 0 12px', display: 'grid', gap: 2 }}>
-                                            {tip.tips.map((t, i) => (
-                                                <li key={i} style={{ fontSize: 10, color: '#374151', lineHeight: 1.4 }}>{t}</li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
                         </div>{/* end grid */}
 
                     </div>
@@ -2698,6 +2654,18 @@ export default function McAngebotsfeed() {
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    {/* Affected % bar */}
+                                                    {(() => {
+                                                        const pct = Math.min(100, Math.round((count / issues.totalRows) * 100));
+                                                        return (
+                                                            <div style={{ textAlign: 'right' }}>
+                                                                <div style={{ fontSize: 10, fontWeight: 700, color: '#DC2626' }}>{pct}%</div>
+                                                                <div style={{ height: 4, width: 60, background: '#F3F4F6', borderRadius: 2, overflow: 'hidden', marginTop: 2 }}>
+                                                                    <div style={{ height: '100%', width: `${pct}%`, background: '#DC2626', borderRadius: 2 }}/>
+                                                                </div>
+                                                            </div>
+                                                        );
+                                                    })()}
                                                 </div>
                                                 <div style={{ fontSize: 13, color: '#374151', lineHeight: 1.6, marginBottom: 6 }}>
                                                     {rule.action}
@@ -2774,6 +2742,46 @@ export default function McAngebotsfeed() {
                                 </div>
                             </div>
 
+                        </div>
+
+                        {/* Quality Tips card */}
+                        <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '14px 20px', marginTop: 4 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: qualityTipsExpanded ? 14 : 0 }}>
+                                <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{T.qualityTitle}</div>
+                                <button type="button" onClick={() => setQualityTipsExpanded(v => !v)}
+                                    style={{ fontSize: 11, color: MC_BLUE, background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, padding: '2px 0' }}>
+                                    {qualityTipsExpanded ? T.qualityShowLess : T.qualityShowMore}
+                                </button>
+                            </div>
+                            {qualityTipsExpanded && (
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 10 }}>
+                                    {T.qualityTips.map((tip) => (
+                                        <div key={tip.field} style={{ background: '#F9FAFB', borderRadius: 8, border: '1px solid #E5E7EB', padding: '10px 12px' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                                                <span style={{ fontSize: 14 }}>{tip.icon}</span>
+                                                <span style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{tip.title}</span>
+                                            </div>
+                                            {tip.bad && tip.good && (
+                                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4, marginBottom: 6 }}>
+                                                    <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 5, padding: '4px 6px' }}>
+                                                        <div style={{ fontSize: 8, fontWeight: 700, color: '#DC2626', marginBottom: 2 }}>✗</div>
+                                                        <div style={{ fontSize: 9, color: '#991B1B', fontFamily: 'monospace', lineHeight: 1.4 }}>{tip.bad}</div>
+                                                    </div>
+                                                    <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 5, padding: '4px 6px' }}>
+                                                        <div style={{ fontSize: 8, fontWeight: 700, color: '#16A34A', marginBottom: 2 }}>✓</div>
+                                                        <div style={{ fontSize: 9, color: '#166534', fontFamily: 'monospace', lineHeight: 1.4 }}>{tip.good}</div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                            <ul style={{ margin: 0, padding: '0 0 0 12px', display: 'grid', gap: 2 }}>
+                                                {tip.tips.map((t, i) => (
+                                                    <li key={i} style={{ fontSize: 10, color: '#374151', lineHeight: 1.4 }}>{t}</li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
 
                     </div>
