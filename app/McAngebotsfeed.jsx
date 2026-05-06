@@ -2928,7 +2928,7 @@ export default function McAngebotsfeed() {
                                     });
                                     const renderCard = ({ key, count, rule }, severity) => {
                                         const isCritical = severity === 'critical';
-                                        const collapsible = isCritical;
+                                        const collapsible = true;
                                         const isOpen = collapsible ? expandedRecs.has(key) : true;
                                         const accent = isCritical ? '#DC2626' : '#D97706';
                                         const bgChip = isCritical ? '#FEE2E2' : '#FEF3C7';
