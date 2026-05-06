@@ -428,7 +428,7 @@ const DE_T = {
     fileLoaded: (n) => `${n} Artikel erkannt`,
     fileChange: 'Ändern',
     dropHeading: 'CSV-Datei hochladen',
-    dropSub: 'Hierher ziehen oder klicken · max. 64 MB',
+    dropSub: 'Hierher ziehen oder klicken',
     warehouseLabel: 'Lagerstandort des Händlers',
     warehouseDE: 'Deutschland', warehouseNonDE: 'Außerhalb Deutschland',
     hsNote: 'HS-Code wird als Pflichtfeld geprüft.',
@@ -583,10 +583,10 @@ const DE_T = {
     howTitle: 'So funktioniert der Feed Checker',
     howSummary: 'Laden Sie Ihren Angebotsfeed als CSV hoch – wir prüfen alle Pflichtfelder und zeigen genau, welche Artikel Fehler haben.',
     howSteps: [
-        { n: 1, title: 'Hochladen', desc: 'CSV-Datei per Drag & Drop oder Klick hochladen. Unterstützt .csv Dateien in UTF-8. Max. 64 MB.' },
-        { n: 2, title: 'Zuordnung', desc: 'Wir ordnen Ihre Spalten automatisch den Feldern zu. Pflichtfelder links, optionale Felder rechts. Manuelle Korrekturen sind jederzeit möglich.' },
-        { n: 3, title: 'Pflichtfeldanalyse', desc: 'Alle Pflichtfelder werden geprüft. Artikel mit Fehlern werden gezählt und angezeigt.' },
-        { n: 4, title: 'Optionale Felder', desc: 'Completeness check für Felder wie Farbe, Material, Maße und Beschreibung – für bessere Sichtbarkeit.' },
+        { n: 1, title: 'Hochladen', desc: 'CSV-Datei per Drag & Drop oder Klick hochladen. Unterstützt .csv Dateien in UTF-8.' },
+        { n: 2, title: 'Zuordnung', desc: 'Ordnen Sie Ihre Spalten den passenden Pflichtfeldern und optionalen Feldern zu.' },
+        { n: 3, title: 'Pflichtfeldanalyse', desc: 'Alle Pflichtfelder werden geprüft und Optimierungsmöglichkeiten werden angezeigt.' },
+        { n: 4, title: 'Optionale Felder', desc: 'Felder wie Farbe, Material, Maße und Beschreibung werden geprüft – für bessere Sichtbarkeit.' },
         { n: 5, title: 'Empfehlungen', desc: 'Fehlerbericht als CSV herunterladen, in Excel korrigieren und neu hochladen.' },
     ],
     warehouseDEsub: 'Kein HS-Code erforderlich',
@@ -640,7 +640,7 @@ const EN_T = {
     fileLoaded: (n) => `${n} items detected`,
     fileChange: 'Change',
     dropHeading: 'Upload CSV file',
-    dropSub: 'Drag here or click · max. 64 MB',
+    dropSub: 'Drag here or click',
     warehouseLabel: 'Warehouse Location',
     warehouseDE: 'Germany', warehouseNonDE: 'Outside Germany',
     hsNote: 'HS Code will be validated as a required field.',
@@ -824,10 +824,10 @@ const EN_T = {
     howTitle: 'How Feed Checker works',
     howSummary: 'Upload your product feed as CSV – we check all required fields and show exactly which items have errors.',
     howSteps: [
-        { n: 1, title: 'Upload', desc: 'Upload your CSV file via drag & drop or click. Supports .csv files in UTF-8. Max. 64 MB.' },
-        { n: 2, title: 'Mapping', desc: 'We automatically map your columns to the required fields. Required fields left, optional fields right. Manual corrections are always possible.' },
-        { n: 3, title: 'Required Field Analysis', desc: 'All required fields are validated. Items with errors are counted and displayed.' },
-        { n: 4, title: 'Optional Fields', desc: 'Completeness check for fields like color, material, dimensions, and description – for better visibility.' },
+        { n: 1, title: 'Upload', desc: 'Upload your CSV file via drag & drop or click. Supports .csv files in UTF-8.' },
+        { n: 2, title: 'Mapping', desc: 'Map your columns to the matching required and optional fields.' },
+        { n: 3, title: 'Required Field Analysis', desc: 'All required fields are validated and optimization opportunities are shown.' },
+        { n: 4, title: 'Optional Fields', desc: 'Fields like color, material, dimensions, and description are checked - for better visibility.' },
         { n: 5, title: 'Recommendations', desc: 'Download the error report as CSV, fix in Excel, and re-upload.' },
     ],
     warehouseDEsub: 'No HS Code required',
@@ -1582,7 +1582,7 @@ export default function McAngebotsfeed() {
                                 <button type="button" onClick={() => setShowVorlage(true)}
                                     style={{ display: 'flex', flexDirection: 'column', borderRadius: 8, border: '1px solid #E2E6EE', background: '#FAFAFA', cursor: 'pointer', textAlign: 'left', overflow: 'hidden', padding: 0 }}>
                                     <div style={{ width: '100%', height: 110, borderBottom: '1px solid #E2E6EE', overflow: 'hidden' }}>
-                                        <svg viewBox="0 0 220 110" width="100%" height="110" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block' }}>
+                                        <svg viewBox="0 0 220 110" width="100%" height="100%" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', width: '100%', height: '100%' }}>
                                             {/* Background */}
                                             <rect width="220" height="110" fill="#F0FDF4"/>
                                             {/* Top header bar */}
@@ -1669,7 +1669,7 @@ export default function McAngebotsfeed() {
                                     </div>
                                     <div style={{ textAlign: 'center' }}>
                                         <div style={{ fontSize: 14, fontWeight: 600, color: '#111827', marginBottom: 3 }}>{T.dropHeading}</div>
-                                        <div style={{ fontSize: 12, color: '#9CA3AF' }}>{lang === 'de' ? 'Hierher ziehen oder klicken · max. 64 MB' : 'Drag here or click · max. 64 MB'}</div>
+                                        <div style={{ fontSize: 12, color: '#9CA3AF' }}>{lang === 'de' ? 'Hierher ziehen oder klicken' : 'Drag here or click'}</div>
                                     </div>
                                     <div style={{ fontSize: 11, color: '#9CA3AF', background: '#F3F4F6', borderRadius: 20, padding: '3px 12px' }}>
                                         {lang === 'de' ? 'CSV · UTF-8' : 'CSV · UTF-8'}
@@ -2840,18 +2840,6 @@ export default function McAngebotsfeed() {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    {/* Affected % bar */}
-                                                    {(() => {
-                                                        const pct = Math.min(100, Math.round((count / issues.totalRows) * 100));
-                                                        return (
-                                                            <div style={{ textAlign: 'right' }}>
-                                                                <div style={{ fontSize: 10, fontWeight: 700, color: '#DC2626' }}>{pct}%</div>
-                                                                <div style={{ height: 4, width: 60, background: '#F3F4F6', borderRadius: 2, overflow: 'hidden', marginTop: 2 }}>
-                                                                    <div style={{ height: '100%', width: `${pct}%`, background: '#DC2626', borderRadius: 2 }}/>
-                                                                </div>
-                                                            </div>
-                                                        );
-                                                    })()}
                                                 </div>
                                                 <div style={{ fontSize: 13, color: '#374151', lineHeight: 1.6, marginBottom: 6 }}>
                                                     {rule.action}
