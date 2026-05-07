@@ -3143,59 +3143,40 @@ export default function McAngebotsfeed() {
                                     {(() => {
                                         const s = issues.pflichtScore;
                                         const sc = s >= 90 ? '#16A34A' : s >= 60 ? '#D97706' : '#DC2626';
-                                        const r = 16, circ = 2 * Math.PI * r;
                                         const lc = issues.livefaehigCount;
                                         const tc = issues.totalRows;
                                         const lColor = lc === tc ? '#16A34A' : lc > 0 ? '#D97706' : '#DC2626';
                                         return (
-                                            <div>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', borderBottom: '1px solid #F3F4F6' }}>
-                                                    <svg width="40" height="40" viewBox="0 0 40 40" style={{ flexShrink: 0 }}>
-                                                        <circle cx="20" cy="20" r={r} fill="none" stroke="#F3F4F6" strokeWidth="4"/>
-                                                        <circle cx="20" cy="20" r={r} fill="none" stroke={sc} strokeWidth="4"
-                                                            strokeDasharray={`${(s / 100) * circ} ${circ}`}
-                                                            strokeLinecap="round" transform="rotate(-90 20 20)"
-                                                        />
-                                                        <text x="20" y="25" textAnchor="middle" fontSize="10" fontWeight="900" fill={sc}>{s}</text>
-                                                    </svg>
-                                                    <div>
-                                                        <div style={{ fontSize: 13, fontWeight: 700, color: sc }}>{s} <span style={{ fontSize: 10, fontWeight: 500, color: '#9CA3AF' }}>{lang === 'de' ? '/ 100 Punkte' : '/ 100 pts'}</span></div>
-                                                        <div style={{ fontSize: 11, color: '#374151', marginTop: 1 }}>{lang === 'de' ? 'Pflichtfeld-Score' : 'Required field score'}</div>
-                                                    </div>
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
+                                                <div style={{ padding: '14px 16px', borderRight: '1px solid #F3F4F6' }}>
+                                                    <div style={{ fontSize: 22, fontWeight: 900, color: sc, lineHeight: 1 }}>{s}</div>
+                                                    <div style={{ fontSize: 9, color: '#9CA3AF', marginTop: 2 }}>{lang === 'de' ? '/ 100 Punkte' : '/ 100 pts'}</div>
+                                                    <div style={{ fontSize: 10, fontWeight: 600, color: '#374151', marginTop: 4 }}>{lang === 'de' ? 'Pflichtfeld-Score' : 'Required field score'}</div>
                                                 </div>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px' }}>
-                                                    <svg width="40" height="40" viewBox="0 0 40 40" style={{ flexShrink: 0 }}>
-                                                        <circle cx="20" cy="20" r={r} fill="none" stroke="#F3F4F6" strokeWidth="4"/>
-                                                        <circle cx="20" cy="20" r={r} fill="none" stroke={lColor} strokeWidth="4"
-                                                            strokeDasharray={`${(lc / tc) * circ} ${circ}`}
-                                                            strokeLinecap="round" transform="rotate(-90 20 20)"
-                                                        />
-                                                        <text x="20" y="25" textAnchor="middle" fontSize="10" fontWeight="900" fill={lColor}>{Math.round((lc / tc) * 100)}</text>
-                                                    </svg>
-                                                    <div>
-                                                        <div style={{ fontSize: 13, fontWeight: 700, color: lColor }}>
-                                                            {lc.toLocaleString(numLocale)} <span style={{ fontSize: 10, fontWeight: 500, color: '#9CA3AF' }}>{lang === 'de' ? `/ ${tc.toLocaleString(numLocale)}` : `/ ${tc.toLocaleString(numLocale)}`}</span>
-                                                        </div>
-                                                        <div style={{ fontSize: 11, color: '#374151', marginTop: 1 }}>{lang === 'de' ? 'Listbare Artikel' : 'Listable items'}</div>
-                                                    </div>
+                                                <div style={{ padding: '14px 16px' }}>
+                                                    <div style={{ fontSize: 22, fontWeight: 900, color: lColor, lineHeight: 1 }}>{lc.toLocaleString(numLocale)}</div>
+                                                    <div style={{ fontSize: 9, color: '#9CA3AF', marginTop: 2 }}>{lang === 'de' ? `von ${tc.toLocaleString(numLocale)}` : `of ${tc.toLocaleString(numLocale)}`}</div>
+                                                    <div style={{ fontSize: 10, fontWeight: 600, color: '#374151', marginTop: 4 }}>{lang === 'de' ? 'Listbare Artikel' : 'Listable items'}</div>
                                                 </div>
                                             </div>
                                         );
                                     })()}
                                 </div>
 
-                                {/* Download Fehlerbericht — primary CTA, shown first */}
-                                <div style={{ background: '#EEF4FF', border: '1px solid #BFDBFE', borderRadius: 12, padding: '14px 16px' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                                        <svg width="16" height="16" viewBox="0 0 18 18" fill="none"><path d="M9 2v10M6 9l3 3 3-3M2 15h14" stroke={MC_BLUE} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                        <span style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{T.recDownloadTitle}</span>
+                                {/* Download Fehlerbericht */}
+                                <div style={{ background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 12, overflow: 'hidden' }}>
+                                    <div style={{ padding: '10px 16px', borderBottom: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', gap: 8 }}>
+                                        <svg width="13" height="13" viewBox="0 0 18 18" fill="none"><path d="M9 2v10M6 9l3 3 3-3M2 15h14" stroke={MC_BLUE} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                        <span style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{T.recDownloadTitle}</span>
                                     </div>
-                                    <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 12, lineHeight: 1.5 }}>{T.recDownloadDesc}</div>
-                                    <button type="button" onClick={csvOnClick}
-                                        style={{ width: '100%', padding: '11px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
-                                        <svg width="13" height="13" viewBox="0 0 15 15" fill="none"><path d="M7.5 2v8M5 7l2.5 2.5L10 7M2 13h11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                        {T.recDownloadBtn}
-                                    </button>
+                                    <div style={{ padding: '10px 16px' }}>
+                                        <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 10, lineHeight: 1.5 }}>{T.recDownloadDesc}</div>
+                                        <button type="button" onClick={csvOnClick}
+                                            style={{ width: '100%', padding: '9px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
+                                            <svg width="13" height="13" viewBox="0 0 15 15" fill="none"><path d="M7.5 2v8M5 7l2.5 2.5L10 7M2 13h11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                            {T.recDownloadBtn}
+                                        </button>
+                                    </div>
                                 </div>
 
                                 {/* Next steps workflow */}
