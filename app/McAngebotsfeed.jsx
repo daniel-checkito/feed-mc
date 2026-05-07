@@ -2390,11 +2390,6 @@ export default function McAngebotsfeed() {
 
                             {/* Nav buttons */}
                             <div style={{ padding: '10px 16px', borderTop: '1px solid #F3F4F6', display: 'flex', flexDirection: 'column', gap: 6 }}>
-                                <button type="button" onClick={csvOnClick}
-                                    style={{ width: '100%', padding: '7px 12px', background: '#F9FAFB', border: '1px solid #E5E7EB', borderRadius: 8, color: '#374151', fontSize: 11, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center' }}>
-                                    <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M8 3v7M5 7l3 3 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 12h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
-                                    {T.csvBtn}
-                                </button>
                                 <div style={{ display: 'flex', gap: 6 }}>
                                     <button type="button" onClick={() => setStep(2)}
                                         style={{ flex: 1, padding: '10px 16px', background: '#fff', border: '1px solid #D0D5E0', borderRadius: 8, color: '#374151', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
@@ -3141,8 +3136,8 @@ export default function McAngebotsfeed() {
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, position: 'sticky', top: 20, alignSelf: 'flex-start', maxHeight: 'calc(100vh - 120px)', overflowY: 'auto' }}>
 
                                 {/* Feed summary stats */}
-                                <div style={{ background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 12, padding: '14px 16px' }}>
-                                    <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.06em', marginBottom: 12, textTransform: 'uppercase' }}>
+                                <div style={{ background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 12, overflow: 'hidden' }}>
+                                    <div style={{ padding: '10px 16px', borderBottom: '1px solid #F3F4F6', fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
                                         {lang === 'de' ? 'Feed-Übersicht' : 'Feed Overview'}
                                     </div>
                                     {(() => {
@@ -3153,8 +3148,8 @@ export default function McAngebotsfeed() {
                                         const tc = issues.totalRows;
                                         const lColor = lc === tc ? '#16A34A' : lc > 0 ? '#D97706' : '#DC2626';
                                         return (
-                                            <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: 12, paddingBottom: 12 }}>
+                                            <div>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', borderBottom: '1px solid #F3F4F6' }}>
                                                     <svg width="40" height="40" viewBox="0 0 40 40" style={{ flexShrink: 0 }}>
                                                         <circle cx="20" cy="20" r={r} fill="none" stroke="#F3F4F6" strokeWidth="4"/>
                                                         <circle cx="20" cy="20" r={r} fill="none" stroke={sc} strokeWidth="4"
@@ -3168,16 +3163,20 @@ export default function McAngebotsfeed() {
                                                         <div style={{ fontSize: 11, color: '#374151', marginTop: 1 }}>{lang === 'de' ? 'Pflichtfeld-Score' : 'Required field score'}</div>
                                                     </div>
                                                 </div>
-                                                <div style={{ height: 1, background: '#F3F4F6', marginBottom: 12 }} />
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                                                    <div style={{ width: 40, textAlign: 'center', flexShrink: 0 }}>
-                                                        <span style={{ fontSize: 26, fontWeight: 900, color: lColor, lineHeight: 1 }}>{lc.toLocaleString(numLocale)}</span>
-                                                    </div>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px' }}>
+                                                    <svg width="40" height="40" viewBox="0 0 40 40" style={{ flexShrink: 0 }}>
+                                                        <circle cx="20" cy="20" r={r} fill="none" stroke="#F3F4F6" strokeWidth="4"/>
+                                                        <circle cx="20" cy="20" r={r} fill="none" stroke={lColor} strokeWidth="4"
+                                                            strokeDasharray={`${(lc / tc) * circ} ${circ}`}
+                                                            strokeLinecap="round" transform="rotate(-90 20 20)"
+                                                        />
+                                                        <text x="20" y="25" textAnchor="middle" fontSize="10" fontWeight="900" fill={lColor}>{Math.round((lc / tc) * 100)}</text>
+                                                    </svg>
                                                     <div>
-                                                        <div style={{ fontSize: 13, fontWeight: 700, color: lColor }}>{lang === 'de' ? 'Listbar' : 'Listable'}</div>
-                                                        <div style={{ fontSize: 11, color: '#374151', marginTop: 1 }}>
-                                                            {lang === 'de' ? `von ${tc.toLocaleString(numLocale)} Artikeln` : `of ${tc.toLocaleString(numLocale)} items`}
+                                                        <div style={{ fontSize: 13, fontWeight: 700, color: lColor }}>
+                                                            {lc.toLocaleString(numLocale)} <span style={{ fontSize: 10, fontWeight: 500, color: '#9CA3AF' }}>{lang === 'de' ? `/ ${tc.toLocaleString(numLocale)}` : `/ ${tc.toLocaleString(numLocale)}`}</span>
                                                         </div>
+                                                        <div style={{ fontSize: 11, color: '#374151', marginTop: 1 }}>{lang === 'de' ? 'Listbare Artikel' : 'Listable items'}</div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -3186,7 +3185,7 @@ export default function McAngebotsfeed() {
                                 </div>
 
                                 {/* Download Fehlerbericht — primary CTA, shown first */}
-                                <div style={{ background: '#EEF4FF', border: `2px solid ${MC_BLUE}`, borderRadius: 12, padding: '16px' }}>
+                                <div style={{ background: '#EEF4FF', border: '1px solid #BFDBFE', borderRadius: 12, padding: '14px 16px' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                                         <svg width="16" height="16" viewBox="0 0 18 18" fill="none"><path d="M9 2v10M6 9l3 3 3-3M2 15h14" stroke={MC_BLUE} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/></svg>
                                         <span style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{T.recDownloadTitle}</span>
@@ -3200,35 +3199,37 @@ export default function McAngebotsfeed() {
                                 </div>
 
                                 {/* Next steps workflow */}
-                                <div style={{ background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 12, padding: '14px 16px' }}>
-                                    <div style={{ fontSize: 11, fontWeight: 700, color: '#374151', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                                <div style={{ background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 12, overflow: 'hidden' }}>
+                                    <div style={{ padding: '10px 16px', borderBottom: '1px solid #F3F4F6', fontSize: 10, fontWeight: 700, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                                         {lang === 'de' ? 'So geht es weiter' : 'What to do next'}
                                     </div>
-                                    {[
-                                        {
-                                            n: 1,
-                                            title: lang === 'de' ? 'Fehlerbericht herunterladen' : 'Download error report',
-                                            desc: lang === 'de' ? 'CSV-Datei mit allen Fehlern je Zeile für Excel' : 'CSV file with all errors per row for Excel',
-                                        },
-                                        {
-                                            n: 2,
-                                            title: lang === 'de' ? 'Fehler in Excel korrigieren' : 'Fix errors in Excel',
-                                            desc: lang === 'de' ? 'Betroffene Artikel anhand der Fehlerspalte bearbeiten' : 'Edit affected items using the error column',
-                                        },
-                                        {
-                                            n: 3,
-                                            title: lang === 'de' ? 'Korrigierten Feed hochladen' : 'Re-upload corrected feed',
-                                            desc: lang === 'de' ? 'Direkt im Händlerportal unter Einstellungen → Feed' : 'In the merchant portal under Settings → Feed',
-                                        },
-                                    ].map(({ n, title, desc }) => (
-                                        <div key={n} style={{ display: 'flex', gap: 10, marginBottom: n < 3 ? 10 : 0 }}>
-                                            <div style={{ width: 20, height: 20, borderRadius: '50%', background: MC_BLUE, color: '#FFF', fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>{n}</div>
-                                            <div>
-                                                <div style={{ fontSize: 11, fontWeight: 600, color: '#111827' }}>{title}</div>
-                                                <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 1, lineHeight: 1.4 }}>{desc}</div>
+                                    <div style={{ padding: '12px 16px', display: 'grid', gap: 10 }}>
+                                        {[
+                                            {
+                                                n: 1,
+                                                title: lang === 'de' ? 'Fehlerbericht herunterladen' : 'Download error report',
+                                                desc: lang === 'de' ? 'CSV-Datei mit allen Fehlern je Zeile für Excel' : 'CSV file with all errors per row for Excel',
+                                            },
+                                            {
+                                                n: 2,
+                                                title: lang === 'de' ? 'Fehler in Excel korrigieren' : 'Fix errors in Excel',
+                                                desc: lang === 'de' ? 'Betroffene Artikel anhand der Fehlerspalte bearbeiten' : 'Edit affected items using the error column',
+                                            },
+                                            {
+                                                n: 3,
+                                                title: lang === 'de' ? 'Korrigierten Feed hochladen' : 'Re-upload corrected feed',
+                                                desc: lang === 'de' ? 'Direkt im Händlerportal unter Einstellungen → Feed' : 'In the merchant portal under Settings → Feed',
+                                            },
+                                        ].map(({ n, title, desc }) => (
+                                            <div key={n} style={{ display: 'flex', gap: 10 }}>
+                                                <div style={{ width: 20, height: 20, borderRadius: '50%', background: MC_BLUE, color: '#FFF', fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>{n}</div>
+                                                <div>
+                                                    <div style={{ fontSize: 11, fontWeight: 600, color: '#111827' }}>{title}</div>
+                                                    <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 1, lineHeight: 1.4 }}>{desc}</div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    ))}
+                                        ))}
+                                    </div>
                                 </div>
 
                                 {/* Nav */}
