@@ -2388,32 +2388,6 @@ export default function McAngebotsfeed() {
                                 </div>
                             )}
 
-                            {/* Top errors list */}
-                            {detailedErrors.length > 0 && (
-                                <div style={{ borderBottom: '1px solid #F3F4F6' }}>
-                                    <div style={{ padding: '8px 16px 6px', fontSize: 10, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                                        {lang === 'de' ? 'Häufigste Fehler' : 'Top Errors'}
-                                    </div>
-                                    <div style={{ padding: '0 16px 10px', display: 'grid', gap: 4, maxHeight: 220, overflowY: 'auto' }}>
-                                        {detailedErrors.map((err, i) => (
-                                            <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '6px 8px', borderRadius: 6, background: '#FEF2F2', border: '1px solid #FEE2E2' }}>
-                                                <div style={{ flex: 1, minWidth: 0 }}>
-                                                    <div style={{ fontSize: 10, fontWeight: 600, color: '#991B1B', lineHeight: 1.35 }}>{err.label}</div>
-                                                    {err.sampleEans.length > 0 && (
-                                                        <div style={{ marginTop: 3, display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-                                                            {err.sampleEans.slice(0, 3).map((ean) => (
-                                                                <span key={ean} style={{ fontSize: 8, color: '#374151', background: '#F3F4F6', borderRadius: 2, padding: '1px 4px', fontFamily: 'monospace' }}>{ean}</span>
-                                                            ))}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                                <span style={{ fontSize: 11, fontWeight: 800, color: '#DC2626', flexShrink: 0 }}>{err.count.toLocaleString(numLocale)}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
                             {/* Nav buttons */}
                             <div style={{ padding: '10px 16px', borderTop: '1px solid #F3F4F6', display: 'flex', flexDirection: 'column', gap: 6 }}>
                                 <button type="button" onClick={csvOnClick}
@@ -2436,82 +2410,6 @@ export default function McAngebotsfeed() {
                         </div>{/* end right panel */}
 
                         </div>{/* end grid */}
-
-                        {/* Insight cards row — description quality + title structure */}
-                        {(descStats || titleAnalysis) && (
-                            <div style={{ display: 'grid', gridTemplateColumns: descStats && titleAnalysis ? '1fr 1fr' : '1fr', gap: 12 }}>
-
-                                {/* Description quality */}
-                                {descStats && (() => {
-                                    const { total, avg, buckets } = descStats;
-                                    const items = [
-                                        { label: lang === 'de' ? 'Zu kurz (<50)' : 'Too short (<50)', count: buckets.short, color: '#DC2626', bg: '#FEE2E2' },
-                                        { label: lang === 'de' ? 'OK (50–149)' : 'OK (50–149)', count: buckets.ok, color: '#D97706', bg: '#FEF3C7' },
-                                        { label: lang === 'de' ? 'Gut (150–499)' : 'Good (150–499)', count: buckets.good, color: '#2563EB', bg: '#DBEAFE' },
-                                        { label: lang === 'de' ? 'Sehr gut (500+)' : 'Great (500+)', count: buckets.great, color: '#16A34A', bg: '#DCFCE7' },
-                                    ];
-                                    return (
-                                        <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'hidden' }}>
-                                            <div style={{ padding: '10px 14px', borderBottom: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                                                <span style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{lang === 'de' ? 'Beschreibungslänge' : 'Description Length'}</span>
-                                                <span style={{ fontSize: 10, color: '#9CA3AF' }}>{lang === 'de' ? `Ø ${avg} Zeichen` : `avg ${avg} chars`}</span>
-                                            </div>
-                                            <div style={{ padding: '10px 14px', display: 'grid', gap: 6 }}>
-                                                {items.map(({ label, count, color, bg }) => {
-                                                    const pct = total > 0 ? Math.round((count / total) * 100) : 0;
-                                                    return (
-                                                        <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                                            <span style={{ fontSize: 10, color: '#374151', width: 110, flexShrink: 0 }}>{label}</span>
-                                                            <div style={{ flex: 1, height: 6, background: '#F3F4F6', borderRadius: 3, overflow: 'hidden' }}>
-                                                                <div style={{ height: '100%', width: `${pct}%`, background: color, borderRadius: 3, transition: 'width 0.4s' }} />
-                                                            </div>
-                                                            <span style={{ fontSize: 10, fontWeight: 700, color, width: 30, textAlign: 'right', flexShrink: 0 }}>{pct}%</span>
-                                                            <span style={{ fontSize: 9, color: '#9CA3AF', width: 28, textAlign: 'right', flexShrink: 0 }}>{count.toLocaleString(numLocale)}</span>
-                                                        </div>
-                                                    );
-                                                })}
-                                            </div>
-                                        </div>
-                                    );
-                                })()}
-
-                                {/* Title structure */}
-                                {titleAnalysis && (() => {
-                                    const { total, missingColor, missingMaterial, missingDimension, missingBrand } = titleAnalysis;
-                                    const items = [
-                                        { label: lang === 'de' ? 'Farbe fehlt' : 'No color', count: missingColor },
-                                        { label: lang === 'de' ? 'Material fehlt' : 'No material', count: missingMaterial },
-                                        { label: lang === 'de' ? 'Maße fehlen' : 'No dimensions', count: missingDimension },
-                                        ...(missingBrand !== null ? [{ label: lang === 'de' ? 'Marke fehlt im Titel' : 'Brand missing', count: missingBrand }] : []),
-                                    ];
-                                    return (
-                                        <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'hidden' }}>
-                                            <div style={{ padding: '10px 14px', borderBottom: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                                                <span style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{lang === 'de' ? 'Titelstruktur' : 'Title Structure'}</span>
-                                                <span style={{ fontSize: 10, color: '#9CA3AF' }}>{total.toLocaleString(numLocale)} {lang === 'de' ? 'Artikel' : 'items'}</span>
-                                            </div>
-                                            <div style={{ padding: '10px 14px', display: 'grid', gap: 6 }}>
-                                                {items.map(({ label, count }) => {
-                                                    const pct = total > 0 ? Math.round((count / total) * 100) : 0;
-                                                    const color = pct > 60 ? '#DC2626' : pct > 30 ? '#D97706' : '#16A34A';
-                                                    return (
-                                                        <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                                            <span style={{ fontSize: 10, color: '#374151', width: 110, flexShrink: 0 }}>{label}</span>
-                                                            <div style={{ flex: 1, height: 6, background: '#F3F4F6', borderRadius: 3, overflow: 'hidden' }}>
-                                                                <div style={{ height: '100%', width: `${pct}%`, background: color, borderRadius: 3, transition: 'width 0.4s' }} />
-                                                            </div>
-                                                            <span style={{ fontSize: 10, fontWeight: 700, color, width: 30, textAlign: 'right', flexShrink: 0 }}>{pct}%</span>
-                                                            <span style={{ fontSize: 9, color: '#9CA3AF', width: 28, textAlign: 'right', flexShrink: 0 }}>{count.toLocaleString(numLocale)}</span>
-                                                        </div>
-                                                    );
-                                                })}
-                                            </div>
-                                        </div>
-                                    );
-                                })()}
-
-                            </div>
-                        )}
 
                     </div>
                 );
