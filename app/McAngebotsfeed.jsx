@@ -2709,6 +2709,7 @@ export default function McAngebotsfeed() {
                 STEP 5 - Empfehlungen & Download
             ══════════════════════════════════════════ */}
             {step === 5 && issues && (() => {
+                const { optFieldStats } = issues;
                 // Build grouped recommendations from errors
                 const errorsByType = {};
                 issues.pflichtErrors.forEach((e) => {
