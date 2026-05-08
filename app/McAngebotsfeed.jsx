@@ -2389,26 +2389,15 @@ export default function McAngebotsfeed() {
                                 </div>
                             </div>
 
-                            {/* Score - prominent display */}
+                            {/* Score - flat numeric display (matches step 5 Feed-Übersicht) */}
                             {(() => {
                                 const s = issues.pflichtScore;
                                 const c3 = s >= 90 ? '#16A34A' : s >= 60 ? '#D97706' : '#DC2626';
-                                const r3 = 26, circ3 = 2 * Math.PI * r3;
                                 return (
-                                    <div style={{ padding: '18px 16px', borderBottom: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', gap: 14 }}>
-                                        <svg width="64" height="64" viewBox="0 0 64 64" style={{ flexShrink: 0 }}>
-                                            <circle cx="32" cy="32" r={r3} fill="none" stroke="#F3F4F6" strokeWidth="6"/>
-                                            <circle cx="32" cy="32" r={r3} fill="none" stroke={c3} strokeWidth="6"
-                                                strokeDasharray={`${(s / 100) * circ3} ${circ3}`}
-                                                strokeLinecap="round"
-                                                transform="rotate(-90 32 32)"
-                                            />
-                                            <text x="32" y="38" textAnchor="middle" fontSize="20" fontWeight="900" fill={c3}>{s}</text>
-                                        </svg>
-                                        <div>
-                                            <div style={{ fontSize: 14, fontWeight: 800, color: '#111827' }}>{lang === 'de' ? 'Pflichtfelder' : 'Required Fields'}</div>
-                                            <div style={{ fontSize: 11, color: '#6B7280', marginTop: 2 }}>{lang === 'de' ? 'von 100 Punkten' : 'out of 100 pts'}</div>
-                                        </div>
+                                    <div style={{ padding: '16px 16px', borderBottom: '1px solid #F3F4F6' }}>
+                                        <div style={{ fontSize: 32, fontWeight: 900, color: c3, lineHeight: 1 }}>{s}</div>
+                                        <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 4 }}>{lang === 'de' ? '/ 100 Punkte' : '/ 100 pts'}</div>
+                                        <div style={{ fontSize: 11, fontWeight: 600, color: '#374151', marginTop: 6 }}>{lang === 'de' ? 'Pflichtfeld-Score' : 'Required field score'}</div>
                                     </div>
                                 );
                             })()}
@@ -2493,17 +2482,66 @@ export default function McAngebotsfeed() {
                 const descCol = mcMapping['description'];
                 const descStats = descCol ? (() => {
                     const buckets = { none: 0, short: 0, ok: 0, good: 0 };
-                    let total = 0;
+                    let total = 0, totalChars = 0;
                     rows.forEach((r) => {
                         total++;
                         const len = String(r[descCol] ?? '').trim().length;
+                        totalChars += len;
                         if (len === 0) buckets.none++;
                         else if (len < 100) buckets.short++;
                         else if (len < 300) buckets.ok++;
                         else buckets.good++;
                     });
-                    return { total, buckets };
+                    return { total, avg: total ? Math.round(totalChars / total) : 0, buckets };
                 })() : null;
+
+                // Title length distribution
+                const nameCol = mcMapping['name'];
+                const titleStats = nameCol ? (() => {
+                    const buckets = { none: 0, short: 0, ok: 0, good: 0 };
+                    let total = 0, totalChars = 0;
+                    rows.forEach((r) => {
+                        total++;
+                        const len = String(r[nameCol] ?? '').trim().length;
+                        totalChars += len;
+                        if (len === 0) buckets.none++;
+                        else if (len < 30) buckets.short++;
+                        else if (len < 80) buckets.ok++;
+                        else buckets.good++;
+                    });
+                    return { total, avg: total ? Math.round(totalChars / total) : 0, buckets };
+                })() : null;
+
+                // Image distribution per product (granular - per integer count)
+                const imgDistribution = mcImageColumns.length > 0 ? (() => {
+                    const dist = {};
+                    let totalRows = 0;
+                    rows.forEach((r) => {
+                        totalRows++;
+                        const cnt = mcImageColumns.reduce((s, col) => s + (String(r[col] ?? '').trim() ? 1 : 0), 0);
+                        dist[cnt] = (dist[cnt] || 0) + 1;
+                    });
+                    return { dist, totalRows };
+                })() : null;
+
+                // Sample products with images (for thumbnails)
+                const eanColImg = mcMapping.ean;
+                const nameColImg = mcMapping.name;
+                const imageSamples = mcImageColumns.length > 0 ? (() => {
+                    const samples = [];
+                    for (const r of rows) {
+                        if (samples.length >= 3) break;
+                        const urls = mcImageColumns.map((c) => String(r[c] ?? '').trim()).filter(Boolean);
+                        if (urls.length < 1) continue;
+                        samples.push({
+                            name: nameColImg ? String(r[nameColImg] ?? '').trim() : '',
+                            ean: eanColImg ? String(r[eanColImg] ?? '').trim() : '',
+                            urls: urls.slice(0, 5),
+                            total: urls.length,
+                        });
+                    }
+                    return samples;
+                })() : [];
 
                 const totalOptionalFields = optFieldStats.fields.length;
                 const completeOptionalFields = optFieldStats.fields.filter(f => !f.notMapped && f.pct === 100).length;
@@ -2605,7 +2643,139 @@ export default function McAngebotsfeed() {
                                         );
                                     })}
                                 </div>
-                                {/* Charts, size hint, lighting hint, and quality tips moved to step 5 (Empfehlungen) */}
+                                {/* Bilder analysis */}
+                                {imgDistribution && imgDistribution.totalRows > 0 && (
+                                    <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'hidden' }}>
+                                        <div style={{ padding: '12px 16px 10px', borderBottom: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', gap: 8 }}>
+                                            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#DC2626', flexShrink: 0 }} />
+                                            <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{lang === 'de' ? 'Bilder' : 'Images'}</div>
+                                            <div style={{ marginLeft: 'auto', fontSize: 10, color: '#16A34A', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 999, padding: '3px 10px', fontWeight: 600 }}>
+                                                {lang === 'de' ? `Bildspalten ${mcImageColumns.length}` : `Image columns ${mcImageColumns.length}`}
+                                            </div>
+                                        </div>
+                                        {/* Distribution chips */}
+                                        <div style={{ padding: '12px 16px', display: 'flex', flexWrap: 'wrap', gap: 6, borderBottom: '1px solid #F3F4F6' }}>
+                                            {Object.entries(imgDistribution.dist)
+                                                .map(([k, v]) => [parseInt(k, 10), v])
+                                                .sort((a, b) => a[0] - b[0])
+                                                .map(([cnt, n]) => {
+                                                    const isOk = cnt >= 3;
+                                                    const isWarn = cnt > 0 && cnt < 3;
+                                                    const color = isOk ? '#16A34A' : isWarn ? '#D97706' : '#DC2626';
+                                                    const bg = isOk ? '#F0FDF4' : isWarn ? '#FFFBEB' : '#FEF2F2';
+                                                    const border = isOk ? '#BBF7D0' : isWarn ? '#FDE68A' : '#FECACA';
+                                                    return (
+                                                        <span key={cnt} style={{ fontSize: 11, fontWeight: 600, color, background: bg, border: `1px solid ${border}`, borderRadius: 6, padding: '4px 10px' }}>
+                                                            {lang === 'de' ? `${cnt} ${cnt === 1 ? 'Bild' : 'Bilder'}` : `${cnt} ${cnt === 1 ? 'image' : 'images'}`}: {n}
+                                                        </span>
+                                                    );
+                                                })}
+                                        </div>
+                                        {/* Product samples */}
+                                        {imageSamples.length > 0 && (
+                                            <div style={{ padding: '8px 16px 12px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+                                                {imageSamples.map((s, i) => (
+                                                    <div key={i} style={{ border: '1px solid #F3F4F6', borderRadius: 8, padding: '8px 10px', display: 'flex', alignItems: 'center', gap: 10 }}>
+                                                        <div style={{ minWidth: 0, flex: 1 }}>
+                                                            <div style={{ fontSize: 12, fontWeight: 700, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name || '—'}</div>
+                                                            {s.ean && <div style={{ fontSize: 10, color: '#9CA3AF', fontFamily: 'monospace', marginTop: 1 }}>{s.ean}</div>}
+                                                            <div style={{ fontSize: 10, color: '#6B7280', marginTop: 1 }}>{lang === 'de' ? `${s.total} Bilder` : `${s.total} images`}</div>
+                                                        </div>
+                                                        <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
+                                                            {s.urls.map((u, ui) => (
+                                                                <img
+                                                                    key={ui}
+                                                                    src={`/api/image-proxy?url=${encodeURIComponent(u)}`}
+                                                                    alt=""
+                                                                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                                                                    style={{ width: 44, height: 44, objectFit: 'cover', borderRadius: 6, border: '1px solid #E5E7EB', background: '#F9FAFB' }}
+                                                                />
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
+                                {/* Title and description length charts side by side */}
+                                {(titleStats?.total > 0 || descStats?.total > 0) && (
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                                        {/* Title length */}
+                                        {titleStats && titleStats.total > 0 && (
+                                            <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '14px 16px' }}>
+                                                <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 12 }}>
+                                                    <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>
+                                                        {lang === 'de' ? 'Titellänge' : 'Title Length'}
+                                                    </div>
+                                                    <div style={{ display: 'flex', gap: 8 }}>
+                                                        <div style={{ fontSize: 10, color: '#16A34A', fontWeight: 600 }}>{lang === 'de' ? 'Ziel: 80+' : 'Target: 80+'}</div>
+                                                        <div style={{ fontSize: 10, color: '#9CA3AF' }}>
+                                                            {lang === 'de' ? `Ø ${titleStats.avg.toLocaleString(numLocale)}` : `Avg. ${titleStats.avg.toLocaleString(numLocale)}`}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                                                    {[
+                                                        { key: 'none',  label: lang === 'de' ? 'Leer (0)' : 'Empty (0)',     color: '#EF4444' },
+                                                        { key: 'short', label: lang === 'de' ? 'Kurz (<30)' : 'Short (<30)', color: '#F59E0B' },
+                                                        { key: 'ok',    label: lang === 'de' ? 'OK (30–79)' : 'OK (30–79)',  color: '#60A5FA' },
+                                                        { key: 'good',  label: lang === 'de' ? 'Gut (80+)' : 'Good (80+)',   color: '#16A34A' },
+                                                    ].map(({ key, label, color }) => {
+                                                        const cnt = titleStats.buckets[key];
+                                                        const pct = titleStats.total ? Math.round((cnt / titleStats.total) * 100) : 0;
+                                                        return (
+                                                            <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                                                                <div style={{ width: 68, fontSize: 10, color: '#374151', fontWeight: 500, textAlign: 'right', flexShrink: 0 }}>{label}</div>
+                                                                <div style={{ flex: 1, height: 10, background: '#F3F4F6', borderRadius: 5, overflow: 'hidden' }}>
+                                                                    <div style={{ height: '100%', width: `${pct}%`, background: color, borderRadius: 5, transition: 'width 0.4s' }} />
+                                                                </div>
+                                                                <div style={{ width: 30, fontSize: 10, fontWeight: 700, color, textAlign: 'left', flexShrink: 0 }}>{pct}%</div>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                        )}
+                                        {/* Description length */}
+                                        {descStats && descStats.total > 0 && (
+                                            <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '14px 16px' }}>
+                                                <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 12 }}>
+                                                    <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>
+                                                        {lang === 'de' ? 'Beschreibungslänge' : 'Description Length'}
+                                                    </div>
+                                                    <div style={{ display: 'flex', gap: 8 }}>
+                                                        <div style={{ fontSize: 10, color: '#16A34A', fontWeight: 600 }}>{lang === 'de' ? 'Ziel: 300+' : 'Target: 300+'}</div>
+                                                        <div style={{ fontSize: 10, color: '#9CA3AF' }}>
+                                                            {lang === 'de' ? `Ø ${descStats.avg.toLocaleString(numLocale)}` : `Avg. ${descStats.avg.toLocaleString(numLocale)}`}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                                                    {[
+                                                        { key: 'none',  label: lang === 'de' ? 'Leer (0)' : 'Empty (0)',         color: '#EF4444' },
+                                                        { key: 'short', label: lang === 'de' ? 'Kurz (<100)' : 'Short (<100)',   color: '#F59E0B' },
+                                                        { key: 'ok',    label: lang === 'de' ? 'OK (100–299)' : 'OK (100–299)',  color: '#60A5FA' },
+                                                        { key: 'good',  label: lang === 'de' ? 'Gut (300+)' : 'Good (300+)',     color: '#16A34A' },
+                                                    ].map(({ key, label, color }) => {
+                                                        const cnt = descStats.buckets[key];
+                                                        const pct = descStats.total ? Math.round((cnt / descStats.total) * 100) : 0;
+                                                        return (
+                                                            <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                                                                <div style={{ width: 78, fontSize: 10, color: '#374151', fontWeight: 500, textAlign: 'right', flexShrink: 0 }}>{label}</div>
+                                                                <div style={{ flex: 1, height: 10, background: '#F3F4F6', borderRadius: 5, overflow: 'hidden' }}>
+                                                                    <div style={{ height: '100%', width: `${pct}%`, background: color, borderRadius: 5, transition: 'width 0.4s' }} />
+                                                                </div>
+                                                                <div style={{ width: 30, fontSize: 10, fontWeight: 700, color, textAlign: 'left', flexShrink: 0 }}>{pct}%</div>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                             </div>
 
                             {/* Right: score + nav (matches step 3 layout) */}
@@ -2621,21 +2791,11 @@ export default function McAngebotsfeed() {
                                     </div>
                                 </div>
 
-                                {/* Score - prominent display matching step 3 */}
-                                <div style={{ padding: '18px 16px', borderBottom: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', gap: 14 }}>
-                                    <svg width="64" height="64" viewBox="0 0 64 64" style={{ flexShrink: 0 }}>
-                                        <circle cx="32" cy="32" r={26} fill="none" stroke="#F3F4F6" strokeWidth="6"/>
-                                        <circle cx="32" cy="32" r={26} fill="none" stroke={overallColor} strokeWidth="6"
-                                            strokeDasharray={`${(overallPct / 100) * (2 * Math.PI * 26)} ${2 * Math.PI * 26}`}
-                                            strokeLinecap="round"
-                                            transform="rotate(-90 32 32)"
-                                        />
-                                        <text x="32" y="38" textAnchor="middle" fontSize="20" fontWeight="900" fill={overallColor}>{overallPct}</text>
-                                    </svg>
-                                    <div>
-                                        <div style={{ fontSize: 14, fontWeight: 800, color: '#111827' }}>{lang === 'de' ? 'Optionale Felder' : 'Optional Fields'}</div>
-                                        <div style={{ fontSize: 11, color: '#6B7280', marginTop: 2 }}>{lang === 'de' ? 'von 100 Punkten' : 'out of 100 pts'}</div>
-                                    </div>
+                                {/* Score - flat numeric display (matches step 3 + step 5 Feed-Übersicht) */}
+                                <div style={{ padding: '16px 16px', borderBottom: '1px solid #F3F4F6' }}>
+                                    <div style={{ fontSize: 32, fontWeight: 900, color: overallColor, lineHeight: 1 }}>{overallPct}</div>
+                                    <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 4 }}>{lang === 'de' ? '/ 100 Punkte' : '/ 100 pts'}</div>
+                                    <div style={{ fontSize: 11, fontWeight: 600, color: '#374151', marginTop: 6 }}>{lang === 'de' ? 'Optionale-Felder-Score' : 'Optional field score'}</div>
                                 </div>
 
                                 {/* Stats strip - Vollständig + Lücken = Gesamt (only mapped fields counted) */}
