@@ -1258,9 +1258,11 @@ export default function McAngebotsfeed() {
         const totalScore = Math.max(0, Math.min(100, Math.round((pflichtScore + optionalScore) / 2)));
 
         // Optional field stats for step 4
-        const OPT_FIELDS_TO_CHECK = ['color', 'material', 'brand', 'description', 'delivery_includes'];
-        const OPT_FIELD_LABELS_DE = { color: 'Farbe', material: 'Material', brand: 'Marke', description: 'Beschreibung', delivery_includes: 'Lieferumfang' };
-        const OPT_FIELD_LABELS_EN = { color: 'Color', material: 'Material', brand: 'Brand', description: 'Description', delivery_includes: 'Delivery Includes' };
+        // brand and description are already validated in the Pflichtfeld step,
+        // so they are intentionally excluded from the optional-field check.
+        const OPT_FIELDS_TO_CHECK = ['color', 'material', 'delivery_includes'];
+        const OPT_FIELD_LABELS_DE = { color: 'Farbe', material: 'Material', delivery_includes: 'Lieferumfang' };
+        const OPT_FIELD_LABELS_EN = { color: 'Color', material: 'Material', delivery_includes: 'Delivery Includes' };
         const optFields = OPT_FIELDS_TO_CHECK.map((field) => {
             const col = mcMapping[field];
             if (!col) return { field, labelDE: OPT_FIELD_LABELS_DE[field], labelEN: OPT_FIELD_LABELS_EN[field], covered: 0, missing: rows.length, total: rows.length, pct: 0, notMapped: true };
@@ -1390,29 +1392,75 @@ export default function McAngebotsfeed() {
         return !!mcMapping[f];
     }) && (!outsideGermany || !!mcMapping['hs_code']);
 
+    // Reusable horizontal progress bar with legend.
+    // Used for Pflicht / Optional / Listbar score displays so they all share one look.
+    const ScoreBar = ({
+        title,
+        pct,
+        color,
+        complete,
+        incomplete,
+        total,
+        completeLabel,
+        incompleteLabel,
+        totalLabel,
+        tipComplete,
+        tipIncomplete,
+        tipTotal,
+        summary,
+        numLocale,
+    }) => (
+        <div style={{ padding: '14px 16px', borderBottom: '1px solid #F3F4F6' }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#374151', marginBottom: 8 }}>{title}</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ flex: 1, height: 10, background: '#E5E7EB', borderRadius: 5, overflow: 'hidden' }}>
+                    <div style={{ height: '100%', width: `${Math.max(0, Math.min(100, pct))}%`, background: color, borderRadius: 5, transition: 'width 0.4s' }} />
+                </div>
+                <div style={{ fontSize: 16, fontWeight: 800, color, lineHeight: 1, minWidth: 44, textAlign: 'right' }}>{pct}%</div>
+            </div>
+            {(complete !== undefined || incomplete !== undefined || total !== undefined) && (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 8, fontSize: 10 }}>
+                    {complete !== undefined && (
+                        <Tooltip text={tipComplete}>
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: '#374151', cursor: tipComplete ? 'help' : 'default' }}>
+                                <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#16A34A', flexShrink: 0 }} />
+                                <strong style={{ fontWeight: 700, color: '#111827' }}>{complete.toLocaleString(numLocale)}</strong> {completeLabel}
+                            </span>
+                        </Tooltip>
+                    )}
+                    {incomplete !== undefined && (
+                        <Tooltip text={tipIncomplete}>
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: '#374151', cursor: tipIncomplete ? 'help' : 'default' }}>
+                                <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#D97706', flexShrink: 0 }} />
+                                <strong style={{ fontWeight: 700, color: '#111827' }}>{incomplete.toLocaleString(numLocale)}</strong> {incompleteLabel}
+                            </span>
+                        </Tooltip>
+                    )}
+                    {total !== undefined && (
+                        <Tooltip text={tipTotal}>
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: '#6B7280', cursor: tipTotal ? 'help' : 'default', marginLeft: 'auto' }}>
+                                <strong style={{ fontWeight: 700, color: '#374151' }}>{total.toLocaleString(numLocale)}</strong> {totalLabel}
+                            </span>
+                        </Tooltip>
+                    )}
+                </div>
+            )}
+            {summary && (
+                <div style={{ fontSize: 11, color: '#6B7280', marginTop: 8, lineHeight: 1.5 }}>{summary}</div>
+            )}
+        </div>
+    );
 
     return (
         <div style={{ background: '#F3F4F6', height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
             {/* ── HEADER ── */}
-            <header style={{ background: MC_BLUE, padding: '10px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+            <header style={{ background: MC_BLUE, padding: '10px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, position: 'relative' }}>
                 <span onClick={resetToStart} style={{ color: '#FFF', fontWeight: 900, fontSize: 22, letterSpacing: '-0.5px', fontStyle: 'italic', whiteSpace: 'nowrap', flexShrink: 0, cursor: 'pointer' }}>
                     FEED CHECKER
                 </span>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-                    {/* Resource buttons */}
-                    <button type="button" onClick={() => setShowLeitfaden(true)}
-                        style={{ display: 'flex', alignItems: 'center', gap: 6, border: '1px solid rgba(255,255,255,0.3)', background: 'transparent', color: '#FFF', fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 6, cursor: 'pointer' }}>
-                        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 1.5h8.5l3 3v10h-11.5v-13z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M11 1.5v3h3" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M5 8h6M5 10.5h6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
-                        {T.feedGuide}
-                    </button>
-                    <button type="button" onClick={() => setShowVorlage(true)}
-                        style={{ display: 'flex', alignItems: 'center', gap: 6, border: '1px solid rgba(255,255,255,0.3)', background: 'transparent', color: '#FFF', fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 6, cursor: 'pointer' }}>
-                        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M5 7l3 3 3-3M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                        {T.feedTemplate}
-                    </button>
-                    <div style={{ width: 1, height: 18, background: 'rgba(255,255,255,0.2)', margin: '0 2px' }} />
-                    {/* Language dropdown */}
+                {/* Language dropdown - centered absolutely so it sits in the middle without affecting the right-hand button group */}
+                <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
                     <div style={{ position: 'relative' }}>
                         <button type="button" onClick={() => setLangOpen((v) => !v)}
                             style={{ display: 'flex', alignItems: 'center', gap: 7, background: langOpen ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: langOpen ? '8px 8px 0 0' : 8, padding: '6px 12px', cursor: 'pointer', color: '#FFF', fontSize: 13, fontWeight: 600, transition: 'background 0.15s' }}>
@@ -1466,6 +1514,21 @@ export default function McAngebotsfeed() {
                             </>
                         )}
                     </div>
+                </div>
+
+                {/* Right-side buttons */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+                    <button type="button" onClick={() => setShowLeitfaden(true)}
+                        style={{ display: 'flex', alignItems: 'center', gap: 6, border: '1px solid rgba(255,255,255,0.3)', background: 'transparent', color: '#FFF', fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 6, cursor: 'pointer' }}>
+                        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 1.5h8.5l3 3v10h-11.5v-13z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M11 1.5v3h3" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M5 8h6M5 10.5h6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                        {T.feedGuide}
+                    </button>
+                    <button type="button" onClick={() => setShowVorlage(true)}
+                        style={{ display: 'flex', alignItems: 'center', gap: 6, border: '1px solid rgba(255,255,255,0.3)', background: 'transparent', color: '#FFF', fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 6, cursor: 'pointer' }}>
+                        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M5 7l3 3 3-3M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                        {T.feedTemplate}
+                    </button>
+                    <div style={{ width: 1, height: 18, background: 'rgba(255,255,255,0.2)', margin: '0 2px' }} />
                     <a
                         href="mailto:contentmanagement.moebel@check24.de?subject=Feed%20Checker%20-%20Hilfe"
                         style={{ border: '1px solid rgba(255,255,255,0.25)', background: 'rgba(255,255,255,0.08)', color: '#FFFFFF', fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}
@@ -1559,9 +1622,14 @@ export default function McAngebotsfeed() {
                                     </div>
                                 </div>
                             ))}
-                            {/* Quality leads to reach - flowing text */}
-                            <div style={{ margin: '10px 18px 14px', padding: '4px 2px' }}>
-                                <span style={{ fontSize: 11, color: '#374151', lineHeight: 1.5 }}>
+                            {/* Reichweiten-Hinweisbox */}
+                            <div style={{ margin: '10px 18px 14px', background: '#FEF3C7', border: '1px solid #FDE68A', borderRadius: 8, padding: '8px 12px', display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 1, color: '#92400E' }}>
+                                    <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.4"/>
+                                    <path d="M8 5v3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                                    <circle cx="8" cy="11" r="0.7" fill="currentColor"/>
+                                </svg>
+                                <span style={{ fontSize: 11, color: '#92400E', lineHeight: 1.5 }}>
                                     {lang === 'de'
                                         ? 'Ein besserer Feed bringt mehr Reichweite. Vollständige Daten führen zu besserer Platzierung und schnellerer Freischaltung.'
                                         : 'A better feed brings more reach. Complete data leads to better placement and faster activation.'}
@@ -2326,14 +2394,41 @@ export default function McAngebotsfeed() {
                                     ? (mcMapping.availability || mcMapping.stock_amount)
                                     : key === 'image_url' ? mcImageColumns[0]
                                     : mcMapping[key];
-                                const errorEans3 = hasError ? getEansFromRowSet(fieldErrorRows[key]) : [];
+                                // Sample values shown next to the field label - real values from
+                                // the mapped column. For ean, this is identical to the row identifier.
                                 const exampleVals = !hasError && mappedCol
                                     ? [...new Set(rows.slice(0, 30).map(r => String(r[mappedCol] ?? '').trim()).filter(Boolean))].slice(0, 3)
                                     : [];
+                                // Per-field error samples: show real values from bad rows
+                                // (e.g. titles for `name`, prices for `price`, urls for `image_url`).
+                                // For the ean field we keep showing the EANs themselves.
+                                const errorSamples3 = hasError ? (() => {
+                                    const out = [];
+                                    const seen = new Set();
+                                    if (key === 'ean' || !mappedCol) {
+                                        if (mcMapping.ean) {
+                                            for (const rn of fieldErrorRows[key]) {
+                                                const v = String(rows[rn - 1]?.[mcMapping.ean] ?? '').trim();
+                                                if (v && !seen.has(v)) { seen.add(v); out.push(v); }
+                                                if (out.length >= 3) break;
+                                            }
+                                        }
+                                    } else {
+                                        for (const rn of fieldErrorRows[key]) {
+                                            const v = String(rows[rn - 1]?.[mappedCol] ?? '').trim();
+                                            if (v && !seen.has(v)) { seen.add(v); out.push(v); }
+                                            if (out.length >= 3) break;
+                                        }
+                                    }
+                                    return out;
+                                })() : [];
+                                const sampleLabel3 = key === 'ean'
+                                    ? 'EAN:'
+                                    : (lang === 'de' ? 'Beispiel:' : 'Example:');
                                 const totalErrCount = fieldErrorRows[key]?.size || 0;
                                 return (
                                     <div key={key} style={{ display: 'grid', gridTemplateColumns: '1fr 90px 120px', padding: '5px 16px', borderBottom: '1px solid #F9FAFB', alignItems: 'start', background: hasError ? (barColor === '#DC2626' ? '#FEF2F2' : '#FFFBF5') : 'transparent', borderLeft: hasError ? `3px solid ${barColor}` : '3px solid transparent' }}>
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0, paddingTop: 2, paddingBottom: hasError && errorEans3.length > 0 ? 4 : 0 }}>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0, paddingTop: 2, paddingBottom: hasError && errorSamples3.length > 0 ? 4 : 0 }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                                                 <div style={{ fontSize: 11, color: hasError ? '#92400E' : '#374151', fontWeight: hasError ? 600 : 500, flexShrink: 0 }}>{label}</div>
                                                 {exampleVals.length > 0 && (
@@ -2344,14 +2439,14 @@ export default function McAngebotsfeed() {
                                                     </div>
                                                 )}
                                             </div>
-                                            {hasError && errorEans3.length > 0 && (
+                                            {hasError && errorSamples3.length > 0 && (
                                                 <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 3 }}>
-                                                    <span style={{ fontSize: 9, color: '#9CA3AF', fontWeight: 600 }}>EAN:</span>
-                                                    {errorEans3.map((ean) => (
-                                                        <span key={ean} style={{ fontSize: 9, color: '#374151', background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', fontFamily: 'monospace', flexShrink: 0 }}>{ean}</span>
+                                                    <span style={{ fontSize: 9, color: '#9CA3AF', fontWeight: 600 }}>{sampleLabel3}</span>
+                                                    {errorSamples3.map((v, i) => (
+                                                        <span key={i} style={{ fontSize: 9, color: '#374151', background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', fontFamily: key === 'ean' ? 'monospace' : 'inherit', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block', flexShrink: 0 }}>{v}</span>
                                                     ))}
-                                                    {totalErrCount > errorEans3.length && (
-                                                        <span style={{ fontSize: 9, color: '#9CA3AF' }}>+{totalErrCount - errorEans3.length} {lang === 'de' ? 'weitere' : 'more'}</span>
+                                                    {totalErrCount > errorSamples3.length && (
+                                                        <span style={{ fontSize: 9, color: '#9CA3AF' }}>+{totalErrCount - errorSamples3.length} {lang === 'de' ? 'weitere' : 'more'}</span>
                                                     )}
                                                 </div>
                                             )}
@@ -2389,47 +2484,37 @@ export default function McAngebotsfeed() {
                                 </div>
                             </div>
 
-                            {/* Score - flat numeric display (matches step 5 Feed-Übersicht) */}
+                            {/* Score progress bar - Pflichtfelder */}
                             {(() => {
                                 const s = issues.pflichtScore;
                                 const c3 = s >= 90 ? '#16A34A' : s >= 60 ? '#D97706' : '#DC2626';
                                 return (
-                                    <div style={{ padding: '16px 16px', borderBottom: '1px solid #F3F4F6' }}>
-                                        <div style={{ fontSize: 32, fontWeight: 900, color: c3, lineHeight: 1 }}>{s}</div>
-                                        <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 4 }}>{lang === 'de' ? '/ 100 Punkte' : '/ 100 pts'}</div>
-                                        <div style={{ fontSize: 11, fontWeight: 600, color: '#374151', marginTop: 6 }}>{lang === 'de' ? 'Pflichtfeld-Score' : 'Required field score'}</div>
-                                    </div>
+                                    <ScoreBar
+                                        title={lang === 'de' ? 'Pflichtfeld-Score' : 'Required field score'}
+                                        pct={s}
+                                        color={c3}
+                                        complete={issues.livefaehigCount}
+                                        incomplete={issues.blockiertCount}
+                                        total={issues.totalRows}
+                                        completeLabel={T.statComplete}
+                                        incompleteLabel={lang === 'de' ? 'unvollständig' : 'incomplete'}
+                                        totalLabel={T.statTotal}
+                                        tipComplete={T.tipComplete}
+                                        tipIncomplete={T.tipErrors}
+                                        tipTotal={T.tipTotal}
+                                        summary={
+                                            issues.blockiertCount === 0
+                                                ? (lang === 'de'
+                                                    ? `Alle ${issues.totalRows.toLocaleString(numLocale)} Artikel sind listingfähig.`
+                                                    : `All ${issues.totalRows.toLocaleString(numLocale)} items are ready to list.`)
+                                                : (lang === 'de'
+                                                    ? `${issues.livefaehigCount.toLocaleString(numLocale)} von ${issues.totalRows.toLocaleString(numLocale)} Artikeln listingfähig.`
+                                                    : `${issues.livefaehigCount.toLocaleString(numLocale)} of ${issues.totalRows.toLocaleString(numLocale)} items listable.`)
+                                        }
+                                        numLocale={numLocale}
+                                    />
                                 );
                             })()}
-
-                            {/* Stats strip */}
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', borderBottom: '1px solid #F3F4F6' }}>
-                                {[
-                                    { val: issues.livefaehigCount, label: T.statComplete, color: '#16A34A', tip: T.tipComplete },
-                                    { val: issues.blockiertCount, label: T.statErrors, color: '#DC2626', tip: T.tipErrors },
-                                    { val: issues.totalRows, label: T.statTotal, color: '#111827', tip: T.tipTotal },
-                                ].map(({ val, label, color, tip }, i) => (
-                                    <Tooltip key={label} text={tip}>
-                                        <div style={{ padding: '14px 8px', borderRight: i < 2 ? '1px solid #F3F4F6' : 'none', cursor: 'help', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
-                                            <div style={{ fontSize: 22, fontWeight: 900, color, lineHeight: 1 }}>{val.toLocaleString(numLocale)}</div>
-                                            <div style={{ fontSize: 10, color: '#6B7280', fontWeight: 500 }}>{label}</div>
-                                        </div>
-                                    </Tooltip>
-                                ))}
-                            </div>
-
-                            {/* Short summary under the numbers */}
-                            <div style={{ padding: '10px 16px', borderBottom: '1px solid #F3F4F6', textAlign: 'center' }}>
-                                <div style={{ fontSize: 11, color: '#374151', lineHeight: 1.5 }}>
-                                    {issues.blockiertCount === 0
-                                        ? (lang === 'de'
-                                            ? `Alle ${issues.totalRows.toLocaleString(numLocale)} Artikel sind listingfähig.`
-                                            : `All ${issues.totalRows.toLocaleString(numLocale)} items are ready to list.`)
-                                        : (lang === 'de'
-                                            ? `${issues.livefaehigCount.toLocaleString(numLocale)} von ${issues.totalRows.toLocaleString(numLocale)} Artikeln listingfähig · ${issues.blockiertCount.toLocaleString(numLocale)} mit Fehlern.`
-                                            : `${issues.livefaehigCount.toLocaleString(numLocale)} of ${issues.totalRows.toLocaleString(numLocale)} items listable · ${issues.blockiertCount.toLocaleString(numLocale)} with errors.`)}
-                                </div>
-                            </div>
 
                             {/* Nav buttons */}
                             <div style={{ padding: '10px 16px', borderTop: '1px solid #F3F4F6', display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -2595,32 +2680,24 @@ export default function McAngebotsfeed() {
                                         const hasError = pct !== null && errs > 0;
                                         const barColor = pct === null ? '#E5E7EB' : pct === 100 ? '#16A34A' : pct >= 70 ? '#D97706' : '#DC2626';
                                         const mappedCol = mcMapping[f.field];
-                                        const exampleVals = !hasError && mappedCol
-                                            ? [...new Set(rows.slice(0, 30).map(r => String(r[mappedCol] ?? '').trim()).filter(Boolean))].slice(0, 3)
+                                        // Real example values from filled rows of this field (always shown if available).
+                                        const exampleVals = mappedCol
+                                            ? [...new Set(rows.map(r => String(r[mappedCol] ?? '').trim()).filter(Boolean))].slice(0, 3)
                                             : [];
+                                        // EAN list for bad rows (kept compact; visible only when there is a missing-data error).
                                         const errorEans4 = hasError ? (optHintsByField[f.field] || []) : [];
                                         return (
                                             <div key={f.field} style={{ display: 'grid', gridTemplateColumns: '1fr 90px 120px', padding: '5px 16px', borderBottom: '1px solid #F9FAFB', alignItems: 'start', background: hasError ? (barColor === '#DC2626' ? '#FEF2F2' : '#FFFBF5') : 'transparent', borderLeft: hasError ? `3px solid ${barColor}` : '3px solid transparent' }}>
-                                                <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0, paddingTop: 2, paddingBottom: hasError && errorEans4.length > 0 ? 4 : 0 }}>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0, paddingTop: 2, paddingBottom: exampleVals.length > 0 ? 4 : 0 }}>
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                                                         <div style={{ fontSize: 11, color: hasError ? '#92400E' : '#374151', fontWeight: hasError ? 600 : 500, flexShrink: 0 }}>{label}</div>
-                                                        {exampleVals.length > 0 && (
-                                                            <div style={{ display: 'flex', gap: 4, flexWrap: 'nowrap', overflow: 'hidden', maxWidth: 220 }}>
-                                                                {exampleVals.slice(0, 2).map((v, i) => (
-                                                                    <span key={i} style={{ fontSize: 9, color: '#6B7280', background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block', flexShrink: 0 }}>{v}</span>
-                                                                ))}
-                                                            </div>
-                                                        )}
                                                     </div>
-                                                    {hasError && errorEans4.length > 0 && (
+                                                    {exampleVals.length > 0 && (
                                                         <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 3 }}>
-                                                            <span style={{ fontSize: 9, color: '#9CA3AF', fontWeight: 600 }}>EAN:</span>
-                                                            {errorEans4.map((ean) => (
-                                                                <span key={ean} style={{ fontSize: 9, color: '#374151', background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', fontFamily: 'monospace', flexShrink: 0 }}>{ean}</span>
+                                                            <span style={{ fontSize: 9, color: '#9CA3AF', fontWeight: 600 }}>{lang === 'de' ? 'Beispiel:' : 'Example:'}</span>
+                                                            {exampleVals.map((v, i) => (
+                                                                <span key={i} style={{ fontSize: 9, color: '#374151', background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block', flexShrink: 0 }}>{v}</span>
                                                             ))}
-                                                            {errs > errorEans4.length && (
-                                                                <span style={{ fontSize: 9, color: '#9CA3AF' }}>+{errs - errorEans4.length} {lang === 'de' ? 'weitere' : 'more'}</span>
-                                                            )}
                                                         </div>
                                                     )}
                                                 </div>
@@ -2791,57 +2868,44 @@ export default function McAngebotsfeed() {
                                     </div>
                                 </div>
 
-                                {/* Score - flat numeric display (matches step 3 + step 5 Feed-Übersicht) */}
-                                <div style={{ padding: '16px 16px', borderBottom: '1px solid #F3F4F6' }}>
-                                    <div style={{ fontSize: 32, fontWeight: 900, color: overallColor, lineHeight: 1 }}>{overallPct}</div>
-                                    <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 4 }}>{lang === 'de' ? '/ 100 Punkte' : '/ 100 pts'}</div>
-                                    <div style={{ fontSize: 11, fontWeight: 600, color: '#374151', marginTop: 6 }}>{lang === 'de' ? 'Optionale-Felder-Score' : 'Optional field score'}</div>
-                                </div>
-
-                                {/* Stats strip - Vollständig + Lücken = Gesamt (only mapped fields counted) */}
+                                {/* Score progress bar - Optionale Felder. Stats on the article level. */}
                                 {(() => {
                                     const mappedFields = optFieldStats.fields.filter(f => !f.notMapped);
-                                    const totalShown = mappedFields.length;
-                                    const completeShown = mappedFields.filter(f => f.pct === 100).length;
-                                    const gapsShown = totalShown - completeShown;
-                                    const tipComplete = lang === 'de' ? 'Optionale Felder vollständig befüllt' : 'Optional fields fully populated';
-                                    const tipGaps = lang === 'de' ? 'Optionale Felder mit Lücken (mind. 1 Artikel ohne Wert)' : 'Optional fields with gaps (at least 1 item missing a value)';
-                                    const tipTotal = lang === 'de' ? 'Im Feed erkannte optionale Felder' : 'Optional fields detected in the feed';
+                                    let completeArticles = 0;
+                                    if (mappedFields.length > 0) {
+                                        rows.forEach((r) => {
+                                            const allFilled = mappedFields.every((f) => {
+                                                const col = mcMapping[f.field];
+                                                return col && String(r[col] ?? '').trim();
+                                            });
+                                            if (allFilled) completeArticles++;
+                                        });
+                                    }
+                                    const incompleteArticles = issues.totalRows - completeArticles;
+                                    const summary = mappedFields.length === 0
+                                        ? (lang === 'de' ? 'Keine optionalen Felder im Feed erkannt.' : 'No optional fields detected in the feed.')
+                                        : completeArticles === issues.totalRows
+                                            ? (lang === 'de' ? 'Alle Artikel haben vollständige optionale Felder.' : 'All items have complete optional fields.')
+                                            : (lang === 'de'
+                                                ? `${completeArticles.toLocaleString(numLocale)} von ${issues.totalRows.toLocaleString(numLocale)} Artikeln vollständig.`
+                                                : `${completeArticles.toLocaleString(numLocale)} of ${issues.totalRows.toLocaleString(numLocale)} items complete.`);
                                     return (
-                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', borderBottom: '1px solid #F3F4F6' }}>
-                                            {[
-                                                { val: completeShown, label: lang === 'de' ? 'Vollständig' : 'Complete', color: '#16A34A', tip: tipComplete },
-                                                { val: gapsShown, label: lang === 'de' ? 'Lücken' : 'Gaps', color: '#D97706', tip: tipGaps },
-                                                { val: totalShown, label: lang === 'de' ? 'Gesamt' : 'Total', color: '#111827', tip: tipTotal },
-                                            ].map(({ val, label, color, tip }, i) => (
-                                                <Tooltip key={label} text={tip}>
-                                                    <div style={{ padding: '14px 8px', borderRight: i < 2 ? '1px solid #F3F4F6' : 'none', cursor: 'help', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
-                                                        <div style={{ fontSize: 22, fontWeight: 900, color, lineHeight: 1 }}>{val.toLocaleString(numLocale)}</div>
-                                                        <div style={{ fontSize: 10, color: '#6B7280', fontWeight: 500 }}>{label}</div>
-                                                    </div>
-                                                </Tooltip>
-                                            ))}
-                                        </div>
-                                    );
-                                })()}
-
-                                {/* Short summary under the numbers */}
-                                {(() => {
-                                    const mappedFields = optFieldStats.fields.filter(f => !f.notMapped);
-                                    const totalShown = mappedFields.length;
-                                    const completeShown = mappedFields.filter(f => f.pct === 100).length;
-                                    return (
-                                        <div style={{ padding: '10px 16px', borderBottom: '1px solid #F3F4F6', textAlign: 'center' }}>
-                                            <div style={{ fontSize: 11, color: '#374151', lineHeight: 1.5 }}>
-                                                {totalShown === 0
-                                                    ? (lang === 'de' ? 'Keine optionalen Felder im Feed erkannt.' : 'No optional fields detected in the feed.')
-                                                    : completeShown === totalShown
-                                                        ? (lang === 'de' ? 'Alle optionalen Felder sind vollständig.' : 'All optional fields are complete.')
-                                                        : (lang === 'de'
-                                                            ? `${completeShown} von ${totalShown} optionalen Feldern vollständig.`
-                                                            : `${completeShown} of ${totalShown} optional fields complete.`)}
-                                            </div>
-                                        </div>
+                                        <ScoreBar
+                                            title={lang === 'de' ? 'Optionale-Felder-Score' : 'Optional field score'}
+                                            pct={overallPct}
+                                            color={overallColor}
+                                            complete={completeArticles}
+                                            incomplete={incompleteArticles}
+                                            total={issues.totalRows}
+                                            completeLabel={lang === 'de' ? 'vollständig' : 'complete'}
+                                            incompleteLabel={lang === 'de' ? 'unvollständig' : 'incomplete'}
+                                            totalLabel={lang === 'de' ? 'gesamt' : 'total'}
+                                            tipComplete={lang === 'de' ? 'Artikel mit allen optionalen Feldern befüllt' : 'Items with all optional fields filled'}
+                                            tipIncomplete={lang === 'de' ? 'Artikel mit mind. einer Lücke in den optionalen Feldern' : 'Items with at least one gap in the optional fields'}
+                                            tipTotal={lang === 'de' ? 'Gesamtzahl Artikel im Feed' : 'Total items in the feed'}
+                                            summary={summary}
+                                            numLocale={numLocale}
+                                        />
                                     );
                                 })()}
 
@@ -3194,82 +3258,99 @@ export default function McAngebotsfeed() {
                                                 </div>
                                             )}
 
-                                            {/* Quality tips for title and description - moved here from step 4 */}
-                                            <div style={{ background: '#FFF', borderRadius: 10, border: '1px solid #E5E7EB', overflow: 'hidden' }}>
-                                                <div style={{ padding: '10px 14px', borderBottom: '1px solid #F3F4F6' }}>
-                                                    <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>
-                                                        {lang === 'de' ? 'Qualitätstipps für Titel & Beschreibung' : 'Quality Tips for Title & Description'}
-                                                    </div>
-                                                </div>
-                                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
-                                                    {[
-                                                        {
-                                                            title: lang === 'de' ? 'Titel' : 'Title',
-                                                            bad: '"Sofa schwarz"',
-                                                            good: lang === 'de' ? '"Dreammöbel Ecksofa 3-Sitzer, Kunstleder schwarz, 180 × 90 cm"' : '"Dreammöbel Corner Sofa 3-seater, faux leather black, 180 × 90 cm"',
-                                                            dos: lang === 'de'
-                                                                ? ['Marke voranstellen', 'Produktart + Farbe + Maße', 'Mind. 2 Wörter']
-                                                                : ['Brand first', 'Product type + Color + Dimensions', 'Min. 2 words'],
-                                                            donts: lang === 'de'
-                                                                ? ['"B-Ware" / "gebraucht"', 'Nur ein Wort', 'Werbephrasen']
-                                                                : ['"used" / "B-stock"', 'Single word only', 'Advertising phrases'],
-                                                        },
-                                                        {
-                                                            title: lang === 'de' ? 'Beschreibung' : 'Description',
-                                                            bad: '"Schönes Sofa."',
-                                                            good: lang === 'de' ? '"Elegantes Ecksofa aus Kunstleder in Schwarz. Maße: 200 × 80 × 120 cm."' : '"Elegant corner sofa made of faux leather in black. Dimensions: 200 × 80 × 120 cm."',
-                                                            dos: lang === 'de'
-                                                                ? ['100-500 Zeichen', 'Material, Farbe, Maße', 'Konkrete Produktdetails']
-                                                                : ['100-500 characters', 'Material, color, dimensions', 'Concrete product details'],
-                                                            donts: lang === 'de'
-                                                                ? ['"günstig", "Top-Qualität"', 'Externe Links', 'Identisch zum Titel']
-                                                                : ['"cheap", "top quality"', 'External links', 'Identical to title'],
-                                                        },
-                                                    ].map((c, i) => (
-                                                        <div key={c.title} style={{ padding: '10px 14px', borderRight: i === 0 ? '1px solid #F3F4F6' : 'none' }}>
-                                                            <div style={{ fontSize: 12, fontWeight: 700, color: '#111827', marginBottom: 8 }}>{c.title}</div>
-                                                            <div style={{ display: 'flex', flexDirection: 'column', gap: 5, marginBottom: 8 }}>
-                                                                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, padding: '5px 8px', background: '#FEF2F2', borderRadius: 5, borderLeft: '2px solid #DC2626' }}>
-                                                                    <span style={{ color: '#DC2626', fontSize: 11, fontWeight: 800, lineHeight: 1.2, flexShrink: 0 }}>✗</span>
-                                                                    <span style={{ fontSize: 11, color: '#7F1D1D', lineHeight: 1.4, fontStyle: 'italic' }}>{c.bad}</span>
-                                                                </div>
-                                                                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, padding: '5px 8px', background: '#F0FDF4', borderRadius: 5, borderLeft: '2px solid #16A34A' }}>
-                                                                    <span style={{ color: '#16A34A', fontSize: 11, fontWeight: 800, lineHeight: 1.2, flexShrink: 0 }}>✓</span>
-                                                                    <span style={{ fontSize: 11, color: '#166534', lineHeight: 1.4, fontStyle: 'italic' }}>{c.good}</span>
-                                                                </div>
+                                            {/* Quality tips for title and description - separate, independently collapsible cards (same look as Handlungsempfehlungen) */}
+                                            {(() => {
+                                                const tips = [
+                                                    {
+                                                        key: 'quality::name',
+                                                        title: lang === 'de' ? 'Qualitätstipps · Titel' : 'Quality tips · Title',
+                                                        bad: '"Sofa schwarz"',
+                                                        good: lang === 'de' ? '"Dreammöbel Ecksofa 3-Sitzer, Kunstleder schwarz, 180 × 90 cm"' : '"Dreammöbel Corner Sofa 3-seater, faux leather black, 180 × 90 cm"',
+                                                        dos: lang === 'de'
+                                                            ? ['Marke voranstellen', 'Produktart + Farbe + Maße', 'Mind. 2 Wörter']
+                                                            : ['Brand first', 'Product type + Color + Dimensions', 'Min. 2 words'],
+                                                        donts: lang === 'de'
+                                                            ? ['"B-Ware" / "gebraucht"', 'Nur ein Wort', 'Werbephrasen']
+                                                            : ['"used" / "B-stock"', 'Single word only', 'Advertising phrases'],
+                                                    },
+                                                    {
+                                                        key: 'quality::description',
+                                                        title: lang === 'de' ? 'Qualitätstipps · Beschreibung' : 'Quality tips · Description',
+                                                        bad: '"Schönes Sofa."',
+                                                        good: lang === 'de' ? '"Elegantes Ecksofa aus Kunstleder in Schwarz. Maße: 200 × 80 × 120 cm."' : '"Elegant corner sofa made of faux leather in black. Dimensions: 200 × 80 × 120 cm."',
+                                                        dos: lang === 'de'
+                                                            ? ['100-500 Zeichen', 'Material, Farbe, Maße', 'Konkrete Produktdetails']
+                                                            : ['100-500 characters', 'Material, color, dimensions', 'Concrete product details'],
+                                                        donts: lang === 'de'
+                                                            ? ['"günstig", "Top-Qualität"', 'Externe Links', 'Identisch zum Titel']
+                                                            : ['"cheap", "top quality"', 'External links', 'Identical to title'],
+                                                    },
+                                                ];
+                                                const accent = MC_BLUE;
+                                                const toggle = (key) => setExpandedRecs((prev) => {
+                                                    const next = new Set(prev);
+                                                    if (next.has(key)) next.delete(key); else next.add(key);
+                                                    return next;
+                                                });
+                                                return tips.map((c) => {
+                                                    const isOpen = expandedRecs.has(c.key);
+                                                    return (
+                                                        <div key={c.key} style={{ background: '#FFF', border: '1px solid #E5E7EB', borderLeft: `3px solid ${accent}`, borderRadius: 10 }}>
+                                                            <div
+                                                                onClick={() => toggle(c.key)}
+                                                                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, padding: '8px 14px', cursor: 'pointer', userSelect: 'none' }}
+                                                            >
+                                                                <span style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{c.title}</span>
+                                                                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: '#9CA3AF', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }}>
+                                                                    <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                                                                </svg>
                                                             </div>
-                                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                                                                <div>
-                                                                    <div style={{ fontSize: 9, fontWeight: 800, color: '#16A34A', marginBottom: 3, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                                                                        {lang === 'de' ? 'So geht es' : 'Do'}
+                                                            {isOpen && (
+                                                                <div style={{ padding: '0 14px 12px 14px' }}>
+                                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 5, marginBottom: 8 }}>
+                                                                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, padding: '6px 9px', background: '#FEF2F2', borderRadius: 6, borderLeft: '2px solid #DC2626' }}>
+                                                                            <span style={{ color: '#DC2626', fontSize: 11, fontWeight: 800, lineHeight: 1.2, flexShrink: 0 }}>✗</span>
+                                                                            <span style={{ fontSize: 11, color: '#7F1D1D', lineHeight: 1.4, fontStyle: 'italic' }}>{c.bad}</span>
+                                                                        </div>
+                                                                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, padding: '6px 9px', background: '#F0FDF4', borderRadius: 6, borderLeft: '2px solid #16A34A' }}>
+                                                                            <span style={{ color: '#16A34A', fontSize: 11, fontWeight: 800, lineHeight: 1.2, flexShrink: 0 }}>✓</span>
+                                                                            <span style={{ fontSize: 11, color: '#166534', lineHeight: 1.4, fontStyle: 'italic' }}>{c.good}</span>
+                                                                        </div>
                                                                     </div>
-                                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                                                                        {c.dos.map((d, j) => (
-                                                                            <div key={j} style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-                                                                                <span style={{ color: '#16A34A', fontSize: 10, fontWeight: 800, flexShrink: 0 }}>+</span>
-                                                                                <span style={{ fontSize: 10, color: '#374151', lineHeight: 1.4 }}>{d}</span>
+                                                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                                                                        <div>
+                                                                            <div style={{ fontSize: 9, fontWeight: 800, color: '#16A34A', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                                                                                {lang === 'de' ? 'So geht es' : 'Do'}
                                                                             </div>
-                                                                        ))}
+                                                                            <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                                                                                {c.dos.map((d, j) => (
+                                                                                    <div key={j} style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
+                                                                                        <span style={{ color: '#16A34A', fontSize: 10, fontWeight: 800, flexShrink: 0 }}>+</span>
+                                                                                        <span style={{ fontSize: 10, color: '#374151', lineHeight: 1.4 }}>{d}</span>
+                                                                                    </div>
+                                                                                ))}
+                                                                            </div>
+                                                                        </div>
+                                                                        <div>
+                                                                            <div style={{ fontSize: 9, fontWeight: 800, color: '#DC2626', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                                                                                {lang === 'de' ? 'Vermeiden' : 'Avoid'}
+                                                                            </div>
+                                                                            <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                                                                                {c.donts.map((d, j) => (
+                                                                                    <div key={j} style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
+                                                                                        <span style={{ color: '#DC2626', fontSize: 10, fontWeight: 800, flexShrink: 0 }}>−</span>
+                                                                                        <span style={{ fontSize: 10, color: '#374151', lineHeight: 1.4 }}>{d}</span>
+                                                                                    </div>
+                                                                                ))}
+                                                                            </div>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
-                                                                <div>
-                                                                    <div style={{ fontSize: 9, fontWeight: 800, color: '#DC2626', marginBottom: 3, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                                                                        {lang === 'de' ? 'Vermeiden' : 'Avoid'}
-                                                                    </div>
-                                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                                                                        {c.donts.map((d, j) => (
-                                                                            <div key={j} style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-                                                                                <span style={{ color: '#DC2626', fontSize: 10, fontWeight: 800, flexShrink: 0 }}>−</span>
-                                                                                <span style={{ fontSize: 10, color: '#374151', lineHeight: 1.4 }}>{d}</span>
-                                                                            </div>
-                                                                        ))}
-                                                                    </div>
-                                                                </div>
-                                                            </div>
+                                                            )}
                                                         </div>
-                                                    ))}
-                                                </div>
-                                            </div>
+                                                    );
+                                                });
+                                            })()}
                                         </div>
                                     );
                                 })()}
@@ -3290,26 +3371,37 @@ export default function McAngebotsfeed() {
                                         const oc = os >= 70 ? '#16A34A' : os >= 40 ? '#D97706' : '#DC2626';
                                         const lc = issues.livefaehigCount;
                                         const tc = issues.totalRows;
+                                        const lPct = tc ? Math.round((lc / tc) * 100) : 0;
                                         const lColor = lc === tc ? '#16A34A' : lc > 0 ? '#D97706' : '#DC2626';
                                         return (
                                             <div>
-                                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderBottom: '1px solid #F3F4F6' }}>
-                                                    <div style={{ padding: '14px 16px', borderRight: '1px solid #F3F4F6' }}>
-                                                        <div style={{ fontSize: 22, fontWeight: 900, color: sc, lineHeight: 1 }}>{s}</div>
-                                                        <div style={{ fontSize: 9, color: '#9CA3AF', marginTop: 2 }}>{lang === 'de' ? '/ 100 Punkte' : '/ 100 pts'}</div>
-                                                        <div style={{ fontSize: 10, fontWeight: 600, color: '#374151', marginTop: 4 }}>{lang === 'de' ? 'Pflichtfeld-Score' : 'Required field score'}</div>
-                                                    </div>
-                                                    <div style={{ padding: '14px 16px' }}>
-                                                        <div style={{ fontSize: 22, fontWeight: 900, color: oc, lineHeight: 1 }}>{os}</div>
-                                                        <div style={{ fontSize: 9, color: '#9CA3AF', marginTop: 2 }}>{lang === 'de' ? '/ 100 Punkte' : '/ 100 pts'}</div>
-                                                        <div style={{ fontSize: 10, fontWeight: 600, color: '#374151', marginTop: 4 }}>{lang === 'de' ? 'Optionale Felder' : 'Optional fields'}</div>
-                                                    </div>
-                                                </div>
-                                                <div style={{ padding: '14px 16px' }}>
-                                                    <div style={{ fontSize: 22, fontWeight: 900, color: lColor, lineHeight: 1 }}>{lc.toLocaleString(numLocale)}</div>
-                                                    <div style={{ fontSize: 9, color: '#9CA3AF', marginTop: 2 }}>{lang === 'de' ? `von ${tc.toLocaleString(numLocale)}` : `of ${tc.toLocaleString(numLocale)}`}</div>
-                                                    <div style={{ fontSize: 10, fontWeight: 600, color: '#374151', marginTop: 4 }}>{lang === 'de' ? 'Listbare Artikel (vollständige Pflichtfelder)' : 'Listable items (complete required fields)'}</div>
-                                                </div>
+                                                <ScoreBar
+                                                    title={lang === 'de' ? 'Pflichtfeld-Score' : 'Required field score'}
+                                                    pct={s}
+                                                    color={sc}
+                                                    numLocale={numLocale}
+                                                />
+                                                <ScoreBar
+                                                    title={lang === 'de' ? 'Optionale-Felder-Score' : 'Optional field score'}
+                                                    pct={os}
+                                                    color={oc}
+                                                    numLocale={numLocale}
+                                                />
+                                                <ScoreBar
+                                                    title={lang === 'de' ? 'Listbare Artikel' : 'Listable items'}
+                                                    pct={lPct}
+                                                    color={lColor}
+                                                    complete={lc}
+                                                    incomplete={tc - lc}
+                                                    total={tc}
+                                                    completeLabel={lang === 'de' ? 'listbar' : 'listable'}
+                                                    incompleteLabel={lang === 'de' ? 'mit Fehlern' : 'with errors'}
+                                                    totalLabel={lang === 'de' ? 'gesamt' : 'total'}
+                                                    tipComplete={lang === 'de' ? 'Artikel mit vollständigen Pflichtfeldern' : 'Items with complete required fields'}
+                                                    tipIncomplete={lang === 'de' ? 'Artikel mit Pflichtfeld-Fehlern' : 'Items with required-field errors'}
+                                                    tipTotal={lang === 'de' ? 'Gesamtzahl Artikel im Feed' : 'Total items in the feed'}
+                                                    numLocale={numLocale}
+                                                />
                                             </div>
                                         );
                                     })()}
