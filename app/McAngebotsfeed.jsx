@@ -859,6 +859,8 @@ export default function McAngebotsfeed() {
     const [headers, setHeaders] = useState([]);
     const [manualMapping, setManualMapping] = useState({});
     const [expandedRecs, setExpandedRecs] = useState(() => new Set());
+    const [expandedFieldExamples, setExpandedFieldExamples] = useState(() => new Set());
+    const [collapsedSections, setCollapsedSections] = useState(() => new Set());
     const [lang, setLang] = useState('de');
     const [langOpen, setLangOpen] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -1541,7 +1543,7 @@ export default function McAngebotsfeed() {
                 {/* Right-side buttons (language selector + action buttons) */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
                     {/* Language dropdown */}
-                    <div style={{ position: 'relative' }}>
+                    <div style={{ position: 'relative', display: 'inline-block' }}>
                         <button type="button" onClick={() => setLangOpen((v) => !v)}
                             style={{ display: 'flex', alignItems: 'center', gap: 7, background: langOpen ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: langOpen ? '8px 8px 0 0' : 8, padding: '6px 12px', cursor: 'pointer', color: '#FFF', fontSize: 13, fontWeight: 600, transition: 'background 0.15s' }}>
                             {lang === 'de' ? (
@@ -2537,7 +2539,8 @@ export default function McAngebotsfeed() {
                                     const errs = (key === 'availability' && alwaysAvailable) ? 0 : (fieldErrorRows[key]?.size || 0);
                                     const pct = isMapped ? Math.max(0, Math.round((1 - errs / issues.totalRows) * 100)) : null;
                                     // Sort key: errors-first, then by pct ascending; clean fields after; not-mapped last.
-                                    const sortRank = pct === null ? 99999 : errs > 0 ? pct : 10000 + pct;
+                                    const notMappedField = pct === null;
+                                    const sortRank = notMappedField ? 3000 : errs > 0 ? pct : 2000 + pct;
                                     return { key, label, sortRank };
                                 })
                                 .sort((a, b) => a.sortRank - b.sortRank)
@@ -2574,22 +2577,40 @@ export default function McAngebotsfeed() {
                                                     </div>
                                                 )}
                                             </div>
-                                            {hasError && fieldErrorDetails[key] && Object.entries(fieldErrorDetails[key]).map(([type, { count, samples }]) => (
-                                                <div key={type} style={{ display: 'flex', alignItems: 'flex-start', flexWrap: 'wrap', gap: 3 }}>
-                                                    <span style={{ fontSize: 9, fontWeight: 700, background: barColor === P_RED ? P_RED_BG : P_ORANGE_BG, color: barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT, border: `1px solid ${barColor}`, borderRadius: 3, padding: '1px 5px', flexShrink: 0, whiteSpace: 'nowrap' }}>
-                                                        {errTypeLabel(type)} · {count.toLocaleString(numLocale)}×
-                                                    </span>
-                                                    {samples.map((s, i) => (
-                                                        <span key={i} style={{ fontSize: 9, background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', color: '#374151', display: 'inline-flex', alignItems: 'center', gap: 2, maxWidth: 260, overflow: 'hidden', flexShrink: 0 }}>
-                                                            {s.value && s.value !== s.ean && (
-                                                                <span style={{ fontFamily: 'monospace', color: P_RED_TEXT, maxWidth: 90, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>"{s.value}"</span>
+                                            {hasError && fieldErrorDetails[key] && (() => {
+                                                const isExpanded = expandedFieldExamples.has(key);
+                                                const toggleExpand = () => setExpandedFieldExamples(prev => {
+                                                    const next = new Set(prev);
+                                                    if (next.has(key)) next.delete(key); else next.add(key);
+                                                    return next;
+                                                });
+                                                return Object.entries(fieldErrorDetails[key]).map(([type, { count, samples }]) => {
+                                                    const visibleSamples = isExpanded ? samples : samples.slice(0, 3);
+                                                    const hiddenCount = samples.length - visibleSamples.length;
+                                                    return (
+                                                        <div key={type} style={{ display: 'flex', alignItems: 'flex-start', flexWrap: 'wrap', gap: 3 }}>
+                                                            <span style={{ fontSize: 9, fontWeight: 700, background: barColor === P_RED ? P_RED_BG : P_ORANGE_BG, color: barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT, border: `1px solid ${barColor}`, borderRadius: 3, padding: '1px 5px', flexShrink: 0, whiteSpace: 'nowrap' }}>
+                                                                {errTypeLabel(type)} · {count.toLocaleString(numLocale)}×
+                                                            </span>
+                                                            {visibleSamples.map((s, i) => (
+                                                                <span key={i} style={{ fontSize: 9, background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', color: '#374151', display: 'inline-flex', alignItems: 'center', gap: 2, maxWidth: 260, overflow: 'hidden', flexShrink: 0 }}>
+                                                                    {s.value && s.value !== s.ean && (
+                                                                        <span style={{ fontFamily: 'monospace', color: P_RED_TEXT, maxWidth: 90, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>"{s.value}"</span>
+                                                                    )}
+                                                                    {s.ean && <span style={{ fontFamily: 'monospace' }}>{s.ean}</span>}
+                                                                    {s.name && <span style={{ fontFamily: 'sans-serif', color: '#6B7280', marginLeft: 2, maxWidth: 110, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>· {s.name}</span>}
+                                                                </span>
+                                                            ))}
+                                                            {hiddenCount > 0 && (
+                                                                <span onClick={toggleExpand} style={{ fontSize: 10, color: '#6B7280', cursor: 'pointer', textDecoration: 'underline', flexShrink: 0 }}>+{hiddenCount} {lang === 'de' ? 'weitere anzeigen' : 'more'}</span>
                                                             )}
-                                                            {s.ean && <span style={{ fontFamily: 'monospace' }}>{s.ean}</span>}
-                                                            {s.name && <span style={{ fontFamily: 'sans-serif', color: '#6B7280', marginLeft: 2, maxWidth: 110, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>· {s.name}</span>}
-                                                        </span>
-                                                    ))}
-                                                </div>
-                                            ))}
+                                                            {isExpanded && samples.length > 3 && (
+                                                                <span onClick={toggleExpand} style={{ fontSize: 10, color: '#6B7280', cursor: 'pointer', textDecoration: 'underline', flexShrink: 0 }}>{lang === 'de' ? 'Weniger anzeigen' : 'Show less'}</span>
+                                                            )}
+                                                        </div>
+                                                    );
+                                                });
+                                            })()}
                                         </div>
                                         <div style={{ textAlign: 'right', fontSize: 10, fontWeight: 600, whiteSpace: 'nowrap', paddingTop: 2 }}>
                                             {pct === null ? <span style={{ color: '#9CA3AF' }}>{T.notInFeed}</span>
@@ -2809,17 +2830,13 @@ export default function McAngebotsfeed() {
                                         <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.05em', paddingLeft: 12 }}>{T.colCoverage}</div>
                                     </div>
                                     {[...optFieldStats.fields]
-                                        .sort((a, b) => {
-                                            const aErrs = !a.notMapped ? (a.total - a.covered) : 0;
-                                            const bErrs = !b.notMapped ? (b.total - b.covered) : 0;
-                                            const aHasErr = aErrs > 0;
-                                            const bHasErr = bErrs > 0;
-                                            if (aHasErr && !bHasErr) return -1;
-                                            if (!aHasErr && bHasErr) return 1;
-                                            const ar = a.notMapped ? 999 : a.pct;
-                                            const br = b.notMapped ? 999 : b.pct;
-                                            return ar - br;
+                                        .map(f => {
+                                            const fNotMapped = f.notMapped;
+                                            const fPct = fNotMapped ? null : f.pct;
+                                            const fSortRank = fNotMapped ? 3000 : (fPct < 100 ? fPct : 2000 + fPct);
+                                            return { ...f, _sortRank: fSortRank };
                                         })
+                                        .sort((a, b) => a._sortRank - b._sortRank)
                                         .map((f) => {
                                         const label = lang === 'de' ? f.labelDE : f.labelEN;
                                         const isMapped = !f.notMapped;
@@ -2840,24 +2857,38 @@ export default function McAngebotsfeed() {
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                                                         <div style={{ fontSize: 11, color: hasError ? '#92400E' : '#374151', fontWeight: hasError ? 600 : 500, flexShrink: 0 }}>{label}</div>
                                                     </div>
-                                                    {errorEans4.length > 0 && (
-                                                        <div style={{ display: 'flex', alignItems: 'flex-start', flexWrap: 'wrap', gap: 3 }}>
-                                                            <span style={{ fontSize: 9, fontWeight: 700, background: barColor === P_RED ? P_RED_BG : P_ORANGE_BG, color: barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT, border: `1px solid ${barColor}`, borderRadius: 3, padding: '1px 5px', flexShrink: 0, whiteSpace: 'nowrap' }}>
-                                                                {lang === 'de' ? 'Fehlend' : 'Missing'} · {errs.toLocaleString(numLocale)}×
-                                                            </span>
-                                                            {errorEans4.slice(0, 5).map((item, i) => (
-                                                                <span key={i} style={{ fontSize: 9, background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', color: '#374151', display: 'inline-flex', alignItems: 'center', gap: 2, maxWidth: 220, overflow: 'hidden' }}>
-                                                                    {typeof item === 'string' ? item : item.ean}
-                                                                    {typeof item !== 'string' && item.name && (
-                                                                        <span style={{ fontFamily: 'sans-serif', color: '#6B7280', marginLeft: 3, maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>· {item.name}</span>
-                                                                    )}
+                                                    {errorEans4.length > 0 && (() => {
+                                                        const fieldKey4 = `opt::${f.field}`;
+                                                        const isExpanded4 = expandedFieldExamples.has(fieldKey4);
+                                                        const toggleExpand4 = () => setExpandedFieldExamples(prev => {
+                                                            const next = new Set(prev);
+                                                            if (next.has(fieldKey4)) next.delete(fieldKey4); else next.add(fieldKey4);
+                                                            return next;
+                                                        });
+                                                        const visibleEans = isExpanded4 ? errorEans4 : errorEans4.slice(0, 3);
+                                                        const hiddenCount4 = errorEans4.length - visibleEans.length;
+                                                        return (
+                                                            <div style={{ display: 'flex', alignItems: 'flex-start', flexWrap: 'wrap', gap: 3 }}>
+                                                                <span style={{ fontSize: 9, fontWeight: 700, background: barColor === P_RED ? P_RED_BG : P_ORANGE_BG, color: barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT, border: `1px solid ${barColor}`, borderRadius: 3, padding: '1px 5px', flexShrink: 0, whiteSpace: 'nowrap' }}>
+                                                                    {lang === 'de' ? 'Fehlend' : 'Missing'} · {errs.toLocaleString(numLocale)}×
                                                                 </span>
-                                                            ))}
-                                                            {errs > errorEans4.slice(0, 5).length && (
-                                                                <span style={{ fontSize: 9, color: '#9CA3AF' }}>+{errs - errorEans4.slice(0, 5).length} {lang === 'de' ? 'weitere' : 'more'}</span>
-                                                            )}
-                                                        </div>
-                                                    )}
+                                                                {visibleEans.map((item, i) => (
+                                                                    <span key={i} style={{ fontSize: 9, background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', color: '#374151', display: 'inline-flex', alignItems: 'center', gap: 2, maxWidth: 220, overflow: 'hidden' }}>
+                                                                        {typeof item === 'string' ? item : item.ean}
+                                                                        {typeof item !== 'string' && item.name && (
+                                                                            <span style={{ fontFamily: 'sans-serif', color: '#6B7280', marginLeft: 3, maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>· {item.name}</span>
+                                                                        )}
+                                                                    </span>
+                                                                ))}
+                                                                {hiddenCount4 > 0 && (
+                                                                    <span onClick={toggleExpand4} style={{ fontSize: 10, color: '#6B7280', cursor: 'pointer', textDecoration: 'underline', flexShrink: 0 }}>+{hiddenCount4} {lang === 'de' ? 'weitere anzeigen' : 'more'}</span>
+                                                                )}
+                                                                {isExpanded4 && errorEans4.length > 3 && (
+                                                                    <span onClick={toggleExpand4} style={{ fontSize: 10, color: '#6B7280', cursor: 'pointer', textDecoration: 'underline', flexShrink: 0 }}>{lang === 'de' ? 'Weniger anzeigen' : 'Show less'}</span>
+                                                                )}
+                                                            </div>
+                                                        );
+                                                    })()}
                                                     {!hasError && exampleVals.length > 0 && (
                                                         <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 3 }}>
                                                             <span style={{ fontSize: 9, color: '#9CA3AF', fontWeight: 600 }}>{lang === 'de' ? 'Beispiel:' : 'Example:'}</span>
@@ -3172,8 +3203,8 @@ export default function McAngebotsfeed() {
                     }
                 });
 
-                const fieldIcon = (field) => {
-                    const color = '#6B7280';
+                const fieldIcon = (field, iconColor) => {
+                    const color = iconColor || '#6B7280';
                     const s = { flexShrink: 0 };
                     if (field === 'name') return <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={s}><path d="M3 12V4l5-2 5 2v8l-5 2-5-2z" stroke={color} strokeWidth="1.3" strokeLinejoin="round"/><path d="M8 2v12" stroke={color} strokeWidth="1.3"/></svg>;
                     if (field === 'ean') return <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={s}><rect x="2" y="3" width="1.5" height="10" fill={color}/><rect x="5" y="3" width="1" height="10" fill={color}/><rect x="7.5" y="3" width="2" height="10" fill={color}/><rect x="11" y="3" width="1" height="10" fill={color}/><rect x="13" y="3" width="1" height="10" fill={color}/></svg>;
@@ -3188,34 +3219,34 @@ export default function McAngebotsfeed() {
                     return <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={s}><circle cx="8" cy="8" r="6" stroke={color} strokeWidth="1.3"/><path d="M5 8a3 3 0 006 0" stroke={color} strokeWidth="1.2"/><path d="M2 8h12" stroke={color} strokeWidth="1.2"/></svg>;
                 };
                 const recRules = lang === 'de' ? {
-                    'name::missing':       { title: 'Artikelname fehlt',               action: 'Tragen Sie für jeden betroffenen Artikel einen vollständigen Namen ein. Format: Marke + Produkttyp + Hauptattribut, z. B. „BRAND Sofa 3-Sitzer grau 180 cm".',         tip: 'Mind. 2 Wörter und 10 Zeichen. Ein guter Name erhöht die Auffindbarkeit deutlich.' },
-                    'name::too_short':     { title: 'Artikelname zu kurz',              action: 'Verlängern Sie den Artikelnamen auf mindestens 10 Zeichen.',                     tip: 'Ergänzen Sie Produkttyp, Farbe oder Material für einen aussagekräftigen Namen.' },
+                    'name::missing':       { title: 'Artikelname fehlt',               shortDesc: 'Eindeutiger und aussagekräftiger Titel ist erforderlich',             action: 'Tragen Sie für jeden betroffenen Artikel einen vollständigen Namen ein. Format: Marke + Produkttyp + Hauptattribut, z. B. „BRAND Sofa 3-Sitzer grau 180 cm".',         tip: 'Mind. 2 Wörter und 10 Zeichen. Ein guter Name erhöht die Auffindbarkeit deutlich.' },
+                    'name::too_short':     { title: 'Artikelname zu kurz',              shortDesc: 'Artikelname enthält zu wenig Informationen',                          action: 'Verlängern Sie den Artikelnamen auf mindestens 10 Zeichen.',                     tip: 'Ergänzen Sie Produkttyp, Farbe oder Material für einen aussagekräftigen Namen.' },
                     'name::one_word':      { title: 'Artikelname: nur ein Wort',        action: 'Der Name muss aus mindestens 2 Wörtern bestehen.',                              tip: 'Kombinieren Sie Marke + Produktname, z. B. „BRAND Tisch" oder „Hersteller Sofa grau".' },
                     'name::placeholder':   { title: 'Artikelname: Platzhalterwert',     action: 'Ersetzen Sie Platzhalter wie „n/a" oder „test" durch echte Artikelnamen.',       tip: 'Verwenden Sie produktspezifische, eindeutige Namen.' },
-                    'name::dup':           { title: 'Artikelname: Duplikate',           action: 'Jeder Artikel muss einen eindeutigen Namen haben. Korrigieren oder entfernen Sie Duplikate.', tip: 'Unterscheiden Sie Varianten durch Farbe, Größe oder Modellbezeichnung.' },
-                    'ean::missing':        { title: 'EAN fehlt',                        action: 'Ergänzen Sie die EAN (GTIN14) für alle betroffenen Artikel.',                   tip: 'Verwenden Sie die offizielle GTIN aus der GS1-Datenbank.' },
-                    'ean::wrong_length':   { title: 'EAN: falsche Länge',               action: 'Die EAN muss 13 oder 14 Stellen haben (EAN-13 oder GTIN-14).',                   tip: 'Beispiel: EAN-13 „4012345678901" (13-stellig) oder GTIN-14 „04012345678901" (14-stellig).' },
+                    'name::dup':           { title: 'Artikelname: Duplikate',           shortDesc: 'Doppelte Artikelnamen gefunden',                                       action: 'Jeder Artikel muss einen eindeutigen Namen haben. Korrigieren oder entfernen Sie Duplikate.', tip: 'Unterscheiden Sie Varianten durch Farbe, Größe oder Modellbezeichnung.' },
+                    'ean::missing':        { title: 'EAN fehlt',                        shortDesc: 'Gültige EAN zur eindeutigen Identifikation ist erforderlich',          action: 'Ergänzen Sie die EAN (GTIN14) für alle betroffenen Artikel.',                   tip: 'Verwenden Sie die offizielle GTIN aus der GS1-Datenbank.' },
+                    'ean::wrong_length':   { title: 'EAN: falsche Länge',               shortDesc: 'EAN entspricht nicht der erforderlichen Länge',                        action: 'Die EAN muss 13 oder 14 Stellen haben (EAN-13 oder GTIN-14).',                   tip: 'Beispiel: EAN-13 „4012345678901" (13-stellig) oder GTIN-14 „04012345678901" (14-stellig).' },
                     'ean::invalid':        { title: 'EAN: ungültiger Wert',             action: 'Entfernen Sie Sonderzeichen, die EAN darf nur Ziffern enthalten.',              tip: 'Keine Buchstaben, Leerzeichen oder Bindestriche erlaubt.' },
                     'ean::placeholder':    { title: 'EAN: Platzhalterwert',             action: 'Ersetzen Sie Test-EANs durch gültige GTIN14-Nummern.',                          tip: 'Erfundene oder Test-EANs werden blockiert.' },
-                    'ean::dup':            { title: 'EAN: Duplikate',                   action: 'Jede EAN darf nur einmal vorkommen. Korrigieren Sie die doppelten Einträge.',   tip: 'Prüfen Sie, ob Artikel versehentlich mehrfach exportiert wurden.' },
-                    'description::missing':    { title: 'Beschreibung fehlt',               action: 'Ergänzen Sie eine Produktbeschreibung für alle betroffenen Artikel.',           tip: 'Mindestens 20 Zeichen, empfohlen 100–500 Zeichen mit Material, Maßen und Features.' },
-                    'description::too_short':  { title: 'Beschreibung zu kurz',             action: 'Verlängern Sie die Beschreibung auf mindestens 20 Zeichen.',                     tip: 'Nennen Sie Material, Farbe, Maße und besondere Produkteigenschaften.' },
+                    'ean::dup':            { title: 'EAN: Duplikate',                   shortDesc: 'Doppelte EANs gefunden',                                               action: 'Jede EAN darf nur einmal vorkommen. Korrigieren Sie die doppelten Einträge.',   tip: 'Prüfen Sie, ob Artikel versehentlich mehrfach exportiert wurden.' },
+                    'description::missing':    { title: 'Beschreibung fehlt',               shortDesc: 'Detaillierte Beschreibung des Artikels ist erforderlich',           action: 'Ergänzen Sie eine Produktbeschreibung für alle betroffenen Artikel.',           tip: 'Mindestens 20 Zeichen, empfohlen 100–500 Zeichen mit Material, Maßen und Features.' },
+                    'description::too_short':  { title: 'Beschreibung zu kurz',             shortDesc: 'Beschreibung enthält zu wenig Informationen',                       action: 'Verlängern Sie die Beschreibung auf mindestens 20 Zeichen.',                     tip: 'Nennen Sie Material, Farbe, Maße und besondere Produkteigenschaften.' },
                     'description::bware':      { title: 'Beschreibung: B-Ware-Hinweis',     action: 'Entfernen Sie die Kennzeichnung „B-Ware" aus der Beschreibung.',                tip: 'B-Ware-Artikel können nicht als Neuware gelistet werden.' },
                     'description::placeholder':{ title: 'Beschreibung: Platzhalterwert',    action: 'Ersetzen Sie Platzhalter durch echte Produktbeschreibungen.',                   tip: 'Beschreiben Sie Material, Farbe und Besonderheiten des Produkts.' },
                     'price::missing':      { title: 'Preis fehlt',                      action: 'Ergänzen Sie den Preis für alle betroffenen Artikel.',                          tip: 'Format: 19.99 (Punkt als Dezimaltrennzeichen, ohne €-Zeichen).' },
                     'price::invalid':      { title: 'Preis: ungültiges Format',         action: 'Korrigieren Sie das Preisformat auf 19.99.',                                    tip: 'Nur positive Zahlen mit Punkt als Dezimaltrennzeichen, z. B. 29.99.' },
                     'price::placeholder':  { title: 'Preis: Platzhalterwert',           action: 'Ersetzen Sie Platzhalterwerte durch den korrekten Artikelpreis.',               tip: 'Der Preis muss eine positive Zahl größer als 0 sein.' },
-                    'shipping_mode::missing':  { title: 'Versandart fehlt',              action: 'Tragen Sie die Versandart ein: „paket" für normale Paketlieferung oder „spedition" für Speditionsversand.',                   tip: 'Schwere oder sperrige Möbel zählen in der Regel als „spedition".' },
+                    'shipping_mode::missing':  { title: 'Versandart fehlt',              shortDesc: 'Versandart und -kosten müssen angegeben werden',                       action: 'Tragen Sie die Versandart ein: „paket" für normale Paketlieferung oder „spedition" für Speditionsversand.',                   tip: 'Schwere oder sperrige Möbel zählen in der Regel als „spedition".' },
                     'shipping_mode::invalid':  { title: 'Versandart: ungültiger Wert',   action: 'Ersetzen Sie den Wert durch „paket" oder „spedition" – diese sind die einzigen gültigen Optionen.',                  tip: 'Prüfen Sie auf Leerzeichen, Groß-/Kleinschreibung oder Tippfehler.' },
                     'shipping_mode::placeholder': { title: 'Versandart: Platzhalterwert', action: 'Ersetzen Sie Platzhalterwerte durch „paket" (Paketversand) oder „spedition" (Speditionslieferung).',              tip: 'Wählen Sie anhand von Gewicht und Größe: Pakete bis ca. 30 kg → „paket", größer/schwerer → „spedition".' },
-                    'image_url::missing':  { title: 'Bild-URL fehlt',                  action: 'Fügen Sie für jeden Artikel eine öffentlich erreichbare Bild-URL ein.',         tip: 'Freigestelltes Bild auf weißem Hintergrund, mind. 600×600 px, kein Login nötig.' },
+                    'image_url::missing':  { title: 'Bild-URL fehlt',                  shortDesc: 'Mindestens ein Produktbild ist erforderlich',                           action: 'Fügen Sie für jeden Artikel eine öffentlich erreichbare Bild-URL ein.',         tip: 'Freigestelltes Bild auf weißem Hintergrund, mind. 600×600 px, kein Login nötig.' },
                     'image_url::invalid':  { title: 'Bild-URL: ungültiger Wert',       action: 'Prüfen Sie, ob die Bild-URL korrekt und öffentlich erreichbar ist.',            tip: 'URL muss mit http:// oder https:// beginnen und direkt auf eine Bilddatei zeigen.' },
-                    'availability::missing':   { title: 'Bestand / Verfügbarkeit fehlt', action: 'Geben Sie Lagerbestand oder Verfügbarkeitsstatus für alle Artikel an.',        tip: 'Entweder numerischer Bestand (z. B. 10) oder einen Verfügbarkeitsstatus.' },
+                    'availability::missing':   { title: 'Bestand / Verfügbarkeit fehlt', shortDesc: 'Bestand oder Verfügbarkeit muss gesetzt sein',                        action: 'Geben Sie Lagerbestand oder Verfügbarkeitsstatus für alle Artikel an.',        tip: 'Entweder numerischer Bestand (z. B. 10) oder einen Verfügbarkeitsstatus.' },
                     'stock_amount::missing':   { title: 'Bestand fehlt',                 action: 'Ergänzen Sie den numerischen Lagerbestand.',                                   tip: 'Tragen Sie den aktuellen Bestand als Zahl ein, z. B. 5 oder 100.' },
-                    'brand::missing':      { title: 'Marke fehlt',                      action: 'Ergänzen Sie den Markennamen für alle betroffenen Artikel.',                   tip: 'Verwenden Sie den offiziellen Markennamen, mind. 2 Zeichen.' },
+                    'brand::missing':      { title: 'Marke fehlt',                      shortDesc: 'Angabe der Marke ist erforderlich',                                    action: 'Ergänzen Sie den Markennamen für alle betroffenen Artikel.',                   tip: 'Verwenden Sie den offiziellen Markennamen, mind. 2 Zeichen.' },
                     'brand::too_short':    { title: 'Marke: zu kurz',                   action: 'Ergänzen Sie den vollständigen Markennamen (mind. 2 Zeichen).',                              tip: 'Abkürzungen vermeiden – verwenden Sie den offiziellen Namen, z. B. „Müller Möbel" statt „MM".' },
                     'brand::placeholder':  { title: 'Marke: Platzhalterwert',           action: 'Ersetzen Sie Platzhalter durch den echten Markennamen.',                       tip: 'Der Markenname muss für jeden Artikel ausgefüllt sein.' },
-                    'delivery_time::missing':  { title: 'Lieferzeit fehlt',              action: 'Tragen Sie die Lieferzeit ein, z. B. „3-5 Werktage" oder „2 Tage". Kunden erwarten diese Angabe vor dem Kauf.',                   tip: 'Format: Zahl + Einheit. Werktage-Angaben (z. B. „3-5 Werktage") werden bevorzugt.' },
+                    'delivery_time::missing':  { title: 'Lieferzeit fehlt',              shortDesc: 'Lieferzeit muss für alle Artikel angegeben sein',                      action: 'Tragen Sie die Lieferzeit ein, z. B. „3-5 Werktage" oder „2 Tage". Kunden erwarten diese Angabe vor dem Kauf.',                   tip: 'Format: Zahl + Einheit. Werktage-Angaben (z. B. „3-5 Werktage") werden bevorzugt.' },
                     'delivery_time::invalid':  { title: 'Lieferzeit: ungültiges Format', action: 'Schreiben Sie die Lieferzeit im Format „Zahl + Einheit", z. B. „3-5 Werktage", „1 Woche" oder „2 Tage".',                                   tip: 'Die Einheit (Tage/Werktage/Woche) muss lesbar sein. Nur eine Zahl ohne Einheit wird abgelehnt.' },
                     'delivery_time::placeholder': { title: 'Lieferzeit: Platzhalterwert', action: 'Ersetzen Sie Platzhalter durch reale Lieferzeitangaben.',                   tip: 'Geben Sie die tatsächliche Lieferzeit an, z. B. „3-5 Werktage".' },
                     'seller_offer_id::missing':{ title: 'Eigene Artikel-ID fehlt',       action: 'Ergänzen Sie Ihre interne Artikel-ID für alle betroffenen Zeilen.',            tip: 'Die Artikel-ID muss eindeutig pro Artikel sein.' },
@@ -3223,45 +3254,45 @@ export default function McAngebotsfeed() {
                     'hs_code::missing':    { title: 'HS-Code fehlt',                    action: 'Da Ihr Lager außerhalb Deutschlands liegt, ist der HS-Code Pflichtfeld.',      tip: 'Den passenden HS-Code finden Sie im EU-Zolltarifverzeichnis (customs.ec.europa.eu).' },
                     'ean::scientific':     { title: 'EAN in wissenschaftlicher Notation', action: 'Speichern Sie die Spalte in Excel als „Text", um die wissenschaftliche Notation zu verhindern.', tip: 'Excel wandelt lange Zahlen automatisch um. Spalte als Text formatieren, dann erneut speichern.' },
                     'name::siehe_oben':    { title: 'Artikelname: „siehe oben"',          action: 'Tragen Sie für jeden Artikel einen eigenen, vollständigen Namen ein.',           tip: '"Siehe oben" ist kein gültiger Artikelname und wird von CHECK24 abgelehnt.' },
-                    'description::external_link': { title: 'Beschreibung: externe URL',   action: 'Entfernen Sie alle externen Links aus der Produktbeschreibung.',                tip: 'Keine www.- oder http(s)-Links in der Beschreibung erlaubt.' },
+                    'description::external_link': { title: 'Beschreibung: externe URL',   shortDesc: 'Externe Links in der Beschreibung prüfen',                           action: 'Entfernen Sie alle externen Links aus der Produktbeschreibung.',                tip: 'Keine www.- oder http(s)-Links in der Beschreibung erlaubt.' },
                     'description::template': { title: 'Beschreibung: Vorlagentext',       action: 'Ersetzen Sie Mustertexte wie „Lorem Ipsum" durch echte Produktbeschreibungen.', tip: 'Jedes Produkt braucht eine einzigartige, informative Beschreibung.' },
-                    'description::advertising': { title: 'Beschreibung: Werbephrasen',    action: 'Entfernen Sie Werbephrasen wie „Jetzt kaufen" oder „Rabatt" aus der Beschreibung.', tip: 'Die Beschreibung soll Produkteigenschaften darstellen, keine Werbetexte.' },
+                    'description::advertising': { title: 'Beschreibung: Werbephrasen',    shortDesc: 'Werbliche Formulierungen vermeiden',                                  action: 'Entfernen Sie Werbephrasen wie „Jetzt kaufen" oder „Rabatt" aus der Beschreibung.', tip: 'Die Beschreibung soll Produkteigenschaften darstellen, keine Werbetexte.' },
                     'description::identical_to_title': { title: 'Beschreibung = Artikelname', action: 'Verfassen Sie eine eigenständige Beschreibung mit Material, Maßen und Besonderheiten – nicht einfach den Artikelnamen wiederholen.', tip: 'Beispiel: Statt „BRAND Sofa grau" → „Gepolstertes 3-Sitzer-Sofa aus Strukturstoff, 230 cm breit, mit Kaltschaum-Polsterung und abnehmbaren Bezügen."' },
-                    'image_url::single':   { title: 'Nur 1 Produktbild',                  action: 'Fügen Sie mindestens 3 Bilder pro Artikel hinzu (Hauptbild + 2 Zusatzbilder).', tip: 'Mehr Bilder erhöhen die Klickrate und Conversion deutlich.' },
+                    'image_url::single':   { title: 'Nur 1 Produktbild',                  shortDesc: 'Weitere Produktbilder können die Conversion steigern',               action: 'Fügen Sie mindestens 3 Bilder pro Artikel hinzu (Hauptbild + 2 Zusatzbilder).', tip: 'Mehr Bilder erhöhen die Klickrate und Conversion deutlich.' },
                     'seller_offer_id::dup':{ title: 'Eigene Artikel-ID: Duplikate',       action: 'Jede Artikel-ID (seller_offer_id) muss eindeutig sein. Korrigieren Sie Duplikate.', tip: 'Verwenden Sie Ihre interne SKU oder eine eindeutige Bestellnummer.' },
-                    'category_path::wrong_category': { title: 'Kategoriepfad: falsche Kategorie', action: 'Ersetzen Sie die Kategorie durch eine gültige Möbelkategorie, z. B. „Sofa", „Boxspringbett", „Esstisch" oder „Kleiderschrank".', tip: 'CHECK24 Möbel akzeptiert nur Kategorien aus dem Möbel-Sortiment. Allgemeine Kategorien wie „Haushalt" oder „Sonstiges" werden abgelehnt.' },
-                    'color::missing':         { title: 'Farbe fehlt',                      action: 'Ergänzen Sie die Farbe für alle betroffenen Artikel.',                             tip: 'Klare Farbangaben verbessern die Filterbarkeit und Auffindbarkeit erheblich.' },
-                    'material::missing':      { title: 'Material fehlt',                   action: 'Ergänzen Sie das Material für alle betroffenen Artikel.',                          tip: 'Material ist ein wichtiges Filterkriterium – z. B. „Eiche", „Kunstleder", „Stoff".' },
+                    'category_path::wrong_category': { title: 'Kategoriepfad: falsche Kategorie', shortDesc: 'Kategoriezuordnung prüfen und korrigieren',                  action: 'Ersetzen Sie die Kategorie durch eine gültige Möbelkategorie, z. B. „Sofa", „Boxspringbett", „Esstisch" oder „Kleiderschrank".', tip: 'CHECK24 Möbel akzeptiert nur Kategorien aus dem Möbel-Sortiment. Allgemeine Kategorien wie „Haushalt" oder „Sonstiges" werden abgelehnt.' },
+                    'color::missing':         { title: 'Farbe fehlt',                      shortDesc: 'Farbangabe erhöht die Auffindbarkeit',                                action: 'Ergänzen Sie die Farbe für alle betroffenen Artikel.',                             tip: 'Klare Farbangaben verbessern die Filterbarkeit und Auffindbarkeit erheblich.' },
+                    'material::missing':      { title: 'Material fehlt',                   shortDesc: 'Materialangabe verbessert die Filterbarkeit',                         action: 'Ergänzen Sie das Material für alle betroffenen Artikel.',                          tip: 'Material ist ein wichtiges Filterkriterium – z. B. „Eiche", „Kunstleder", „Stoff".' },
                     'delivery_includes::missing': { title: 'Lieferumfang fehlt',           action: 'Geben Sie den Lieferumfang im Format „1x Tisch, 4x Stuhl" an.',                   tip: 'Ein vollständiger Lieferumfang reduziert Retouren und Kundenfragen.' },
                 } : {
-                    'name::missing':       { title: 'Item name missing',              action: 'Add a full product name for every affected item. Format: Brand + Product type + Key attribute, e.g. "BRAND Sofa 3-seater grey 180 cm".',                              tip: 'Min. 2 words and 10 characters. A descriptive name significantly improves search visibility.' },
-                    'name::too_short':     { title: 'Item name too short',            action: 'Extend the item name to at least 10 characters.',                               tip: 'Add product type, color, or material to create a descriptive name.' },
+                    'name::missing':       { title: 'Item name missing',              shortDesc: 'A unique and descriptive title is required',                             action: 'Add a full product name for every affected item. Format: Brand + Product type + Key attribute, e.g. "BRAND Sofa 3-seater grey 180 cm".',                              tip: 'Min. 2 words and 10 characters. A descriptive name significantly improves search visibility.' },
+                    'name::too_short':     { title: 'Item name too short',            shortDesc: 'Item name does not contain enough information',                           action: 'Extend the item name to at least 10 characters.',                               tip: 'Add product type, color, or material to create a descriptive name.' },
                     'name::one_word':      { title: 'Item name: single word only',   action: 'The name must consist of at least 2 words.',                                    tip: 'Combine brand + product name, e.g. "BRAND Table" or "Brand Sofa grey".' },
                     'name::placeholder':   { title: 'Item name: placeholder value',  action: 'Replace placeholders like "n/a" or "test" with real item names.',               tip: 'Use product-specific, unique names.' },
-                    'name::dup':           { title: 'Item name: duplicates',         action: 'Every item must have a unique name. Fix or remove duplicates.',                  tip: 'Differentiate variants by color, size, or model designation.' },
-                    'ean::missing':        { title: 'EAN missing',                   action: 'Add the EAN (GTIN14) for all affected items.',                                  tip: 'Use the official GTIN from the GS1 database.' },
-                    'ean::wrong_length':   { title: 'EAN: wrong length',             action: 'EAN must be 13 or 14 digits (EAN-13 or GTIN-14).',                              tip: 'Example: EAN-13 "4012345678901" (13 digits) or GTIN-14 "04012345678901" (14 digits).' },
+                    'name::dup':           { title: 'Item name: duplicates',         shortDesc: 'Duplicate item names found',                                              action: 'Every item must have a unique name. Fix or remove duplicates.',                  tip: 'Differentiate variants by color, size, or model designation.' },
+                    'ean::missing':        { title: 'EAN missing',                   shortDesc: 'Valid EAN required for unique identification',                            action: 'Add the EAN (GTIN14) for all affected items.',                                  tip: 'Use the official GTIN from the GS1 database.' },
+                    'ean::wrong_length':   { title: 'EAN: wrong length',             shortDesc: 'EAN does not match the required length',                                  action: 'EAN must be 13 or 14 digits (EAN-13 or GTIN-14).',                              tip: 'Example: EAN-13 "4012345678901" (13 digits) or GTIN-14 "04012345678901" (14 digits).' },
                     'ean::invalid':        { title: 'EAN: invalid value',            action: 'Remove special characters; EAN must contain digits only.',                     tip: 'No letters, spaces, or hyphens allowed.' },
                     'ean::placeholder':    { title: 'EAN: placeholder value',        action: 'Replace test EANs with valid GTIN14 numbers.',                                  tip: 'Invented or test EANs will be blocked.' },
-                    'ean::dup':            { title: 'EAN: duplicates',               action: 'Each EAN may only appear once. Fix the duplicate entries.',                     tip: 'Check whether items were accidentally exported multiple times.' },
-                    'description::missing':    { title: 'Description missing',           action: 'Add a product description for all affected items.',                             tip: 'Min. 20 characters, ideally 100–500 with material, dimensions, and features.' },
-                    'description::too_short':  { title: 'Description too short',         action: 'Extend the description to at least 20 characters.',                             tip: 'Mention material, color, dimensions, and key product features.' },
+                    'ean::dup':            { title: 'EAN: duplicates',               shortDesc: 'Duplicate EANs found',                                                    action: 'Each EAN may only appear once. Fix the duplicate entries.',                     tip: 'Check whether items were accidentally exported multiple times.' },
+                    'description::missing':    { title: 'Description missing',           shortDesc: 'Detailed description of the item is required',                         action: 'Add a product description for all affected items.',                             tip: 'Min. 20 characters, ideally 100–500 with material, dimensions, and features.' },
+                    'description::too_short':  { title: 'Description too short',         shortDesc: 'Description does not contain enough information',                       action: 'Extend the description to at least 20 characters.',                             tip: 'Mention material, color, dimensions, and key product features.' },
                     'description::bware':      { title: 'Description: used-goods label', action: 'Remove the "B-Ware" label from the description.',                               tip: 'Used goods items cannot be listed as new.' },
                     'description::placeholder':{ title: 'Description: placeholder value', action: 'Replace placeholder values with real product descriptions.',                  tip: 'Describe material, color, and special features of the product.' },
                     'price::missing':      { title: 'Price missing',                  action: 'Add the price for all affected items.',                                         tip: 'Format: 19.99 (dot as decimal separator, no currency symbol).' },
                     'price::invalid':      { title: 'Price: invalid format',          action: 'Correct the price format to 19.99.',                                            tip: 'Only positive numbers with dot as decimal separator, e.g. 29.99.' },
                     'price::placeholder':  { title: 'Price: placeholder value',       action: 'Replace placeholder values with the correct item price.',                       tip: 'The price must be a positive number greater than 0.' },
-                    'shipping_mode::missing':  { title: 'Shipping mode missing',      action: 'Set the shipping mode to "paket" (parcel delivery) or "spedition" (freight delivery) for every affected item.',                                 tip: 'Heavy or bulky furniture typically qualifies as "spedition".' },
+                    'shipping_mode::missing':  { title: 'Shipping mode missing',      shortDesc: 'Shipping mode and cost must be specified',                                action: 'Set the shipping mode to "paket" (parcel delivery) or "spedition" (freight delivery) for every affected item.',                                 tip: 'Heavy or bulky furniture typically qualifies as "spedition".' },
                     'shipping_mode::invalid':  { title: 'Shipping mode: invalid value', action: 'Replace the value with "paket" or "spedition" — these are the only accepted options.',                           tip: 'Check for extra spaces, capitalisation, or typos.' },
                     'shipping_mode::placeholder':{ title: 'Shipping mode: placeholder', action: 'Replace placeholder values with "paket" (parcel) or "spedition" (freight delivery).',                          tip: 'Choose based on weight and size: items up to ~30 kg → "paket", larger/heavier → "spedition".' },
-                    'image_url::missing':  { title: 'Image URL missing',             action: 'Add a publicly accessible image URL for every item.',                           tip: 'Cut-out on white background, min. 600×600 px, no login required.' },
+                    'image_url::missing':  { title: 'Image URL missing',             shortDesc: 'At least one product image is required',                                  action: 'Add a publicly accessible image URL for every item.',                           tip: 'Cut-out on white background, min. 600×600 px, no login required.' },
                     'image_url::invalid':  { title: 'Image URL: invalid value',      action: 'Check that the image URL is correct and publicly accessible.',                  tip: 'URL must start with http:// or https:// and point directly to an image file.' },
-                    'availability::missing':   { title: 'Stock / Availability missing', action: 'Provide stock count or availability status for every item.',                   tip: 'Either a numeric stock count (e.g. 10) or an availability status.' },
+                    'availability::missing':   { title: 'Stock / Availability missing', shortDesc: 'Stock or availability must be set',                                     action: 'Provide stock count or availability status for every item.',                   tip: 'Either a numeric stock count (e.g. 10) or an availability status.' },
                     'stock_amount::missing':   { title: 'Stock missing',              action: 'Add the numeric stock count.',                                                  tip: 'Enter the current stock as a number, e.g. 5 or 100.' },
-                    'brand::missing':      { title: 'Brand missing',                 action: 'Add the brand name for all affected items.',                                   tip: 'Use the official brand name, min. 2 characters.' },
+                    'brand::missing':      { title: 'Brand missing',                 shortDesc: 'Specifying the brand is required',                                        action: 'Add the brand name for all affected items.',                                   tip: 'Use the official brand name, min. 2 characters.' },
                     'brand::too_short':    { title: 'Brand: too short',              action: 'Enter the full brand name (at least 2 characters).',                                    tip: 'Avoid abbreviations — use the official name, e.g. "Müller Möbel" instead of "MM".' },
                     'brand::placeholder':  { title: 'Brand: placeholder value',      action: 'Replace placeholders with the real brand name.',                               tip: 'Brand name must be filled in for every item.' },
-                    'delivery_time::missing':  { title: 'Delivery time missing',     action: 'Enter the delivery time, e.g. "3-5 working days" or "2 days". Customers check this before purchasing.',                                 tip: 'Format: number + unit. Working-day ranges (e.g. "3-5 working days") are preferred.' },
+                    'delivery_time::missing':  { title: 'Delivery time missing',     shortDesc: 'Delivery time must be specified for all items',                           action: 'Enter the delivery time, e.g. "3-5 working days" or "2 days". Customers check this before purchasing.',                                 tip: 'Format: number + unit. Working-day ranges (e.g. "3-5 working days") are preferred.' },
                     'delivery_time::invalid':  { title: 'Delivery time: invalid format', action: 'Write the delivery time as "number + unit", e.g. "3-5 working days", "1 week", or "2 days".',                                              tip: 'The unit (days / working days / week) must be present. A number alone without a unit will be rejected.' },
                     'delivery_time::placeholder':{ title: 'Delivery time: placeholder', action: 'Replace placeholders with actual delivery time information.',                 tip: 'Enter the real delivery time, e.g. "3-5 working days".' },
                     'seller_offer_id::missing':{ title: 'Own item ID missing',        action: 'Add your internal item ID for all affected rows.',                              tip: 'The item ID must be unique per item.' },
@@ -3269,15 +3300,15 @@ export default function McAngebotsfeed() {
                     'hs_code::missing':    { title: 'HS Code missing',                action: 'Since your warehouse is outside Germany, HS Code is required.',                 tip: 'Find the correct HS Code in the EU customs tariff directory.' },
                     'ean::scientific':     { title: 'EAN in scientific notation',      action: 'Format the EAN column as "Text" in Excel to prevent scientific notation.',       tip: 'Excel converts long numbers automatically. Format the column as text before saving.' },
                     'name::siehe_oben':    { title: 'Item name: "siehe oben"',         action: 'Enter a unique, complete name for every item.',                                  tip: '"Siehe oben" is not a valid item name and will be rejected by CHECK24.' },
-                    'description::external_link': { title: 'Description: external URL', action: 'Remove all external links from the product description.',                      tip: 'www. or http(s) links are not allowed in the description.' },
+                    'description::external_link': { title: 'Description: external URL', shortDesc: 'Check and remove external links in description',                       action: 'Remove all external links from the product description.',                      tip: 'www. or http(s) links are not allowed in the description.' },
                     'description::template': { title: 'Description: template text',    action: 'Replace template text (Lorem Ipsum etc.) with real product descriptions.',       tip: 'Every product needs a unique, informative description.' },
-                    'description::advertising': { title: 'Description: advertising phrases', action: 'Remove advertising phrases like "Buy now" or "Discount" from the description.', tip: 'Descriptions should present product features, not advertising copy.' },
+                    'description::advertising': { title: 'Description: advertising phrases', shortDesc: 'Avoid promotional language in descriptions',                       action: 'Remove advertising phrases like "Buy now" or "Discount" from the description.', tip: 'Descriptions should present product features, not advertising copy.' },
                     'description::identical_to_title': { title: 'Description = Item name', action: 'Write a proper description covering material, dimensions, and features — do not just copy the item name.',      tip: 'Example: instead of "BRAND Sofa grey" → "Upholstered 3-seater sofa in structured fabric, 230 cm wide, cold-foam padding, removable covers."' },
-                    'image_url::single':   { title: 'Only 1 product image',            action: 'Add at least 3 images per item (main image + 2 additional images).',            tip: 'More images significantly increase click-through rate and conversion.' },
+                    'image_url::single':   { title: 'Only 1 product image',            shortDesc: 'Additional product images can increase conversion',                      action: 'Add at least 3 images per item (main image + 2 additional images).',            tip: 'More images significantly increase click-through rate and conversion.' },
                     'seller_offer_id::dup':{ title: 'Own item ID: duplicates',         action: 'Each seller_offer_id must be unique. Fix the duplicate entries.',               tip: 'Use your internal SKU or a unique order number.' },
-                    'category_path::wrong_category': { title: 'Category path: wrong category', action: 'Replace the category with a valid furniture category, e.g. "Sofa", "Boxspringbett", "Esstisch", or "Kleiderschrank".', tip: 'CHECK24 Furniture only accepts categories from the furniture assortment. Generic categories like "Household" or "Other" will be rejected.' },
-                    'color::missing':         { title: 'Color missing',                    action: 'Add the color for all affected items.',                                            tip: 'Clear color values significantly improve filterability and discoverability.' },
-                    'material::missing':      { title: 'Material missing',                 action: 'Add the material for all affected items.',                                        tip: 'Material is an important filter criterion — e.g. "Oak", "Faux Leather", "Fabric".' },
+                    'category_path::wrong_category': { title: 'Category path: wrong category', shortDesc: 'Review and correct the category assignment',                    action: 'Replace the category with a valid furniture category, e.g. "Sofa", "Boxspringbett", "Esstisch", or "Kleiderschrank".', tip: 'CHECK24 Furniture only accepts categories from the furniture assortment. Generic categories like "Household" or "Other" will be rejected.' },
+                    'color::missing':         { title: 'Color missing',                    shortDesc: 'Color specification increases discoverability',                          action: 'Add the color for all affected items.',                                            tip: 'Clear color values significantly improve filterability and discoverability.' },
+                    'material::missing':      { title: 'Material missing',                 shortDesc: 'Material specification improves filterability',                           action: 'Add the material for all affected items.',                                        tip: 'Material is an important filter criterion — e.g. "Oak", "Faux Leather", "Fabric".' },
                     'delivery_includes::missing': { title: 'Delivery includes missing',    action: 'Enter the delivery contents in the format "1x table, 4x chair".',                tip: 'A complete delivery scope reduces returns and customer queries.' },
                 };
 
@@ -3406,29 +3437,42 @@ export default function McAngebotsfeed() {
                                         if (next.has(key)) next.delete(key); else next.add(key);
                                         return next;
                                     });
-                                    const renderCard = ({ key, count, rule, sampleEans }, accent) => {
+                                    const renderCard = ({ key, count, rule, sampleEans, field }, accent, accentBg, accentText) => {
                                         const isOpen = expandedRecs.has(key);
                                         return (
-                                            <div key={key} style={{ background: '#FFF', border: '1px solid #E5E7EB', borderLeft: `3px solid ${accent}`, borderRadius: 10 }}>
+                                            <div key={key}
+                                                style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', boxShadow: isOpen ? '0 2px 8px rgba(0,0,0,0.10)' : '0 1px 3px rgba(0,0,0,0.06)', overflow: 'hidden' }}
+                                            >
                                                 <div
                                                     onClick={() => toggleRec(key)}
-                                                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, padding: '8px 14px', cursor: 'pointer', userSelect: 'none' }}
+                                                    style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', cursor: 'pointer', userSelect: 'none' }}
                                                 >
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flex: 1 }}>
-                                                        <span style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{rule.title}</span>
-                                                        <span style={{ fontSize: 11, color: accent, fontWeight: 600, whiteSpace: 'nowrap' }}>
-                                                            {T.recAffected(count.toLocaleString(numLocale))}
-                                                        </span>
+                                                    {/* Icon tile */}
+                                                    <div style={{ width: 32, height: 32, borderRadius: '50%', background: accentBg || '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                                        {fieldIcon(field || key.split('::')[0], accentText || '#6B7280')}
                                                     </div>
-                                                    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: '#9CA3AF', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }}>
-                                                        <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-                                                    </svg>
+                                                    {/* Text */}
+                                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                                        <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', lineHeight: 1.3 }}>{rule.title}</div>
+                                                        {rule.shortDesc && <div style={{ fontSize: 11, color: '#6B7280', marginTop: 1 }}>{rule.shortDesc}</div>}
+                                                    </div>
+                                                    {/* Count + chevron */}
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+                                                        {count > 0 && (
+                                                            <div style={{ textAlign: 'right' }}>
+                                                                <div style={{ fontSize: 16, fontWeight: 800, color: accentText || accent || '#374151', lineHeight: 1 }}>{count.toLocaleString(numLocale)}</div>
+                                                                <div style={{ fontSize: 10, color: '#9CA3AF' }}>{lang === 'de' ? 'Artikel betroffen' : 'items affected'}</div>
+                                                            </div>
+                                                        )}
+                                                        {count === 0 && <span style={{ fontSize: 11, color: '#9CA3AF', background: '#F3F4F6', borderRadius: 4, padding: '2px 7px' }}>–</span>}
+                                                        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: '#9CA3AF', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }}>
+                                                            <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                                                        </svg>
+                                                    </div>
                                                 </div>
                                                 {isOpen && (
-                                                    <div style={{ padding: '0 14px 10px 14px' }}>
-                                                        <div style={{ fontSize: 12, color: '#374151', lineHeight: 1.55, marginBottom: 6 }}>
-                                                            {rule.action}
-                                                        </div>
+                                                    <div style={{ padding: '0 14px 12px 14px', borderTop: '1px solid #F3F4F6' }}>
+                                                        <div style={{ fontSize: 12, color: '#374151', lineHeight: 1.55, marginBottom: 6, paddingTop: 8 }}>{rule.action}</div>
                                                         {sampleEans && sampleEans.length > 0 && (
                                                             <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 4, marginBottom: 6 }}>
                                                                 <span style={{ fontSize: 10, color: '#9CA3AF', fontWeight: 600, marginRight: 2 }}>EAN:</span>
@@ -3445,46 +3489,86 @@ export default function McAngebotsfeed() {
                                                                 )}
                                                             </div>
                                                         )}
-                                                        <div style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.5, background: '#F9FAFB', borderRadius: 6, padding: '6px 10px' }}>
-                                                            {rule.tip}
-                                                        </div>
+                                                        <div style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.5, background: '#F9FAFB', borderRadius: 6, padding: '6px 10px' }}>{rule.tip}</div>
                                                     </div>
                                                 )}
                                             </div>
                                         );
                                     };
 
-                                    const Section = ({ title, subtitle, color, items }) => items.length === 0 ? null : (
-                                        <div>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                                                <span style={{ fontSize: 11, fontWeight: 700, color, letterSpacing: '0.04em' }}>{title}</span>
-                                                <span style={{ fontSize: 11, color: '#9CA3AF' }}>·</span>
-                                                <span style={{ fontSize: 11, color: '#6B7280' }}>{subtitle}</span>
+                                    const Section = ({ title, subtitle, accent, accentBg, accentText, items, sectionKey }) => {
+                                        if (items.length === 0) return null;
+                                        const sOpen = !collapsedSections.has(sectionKey);
+                                        const toggleSec = () => setCollapsedSections(prev => {
+                                            const next = new Set(prev);
+                                            if (next.has(sectionKey)) next.delete(sectionKey); else next.add(sectionKey);
+                                            return next;
+                                        });
+                                        return (
+                                            <div>
+                                                <div
+                                                    onClick={toggleSec}
+                                                    style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: sOpen ? 8 : 0, cursor: 'pointer', userSelect: 'none', padding: '6px 0' }}
+                                                >
+                                                    <div style={{ width: 20, height: 20, borderRadius: '50%', background: accentBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                                        <svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M8 3v6M8 12v1" stroke={accentText} strokeWidth="2" strokeLinecap="round"/></svg>
+                                                    </div>
+                                                    <span style={{ fontSize: 11, fontWeight: 700, color: accentText, letterSpacing: '0.04em', textTransform: 'uppercase' }}>{title}</span>
+                                                    <span style={{ fontSize: 10, background: accentBg, color: accentText, borderRadius: 10, padding: '1px 7px', fontWeight: 700 }}>{items.length}</span>
+                                                    <span style={{ fontSize: 10, color: '#6B7280', marginLeft: 2 }}>{subtitle}</span>
+                                                    <svg width="11" height="11" viewBox="0 0 16 16" fill="none" style={{ marginLeft: 'auto', flexShrink: 0, color: '#9CA3AF', transform: sOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }}>
+                                                        <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                                                    </svg>
+                                                </div>
+                                                {sOpen && (
+                                                    <div style={{ display: 'grid', gap: 6 }}>
+                                                        {items.map((r) => renderCard(r, accent, accentBg, accentText))}
+                                                    </div>
+                                                )}
                                             </div>
-                                            <div style={{ display: 'grid', gap: 6 }}>
-                                                {items.map((r) => renderCard(r, color))}
-                                            </div>
-                                        </div>
-                                    );
+                                        );
+                                    };
+
+                                    const allSectionKeys = ['pflicht', 'optional', 'hints'];
+                                    const allCollapsed = allSectionKeys.every(k => collapsedSections.has(k));
 
                                     return (
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                                            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                                <button type="button"
+                                                    onClick={() => setCollapsedSections(allCollapsed ? new Set() : new Set(allSectionKeys))}
+                                                    style={{ fontSize: 11, color: '#6B7280', background: 'none', border: '1px solid #E5E7EB', borderRadius: 6, padding: '3px 10px', cursor: 'pointer' }}
+                                                >
+                                                    {allCollapsed
+                                                        ? (lang === 'de' ? 'Alle aufklappen' : 'Expand all')
+                                                        : (lang === 'de' ? 'Alle einklappen' : 'Collapse all')}
+                                                </button>
+                                            </div>
                                             <Section
-                                                title={lang === 'de' ? 'PFLICHTFELD' : 'REQUIRED FIELDS'}
+                                                sectionKey="pflicht"
+                                                title={lang === 'de' ? 'Pflichtfelder' : 'Required Fields'}
                                                 subtitle={lang === 'de' ? 'verhindern das Listing' : 'block listing'}
-                                                color={P_RED_TEXT}
+                                                accent={P_RED}
+                                                accentBg={P_RED_BG}
+                                                accentText={P_RED_TEXT}
                                                 items={pflichtRecs}
                                             />
                                             <Section
-                                                title={lang === 'de' ? 'OPTIONALE FELDER' : 'OPTIONAL FIELDS'}
+                                                sectionKey="optional"
+                                                title={lang === 'de' ? 'Optionale Felder' : 'Optional Fields'}
                                                 subtitle={lang === 'de' ? 'verbessern Filter, Suche und Conversion' : 'boost filters, search and conversion'}
-                                                color={P_ORANGE_TEXT}
+                                                accent='#FDBA74'
+                                                accentBg='#FFF7ED'
+                                                accentText='#9A3412'
                                                 items={optionalRecs}
                                             />
                                             <Section
-                                                title={lang === 'de' ? 'HINWEISE' : 'HINTS'}
+                                                sectionKey="hints"
+                                                title={lang === 'de' ? 'Hinweise' : 'Hints'}
                                                 subtitle={lang === 'de' ? 'Qualitätsverbesserungen, optional' : 'quality improvements, optional'}
-                                                color="#64748B"
+                                                accent={P_BLUE}
+                                                accentBg={P_BLUE_BG}
+                                                accentText={P_BLUE_TEXT}
                                                 items={hintRecs}
                                             />
 
@@ -3633,10 +3717,16 @@ export default function McAngebotsfeed() {
                             {/* Right: download + reset panel */}
                             <div className="mc-sticky-sidebar" style={{ display: 'flex', flexDirection: 'column', gap: 12, maxHeight: 'calc(100vh - 120px)', overflowY: 'auto' }}>
 
-                                {/* Feed summary stats */}
-                                <div style={{ background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 12, overflow: 'hidden' }}>
-                                    <div style={{ padding: '10px 16px', borderBottom: '1px solid #F3F4F6', fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-                                        {lang === 'de' ? 'Feed-Übersicht' : 'Feed Overview'}
+                                {/* Card 1 — Feed-Übersicht */}
+                                <div style={{ background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 14, overflow: 'hidden' }}>
+                                    <div style={{ padding: '10px 16px', borderBottom: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                        <span style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                                            {lang === 'de' ? 'FEED-ÜBERSICHT' : 'FEED OVERVIEW'}
+                                        </span>
+                                        <button type="button" onClick={() => setStep(3)}
+                                            style={{ fontSize: 10, color: MC_BLUE, background: 'none', border: '1px solid #DBEAFE', borderRadius: 5, padding: '2px 8px', cursor: 'pointer', fontWeight: 600 }}>
+                                            {lang === 'de' ? 'Details ansehen ›' : 'View details ›'}
+                                        </button>
                                     </div>
                                     {(() => {
                                         const s = issues.pflichtScore;
@@ -3644,7 +3734,6 @@ export default function McAngebotsfeed() {
                                         const os = issues.optionalScore;
                                         const oc = os >= 70 ? P_GREEN : os >= 40 ? P_ORANGE : P_RED;
                                         const tc = issues.totalRows;
-                                        // Compute optional complete articles for stats strip
                                         const optMappedFields = optFieldStats.fields.filter(f => !f.notMapped);
                                         let optCompleteArticles = 0;
                                         if (optMappedFields.length > 0) {
@@ -3693,76 +3782,80 @@ export default function McAngebotsfeed() {
                                     })()}
                                 </div>
 
-                                {/* Summary text box */}
-                                <div style={{ background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 12, padding: '12px 16px' }}>
-                                    <div style={{ fontSize: 11, color: '#374151', lineHeight: 1.65 }}>
-                                        {lang === 'de'
-                                            ? `Von ${issues.totalRows.toLocaleString(numLocale)} Artikeln im Feed sind ${issues.livefaehigCount.toLocaleString(numLocale)} listbar (${listablePct} %). ${issues.blockiertCount > 0 ? `${issues.blockiertCount.toLocaleString(numLocale)} Artikel weisen Fehler in den Pflichtfeldern auf. ` : ''}Mit den Handlungsempfehlungen können Sie die Abdeckung auf bis zu 100 % steigern.`
-                                            : `Of ${issues.totalRows.toLocaleString(numLocale)} items in the feed, ${issues.livefaehigCount.toLocaleString(numLocale)} are listable (${listablePct} %). ${issues.blockiertCount > 0 ? `${issues.blockiertCount.toLocaleString(numLocale)} items have errors in required fields. ` : ''}Use the recommendations below to reach up to 100 % coverage.`
-                                        }
+                                {/* Card 2 — Summary */}
+                                <div style={{ background: '#EFF6FF', borderRadius: 14, border: '1px solid #DBEAFE', padding: '14px 16px', display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+                                    <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#DBEAFE', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2 }}>
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 12L8 4l6 8H2z" stroke="#1E40AF" strokeWidth="1.4" strokeLinejoin="round"/><path d="M8 4v8" stroke="#1E40AF" strokeWidth="1.2"/></svg>
+                                    </div>
+                                    <div style={{ fontSize: 12, color: '#1E3A8A', lineHeight: 1.6 }}>
+                                        {lang === 'de' ? (
+                                            <span>Von <strong>{issues.totalRows.toLocaleString(numLocale)}</strong> Artikeln im Feed sind <strong style={{ color: '#166534' }}>{issues.livefaehigCount.toLocaleString(numLocale)}</strong> listbar (<strong>{listablePct}%</strong>).{issues.blockiertCount > 0 && <> <strong style={{ color: '#991B1B' }}>{issues.blockiertCount.toLocaleString(numLocale)}</strong> Artikel weisen Fehler in den Pflichtfeldern auf.</>} Mit den Handlungsempfehlungen können Sie die Abdeckung auf bis zu 100 % steigern.</span>
+                                        ) : (
+                                            <span>Of <strong>{issues.totalRows.toLocaleString(numLocale)}</strong> items in the feed, <strong style={{ color: '#166534' }}>{issues.livefaehigCount.toLocaleString(numLocale)}</strong> are listable (<strong>{listablePct}%</strong>).{issues.blockiertCount > 0 && <> <strong style={{ color: '#991B1B' }}>{issues.blockiertCount.toLocaleString(numLocale)}</strong> items have errors in required fields.</>} Use the recommendations to improve coverage to up to 100%.</span>
+                                        )}
                                     </div>
                                 </div>
 
-                                {/* Next steps workflow */}
-                                <div style={{ background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 12, overflow: 'hidden' }}>
-                                    <div style={{ padding: '10px 16px', borderBottom: '1px solid #F3F4F6', fontSize: 10, fontWeight: 700, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                                        {lang === 'de' ? 'So geht es weiter' : 'What to do next'}
+                                {/* Card 3 — So geht es weiter / Next Steps */}
+                                <div style={{ background: '#FFF', borderRadius: 14, border: '1px solid #E5E7EB', overflow: 'hidden' }}>
+                                    <div style={{ padding: '10px 14px 8px', borderBottom: '1px solid #F3F4F6' }}>
+                                        <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.06em' }}>
+                                            {lang === 'de' ? 'SO GEHT ES WEITER' : 'NEXT STEPS'}
+                                        </div>
                                     </div>
-                                    <div style={{ padding: '12px 16px', display: 'grid', gap: 10 }}>
-                                        {[
-                                            {
-                                                n: 1,
-                                                title: lang === 'de' ? 'Fehlerbericht herunterladen' : 'Download error report',
-                                                desc: lang === 'de' ? 'CSV-Datei mit allen Fehlern je Zeile für Excel' : 'CSV file with all errors per row for Excel',
-                                            },
-                                            {
-                                                n: 2,
-                                                title: lang === 'de' ? 'Fehler in Excel korrigieren' : 'Fix errors in Excel',
-                                                desc: lang === 'de' ? 'Betroffene Artikel anhand der Fehlerspalte bearbeiten' : 'Edit affected items using the error column',
-                                            },
-                                            {
-                                                n: 3,
-                                                title: lang === 'de' ? 'Korrigierten Feed hochladen' : 'Re-upload corrected feed',
-                                                desc: lang === 'de' ? 'Direkt im Händlerportal unter Einstellungen → Feed' : 'In the merchant portal under Settings → Feed',
-                                            },
-                                        ].map(({ n, title, desc }) => (
-                                            <div key={n} style={{ display: 'flex', gap: 10 }}>
-                                                <div style={{ width: 20, height: 20, borderRadius: '50%', background: MC_BLUE, color: '#FFF', fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>{n}</div>
-                                                <div>
-                                                    <div style={{ fontSize: 11, fontWeight: 600, color: '#111827' }}>{title}</div>
-                                                    <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 1, lineHeight: 1.4 }}>{desc}</div>
-                                                </div>
+                                    {[
+                                        { n: 1, title: lang === 'de' ? 'Fehlerbericht herunterladen' : 'Download error report', sub: lang === 'de' ? 'CSV-Datei mit allen Fehlern je Zeile für Excel' : 'CSV file with all errors per row for Excel',
+                                          icon: <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M5 7l3 3 3-3M2 13h12" stroke="#2563EB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+                                        { n: 2, title: lang === 'de' ? 'Fehler in Excel korrigieren' : 'Fix errors in Excel', sub: lang === 'de' ? 'Betroffene Artikel anhand der Fehlerspalte bearbeiten' : 'Edit affected items using the error column',
+                                          icon: <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M11 2l3 3-8 8H3v-3L11 2z" stroke="#2563EB" strokeWidth="1.4" strokeLinejoin="round"/></svg> },
+                                        { n: 3, title: lang === 'de' ? 'Korrigierten Feed hochladen' : 'Upload corrected feed', sub: lang === 'de' ? 'Direkt im Händlerportal unter Einstellungen → Feed' : 'In the merchant portal under Settings → Feed',
+                                          icon: <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 10V2M5 5l3-3 3 3" stroke="#2563EB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 13h12" stroke="#2563EB" strokeWidth="1.5" strokeLinecap="round"/></svg> },
+                                    ].map((step, i) => (
+                                        <div key={step.n} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderBottom: i < 2 ? '1px solid #F3F4F6' : 'none' }}>
+                                            <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#2563EB', color: '#FFF', fontSize: 11, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{step.n}</div>
+                                            <div style={{ flex: 1, minWidth: 0 }}>
+                                                <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>{step.title}</div>
+                                                <div style={{ fontSize: 10, color: '#6B7280', marginTop: 1 }}>{step.sub}</div>
                                             </div>
-                                        ))}
-                                    </div>
+                                            <div style={{ width: 28, height: 28, borderRadius: 6, background: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{step.icon}</div>
+                                        </div>
+                                    ))}
                                 </div>
 
-                                {/* Download Fehlerbericht */}
-                                <div style={{ background: P_BLUE_BG, border: `1px solid ${P_BLUE}`, borderLeft: '3px solid #2563EB', borderRadius: 12, overflow: 'hidden' }}>
-                                    <div style={{ padding: '10px 16px', borderBottom: `1px solid ${P_BLUE}`, display: 'flex', alignItems: 'center', gap: 8 }}>
-                                        <svg width="13" height="13" viewBox="0 0 18 18" fill="none"><path d="M9 2v10M6 9l3 3 3-3M2 15h14" stroke={MC_BLUE} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                        <span style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{T.recDownloadTitle}</span>
+                                {/* Card 4 — Fehlerbericht als CSV (prominent download) */}
+                                <div style={{ background: '#EFF6FF', borderRadius: 14, border: '1px solid #BFDBFE', boxShadow: '0 2px 8px rgba(37,99,235,0.08)', overflow: 'hidden' }}>
+                                    <div style={{ padding: '12px 14px', display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                                        <div style={{ flex: 1 }}>
+                                            <div style={{ fontSize: 10, fontWeight: 700, color: '#2563EB', letterSpacing: '0.06em', marginBottom: 4 }}>
+                                                {lang === 'de' ? 'FEHLERBERICHT ALS CSV' : 'ERROR REPORT AS CSV'}
+                                            </div>
+                                            <div style={{ fontSize: 11, color: '#1E3A8A', lineHeight: 1.5 }}>
+                                                {lang === 'de' ? 'Pro Artikel werden alle Fehler in einer Spalte aufgelistet – direkt in Excel korrigierbar.' : 'All errors per item listed in one column – ready to fix in Excel.'}
+                                            </div>
+                                        </div>
+                                        <div style={{ background: '#FFF', borderRadius: 8, padding: '8px 10px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+                                            <svg width="20" height="24" viewBox="0 0 20 24" fill="none"><rect width="20" height="24" rx="3" fill="#EFF6FF" stroke="#BFDBFE" strokeWidth="1"/><path d="M4 14h12M4 17h8" stroke="#2563EB" strokeWidth="1.2" strokeLinecap="round"/><rect x="4" y="6" width="7" height="5" rx="1" fill="#DBEAFE"/></svg>
+                                            <span style={{ fontSize: 8, fontWeight: 700, color: '#2563EB' }}>CSV</span>
+                                        </div>
                                     </div>
-                                    <div style={{ padding: '10px 16px' }}>
-                                        <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 10, lineHeight: 1.5 }}>{T.recDownloadDesc}</div>
+                                    <div style={{ padding: '0 14px 12px' }}>
                                         <button type="button" onClick={csvOnClick}
-                                            style={{ width: '100%', padding: '9px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, boxShadow: '0 2px 8px rgba(37,99,235,0.25)' }}>
-                                            <svg width="13" height="13" viewBox="0 0 15 15" fill="none"><path d="M7.5 2v8M5 7l2.5 2.5L10 7M2 13h11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                            {T.recDownloadBtn}
+                                            style={{ width: '100%', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 8, padding: '10px', fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                                            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M5 7l3 3 3-3M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                            {lang === 'de' ? 'Fehlerbericht herunterladen' : 'Download error report'}
                                         </button>
                                     </div>
                                 </div>
 
                                 {/* Nav */}
-                                <div style={{ display: 'flex', gap: 6 }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                                     <button type="button" onClick={() => setStep(4)}
-                                        style={{ flex: 1, padding: '10px 16px', background: '#FFF', color: '#374151', border: '1px solid #D1D5DB', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
-                                        {T.back}
+                                        style={{ background: '#FFF', border: '1px solid #D1D5DB', borderRadius: 8, padding: '10px', fontSize: 13, fontWeight: 600, color: '#374151', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                                        ← {T.back}
                                     </button>
                                     <button type="button" onClick={resetToStart}
-                                        style={{ flex: 1, padding: '10px 16px', background: '#FFF', color: '#374151', border: '1px solid #D1D5DB', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-                                        <svg width="11" height="11" viewBox="0 0 15 15" fill="none"><path d="M2 7.5h11M7 2.5l-5 5 5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                        {lang === 'de' ? 'Neu hochladen' : 'Upload new'}
+                                        style={{ background: MC_BLUE, border: 'none', borderRadius: 8, padding: '10px', fontSize: 13, fontWeight: 700, color: '#FFF', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                                        {lang === 'de' ? 'Neu hochladen' : 'New upload'} →
                                     </button>
                                 </div>
                             </div>
