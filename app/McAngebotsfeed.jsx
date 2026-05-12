@@ -3972,25 +3972,25 @@ export default function McAngebotsfeed() {
                                 </div>
 
                                 {/* Card 4 — Fehlerbericht als CSV (prominent download) */}
-                                <div style={{ background: '#EFF6FF', borderRadius: 14, border: '1px solid #BFDBFE', boxShadow: '0 2px 8px rgba(37,99,235,0.08)', overflow: 'hidden' }}>
-                                    <div style={{ padding: '12px 14px', display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                                        <div style={{ flex: 1 }}>
-                                            <div style={{ fontSize: 10, fontWeight: 700, color: '#2563EB', letterSpacing: '0.06em', marginBottom: 4 }}>
+                                <div style={{ background: '#EFF6FF', borderRadius: 14, border: '1px solid #BFDBFE', boxShadow: '0 2px 8px rgba(37,99,235,0.08)' }}>
+                                    <div style={{ padding: '16px 16px 12px', display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                                        <div style={{ flex: 1, minWidth: 0 }}>
+                                            <div style={{ fontSize: 13, fontWeight: 800, color: '#2563EB', letterSpacing: '0.04em', marginBottom: 6 }}>
                                                 {lang === 'de' ? 'FEHLERBERICHT ALS CSV' : 'ERROR REPORT AS CSV'}
                                             </div>
-                                            <div style={{ fontSize: 11, color: '#1E3A8A', lineHeight: 1.5 }}>
+                                            <div style={{ fontSize: 12, color: '#1E3A8A', lineHeight: 1.5 }}>
                                                 {lang === 'de' ? 'Pro Artikel werden alle Fehler in einer Spalte aufgelistet – direkt in Excel korrigierbar.' : 'All errors per item listed in one column – ready to fix in Excel.'}
                                             </div>
                                         </div>
-                                        <div style={{ background: '#FFF', borderRadius: 8, padding: '8px 10px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-                                            <svg width="20" height="24" viewBox="0 0 20 24" fill="none"><rect width="20" height="24" rx="3" fill="#EFF6FF" stroke="#BFDBFE" strokeWidth="1"/><path d="M4 14h12M4 17h8" stroke="#2563EB" strokeWidth="1.2" strokeLinecap="round"/><rect x="4" y="6" width="7" height="5" rx="1" fill="#DBEAFE"/></svg>
-                                            <span style={{ fontSize: 8, fontWeight: 700, color: '#2563EB' }}>CSV</span>
+                                        <div style={{ background: '#FFF', borderRadius: 10, padding: '10px 12px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, border: '1px solid #DBEAFE' }}>
+                                            <svg width="24" height="28" viewBox="0 0 20 24" fill="none"><rect width="20" height="24" rx="3" fill="#EFF6FF" stroke="#BFDBFE" strokeWidth="1"/><path d="M4 14h12M4 17h8" stroke="#2563EB" strokeWidth="1.2" strokeLinecap="round"/><rect x="4" y="6" width="7" height="5" rx="1" fill="#DBEAFE"/></svg>
+                                            <span style={{ fontSize: 9, fontWeight: 800, color: '#2563EB', letterSpacing: '0.04em' }}>CSV</span>
                                         </div>
                                     </div>
-                                    <div style={{ padding: '0 14px 12px' }}>
+                                    <div style={{ padding: '0 16px 16px' }}>
                                         <button type="button" onClick={csvOnClick}
-                                            style={{ width: '100%', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 8, padding: '10px', fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                                            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M5 7l3 3 3-3M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                            style={{ width: '100%', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 10, padding: '12px', fontSize: 14, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M5 7l3 3 3-3M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                                             {lang === 'de' ? 'Fehlerbericht herunterladen' : 'Download error report'}
                                         </button>
                                     </div>
