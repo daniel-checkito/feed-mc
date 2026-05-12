@@ -536,7 +536,7 @@ const DE_T = {
     hinweisTitle: 'Wichtige Hinweise zum Feed',
     hinweisBeforeNext: 'Vor dem nächsten Upload prüfen',
     hinweisPflicht: {
-        label: 'PFLICHT', color: '#DC2626', bg: '#FEF2F2', border: '#FECACA',
+        label: 'PFLICHT', color: '#991B1B', bg: '#FEF2F2', border: '#FCA5A5',
         title: 'Kritische Anforderungen', sub: 'Bei Verstoß keine Listing',
         items: [
             'Ausschließlich Neuware zulässig im Feed',
@@ -549,7 +549,7 @@ const DE_T = {
         ],
     },
     hinweisQuality: {
-        label: 'QUALITÄT', color: '#D97706', bg: '#FFFBEB', border: '#FDE68A',
+        label: 'QUALITÄT', color: '#92400E', bg: '#FFFBEB', border: '#FCD34D',
         title: 'Sichtbarkeit & Darstellung', sub: 'Beeinflusst Conversion',
         items: [
             'Titelformat: Marke + Produktname + Produktart + Material + Farbe + Maße',
@@ -777,7 +777,7 @@ const EN_T = {
     hinweisTitle: 'Important Feed Requirements',
     hinweisBeforeNext: 'Check before next upload',
     hinweisPflicht: {
-        label: 'REQUIRED', color: '#DC2626', bg: '#FEF2F2', border: '#FECACA',
+        label: 'REQUIRED', color: '#991B1B', bg: '#FEF2F2', border: '#FCA5A5',
         title: 'Critical Requirements', sub: 'Violations prevent listing',
         items: [
             'Only new goods allowed in the feed',
@@ -790,7 +790,7 @@ const EN_T = {
         ],
     },
     hinweisQuality: {
-        label: 'QUALITY', color: '#D97706', bg: '#FFFBEB', border: '#FDE68A',
+        label: 'QUALITY', color: '#92400E', bg: '#FFFBEB', border: '#FCD34D',
         title: 'Visibility & Presentation', sub: 'Affects conversion',
         items: [
             'Title format: Brand + Product name + Type + Material + Color + Size',
@@ -862,6 +862,9 @@ export default function McAngebotsfeed() {
     const [lang, setLang] = useState('de');
     const [langOpen, setLangOpen] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [imgModal, setImgModal] = useState({ open: false, urls: [], idx: 0 });
+    const [eanSearchImg, setEanSearchImg] = useState('');
+    const [selectedImgCount, setSelectedImgCount] = useState(null);
     const [alwaysAvailable, setAlwaysAvailable] = useState(false);
     const [optionalExpanded, setOptionalExpanded] = useState(false);
     const [parseError, setParseError] = useState(null);
@@ -1473,7 +1476,7 @@ export default function McAngebotsfeed() {
                     {complete !== undefined && (
                         <Tooltip text={tipComplete}>
                             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: '#374151', cursor: tipComplete ? 'help' : 'default' }}>
-                                <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#16A34A', flexShrink: 0 }} />
+                                <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#86EFAC', flexShrink: 0 }} />
                                 <strong style={{ fontWeight: 700, color: '#111827' }}>{complete.toLocaleString(numLocale)}</strong> {completeLabel}
                             </span>
                         </Tooltip>
@@ -1481,7 +1484,7 @@ export default function McAngebotsfeed() {
                     {incomplete !== undefined && (
                         <Tooltip text={tipIncomplete}>
                             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: '#374151', cursor: tipIncomplete ? 'help' : 'default' }}>
-                                <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#D97706', flexShrink: 0 }} />
+                                <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#FCD34D', flexShrink: 0 }} />
                                 <strong style={{ fontWeight: 700, color: '#111827' }}>{incomplete.toLocaleString(numLocale)}</strong> {incompleteLabel}
                             </span>
                         </Tooltip>
@@ -1719,7 +1722,7 @@ export default function McAngebotsfeed() {
                                 </div>
                             ))}
                             {/* Reichweiten-Hinweisbox */}
-                            <div style={{ margin: '10px 18px 14px', background: '#FEF3C7', border: '1px solid #FDE68A', borderRadius: 8, padding: '8px 12px', display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                            <div style={{ margin: '10px 18px 14px', background: '#FFFBEB', border: '1px solid #FCD34D', borderRadius: 8, padding: '8px 12px', display: 'flex', alignItems: 'flex-start', gap: 8 }}>
                                 <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 1, color: '#92400E' }}>
                                     <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.4"/>
                                     <path d="M8 5v3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
@@ -1870,7 +1873,7 @@ export default function McAngebotsfeed() {
 
                             {parseError && (
                                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 8, padding: '10px 12px' }}>
-                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 1 }}><circle cx="8" cy="8" r="7" stroke="#DC2626" strokeWidth="1.3"/><path d="M8 5v3.5M8 10.5v.5" stroke="#DC2626" strokeWidth="1.4" strokeLinecap="round"/></svg>
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 1 }}><circle cx="8" cy="8" r="7" stroke="#FCA5A5" strokeWidth="1.3"/><path d="M8 5v3.5M8 10.5v.5" stroke="#FCA5A5" strokeWidth="1.4" strokeLinecap="round"/></svg>
                                     <span style={{ fontSize: 12, color: '#991B1B', lineHeight: 1.45 }}>{parseError}</span>
                                 </div>
                             )}
@@ -1996,11 +1999,11 @@ export default function McAngebotsfeed() {
                             <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 0' }}>
                                 <Tooltip text={(langDE ? FIELD_TOOLTIPS_DE : FIELD_TOOLTIPS_EN)['image_url'] || null}>
                                     <span style={{ fontSize: 11, color: '#374151', width: 120, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 3, cursor: 'help', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                        {T.mainImageLabel}<span style={{ color: '#DC2626', fontWeight: 700 }}>*</span>
+                                        {T.mainImageLabel}<span style={{ color: '#991B1B', fontWeight: 700 }}>*</span>
                                         <span style={{ fontSize: 9, color: '#9CA3AF', borderRadius: '50%', border: '1px solid #D1D5DB', width: 12, height: 12, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>?</span>
                                     </span>
                                 </Tooltip>
-                                <div style={{ flex: 1, minWidth: 0, fontSize: 11, padding: '4px 7px', borderRadius: 5, border: `1px solid ${mcImageColumns.length > 0 ? '#D1FAE5' : '#FCA5A5'}`, background: mcImageColumns.length > 0 ? '#F0FDF4' : '#FFF5F5', color: mcImageColumns.length > 0 ? '#166534' : '#DC2626', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                <div style={{ flex: 1, minWidth: 0, fontSize: 11, padding: '4px 7px', borderRadius: 5, border: `1px solid ${mcImageColumns.length > 0 ? '#D1FAE5' : '#FCA5A5'}`, background: mcImageColumns.length > 0 ? '#F0FDF4' : '#FFF5F5', color: mcImageColumns.length > 0 ? '#166534' : '#991B1B', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                     {mcImageColumns.length > 0 ? mcImageColumns.join(', ') : T.notDetected}
                                 </div>
                             </div>
@@ -2008,7 +2011,9 @@ export default function McAngebotsfeed() {
                     }
 
                     const isAvailability = fieldKey === 'availability';
-                    const col = mcMapping[fieldKey];
+                    const col = isAvailability
+                        ? (mcMapping['availability'] || mcMapping['stock_amount'])
+                        : mcMapping[fieldKey];
                     const missing = !col && isPflicht && !(isAvailability && alwaysAvailable);
                     const tooltipText = (langDE ? FIELD_TOOLTIPS_DE : FIELD_TOOLTIPS_EN)[fieldKey] || null;
                     // Options excluding columns used by other fields
@@ -2021,7 +2026,7 @@ export default function McAngebotsfeed() {
                                 <Tooltip text={tooltipText}>
                                     <span style={{ fontSize: 11, color: '#374151', width: 120, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 3, cursor: tooltipText ? 'help' : 'default', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                         {label}
-                                        {isPflicht && <span style={{ color: '#DC2626', fontWeight: 700, flexShrink: 0 }}>*</span>}
+                                        {isPflicht && <span style={{ color: '#991B1B', fontWeight: 700, flexShrink: 0 }}>*</span>}
                                         {tooltipText && <span style={{ fontSize: 9, color: '#9CA3AF', borderRadius: '50%', border: '1px solid #D1D5DB', width: 12, height: 12, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>?</span>}
                                     </span>
                                 </Tooltip>
@@ -2070,7 +2075,7 @@ export default function McAngebotsfeed() {
                     <div style={{ width: '100%', maxWidth: 1100, overflowX: 'hidden' }}>
                         {mcIsWrongFile ? (
                             <div style={{ padding: '20px', borderRadius: 12, border: '1px solid #FECACA', background: '#FEF2F2', display: 'flex', gap: 12 }}>
-                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ flexShrink: 0, color: '#DC2626' }}><path d="M10 3L2 17h16L10 3z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/><path d="M10 9v3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/><circle cx="10" cy="14.5" r="0.75" fill="currentColor"/></svg>
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ flexShrink: 0, color: '#991B1B' }}><path d="M10 3L2 17h16L10 3z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/><path d="M10 9v3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/><circle cx="10" cy="14.5" r="0.75" fill="currentColor"/></svg>
                                 <div>
                                     <div style={{ fontSize: 13, fontWeight: 700, color: '#B91C1C', marginBottom: 4 }}>{T.wrongFileTitle}</div>
                                     <div style={{ fontSize: 11, color: '#7F1D1D', lineHeight: 1.6 }}>{T.wrongFileDesc}</div>
@@ -2084,12 +2089,12 @@ export default function McAngebotsfeed() {
                                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, marginBottom: missingPflicht2.length > 0 ? 6 : 0 }}>
                                         <div style={{ fontSize: 16, fontWeight: 800, color: '#111827' }}>{T.mappingTitle}</div>
                                         {missingPflicht2.length > 0 && (
-                                            <div style={{ fontSize: 12, color: '#DC2626', fontWeight: 600 }}>{T.mappingMissing(missingPflicht2.length)}</div>
+                                            <div style={{ fontSize: 12, color: '#991B1B', fontWeight: 600 }}>{T.mappingMissing(missingPflicht2.length)}</div>
                                         )}
                                     </div>
                                     {missingPflicht2.length > 0 && (
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: '#DC2626' }}>
-                                            <span style={{ color: '#DC2626', fontWeight: 700 }}>*</span>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: '#991B1B' }}>
+                                            <span style={{ color: '#991B1B', fontWeight: 700 }}>*</span>
                                             <span>{langDE ? 'Rot markierte Felder sind Pflichtfelder und müssen zugeordnet werden.' : 'Fields marked red are required and must be mapped before continuing.'}</span>
                                         </div>
                                     )}
@@ -2160,8 +2165,8 @@ export default function McAngebotsfeed() {
                                             {langDE ? 'FEHLER / HINWEISE' : 'ERRORS / HINTS'}
                                         </div>
                                         {missingPflicht2.length === 0 ? (
-                                            <div style={{ fontSize: 12, color: '#16A34A', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 5 }}>
-                                                <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4 6-6" stroke="#16A34A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                            <div style={{ fontSize: 12, color: '#166534', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 5 }}>
+                                                <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4 6-6" stroke="#166534" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                                                 {langDE ? 'Alle Pflichtfelder zugeordnet' : 'All required fields mapped'}
                                             </div>
                                         ) : (
@@ -2170,7 +2175,7 @@ export default function McAngebotsfeed() {
                                                     const label = f === 'image_url' ? (langDE ? 'Hauptbild' : 'Main Image') : (FIELD_LABELS[f] || f);
                                                     return (
                                                         <div key={f} style={{ fontSize: 11, display: 'flex', alignItems: 'flex-start', gap: 5, background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 5, padding: '5px 8px' }}>
-                                                            <span style={{ color: '#DC2626', fontWeight: 700, flexShrink: 0, marginTop: 1 }}>✕</span>
+                                                            <span style={{ color: '#991B1B', fontWeight: 700, flexShrink: 0, marginTop: 1 }}>✕</span>
                                                             <div>
                                                                 <div style={{ color: '#991B1B', fontWeight: 600 }}>{label}</div>
                                                                 <div style={{ color: '#B91C1C', fontSize: 10 }}>{langDE ? 'nicht zugeordnet' : 'not assigned'}</div>
@@ -2178,7 +2183,7 @@ export default function McAngebotsfeed() {
                                                         </div>
                                                     );
                                                 })}
-                                                <div style={{ fontSize: 10, color: '#B45309', background: '#FFFBEB', border: '1px solid #FDE68A', borderRadius: 5, padding: '6px 8px', marginTop: 4, lineHeight: 1.5 }}>
+                                                <div style={{ fontSize: 10, color: '#92400E', background: '#FFFBEB', border: '1px solid #FCD34D', borderRadius: 5, padding: '6px 8px', marginTop: 4, lineHeight: 1.5 }}>
                                                     {T.mappingWarning}
                                                 </div>
                                             </div>
@@ -2192,7 +2197,7 @@ export default function McAngebotsfeed() {
                                                 const lbl = f === 'image_url' ? (langDE ? 'Hauptbild' : 'Main Image') : (FIELD_LABELS[f] || f);
                                                 return (
                                                     <div key={f} style={{ fontSize: 10, display: 'flex', alignItems: 'baseline', gap: 3 }}>
-                                                        <span style={{ color: '#16A34A', fontWeight: 700, flexShrink: 0 }}>✓</span>
+                                                        <span style={{ color: '#166534', fontWeight: 700, flexShrink: 0 }}>✓</span>
                                                         <span style={{ color: '#374151' }}>{lbl}</span>
                                                         {col && <span style={{ color: '#9CA3AF', fontSize: 9 }}>→ {col}</span>}
                                                     </div>
@@ -2228,7 +2233,7 @@ export default function McAngebotsfeed() {
 
                                 {/* Bottom nav */}
                                 <div style={{ padding: '10px 20px', borderTop: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-                                    <div style={{ fontSize: 11, color: (issues?.missingPflichtCols?.length ?? 0) > 0 ? '#DC2626' : '#16A34A', fontWeight: 600 }}>
+                                    <div style={{ fontSize: 11, color: (issues?.missingPflichtCols?.length ?? 0) > 0 ? '#991B1B' : '#166534', fontWeight: 600 }}>
                                         {(issues?.missingPflichtCols?.length ?? 0) > 0
                                             ? (lang === 'de'
                                                 ? `${issues.missingPflichtCols.length} Pflichtfeld${issues.missingPflichtCols.length > 1 ? 'er' : ''} fehlen noch`
@@ -2508,7 +2513,7 @@ export default function McAngebotsfeed() {
                         <div className="mc-two-col-320" style={{ alignItems: 'start' }}>
 
                         {/* Field analysis table */}
-                        <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'auto', maxHeight: 'calc(100vh - 200px)' }}>
+                        <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'hidden' }}>
                             <div style={{ padding: '12px 16px 10px', borderBottom: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'sticky', top: 0, background: '#FFF', zIndex: 1, gap: 12 }}>
                                 <div style={{ minWidth: 0 }}>
                                     <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{T.analysisTitle}</div>
@@ -2531,8 +2536,8 @@ export default function McAngebotsfeed() {
                                         : !!mcMapping[key];
                                     const errs = (key === 'availability' && alwaysAvailable) ? 0 : (fieldErrorRows[key]?.size || 0);
                                     const pct = isMapped ? Math.max(0, Math.round((1 - errs / issues.totalRows) * 100)) : null;
-                                    // Sort key: lower = worse (shows first). Not-in-feed sorts last.
-                                    const sortRank = pct === null ? 999 : pct;
+                                    // Sort key: errors-first, then by pct ascending; clean fields after; not-mapped last.
+                                    const sortRank = pct === null ? 99999 : errs > 0 ? pct : 10000 + pct;
                                     return { key, label, sortRank };
                                 })
                                 .sort((a, b) => a.sortRank - b.sortRank)
@@ -2882,60 +2887,94 @@ export default function McAngebotsfeed() {
                                     })}
                                 </div>
                                 {/* Bilder analysis */}
-                                {imgDistribution && imgDistribution.totalRows > 0 && (
-                                    <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'hidden' }}>
-                                        <div style={{ padding: '12px 16px 10px', borderBottom: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', gap: 8 }}>
-                                            <span style={{ width: 8, height: 8, borderRadius: '50%', background: P_RED, flexShrink: 0 }} />
-                                            <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{lang === 'de' ? 'Bilder' : 'Images'}</div>
-                                            <div style={{ marginLeft: 'auto', fontSize: 10, color: '#16A34A', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 999, padding: '3px 10px', fontWeight: 600 }}>
-                                                {lang === 'de' ? `Bildspalten ${mcImageColumns.length}` : `Image columns ${mcImageColumns.length}`}
+                                {imgDistribution && imgDistribution.totalRows > 0 && (() => {
+                                    // All products with at least one image (for EAN search + chip filter)
+                                    const allImgSamples = mcImageColumns.length > 0 ? rows.map((r) => ({
+                                        name: nameColImg ? String(r[nameColImg] ?? '').trim() : '',
+                                        ean: eanColImg ? String(r[eanColImg] ?? '').trim() : '',
+                                        urls: mcImageColumns.map((c) => String(r[c] ?? '').trim()).filter(Boolean),
+                                        total: mcImageColumns.reduce((s, c) => s + (String(r[c] ?? '').trim() ? 1 : 0), 0),
+                                    })) : [];
+
+                                    const searchTerm = eanSearchImg.trim().toLowerCase();
+                                    const filteredSamples = allImgSamples
+                                        .filter((s) => selectedImgCount === null || s.total === selectedImgCount)
+                                        .filter((s) => !searchTerm || s.ean.toLowerCase().includes(searchTerm) || s.name.toLowerCase().includes(searchTerm))
+                                        .slice(0, 5);
+
+                                    return (
+                                        <div style={{ background: '#FFF', borderRadius: 14, boxShadow: '0 1px 4px rgba(0,0,0,0.06)', border: '1px solid #E5E7EB', overflow: 'hidden' }}>
+                                            {/* Header */}
+                                            <div style={{ padding: '12px 16px 10px', borderBottom: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', gap: 8 }}>
+                                                <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{lang === 'de' ? 'Bilder' : 'Images'}</div>
+                                                <div style={{ marginLeft: 'auto', fontSize: 10, color: P_GREEN_TEXT, background: P_GREEN_BG, border: `1px solid ${P_GREEN}`, borderRadius: 999, padding: '3px 10px', fontWeight: 600 }}>
+                                                    {lang === 'de' ? `${mcImageColumns.length} Bildspalten` : `${mcImageColumns.length} image columns`}
+                                                </div>
                                             </div>
-                                        </div>
-                                        {/* Distribution chips */}
-                                        <div style={{ padding: '12px 16px', display: 'flex', flexWrap: 'wrap', gap: 6, borderBottom: '1px solid #F3F4F6' }}>
-                                            {Object.entries(imgDistribution.dist)
-                                                .map(([k, v]) => [parseInt(k, 10), v])
-                                                .sort((a, b) => a[0] - b[0])
-                                                .map(([cnt, n]) => {
-                                                    const isOk = cnt >= 3;
-                                                    const isWarn = cnt > 0 && cnt < 3;
-                                                    const color = isOk ? P_GREEN_TEXT : isWarn ? P_ORANGE_TEXT : P_RED_TEXT;
-                                                    const bg = isOk ? P_GREEN_BG : isWarn ? P_ORANGE_BG : P_RED_BG;
-                                                    const border = isOk ? P_GREEN : isWarn ? P_ORANGE : P_RED;
-                                                    return (
-                                                        <span key={cnt} style={{ fontSize: 11, fontWeight: 600, color, background: bg, border: `1px solid ${border}`, borderRadius: 6, padding: '4px 10px' }}>
-                                                            {lang === 'de' ? `${cnt} ${cnt === 1 ? 'Bild' : 'Bilder'}` : `${cnt} ${cnt === 1 ? 'image' : 'images'}`}: {n}
-                                                        </span>
-                                                    );
-                                                })}
-                                        </div>
-                                        {/* Product samples */}
-                                        {imageSamples.length > 0 && (
+                                            {/* Clickable distribution chips */}
+                                            <div style={{ padding: '10px 16px 10px', display: 'flex', flexWrap: 'wrap', gap: 6, borderBottom: '1px solid #F3F4F6' }}>
+                                                {[{ cnt: null, label: lang === 'de' ? 'Alle' : 'All', n: imgDistribution.totalRows }]
+                                                    .concat(Object.entries(imgDistribution.dist).map(([k, v]) => ({ cnt: parseInt(k, 10), label: null, n: v })).sort((a, b) => a.cnt - b.cnt))
+                                                    .map(({ cnt, label, n }) => {
+                                                        const isActive = selectedImgCount === cnt;
+                                                        const isOk = cnt === null || cnt >= 3;
+                                                        const isWarn = cnt !== null && cnt > 0 && cnt < 3;
+                                                        const color = isActive ? '#FFF' : isOk ? P_GREEN_TEXT : isWarn ? P_ORANGE_TEXT : P_RED_TEXT;
+                                                        const bg = isActive ? (isOk ? P_GREEN_TEXT : isWarn ? P_ORANGE_TEXT : P_RED_TEXT) : isOk ? P_GREEN_BG : isWarn ? P_ORANGE_BG : P_RED_BG;
+                                                        const border = isOk ? P_GREEN : isWarn ? P_ORANGE : P_RED;
+                                                        const chipLabel = label ?? (lang === 'de' ? `${cnt} ${cnt === 1 ? 'Bild' : 'Bilder'}` : `${cnt} ${cnt === 1 ? 'image' : 'images'}`);
+                                                        return (
+                                                            <button key={String(cnt)} type="button"
+                                                                onClick={() => setSelectedImgCount(isActive ? null : cnt)}
+                                                                style={{ fontSize: 11, fontWeight: 600, color, background: bg, border: `1px solid ${border}`, borderRadius: 6, padding: '4px 10px', cursor: 'pointer' }}>
+                                                                {chipLabel}: {n}
+                                                            </button>
+                                                        );
+                                                    })}
+                                            </div>
+                                            {/* EAN / name search */}
+                                            <div style={{ padding: '8px 16px', borderBottom: '1px solid #F3F4F6', position: 'relative' }}>
+                                                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ position: 'absolute', left: 24, top: '50%', transform: 'translateY(-50%)', color: '#9CA3AF', pointerEvents: 'none' }}><circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" strokeWidth="1.3"/><path d="M10 10l3 3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>
+                                                <input type="text" value={eanSearchImg} onChange={(e) => setEanSearchImg(e.target.value)}
+                                                    placeholder={lang === 'de' ? 'EAN oder Produktname suchen…' : 'Search EAN or product name…'}
+                                                    style={{ width: '100%', boxSizing: 'border-box', paddingLeft: 28, paddingRight: 10, paddingTop: 5, paddingBottom: 5, border: '1px solid #E5E7EB', borderRadius: 6, fontSize: 11, outline: 'none', background: '#F9FAFB' }} />
+                                            </div>
+                                            {/* Product sample cards */}
                                             <div style={{ padding: '8px 16px 12px', display: 'flex', flexDirection: 'column', gap: 6 }}>
-                                                {imageSamples.map((s, i) => (
-                                                    <div key={i} style={{ border: '1px solid #F3F4F6', borderRadius: 8, padding: '8px 10px', display: 'flex', alignItems: 'center', gap: 10 }}>
-                                                        <div style={{ minWidth: 0, flex: 1, maxWidth: '50%' }}>
-                                                            <div style={{ fontSize: 12, fontWeight: 700, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name || '—'}</div>
+                                                {filteredSamples.length === 0 ? (
+                                                    <div style={{ fontSize: 11, color: '#9CA3AF', textAlign: 'center', padding: '12px 0' }}>
+                                                        {lang === 'de' ? 'Keine Produkte gefunden.' : 'No products found.'}
+                                                    </div>
+                                                ) : filteredSamples.map((s, i) => (
+                                                    <div key={i} style={{ border: '1px solid #F3F4F6', borderRadius: 10, padding: '8px 10px', display: 'flex', alignItems: 'center', gap: 10 }}>
+                                                        <div style={{ minWidth: 0, flex: 1 }}>
+                                                            <div style={{ fontSize: 11, fontWeight: 700, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name || '—'}</div>
                                                             {s.ean && <div style={{ fontSize: 10, color: '#9CA3AF', fontFamily: 'monospace', marginTop: 1 }}>{s.ean}</div>}
                                                             <div style={{ fontSize: 10, color: '#6B7280', marginTop: 1 }}>{lang === 'de' ? `${s.total} Bilder` : `${s.total} images`}</div>
                                                         </div>
-                                                        <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
-                                                            {s.urls.map((u, ui) => (
-                                                                <img
-                                                                    key={ui}
+                                                        <div style={{ display: 'flex', gap: 4, flexShrink: 0, marginLeft: 'auto' }}>
+                                                            {s.urls.slice(0, 4).map((u, ui) => (
+                                                                <img key={ui}
                                                                     src={`/api/image-proxy?url=${encodeURIComponent(u)}`}
                                                                     alt=""
+                                                                    onClick={() => setImgModal({ open: true, urls: s.urls, idx: ui })}
                                                                     onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                                                                    style={{ width: 44, height: 44, objectFit: 'cover', borderRadius: 6, border: '1px solid #E5E7EB', background: '#F9FAFB' }}
+                                                                    style={{ width: 44, height: 44, objectFit: 'cover', borderRadius: 6, border: '1px solid #E5E7EB', background: '#F9FAFB', cursor: 'zoom-in' }}
                                                                 />
                                                             ))}
+                                                            {s.urls.length > 4 && (
+                                                                <div onClick={() => setImgModal({ open: true, urls: s.urls, idx: 4 })}
+                                                                    style={{ width: 44, height: 44, borderRadius: 6, border: '1px solid #E5E7EB', background: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: '#6B7280', cursor: 'zoom-in', flexShrink: 0 }}>
+                                                                    +{s.urls.length - 4}
+                                                                </div>
+                                                            )}
                                                         </div>
                                                     </div>
                                                 ))}
                                             </div>
-                                        )}
-                                    </div>
-                                )}
+                                        </div>
+                                    );
+                                })()}
 
                                 {/* Title and description length charts side by side */}
                                 {(titleStats?.total > 0 || descStats?.total > 0) && (
@@ -2948,7 +2987,7 @@ export default function McAngebotsfeed() {
                                                         {lang === 'de' ? 'Titellänge' : 'Title Length'}
                                                     </div>
                                                     <div style={{ display: 'flex', gap: 8 }}>
-                                                        <div style={{ fontSize: 10, color: '#16A34A', fontWeight: 600 }}>{lang === 'de' ? 'Ziel: 80+' : 'Target: 80+'}</div>
+                                                        <div style={{ fontSize: 10, color: '#166534', fontWeight: 600 }}>{lang === 'de' ? 'Ziel: 80+' : 'Target: 80+'}</div>
                                                         <div style={{ fontSize: 10, color: '#9CA3AF' }}>
                                                             {lang === 'de' ? `Ø ${titleStats.avg.toLocaleString(numLocale)}` : `Avg. ${titleStats.avg.toLocaleString(numLocale)}`}
                                                         </div>
@@ -2959,7 +2998,7 @@ export default function McAngebotsfeed() {
                                                         { key: 'none',  label: lang === 'de' ? 'Leer (0)' : 'Empty (0)',     color: '#EF4444' },
                                                         { key: 'short', label: lang === 'de' ? 'Kurz (<30)' : 'Short (<30)', color: '#F59E0B' },
                                                         { key: 'ok',    label: lang === 'de' ? 'OK (30–79)' : 'OK (30–79)',  color: '#60A5FA' },
-                                                        { key: 'good',  label: lang === 'de' ? 'Gut (80+)' : 'Good (80+)',   color: '#16A34A' },
+                                                        { key: 'good',  label: lang === 'de' ? 'Gut (80+)' : 'Good (80+)',   color: '#166534' },
                                                     ].map(({ key, label, color }) => {
                                                         const cnt = titleStats.buckets[key];
                                                         const pct = titleStats.total ? Math.round((cnt / titleStats.total) * 100) : 0;
@@ -2984,7 +3023,7 @@ export default function McAngebotsfeed() {
                                                         {lang === 'de' ? 'Beschreibungslänge' : 'Description Length'}
                                                     </div>
                                                     <div style={{ display: 'flex', gap: 8 }}>
-                                                        <div style={{ fontSize: 10, color: '#16A34A', fontWeight: 600 }}>{lang === 'de' ? 'Ziel: 300+' : 'Target: 300+'}</div>
+                                                        <div style={{ fontSize: 10, color: '#166534', fontWeight: 600 }}>{lang === 'de' ? 'Ziel: 300+' : 'Target: 300+'}</div>
                                                         <div style={{ fontSize: 10, color: '#9CA3AF' }}>
                                                             {lang === 'de' ? `Ø ${descStats.avg.toLocaleString(numLocale)}` : `Avg. ${descStats.avg.toLocaleString(numLocale)}`}
                                                         </div>
@@ -2995,7 +3034,7 @@ export default function McAngebotsfeed() {
                                                         { key: 'none',  label: lang === 'de' ? 'Leer (0)' : 'Empty (0)',         color: '#EF4444' },
                                                         { key: 'short', label: lang === 'de' ? 'Kurz (<100)' : 'Short (<100)',   color: '#F59E0B' },
                                                         { key: 'ok',    label: lang === 'de' ? 'OK (100–299)' : 'OK (100–299)',  color: '#60A5FA' },
-                                                        { key: 'good',  label: lang === 'de' ? 'Gut (300+)' : 'Good (300+)',     color: '#16A34A' },
+                                                        { key: 'good',  label: lang === 'de' ? 'Gut (300+)' : 'Good (300+)',     color: '#166534' },
                                                     ].map(({ key, label, color }) => {
                                                         const cnt = descStats.buckets[key];
                                                         const pct = descStats.total ? Math.round((cnt / descStats.total) * 100) : 0;
@@ -3745,6 +3784,94 @@ export default function McAngebotsfeed() {
             </div>{/* end scrollable area */}
         </div>{/* end main body */}
 
+        {/* Image Lightbox Modal */}
+        {imgModal.open && (
+            <div
+                onClick={() => setImgModal({ open: false, urls: [], idx: 0 })}
+                style={{
+                    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    zIndex: 1100, padding: 16,
+                }}
+            >
+                <div
+                    onClick={(e) => e.stopPropagation()}
+                    style={{
+                        position: 'relative', display: 'flex', flexDirection: 'column',
+                        alignItems: 'center', gap: 12, maxWidth: '90vw',
+                    }}
+                >
+                    {/* Main image */}
+                    <img
+                        src={imgModal.urls[imgModal.idx]}
+                        alt=""
+                        style={{
+                            maxWidth: '80vw', maxHeight: '70vh', objectFit: 'contain',
+                            borderRadius: 8, background: '#FFF', boxShadow: '0 4px 24px rgba(0,0,0,0.4)',
+                        }}
+                        onError={(e) => { e.target.style.display = 'none'; }}
+                    />
+                    {/* Counter */}
+                    <div style={{ color: '#D1D5DB', fontSize: 12 }}>
+                        {imgModal.idx + 1} / {imgModal.urls.length}
+                    </div>
+                    {/* Thumbnail strip */}
+                    {imgModal.urls.length > 1 && (
+                        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center' }}>
+                            {imgModal.urls.map((url, i) => (
+                                <img
+                                    key={i}
+                                    src={url}
+                                    alt=""
+                                    onClick={() => setImgModal((m) => ({ ...m, idx: i }))}
+                                    style={{
+                                        width: 44, height: 44, objectFit: 'cover', borderRadius: 5,
+                                        cursor: 'pointer', border: `2px solid ${i === imgModal.idx ? '#93C5FD' : 'transparent'}`,
+                                        background: '#374151', opacity: i === imgModal.idx ? 1 : 0.65,
+                                        transition: 'opacity 0.15s',
+                                    }}
+                                    onError={(e) => { e.target.style.display = 'none'; }}
+                                />
+                            ))}
+                        </div>
+                    )}
+                    {/* Prev / Next arrows */}
+                    {imgModal.urls.length > 1 && (
+                        <>
+                            <button
+                                onClick={() => setImgModal((m) => ({ ...m, idx: (m.idx - 1 + m.urls.length) % m.urls.length }))}
+                                style={{
+                                    position: 'absolute', left: -44, top: '35%',
+                                    background: 'rgba(255,255,255,0.12)', border: 'none', borderRadius: '50%',
+                                    width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    cursor: 'pointer', color: '#FFF', fontSize: 18,
+                                }}
+                            >‹</button>
+                            <button
+                                onClick={() => setImgModal((m) => ({ ...m, idx: (m.idx + 1) % m.urls.length }))}
+                                style={{
+                                    position: 'absolute', right: -44, top: '35%',
+                                    background: 'rgba(255,255,255,0.12)', border: 'none', borderRadius: '50%',
+                                    width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    cursor: 'pointer', color: '#FFF', fontSize: 18,
+                                }}
+                            >›</button>
+                        </>
+                    )}
+                    {/* Close button */}
+                    <button
+                        onClick={() => setImgModal({ open: false, urls: [], idx: 0 })}
+                        style={{
+                            position: 'absolute', top: -16, right: -16,
+                            background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '50%',
+                            width: 30, height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            cursor: 'pointer', color: '#FFF', fontSize: 16, lineHeight: 1,
+                        }}
+                    >×</button>
+                </div>
+            </div>
+        )}
+
         {/* Feedleitfaden PDF Modal */}
         {showLeitfaden && (
             <div
@@ -3806,7 +3933,7 @@ export default function McAngebotsfeed() {
                 { label: lang === 'de' ? 'Identifikation' : 'Identification', color: '#1553B6', cols: ['EAN (GTIN14)', 'offer_id', 'name', 'brand', 'series', 'model', 'category_path', 'deeplink'] },
                 { label: lang === 'de' ? 'Beschreibung & Merkmale' : 'Description & Features', color: '#7C3AED', cols: ['description', 'color', 'material', 'surface_treatment', 'material_wood_quality', 'frame_material', 'orientation', 'cover', 'removable_cover', 'washable_cover', 'care_instructions', 'suitable_for_allergic', 'certificate', 'temper', 'density', 'filling', 'filling_weight', 'filling_quantity', 'quilt_type', 'quilt_zones', 'number_lying_zones'] },
                 { label: lang === 'de' ? 'Maße & Gewicht' : 'Dimensions & Weight', color: '#059669', cols: ['size', 'size_height', 'size_width', 'size_depth', 'size_diameter', 'size_lying_surface', 'size_seat_height', 'size_seat_depth', 'size_seat_width', 'weight', 'weight_capacity'] },
-                { label: lang === 'de' ? 'Ausstattung & Lieferumfang' : 'Features & Included', color: '#D97706', cols: ['with_drawer', 'numbers_doors', 'numbers_drawers', 'numbers_shelf', 'softclose', 'set_includes', 'delivery_includes', 'incl_mattress', 'incl_slatted_frame', 'lighting_included', 'illuminant_included', 'socket', 'two_men_handling'] },
+                { label: lang === 'de' ? 'Ausstattung & Lieferumfang' : 'Features & Included', color: '#92400E', cols: ['with_drawer', 'numbers_doors', 'numbers_drawers', 'numbers_shelf', 'softclose', 'set_includes', 'delivery_includes', 'incl_mattress', 'incl_slatted_frame', 'lighting_included', 'illuminant_included', 'socket', 'two_men_handling'] },
                 { label: lang === 'de' ? 'Energie & Zertifikate' : 'Energy & Certificates', color: '#10B981', cols: ['energy_efficiency_label', 'energy_efficiency_category', 'EPREL_registration_number', 'ce_label_declaration_confirmation', 'ce_label_instruction_manual', 'ce_label_safety_instructions', 'disposal_old_packaging', 'disposal_old_furniture'] },
                 { label: lang === 'de' ? 'Bilder (1–10)' : 'Images (1–10)', color: '#EC4899', cols: ['Bildlink_1', 'Bildlink_2', 'Bildlink_3', 'Bildlink_4', 'Bildlink_5', 'Bildlink_6', 'Bildlink_7', 'Bildlink_8', 'Bildlink_9', 'Bildlink_10'] },
                 { label: lang === 'de' ? 'Preis & Versand' : 'Price & Shipping', color: '#0891B2', cols: ['price', 'stock_amount', 'availability', 'delivery_time', 'shipping_mode', 'shipping_cost', 'shipping_no_of_items', 'shipping_size_pack1', 'shipping_weight_in_kg', 'delivery_condition', 'delivery_place_use', 'assembly_service', 'HS-Code'] },
@@ -3867,7 +3994,7 @@ export default function McAngebotsfeed() {
                                             const ex = exMap[col] || '';
                                             const idx = VORLAGE_HEADERS.indexOf(col) + 1;
                                             return (
-                                                <div key={col} style={{ border: `1px solid ${isPflicht ? '#FDE68A' : '#E5E7EB'}`, borderRadius: 7, padding: '8px 10px', background: isPflicht ? '#FFFBEB' : '#FAFAFA', display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0, overflow: 'hidden' }}>
+                                                <div key={col} style={{ border: `1px solid ${isPflicht ? '#FCD34D' : '#E5E7EB'}`, borderRadius: 7, padding: '8px 10px', background: isPflicht ? '#FFFBEB' : '#FAFAFA', display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0, overflow: 'hidden' }}>
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: 5, minWidth: 0 }}>
                                                         <span style={{ fontSize: 10, color: '#9CA3AF', minWidth: 18, fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>{idx}</span>
                                                         <span style={{ fontSize: 12, fontWeight: 600, color: isPflicht ? '#92400E' : '#111827', fontFamily: 'monospace', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={col}>{col}</span>
