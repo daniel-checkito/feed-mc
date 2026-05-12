@@ -1713,7 +1713,7 @@ export default function McAngebotsfeed() {
             </div>
 
             {/* Scrollable area: step content + sticky bars */}
-            <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
 
             {/* Step content */}
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '24px 32px', boxSizing: 'border-box' }}>
