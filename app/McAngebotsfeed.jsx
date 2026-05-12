@@ -3472,22 +3472,38 @@ export default function McAngebotsfeed() {
                             {/* Left: recommendations */}
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                                 {/* Page header */}
-                                <div>
-                                    <div style={{ fontSize: 16, fontWeight: 800, color: '#111827', marginBottom: 3 }}>
-                                        {recommendations.length > 0
-                                            ? (lang === 'de' ? 'Handlungsempfehlungen' : 'Recommendations')
-                                            : T.recNoErrorsTitle}
-                                    </div>
-                                    {recommendations.length > 0 && (
-                                        <div style={{ fontSize: 12, color: '#6B7280' }}>
-                                            {lang === 'de'
-                                                ? `${pflichtRecs.length} Pflichtfeld · ${optionalRecs.length} optionale Felder · ${hintRecs.length} Hinweise`
-                                                : `${pflichtRecs.length} required · ${optionalRecs.length} optional · ${hintRecs.length} hints`}
+                                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+                                    <div style={{ minWidth: 0 }}>
+                                        <div style={{ fontSize: 16, fontWeight: 800, color: '#111827', marginBottom: 3 }}>
+                                            {recommendations.length > 0
+                                                ? (lang === 'de' ? 'Handlungsempfehlungen' : 'Recommendations')
+                                                : T.recNoErrorsTitle}
                                         </div>
-                                    )}
-                                    {recommendations.length === 0 && (
-                                        <div style={{ fontSize: 13, color: '#6B7280' }}>{T.recNoErrorsSub}</div>
-                                    )}
+                                        {recommendations.length > 0 && (
+                                            <div style={{ fontSize: 12, color: '#6B7280' }}>
+                                                {lang === 'de'
+                                                    ? `${pflichtRecs.length} Pflichtfeld · ${optionalRecs.length} optionale Felder · ${hintRecs.length} Hinweise`
+                                                    : `${pflichtRecs.length} required · ${optionalRecs.length} optional · ${hintRecs.length} hints`}
+                                            </div>
+                                        )}
+                                        {recommendations.length === 0 && (
+                                            <div style={{ fontSize: 13, color: '#6B7280' }}>{T.recNoErrorsSub}</div>
+                                        )}
+                                    </div>
+                                    {recommendations.length > 0 && (() => {
+                                        const allSectionKeys = ['pflicht', 'optional', 'hints'];
+                                        const allCollapsed = allSectionKeys.every(k => collapsedSections.has(k));
+                                        return (
+                                            <button type="button"
+                                                onClick={() => setCollapsedSections(allCollapsed ? new Set() : new Set(allSectionKeys))}
+                                                style={{ fontSize: 11, color: '#6B7280', background: 'none', border: '1px solid #E5E7EB', borderRadius: 6, padding: '4px 10px', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}
+                                            >
+                                                {allCollapsed
+                                                    ? (lang === 'de' ? 'Alle aufklappen' : 'Expand all')
+                                                    : (lang === 'de' ? 'Alle einklappen' : 'Collapse all')}
+                                            </button>
+                                        );
+                                    })()}
                                 </div>
                                 {/* No-errors state */}
                                 {recommendations.length === 0 && (
@@ -3601,21 +3617,8 @@ export default function McAngebotsfeed() {
                                         );
                                     };
 
-                                    const allSectionKeys = ['pflicht', 'optional', 'hints'];
-                                    const allCollapsed = allSectionKeys.every(k => collapsedSections.has(k));
-
                                     return (
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                                            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                                                <button type="button"
-                                                    onClick={() => setCollapsedSections(allCollapsed ? new Set() : new Set(allSectionKeys))}
-                                                    style={{ fontSize: 11, color: '#6B7280', background: 'none', border: '1px solid #E5E7EB', borderRadius: 6, padding: '3px 10px', cursor: 'pointer' }}
-                                                >
-                                                    {allCollapsed
-                                                        ? (lang === 'de' ? 'Alle aufklappen' : 'Expand all')
-                                                        : (lang === 'de' ? 'Alle einklappen' : 'Collapse all')}
-                                                </button>
-                                            </div>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                                             <Section
                                                 sectionKey="pflicht"
                                                 title={lang === 'de' ? 'Pflichtfelder' : 'Required Fields'}
@@ -3787,7 +3790,7 @@ export default function McAngebotsfeed() {
                             </div>
 
                             {/* Right: download + reset panel */}
-                            <div className="mc-sticky-sidebar" style={{ display: 'flex', flexDirection: 'column', gap: 12, maxHeight: 'calc(100vh - 120px)', overflowY: 'auto' }}>
+                            <div className="mc-sticky-sidebar" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
 
                                 {/* Card 1 — Feed-Übersicht */}
                                 <div style={{ background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 14, overflow: 'hidden' }}>
@@ -3876,20 +3879,13 @@ export default function McAngebotsfeed() {
                                         </div>
                                     </div>
                                     {[
-                                        { n: 1, title: lang === 'de' ? 'Fehlerbericht herunterladen' : 'Download error report', sub: lang === 'de' ? 'CSV-Datei mit allen Fehlern je Zeile für Excel' : 'CSV file with all errors per row for Excel',
-                                          icon: <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M5 7l3 3 3-3M2 13h12" stroke="#2563EB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> },
-                                        { n: 2, title: lang === 'de' ? 'Fehler in Excel korrigieren' : 'Fix errors in Excel', sub: lang === 'de' ? 'Betroffene Artikel anhand der Fehlerspalte bearbeiten' : 'Edit affected items using the error column',
-                                          icon: <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M11 2l3 3-8 8H3v-3L11 2z" stroke="#2563EB" strokeWidth="1.4" strokeLinejoin="round"/></svg> },
-                                        { n: 3, title: lang === 'de' ? 'Korrigierten Feed hochladen' : 'Upload corrected feed', sub: lang === 'de' ? 'Direkt im Händlerportal unter Einstellungen → Feed' : 'In the merchant portal under Settings → Feed',
-                                          icon: <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 10V2M5 5l3-3 3 3" stroke="#2563EB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 13h12" stroke="#2563EB" strokeWidth="1.5" strokeLinecap="round"/></svg> },
+                                        { n: 1, title: lang === 'de' ? 'Fehlerbericht herunterladen' : 'Download error report' },
+                                        { n: 2, title: lang === 'de' ? 'Fehler in Excel korrigieren' : 'Fix errors in Excel' },
+                                        { n: 3, title: lang === 'de' ? 'Korrigierten Feed hochladen' : 'Upload corrected feed' },
                                     ].map((step, i) => (
-                                        <div key={step.n} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderBottom: i < 2 ? '1px solid #F3F4F6' : 'none' }}>
-                                            <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#2563EB', color: '#FFF', fontSize: 11, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{step.n}</div>
-                                            <div style={{ flex: 1, minWidth: 0 }}>
-                                                <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>{step.title}</div>
-                                                <div style={{ fontSize: 10, color: '#6B7280', marginTop: 1 }}>{step.sub}</div>
-                                            </div>
-                                            <div style={{ width: 28, height: 28, borderRadius: 6, background: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{step.icon}</div>
+                                        <div key={step.n} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 14px', borderBottom: i < 2 ? '1px solid #F3F4F6' : 'none' }}>
+                                            <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#2563EB', color: '#FFF', fontSize: 11, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{step.n}</div>
+                                            <div style={{ flex: 1, minWidth: 0, fontSize: 12, fontWeight: 500, color: '#111827' }}>{step.title}</div>
                                         </div>
                                     ))}
                                 </div>
