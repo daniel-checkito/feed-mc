@@ -3916,14 +3916,10 @@ export default function McAngebotsfeed() {
                                 </div>
 
                                 {/* Nav */}
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                                <div>
                                     <button type="button" onClick={() => setStep(4)}
-                                        style={{ background: '#FFF', border: '1px solid #D1D5DB', borderRadius: 8, padding: '10px', fontSize: 13, fontWeight: 600, color: '#374151', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                                        style={{ width: '100%', background: '#FFF', border: '1px solid #D1D5DB', borderRadius: 8, padding: '10px', fontSize: 13, fontWeight: 600, color: '#374151', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
                                         ← {T.back}
-                                    </button>
-                                    <button type="button" onClick={resetToStart}
-                                        style={{ background: MC_BLUE, border: 'none', borderRadius: 8, padding: '10px', fontSize: 13, fontWeight: 700, color: '#FFF', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-                                        {lang === 'de' ? 'Neu hochladen' : 'New upload'} →
                                     </button>
                                 </div>
                             </div>
