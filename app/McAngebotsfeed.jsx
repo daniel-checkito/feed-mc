@@ -2836,10 +2836,12 @@ export default function McAngebotsfeed() {
                                                         <div style={{ fontSize: 11, color: hasError ? '#92400E' : '#374151', fontWeight: hasError ? 600 : 500, flexShrink: 0 }}>{label}</div>
                                                     </div>
                                                     {errorEans4.length > 0 && (
-                                                        <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 3 }}>
-                                                            <span style={{ fontSize: 9, color: '#9CA3AF', fontWeight: 600 }}>EAN:</span>
+                                                        <div style={{ display: 'flex', alignItems: 'flex-start', flexWrap: 'wrap', gap: 3 }}>
+                                                            <span style={{ fontSize: 9, fontWeight: 700, background: barColor === P_RED ? P_RED_BG : P_ORANGE_BG, color: barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT, border: `1px solid ${barColor}`, borderRadius: 3, padding: '1px 5px', flexShrink: 0, whiteSpace: 'nowrap' }}>
+                                                                {lang === 'de' ? 'Fehlend' : 'Missing'} · {errs.toLocaleString(numLocale)}×
+                                                            </span>
                                                             {errorEans4.slice(0, 5).map((item, i) => (
-                                                                <span key={i} style={{ fontFamily: 'monospace', fontSize: 9, background: '#F3F4F6', padding: '1px 5px', borderRadius: 3, color: '#374151', display: 'inline-flex', alignItems: 'center', gap: 2, maxWidth: 220, overflow: 'hidden' }}>
+                                                                <span key={i} style={{ fontSize: 9, background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', color: '#374151', display: 'inline-flex', alignItems: 'center', gap: 2, maxWidth: 220, overflow: 'hidden' }}>
                                                                     {typeof item === 'string' ? item : item.ean}
                                                                     {typeof item !== 'string' && item.name && (
                                                                         <span style={{ fontFamily: 'sans-serif', color: '#6B7280', marginLeft: 3, maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>· {item.name}</span>
