@@ -1513,13 +1513,14 @@ export default function McAngebotsfeed() {
                 }
             `}</style>
             {/* ── HEADER ── */}
-            <header style={{ background: MC_BLUE, padding: '10px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, position: 'relative', zIndex: 200 }}>
+            <header style={{ background: MC_BLUE, padding: '10px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, zIndex: 200 }}>
                 <span onClick={resetToStart} style={{ color: '#FFF', fontWeight: 900, fontSize: 22, letterSpacing: '-0.5px', fontStyle: 'italic', whiteSpace: 'nowrap', flexShrink: 0, cursor: 'pointer' }}>
                     FEED CHECKER
                 </span>
 
-                {/* Language dropdown - centered absolutely so it sits in the middle without affecting the right-hand button group */}
-                <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
+                {/* Right-side buttons (language selector + action buttons) */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+                    {/* Language dropdown */}
                     <div style={{ position: 'relative' }}>
                         <button type="button" onClick={() => setLangOpen((v) => !v)}
                             style={{ display: 'flex', alignItems: 'center', gap: 7, background: langOpen ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: langOpen ? '8px 8px 0 0' : 8, padding: '6px 12px', cursor: 'pointer', color: '#FFF', fontSize: 13, fontWeight: 600, transition: 'background 0.15s' }}>
@@ -1543,7 +1544,6 @@ export default function McAngebotsfeed() {
                         </button>
                         {langOpen && (
                             <>
-                                {/* Click-outside backdrop */}
                                 <div style={{ position: 'fixed', inset: 0, zIndex: 1000 }} onClick={() => setLangOpen(false)} />
                                 <div style={{ position: 'absolute', top: '100%', right: 0, background: '#FFF', borderRadius: '0 0 8px 8px', border: '1px solid rgba(255,255,255,0.25)', boxShadow: '0 8px 24px rgba(0,0,0,0.18)', overflow: 'hidden', zIndex: 1001, minWidth: '100%' }}>
                                     {[{ value: 'de', label: 'Deutsch' }, { value: 'en', label: 'English' }].map((opt) => (
@@ -1573,10 +1573,7 @@ export default function McAngebotsfeed() {
                             </>
                         )}
                     </div>
-                </div>
-
-                {/* Right-side buttons */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+                    <div className="mc-header-sep" style={{ width: 1, height: 18, background: 'rgba(255,255,255,0.2)', margin: '0 2px' }} />
                     <button type="button" onClick={() => setShowLeitfaden(true)} className="mc-header-guide-btn"
                         style={{ display: 'flex', alignItems: 'center', gap: 6, border: '1px solid rgba(255,255,255,0.3)', background: 'transparent', color: '#FFF', fontSize: 12, fontWeight: 600, padding: '6px 10px', borderRadius: 6, cursor: 'pointer' }}>
                         <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 1.5h8.5l3 3v10h-11.5v-13z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M11 1.5v3h3" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M5 8h6M5 10.5h6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
