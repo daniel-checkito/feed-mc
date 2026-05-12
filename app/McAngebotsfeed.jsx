@@ -3498,9 +3498,10 @@ export default function McAngebotsfeed() {
                                                 onClick={() => setCollapsedSections(allCollapsed ? new Set() : new Set(allSectionKeys))}
                                                 style={{ fontSize: 11, color: '#6B7280', background: 'none', border: '1px solid #E5E7EB', borderRadius: 6, padding: '4px 10px', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}
                                             >
+                                                <svg width="11" height="11" viewBox="0 0 16 16" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4, transform: allCollapsed ? 'rotate(0deg)' : 'rotate(180deg)' }}><path d="M4 10l4-4 4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
                                                 {allCollapsed
-                                                    ? (lang === 'de' ? 'Alle aufklappen' : 'Expand all')
-                                                    : (lang === 'de' ? 'Alle einklappen' : 'Collapse all')}
+                                                    ? (lang === 'de' ? 'Alle Kategorien aufklappen' : 'Expand all categories')
+                                                    : (lang === 'de' ? 'Alle Kategorien einklappen' : 'Collapse all categories')}
                                             </button>
                                         );
                                     })()}
@@ -3525,42 +3526,53 @@ export default function McAngebotsfeed() {
                                         if (next.has(key)) next.delete(key); else next.add(key);
                                         return next;
                                     });
-                                    const renderCard = ({ key, count, rule, sampleEans, field }, accent, accentBg, accentText) => {
+                                    const renderCard = ({ key, count, rule, sampleEans, field, _isQualityTip, _qualityContent }, accent, accentBg, accentText) => {
                                         const isOpen = expandedRecs.has(key);
                                         return (
                                             <div key={key}
-                                                style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', boxShadow: isOpen ? '0 2px 8px rgba(0,0,0,0.10)' : '0 1px 3px rgba(0,0,0,0.06)', overflow: 'hidden' }}
+                                                style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', boxShadow: isOpen ? '0 2px 8px rgba(0,0,0,0.10)' : '0 1px 2px rgba(0,0,0,0.04)', overflow: 'hidden' }}
                                             >
                                                 <div
                                                     onClick={() => toggleRec(key)}
-                                                    style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', cursor: 'pointer', userSelect: 'none' }}
+                                                    style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 16px', cursor: 'pointer', userSelect: 'none' }}
                                                 >
                                                     {/* Icon tile */}
-                                                    <div style={{ width: 32, height: 32, borderRadius: '50%', background: accentBg || '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                                    <div style={{ width: 40, height: 40, borderRadius: '50%', background: accentBg || '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                                                         {fieldIcon(field || key.split('::')[0], accentText || '#6B7280')}
                                                     </div>
                                                     {/* Text */}
                                                     <div style={{ flex: 1, minWidth: 0 }}>
-                                                        <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', lineHeight: 1.3 }}>{rule.title}</div>
-                                                        {rule.shortDesc && <div style={{ fontSize: 11, color: '#6B7280', marginTop: 1 }}>{rule.shortDesc}</div>}
+                                                        <div style={{ fontSize: 14, fontWeight: 700, color: '#111827', lineHeight: 1.3 }}>{rule.title}</div>
+                                                        {rule.shortDesc && <div style={{ fontSize: 12, color: '#6B7280', marginTop: 2 }}>{rule.shortDesc}</div>}
                                                     </div>
-                                                    {/* Count + chevron */}
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-                                                        {count > 0 && (
-                                                            <div style={{ textAlign: 'right' }}>
-                                                                <div style={{ fontSize: 16, fontWeight: 800, color: accentText || accent || '#374151', lineHeight: 1 }}>{count.toLocaleString(numLocale)}</div>
-                                                                <div style={{ fontSize: 10, color: '#9CA3AF' }}>{lang === 'de' ? 'Artikel betroffen' : 'items affected'}</div>
-                                                            </div>
+                                                    {/* Count badge + chevron */}
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+                                                        {_isQualityTip ? (
+                                                            <span style={{ fontSize: 11, color: '#6B7280', background: '#F3F4F6', borderRadius: 12, padding: '3px 10px', fontWeight: 600 }}>–</span>
+                                                        ) : count > 0 ? (
+                                                            <>
+                                                                <span style={{ fontSize: 14, fontWeight: 700, color: accentText, background: accentBg, borderRadius: 6, padding: '3px 10px', minWidth: 40, textAlign: 'center' }}>{count.toLocaleString(numLocale)}</span>
+                                                                <span style={{ fontSize: 11, color: '#9CA3AF' }}>{lang === 'de' ? 'Artikel betroffen' : 'items affected'}</span>
+                                                            </>
+                                                        ) : (
+                                                            <span style={{ fontSize: 11, color: '#9CA3AF', background: '#F3F4F6', borderRadius: 12, padding: '3px 10px' }}>–</span>
                                                         )}
-                                                        {count === 0 && <span style={{ fontSize: 11, color: '#9CA3AF', background: '#F3F4F6', borderRadius: 4, padding: '2px 7px' }}>–</span>}
-                                                        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: '#9CA3AF', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }}>
-                                                            <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                                                        {_isQualityTip && (
+                                                            <span style={{ fontSize: 11, color: '#6B7280' }}>{lang === 'de' ? 'Optional' : 'Optional'}</span>
+                                                        )}
+                                                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: '#9CA3AF', transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }}>
+                                                            <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
                                                         </svg>
                                                     </div>
                                                 </div>
-                                                {isOpen && (
-                                                    <div style={{ padding: '0 14px 12px 14px', borderTop: '1px solid #F3F4F6' }}>
-                                                        <div style={{ fontSize: 12, color: '#374151', lineHeight: 1.55, marginBottom: 6, paddingTop: 8 }}>{rule.action}</div>
+                                                {isOpen && _isQualityTip && _qualityContent && (
+                                                    <div style={{ padding: '0 16px 14px 16px', borderTop: '1px solid #F3F4F6' }}>
+                                                        {_qualityContent}
+                                                    </div>
+                                                )}
+                                                {isOpen && !_isQualityTip && (
+                                                    <div style={{ padding: '0 16px 14px 16px', borderTop: '1px solid #F3F4F6' }}>
+                                                        <div style={{ fontSize: 12, color: '#374151', lineHeight: 1.55, marginBottom: 6, paddingTop: 10 }}>{rule.action}</div>
                                                         {sampleEans && sampleEans.length > 0 && (
                                                             <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 4, marginBottom: 6 }}>
                                                                 <span style={{ fontSize: 10, color: '#9CA3AF', fontWeight: 600, marginRight: 2 }}>EAN:</span>
@@ -3584,7 +3596,18 @@ export default function McAngebotsfeed() {
                                         );
                                     };
 
-                                    const Section = ({ title, subtitle, accent, accentBg, accentText, items, sectionKey }) => {
+                                    const sectionIcon = (variant, color) => {
+                                        if (variant === 'pflicht') return (
+                                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke={color} strokeWidth="1.6"/><path d="M10 5.5v5.2M10 13.4v.6" stroke={color} strokeWidth="1.8" strokeLinecap="round"/></svg>
+                                        );
+                                        if (variant === 'optional') return (
+                                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke={color} strokeWidth="1.6" strokeDasharray="2.6 2.6"/></svg>
+                                        );
+                                        return (
+                                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke={color} strokeWidth="1.6"/><path d="M10 9v5M10 6v0.6" stroke={color} strokeWidth="1.8" strokeLinecap="round"/></svg>
+                                        );
+                                    };
+                                    const Section = ({ title, subtitle, accent, accentBg, accentText, items, sectionKey, iconVariant }) => {
                                         if (items.length === 0) return null;
                                         const sOpen = !collapsedSections.has(sectionKey);
                                         const toggleSec = () => setCollapsedSections(prev => {
@@ -3596,20 +3619,20 @@ export default function McAngebotsfeed() {
                                             <div>
                                                 <div
                                                     onClick={toggleSec}
-                                                    style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: sOpen ? 8 : 0, cursor: 'pointer', userSelect: 'none', padding: '6px 0' }}
+                                                    style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: sOpen ? 10 : 0, cursor: 'pointer', userSelect: 'none', padding: '10px 4px' }}
                                                 >
-                                                    <div style={{ width: 20, height: 20, borderRadius: '50%', background: accentBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                                        <svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M8 3v6M8 12v1" stroke={accentText} strokeWidth="2" strokeLinecap="round"/></svg>
+                                                    <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                        {sectionIcon(iconVariant, accentText)}
                                                     </div>
-                                                    <span style={{ fontSize: 11, fontWeight: 700, color: accentText, letterSpacing: '0.04em', textTransform: 'uppercase' }}>{title}</span>
-                                                    <span style={{ fontSize: 10, background: accentBg, color: accentText, borderRadius: 10, padding: '1px 7px', fontWeight: 700 }}>{items.length}</span>
-                                                    <span style={{ fontSize: 10, color: '#6B7280', marginLeft: 2 }}>{subtitle}</span>
-                                                    <svg width="11" height="11" viewBox="0 0 16 16" fill="none" style={{ marginLeft: 'auto', flexShrink: 0, color: '#9CA3AF', transform: sOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }}>
+                                                    <span style={{ fontSize: 13, fontWeight: 800, color: accentText, letterSpacing: '0.06em', textTransform: 'uppercase' }}>{title}</span>
+                                                    <span style={{ fontSize: 12, background: accentBg, color: accentText, borderRadius: 8, padding: '2px 10px', fontWeight: 700 }}>{items.length}</span>
+                                                    <span style={{ fontSize: 11, background: accentBg, color: accentText, borderRadius: 12, padding: '3px 10px', fontWeight: 500, marginLeft: 4 }}>{subtitle}</span>
+                                                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={{ marginLeft: 'auto', flexShrink: 0, color: '#9CA3AF', transform: sOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }}>
                                                         <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
                                                     </svg>
                                                 </div>
                                                 {sOpen && (
-                                                    <div style={{ display: 'grid', gap: 6 }}>
+                                                    <div style={{ display: 'grid', gap: 8 }}>
                                                         {items.map((r) => renderCard(r, accent, accentBg, accentText))}
                                                     </div>
                                                 )}
@@ -3617,10 +3640,80 @@ export default function McAngebotsfeed() {
                                         );
                                     };
 
+                                    // Build quality tips as additional Hinweise items
+                                    const qualityTipsData = [
+                                        {
+                                            key: 'quality::name',
+                                            title: lang === 'de' ? 'Qualitätstipps · Titel' : 'Quality tips · Title',
+                                            shortDesc: lang === 'de' ? 'Titel noch aussagekräftiger gestalten' : 'Make the title more descriptive',
+                                            bad: '"Sofa schwarz"',
+                                            good: lang === 'de' ? '"Dreammöbel Ecksofa 3-Sitzer, Kunstleder schwarz, 180 × 90 cm"' : '"Dreammöbel Corner Sofa 3-seater, faux leather black, 180 × 90 cm"',
+                                            dos: lang === 'de' ? ['Marke voranstellen', 'Produktart + Farbe + Maße', 'Mind. 2 Wörter'] : ['Brand first', 'Product type + Color + Dimensions', 'Min. 2 words'],
+                                            donts: lang === 'de' ? ['"B-Ware" / "gebraucht"', 'Nur ein Wort', 'Werbephrasen'] : ['"used" / "B-stock"', 'Single word only', 'Advertising phrases'],
+                                        },
+                                        {
+                                            key: 'quality::description',
+                                            title: lang === 'de' ? 'Qualitätstipps · Beschreibung' : 'Quality tips · Description',
+                                            shortDesc: lang === 'de' ? 'Beschreibung noch informativer gestalten' : 'Make the description more informative',
+                                            bad: '"Schönes Sofa."',
+                                            good: lang === 'de' ? '"Elegantes Ecksofa aus Kunstleder in Schwarz. Maße: 200 × 80 × 120 cm."' : '"Elegant corner sofa made of faux leather in black. Dimensions: 200 × 80 × 120 cm."',
+                                            dos: lang === 'de' ? ['100-500 Zeichen', 'Material, Farbe, Maße', 'Konkrete Produktdetails'] : ['100-500 characters', 'Material, color, dimensions', 'Concrete product details'],
+                                            donts: lang === 'de' ? ['"günstig", "Top-Qualität"', 'Externe Links', 'Identisch zum Titel'] : ['"cheap", "top quality"', 'External links', 'Identical to title'],
+                                        },
+                                    ];
+                                    const qualityTipItems = qualityTipsData.map((c) => ({
+                                        key: c.key,
+                                        count: 0,
+                                        field: c.key === 'quality::name' ? 'name' : 'description',
+                                        rule: { title: c.title, shortDesc: c.shortDesc },
+                                        sampleEans: [],
+                                        _isQualityTip: true,
+                                        _qualityContent: (
+                                            <div style={{ paddingTop: 10 }}>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: 5, marginBottom: 8 }}>
+                                                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, padding: '6px 9px', background: P_RED_BG, borderRadius: 6, borderLeft: `2px solid ${P_RED}` }}>
+                                                        <span style={{ color: P_RED_TEXT, fontSize: 11, fontWeight: 800, lineHeight: 1.2, flexShrink: 0 }}>✗</span>
+                                                        <span style={{ fontSize: 11, color: P_RED_TEXT, lineHeight: 1.4, fontStyle: 'italic' }}>{c.bad}</span>
+                                                    </div>
+                                                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, padding: '6px 9px', background: P_GREEN_BG, borderRadius: 6, borderLeft: `2px solid ${P_GREEN}` }}>
+                                                        <span style={{ color: P_GREEN_TEXT, fontSize: 11, fontWeight: 800, lineHeight: 1.2, flexShrink: 0 }}>✓</span>
+                                                        <span style={{ fontSize: 11, color: P_GREEN_TEXT, lineHeight: 1.4, fontStyle: 'italic' }}>{c.good}</span>
+                                                    </div>
+                                                </div>
+                                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                                                    <div>
+                                                        <div style={{ fontSize: 9, fontWeight: 800, color: P_GREEN_TEXT, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{lang === 'de' ? 'So geht es' : 'Do'}</div>
+                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                                                            {c.dos.map((d, j) => (
+                                                                <div key={j} style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
+                                                                    <span style={{ color: P_GREEN_TEXT, fontSize: 10, fontWeight: 800, flexShrink: 0 }}>+</span>
+                                                                    <span style={{ fontSize: 10, color: '#374151', lineHeight: 1.4 }}>{d}</span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <div style={{ fontSize: 9, fontWeight: 800, color: P_RED_TEXT, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{lang === 'de' ? 'Vermeiden' : 'Avoid'}</div>
+                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                                                            {c.donts.map((d, j) => (
+                                                                <div key={j} style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
+                                                                    <span style={{ color: P_RED_TEXT, fontSize: 10, fontWeight: 800, flexShrink: 0 }}>−</span>
+                                                                    <span style={{ fontSize: 10, color: '#374151', lineHeight: 1.4 }}>{d}</span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ),
+                                    }));
+                                    const hintRecsWithQuality = [...hintRecs, ...qualityTipItems];
+
                                     return (
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                                             <Section
                                                 sectionKey="pflicht"
+                                                iconVariant="pflicht"
                                                 title={lang === 'de' ? 'Pflichtfelder' : 'Required Fields'}
                                                 subtitle={lang === 'de' ? 'verhindern das Listing' : 'block listing'}
                                                 accent={P_RED}
@@ -3630,6 +3723,7 @@ export default function McAngebotsfeed() {
                                             />
                                             <Section
                                                 sectionKey="optional"
+                                                iconVariant="optional"
                                                 title={lang === 'de' ? 'Optionale Felder' : 'Optional Fields'}
                                                 subtitle={lang === 'de' ? 'verbessern Filter, Suche und Conversion' : 'boost filters, search and conversion'}
                                                 accent='#FDBA74'
@@ -3639,12 +3733,13 @@ export default function McAngebotsfeed() {
                                             />
                                             <Section
                                                 sectionKey="hints"
+                                                iconVariant="hints"
                                                 title={lang === 'de' ? 'Hinweise' : 'Hints'}
                                                 subtitle={lang === 'de' ? 'Qualitätsverbesserungen, optional' : 'quality improvements, optional'}
                                                 accent={P_BLUE}
                                                 accentBg={P_BLUE_BG}
                                                 accentText={P_BLUE_TEXT}
-                                                items={hintRecs}
+                                                items={hintRecsWithQuality}
                                             />
 
                                             {/* Maß / size hint - collapsible */}
@@ -3691,40 +3786,11 @@ export default function McAngebotsfeed() {
                                                 );
                                             })()}
 
-                                            {/* Quality tips for title and description - separate, independently collapsible cards (same look as Handlungsempfehlungen) */}
-                                            {(() => {
-                                                const tips = [
-                                                    {
-                                                        key: 'quality::name',
-                                                        title: lang === 'de' ? 'Qualitätstipps · Titel' : 'Quality tips · Title',
-                                                        bad: '"Sofa schwarz"',
-                                                        good: lang === 'de' ? '"Dreammöbel Ecksofa 3-Sitzer, Kunstleder schwarz, 180 × 90 cm"' : '"Dreammöbel Corner Sofa 3-seater, faux leather black, 180 × 90 cm"',
-                                                        dos: lang === 'de'
-                                                            ? ['Marke voranstellen', 'Produktart + Farbe + Maße', 'Mind. 2 Wörter']
-                                                            : ['Brand first', 'Product type + Color + Dimensions', 'Min. 2 words'],
-                                                        donts: lang === 'de'
-                                                            ? ['"B-Ware" / "gebraucht"', 'Nur ein Wort', 'Werbephrasen']
-                                                            : ['"used" / "B-stock"', 'Single word only', 'Advertising phrases'],
-                                                    },
-                                                    {
-                                                        key: 'quality::description',
-                                                        title: lang === 'de' ? 'Qualitätstipps · Beschreibung' : 'Quality tips · Description',
-                                                        bad: '"Schönes Sofa."',
-                                                        good: lang === 'de' ? '"Elegantes Ecksofa aus Kunstleder in Schwarz. Maße: 200 × 80 × 120 cm."' : '"Elegant corner sofa made of faux leather in black. Dimensions: 200 × 80 × 120 cm."',
-                                                        dos: lang === 'de'
-                                                            ? ['100-500 Zeichen', 'Material, Farbe, Maße', 'Konkrete Produktdetails']
-                                                            : ['100-500 characters', 'Material, color, dimensions', 'Concrete product details'],
-                                                        donts: lang === 'de'
-                                                            ? ['"günstig", "Top-Qualität"', 'Externe Links', 'Identisch zum Titel']
-                                                            : ['"cheap", "top quality"', 'External links', 'Identical to title'],
-                                                    },
-                                                ];
+                                            {/* Quality tips are integrated into the Hinweise section above */}
+                                            {false && (() => {
+                                                const tips = [];
                                                 const accent = '#64748B';
-                                                const toggle = (key) => setExpandedRecs((prev) => {
-                                                    const next = new Set(prev);
-                                                    if (next.has(key)) next.delete(key); else next.add(key);
-                                                    return next;
-                                                });
+                                                const toggle = (key) => setExpandedRecs((prev) => prev);
                                                 return tips.map((c) => {
                                                     const isOpen = expandedRecs.has(c.key);
                                                     return (
@@ -3873,21 +3939,36 @@ export default function McAngebotsfeed() {
 
                                 {/* Card 3 — So geht es weiter / Next Steps */}
                                 <div style={{ background: '#FFF', borderRadius: 14, border: '1px solid #E5E7EB', overflow: 'hidden' }}>
-                                    <div style={{ padding: '10px 14px 8px', borderBottom: '1px solid #F3F4F6' }}>
-                                        <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.06em' }}>
+                                    <div style={{ padding: '12px 16px 10px' }}>
+                                        <div style={{ fontSize: 11, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.06em' }}>
                                             {lang === 'de' ? 'SO GEHT ES WEITER' : 'NEXT STEPS'}
                                         </div>
                                     </div>
-                                    {[
-                                        { n: 1, title: lang === 'de' ? 'Fehlerbericht herunterladen' : 'Download error report' },
-                                        { n: 2, title: lang === 'de' ? 'Fehler in Excel korrigieren' : 'Fix errors in Excel' },
-                                        { n: 3, title: lang === 'de' ? 'Korrigierten Feed hochladen' : 'Upload corrected feed' },
-                                    ].map((step, i) => (
-                                        <div key={step.n} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 14px', borderBottom: i < 2 ? '1px solid #F3F4F6' : 'none' }}>
-                                            <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#2563EB', color: '#FFF', fontSize: 11, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{step.n}</div>
-                                            <div style={{ flex: 1, minWidth: 0, fontSize: 12, fontWeight: 500, color: '#111827' }}>{step.title}</div>
-                                        </div>
-                                    ))}
+                                    {(() => {
+                                        const steps = [
+                                            { n: 1, title: lang === 'de' ? 'Fehlerbericht herunterladen' : 'Download error report', sub: lang === 'de' ? 'CSV-Datei mit allen Fehlern je Zeile für Excel' : 'CSV file with all errors per row for Excel', icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M5 7l3 3 3-3M2 13h12" stroke={MC_BLUE} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+                                            { n: 2, title: lang === 'de' ? 'Fehler in Excel korrigieren' : 'Fix errors in Excel', sub: lang === 'de' ? 'Betroffene Artikel anhand der Fehlerspalte bearbeiten' : 'Edit affected items based on the error column', icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M11 2l3 3-8 8H3v-3l8-8z" stroke={MC_BLUE} strokeWidth="1.5" strokeLinejoin="round"/></svg> },
+                                            { n: 3, title: lang === 'de' ? 'Korrigierten Feed hochladen' : 'Upload corrected feed', sub: lang === 'de' ? 'Direkt im Händlerportal unter Einstellungen → Feed' : 'Directly in the merchant portal under Settings → Feed', icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 11a3 3 0 010-6 4 4 0 017.7 1A2.5 2.5 0 0113 11" stroke={MC_BLUE} strokeWidth="1.4" strokeLinejoin="round"/><path d="M8 8v5M6 10l2-2 2 2" stroke={MC_BLUE} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+                                        ];
+                                        return (
+                                            <div style={{ padding: '0 16px 14px', position: 'relative' }}>
+                                                {/* Connecting line */}
+                                                <div style={{ position: 'absolute', left: 26, top: 22, bottom: 22, width: 1.5, background: '#DBEAFE', zIndex: 0 }} />
+                                                {steps.map((step, i) => (
+                                                    <div key={step.n} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 0', position: 'relative', zIndex: 1 }}>
+                                                        <div style={{ width: 24, height: 24, borderRadius: '50%', background: MC_BLUE, color: '#FFF', fontSize: 12, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{step.n}</div>
+                                                        <div style={{ flex: 1, minWidth: 0 }}>
+                                                            <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', lineHeight: 1.3 }}>{step.title}</div>
+                                                            <div style={{ fontSize: 11, color: '#6B7280', marginTop: 2 }}>{step.sub}</div>
+                                                        </div>
+                                                        <div style={{ width: 32, height: 32, borderRadius: 8, background: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                                            {step.icon}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        );
+                                    })()}
                                 </div>
 
                                 {/* Card 4 — Fehlerbericht als CSV (prominent download) */}
