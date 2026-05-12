@@ -97,13 +97,19 @@ const FIELD_TOOLTIPS_EN = {
     model: 'Model designation or manufacturer article number.',
 };
 
-const EXAMPLE_FEED_CSV = `EAN (GTIN14);offer_id;name;description;brand;price;delivery_time;shipping_mode;availability;stock_amount;Bildlink_1;manufacturer_name;manufacturer_street;manufacturer_postcode;manufacturer_city;manufacturer_country;manufacturer_email
-4045347288557;T12345-SW;Dreammöbel Dream Ecksofa mit Hocker, Kunstleder schwarz, 180x200 cm;Elegantes Ecksofa aus hochwertigem Kunstleder in Schwarz. Maße: B 200 cm × H 80 cm × T 120 cm. Pflegeleicht und strapazierfähig. Inkl. Hocker.;Dreammöbel;599.00;3-5 Werktage;Spedition;auf Lager;12;https://example.com/img/sofa-schwarz.jpg;Traum GmbH;Musterstr. 1;10115;Berlin;Deutschland;info@traumgmbh.de
-4045347288558;T12345-GR;Dreammöbel Dream Ecksofa mit Hocker, Kunstleder grau, 180x200 cm;Elegantes Ecksofa aus hochwertigem Kunstleder in Grau. Maße: B 200 cm × H 80 cm × T 120 cm. Pflegeleicht und strapazierfähig. Inkl. Hocker.;Dreammöbel;579.00;3-5 Werktage;Spedition;auf Lager;8;https://example.com/img/sofa-grau.jpg;Traum GmbH;Musterstr. 1;10115;Berlin;Deutschland;info@traumgmbh.de
-4045347299001;T67890;Holztisch;Tisch aus Holz.;NaturWood;149.99;1-2 Wochen;Paket;auf Lager;25;https://example.com/img/tisch.jpg;NaturWood GmbH;Waldweg 5;80331;München;Deutschland;service@naturwood.de
-;T99999;Regal;Schönes Regal für viele Bücher und Dekogegenstände, sehr praktisch und stabil aus MDF gefertigt.;HomeStyle;89.00;2-4 Werktage;Paket;auf Lager;5;https://example.com/img/regal.jpg;HomeStyle KG;Hauptstr. 10;20095;Hamburg;Deutschland;info@homestyle.de
-4045347299002;T55555;;Modernes Sideboard aus Eiche massiv, naturfarben. Breite 160 cm, Höhe 75 cm, Tiefe 40 cm.;OakLine;349.00;1-2 Wochen;Spedition;sofort lieferbar;3;https://example.com/img/sideboard.jpg;OakLine GmbH;Eichenweg 3;50667;Köln;Deutschland;kontakt@oakline.de
-4045347299003;T55555;Bücherregal Weiß 80cm breit, MDF lackiert;Weißes Bücherregal aus MDF, hochglanz lackiert. 5 Fächer, Breite 80 cm × Höhe 180 cm × Tiefe 30 cm.;HomeStyle;129.00;2-4 Werktage;Paket;auf Lager;15;https://example.com/img/buecherregal.jpg;HomeStyle KG;Hauptstr. 10;20095;Hamburg;Deutschland;info@homestyle.de`;
+const EXAMPLE_FEED_CSV = `EAN (GTIN14);offer_id;name;description;brand;price;delivery_time;shipping_mode;availability;stock_amount;Bildlink_1;Bildlink_2;Bildlink_3;color;material;category_path;delivery_includes;manufacturer_name;manufacturer_street;manufacturer_postcode;manufacturer_city;manufacturer_country;manufacturer_email
+4045347288557;T12345-SW;Dreammöbel Dream Ecksofa mit Hocker, Kunstleder schwarz, 270x170 cm;Elegantes Ecksofa aus hochwertigem Kunstleder in Schwarz. Maße: B 270 cm × H 82 cm × T 170 cm. Pflegeleichtes Kunstleder, strapazierfähiger Holzrahmen. Inkl. Hocker. Einfache Selbstmontage ca. 30 min.;Dreammöbel;899.00;3-5 Werktage;Spedition;auf Lager;12;https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600;https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=600;https://images.unsplash.com/photo-1567016432779-094069958ea5?w=600;Schwarz;Kunstleder / Holz;Wohnzimmer > Sofas > Ecksofas;1x Ecksofa, 1x Hocker, 4x Füße;Traum GmbH;Musterstr. 1;10115;Berlin;Deutschland;info@traumgmbh.de
+4045347288558;T12345-GR;Dreammöbel Dream Ecksofa mit Hocker, Kunstleder grau, 270x170 cm;Elegantes Ecksofa aus hochwertigem Kunstleder in Grau. Maße: B 270 cm × H 82 cm × T 170 cm. Pflegeleichtes Kunstleder, stabiler Holzrahmen. Inkl. Hocker mit passendem Bezug.;Dreammöbel;849.00;3-5 Werktage;Spedition;auf Lager;8;https://images.unsplash.com/photo-1540574163026-643ea20ade25?w=600;https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600;;Grau;Kunstleder / Holz;Wohnzimmer > Sofas > Ecksofas;1x Ecksofa, 1x Hocker, 4x Füße;Traum GmbH;Musterstr. 1;10115;Berlin;Deutschland;info@traumgmbh.de
+4045347299001;T67890-NK;NaturWood Esstisch massiv Eiche natur, 160x80 cm;Massiver Esstisch aus naturbelassener Eiche. Maße: B 160 cm × H 76 cm × T 80 cm. Geölt und gewachst. Jedes Stück ein Unikat durch die natürliche Maserung. Lieferung teilmontiert.;NaturWood;649.00;1-2 Wochen;Spedition;auf Lager;7;https://images.unsplash.com/photo-1449247709967-d4461a6a6103?w=600;https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600;https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=600;Natur / Eiche;Eiche massiv;Esszimmer > Tische > Esstische;1x Esstisch;NaturWood GmbH;Waldweg 5;80331;München;Deutschland;service@naturwood.de
+4045347299010;T67891-WS;NaturWood Esstisch massiv Eiche weiß gebeizt, 140x80 cm;Massiver Esstisch aus Eiche, weiß gebeizt. Maße: B 140 cm × H 76 cm × T 80 cm. Zeitloser Landhausstil, robust und pflegeleicht. Montage in ca. 20 Minuten.;NaturWood;Auf Anfrage;1-2 Wochen;Spedition;auf Lager;4;https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=600;;;Weiß gebeizt;Eiche massiv;Esszimmer > Tische > Esstische;1x Esstisch;NaturWood GmbH;Waldweg 5;80331;München;Deutschland;service@naturwood.de
+;T99999-WR;HomeStyle Wandregal schwebend weiß, 3er Set 60 cm;Modernes Schwebegeregal aus lackiertem MDF in Weiß. 3er-Set, je Regal: B 60 cm × T 20 cm × H 4 cm. Unsichtbare Wandbefestigung inklusive. Ideal für Wohnzimmer und Büro.;HomeStyle;59.00;2-4 Werktage;Paket;auf Lager;23;https://images.unsplash.com/photo-1616627781431-23b776aad6b2?w=600;;; Weiß;MDF lackiert;Wohnzimmer > Regale > Wandregale;3x Wandregal, 9x Dübel, 9x Schrauben;HomeStyle KG;Hauptstr. 10;20095;Hamburg;Deutschland;info@homestyle.de
+4045347299002;T55555;OakLine Sideboard Eiche massiv natur, 4 Türen, 160 cm;;OakLine;549.00;1-2 Wochen;Spedition;sofort lieferbar;3;https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600;;; Eiche natur;Eiche massiv;Wohnzimmer > Sideboards;1x Sideboard;OakLine GmbH;Eichenweg 3;50667;Köln;Deutschland;kontakt@oakline.de
+4045347299003;T55555;HomeStyle Bücherregal weiß hochglanz, 5 Fächer, 80x180 cm;Weißes Bücherregal aus MDF, hochglanz lackiert. 5 Einlegeböden verstellbar. Maße: B 80 cm × H 180 cm × T 30 cm. Standsicher mit Kippschutz-Montageset.;HomeStyle;149.00;2-4 Werktage;Paket;auf Lager;15;https://images.unsplash.com/photo-1616627781431-23b776aad6b2?w=600;https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600;;Weiß Hochglanz;MDF lackiert;Wohnzimmer > Regale > Bücherregale;1x Regal, 5x Einlegeboden, Montageset;HomeStyle KG;Hauptstr. 10;20095;Hamburg;Deutschland;info@homestyle.de
+4045347299020;T88001-WK;SleepWell Boxspringbett Stoff anthrazit, 180x200 cm;Hochwertiges Boxspringbett mit 3-schichtigem Aufbau: Bonellfedern-Unterbox, 7-Zonen-Taschenfederkern-Matratze, Topper. Bezug: Strukturstoff anthrazit. Maße: B 180 cm × H 120 cm × T 220 cm.;SleepWell;1299.00;5-7 Werktage;Spedition;auf Lager;5;https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600;https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600;https://images.unsplash.com/photo-1540574163026-643ea20ade25?w=600;Anthrazit;Strukturstoff / Stahl;Schlafzimmer > Betten > Boxspringbetten;1x Boxspringbett (Unterbox + Matratze + Topper), Montagematerial;SleepWell GmbH;Schlafweg 12;70173;Stuttgart;Deutschland;info@sleepwell.de
+4045347299021;T88002-BG;SleepWell Boxspringbett Kunstleder beige, 160x200 cm;Elegantes Boxspringbett mit Kunstlederbezug in Beige. 7-Zonen-Taschenfederkernmatratze H3, Visco-Topper 5 cm. Maße: B 160 cm × H 118 cm × T 218 cm. Lieferung frei Haus, Aufbauservice buchbar.;SleepWell;1099.00;5-7 Werktage;Spedition;auf Lager;3;https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600;;;Beige;Kunstleder / Metall;Schlafzimmer > Betten > Boxspringbetten;1x Boxspringbett, Montagematerial;SleepWell GmbH;Schlafweg 12;70173;Stuttgart;Deutschland;info@sleepwell.de
+4045347299030;T77001-ES;FurniStyle Esszimmerstuhl Stoff grau, 4er Set;4 Esszimmerstühle im modernen Skandi-Design. Sitzfläche und Rückenlehne gepolstert mit Strukturstoff in Grau. Gestell aus Buchenholz natur. Maße je Stuhl: B 46 × H 83 × T 55 cm.;FurniStyle;299.00;3-5 Werktage;Paket;auf Lager;18;https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=600;https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600;https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=600;Grau / Natur;Stoff / Buchenholz;Esszimmer > Stühle > Esszimmerstühle;4x Stuhl, Montagematerial;FurniStyle KG;Designweg 8;40210;Düsseldorf;Deutschland;hello@furnistyle.de
+4045347299040;T66001-PL;LightUp Pendelleuchte Metall schwarz, E27, höhenverstellbar;Moderne Pendelleuchte aus gebürstetem Metall in Schwarz. Fassung E27, max. 60W. Kabel höhenverstellbar 40–120 cm. Inklusive Baldachin und Montagematerial. OHNE Leuchtmittel.;LightUp;89.00;2-3 Werktage;Paket;auf Lager;31;https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600;https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600;;Schwarz;Metall / Textilkabel;Wohnzimmer > Leuchten > Pendelleuchten;1x Pendelleuchte, 1x Baldachin, Montagematerial;LightUp GmbH;Lichtstr. 3;50679;Köln;Deutschland;info@lightup.de
+4045347299041;T66002-GO;LightUp Pendelleuchte Metall gold, E27, höhenverstellbar;Stilvolle Pendelleuchte aus gebürstetem Metall in Messing-Gold. Fassung E27, max. 60W. Kabel höhenverstellbar 40–120 cm. Passt zu modernen und klassischen Einrichtungsstilen.;LightUp;99.00;2-3 Werktage;Paket;auf Lager;14;https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600;;;Gold / Messing;Metall / Textilkabel;Wohnzimmer > Leuchten > Pendelleuchten;1x Pendelleuchte, 1x Baldachin, Montagematerial;LightUp GmbH;Lichtstr. 3;50679;Köln;Deutschland;info@lightup.de`;
 
 // Word lists for title structure analysis
 const COLOR_WORDS_DE = ['schwarz','weiß','weiss','grau','beige','braun','natur','naturfarben','silber','gold','rot','blau','grün','gelb','orange','türkis','creme','sand','anthrazit','cognac','cappuccino','taupe','dunkelgrau','hellgrau','dunkelbraun','elfenbein','bordeaux','petrol'];
@@ -845,21 +851,32 @@ export default function McAngebotsfeed() {
     const [langOpen, setLangOpen] = useState(false);
     const [alwaysAvailable, setAlwaysAvailable] = useState(false);
     const [optionalExpanded, setOptionalExpanded] = useState(false);
+    const [parseError, setParseError] = useState(null);
     const fileRef = useRef(null);
 
     function parseFile(f) {
         if (!f) return;
         const ext = f.name.split('.').pop().toLowerCase();
-        if (ext !== 'csv' && f.type !== 'text/csv' && f.type !== 'application/csv') return;
+        if (ext !== 'csv' && f.type !== 'text/csv' && f.type !== 'application/csv') {
+            setParseError(lang === 'de' ? 'Nur CSV-Dateien werden unterstützt.' : 'Only CSV files are supported.');
+            return;
+        }
+        setParseError(null);
         setFile(f);
         setRows([]);
         setHeaders([]);
         setManualMapping({});
         const tryParseMc = (encoding) => {
             const reader = new FileReader();
+            reader.onerror = () => {
+                setParseError(lang === 'de' ? 'Datei konnte nicht gelesen werden.' : 'Could not read file.');
+            };
             reader.onload = (evt) => {
                 const text = evt.target?.result;
-                if (typeof text !== 'string') return;
+                if (typeof text !== 'string') {
+                    setParseError(lang === 'de' ? 'Dateiinhalt konnte nicht verarbeitet werden.' : 'Could not process file contents.');
+                    return;
+                }
                 if (encoding === 'UTF-8' && /Ã¤|Ã¶|Ã¼|Ã\x84|Ã\x96|Ã\x9C|Ã\x9F/.test(text)) {
                     tryParseMc('windows-1252');
                     return;
@@ -870,8 +887,28 @@ export default function McAngebotsfeed() {
                     complete: (res) => {
                         const r = Array.isArray(res.data) ? res.data : [];
                         const h = res.meta?.fields || Object.keys(r[0] || {});
+                        if (h.length === 0) {
+                            setParseError(lang === 'de' ? 'Die CSV-Datei enthält keine Spaltenköpfe.' : 'The CSV file contains no column headers.');
+                            setFile(null);
+                            return;
+                        }
+                        if (r.length === 0) {
+                            setParseError(lang === 'de' ? 'Die CSV-Datei enthält keine Datenzeilen.' : 'The CSV file contains no data rows.');
+                            setFile(null);
+                            return;
+                        }
+                        if (res.errors?.length > 0) {
+                            const firstErr = res.errors[0];
+                            setParseError(lang === 'de'
+                                ? `CSV-Fehler in Zeile ${firstErr.row ?? '?'}: ${firstErr.message}`
+                                : `CSV error at row ${firstErr.row ?? '?'}: ${firstErr.message}`);
+                        }
                         setHeaders(h);
                         setRows(r);
+                    },
+                    error: (err) => {
+                        setParseError(lang === 'de' ? `CSV konnte nicht geparst werden: ${err.message}` : `Could not parse CSV: ${err.message}`);
+                        setFile(null);
                     },
                 });
             };
@@ -1453,6 +1490,28 @@ export default function McAngebotsfeed() {
 
     return (
         <div style={{ background: '#F3F4F6', height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+            <style>{`
+                .mc-header-btn-label { display: inline; }
+                .mc-header-guide-btn { display: flex !important; }
+                .mc-header-sep { display: block !important; }
+                .mc-step1-grid { display: grid; grid-template-columns: 1fr 420px; gap: 20px; align-items: start; }
+                .mc-two-col-320 { display: grid; grid-template-columns: 1fr 320px; gap: 16px; align-items: start; }
+                .mc-two-col-400 { display: grid; grid-template-columns: 1fr 420px; gap: 20px; align-items: start; }
+                .mc-tab-bar { overflow-x: auto; scrollbar-width: none; }
+                .mc-tab-bar::-webkit-scrollbar { display: none; }
+                .mc-sticky-sidebar { position: sticky; top: 20px; align-self: flex-start; }
+                @media (max-width: 960px) {
+                    .mc-header-btn-label { display: none !important; }
+                    .mc-step1-grid { grid-template-columns: 1fr !important; }
+                    .mc-two-col-400 { grid-template-columns: 1fr !important; }
+                    .mc-two-col-320 { grid-template-columns: 1fr !important; }
+                    .mc-sticky-sidebar { position: static !important; }
+                }
+                @media (max-width: 640px) {
+                    .mc-header-guide-btn { display: none !important; }
+                    .mc-header-sep { display: none !important; }
+                }
+            `}</style>
             {/* ── HEADER ── */}
             <header style={{ background: MC_BLUE, padding: '10px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, position: 'relative', zIndex: 200 }}>
                 <span onClick={resetToStart} style={{ color: '#FFF', fontWeight: 900, fontSize: 22, letterSpacing: '-0.5px', fontStyle: 'italic', whiteSpace: 'nowrap', flexShrink: 0, cursor: 'pointer' }}>
@@ -1518,30 +1577,23 @@ export default function McAngebotsfeed() {
 
                 {/* Right-side buttons */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-                    <button type="button" onClick={() => setShowLeitfaden(true)}
-                        style={{ display: 'flex', alignItems: 'center', gap: 6, border: '1px solid rgba(255,255,255,0.3)', background: 'transparent', color: '#FFF', fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 6, cursor: 'pointer' }}>
+                    <button type="button" onClick={() => setShowLeitfaden(true)} className="mc-header-guide-btn"
+                        style={{ display: 'flex', alignItems: 'center', gap: 6, border: '1px solid rgba(255,255,255,0.3)', background: 'transparent', color: '#FFF', fontSize: 12, fontWeight: 600, padding: '6px 10px', borderRadius: 6, cursor: 'pointer' }}>
                         <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 1.5h8.5l3 3v10h-11.5v-13z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M11 1.5v3h3" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M5 8h6M5 10.5h6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
-                        {T.feedGuide}
+                        <span className="mc-header-btn-label">{T.feedGuide}</span>
                     </button>
-                    <button type="button" onClick={() => setShowVorlage(true)}
-                        style={{ display: 'flex', alignItems: 'center', gap: 6, border: '1px solid rgba(255,255,255,0.3)', background: 'transparent', color: '#FFF', fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 6, cursor: 'pointer' }}>
+                    <button type="button" onClick={() => setShowVorlage(true)} className="mc-header-guide-btn"
+                        style={{ display: 'flex', alignItems: 'center', gap: 6, border: '1px solid rgba(255,255,255,0.3)', background: 'transparent', color: '#FFF', fontSize: 12, fontWeight: 600, padding: '6px 10px', borderRadius: 6, cursor: 'pointer' }}>
                         <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M5 7l3 3 3-3M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                        {T.feedTemplate}
+                        <span className="mc-header-btn-label">{T.feedTemplate}</span>
                     </button>
-                    <div style={{ width: 1, height: 18, background: 'rgba(255,255,255,0.2)', margin: '0 2px' }} />
+                    <div className="mc-header-sep" style={{ width: 1, height: 18, background: 'rgba(255,255,255,0.2)', margin: '0 2px' }} />
                     <a
                         href="mailto:contentmanagement.moebel@check24.de?subject=Feed%20Checker%20-%20Hilfe"
-                        style={{ border: '1px solid rgba(255,255,255,0.25)', background: 'rgba(255,255,255,0.08)', color: '#FFFFFF', fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}
+                        style={{ border: '1px solid rgba(255,255,255,0.25)', background: 'rgba(255,255,255,0.08)', color: '#FFFFFF', fontSize: 12, fontWeight: 600, padding: '6px 10px', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}
                     >
                         <svg width="13" height="13" viewBox="0 0 13 13" fill="none" style={{ flexShrink: 0 }}><rect x="1" y="2.5" width="11" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.3"/><path d="M1 4l5.5 3.5L12 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>
-                        {T.helpContact}
-                    </a>
-                    <a
-                        href="mailto:contentmanagement.moebel@check24.de?subject=Feedback%20zum%20Feedchecker"
-                        style={{ border: '1px solid rgba(255,255,255,0.25)', background: 'rgba(255,255,255,0.08)', color: '#FFFFFF', fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}
-                    >
-                        <svg width="13" height="13" viewBox="0 0 13 13" fill="none" style={{ flexShrink: 0 }}><path d="M2 2h9v7H6.5L4 11V9H2V2z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/></svg>
-                        {lang === 'de' ? 'Feedback zum Feedchecker' : 'Feedback on Feedchecker'}
+                        <span className="mc-header-btn-label">{T.helpContact}</span>
                     </a>
                 </div>
             </header>
@@ -1549,7 +1601,7 @@ export default function McAngebotsfeed() {
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
             {/* Step tabs bar */}
-            <div style={{ background: '#fff', borderBottom: '1px solid #E2E6EE', padding: '0 32px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0, flexShrink: 0, position: 'relative' }}>
+            <div className="mc-tab-bar" style={{ background: '#fff', borderBottom: '1px solid #E2E6EE', padding: '0 32px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0, flexShrink: 0, position: 'relative' }}>
                 {[
                     { n: 1, label: T.stepUpload },
                     { n: 2, label: T.stepMapping },
@@ -1602,7 +1654,7 @@ export default function McAngebotsfeed() {
                 STEP 1 - Upload
             ══════════════════════════════════════════ */}
             {step === 1 && (
-                <div style={{ width: '100%', maxWidth: 1100, display: 'grid', gridTemplateColumns: '1fr 420px', gap: 20, alignItems: 'start' }}>
+                <div className="mc-step1-grid" style={{ width: '100%', maxWidth: 1100, alignItems: 'start' }}>
 
                     {/* Left column: How-it-works + Resources */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -1736,7 +1788,13 @@ export default function McAngebotsfeed() {
                                         <div style={{ fontSize: 13, fontWeight: 600, color: '#166534', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{file.name}</div>
                                         <div style={{ fontSize: 11, color: '#4B7A5A', marginTop: 2 }}>{(file.size / 1024).toFixed(1)} KB · {rows.length > 0 ? T.fileLoaded(rows.length.toLocaleString(numLocale)) : T.fileReading}</div>
                                     </div>
-                                    <button type="button" onClick={() => { setFile(null); setRows([]); setHeaders([]); setManualMapping({}); }}
+                                    <button type="button" onClick={() => {
+                                            const msg = lang === 'de'
+                                                ? 'Aktuellen Feed verwerfen und eine neue Datei laden?'
+                                                : 'Discard current feed and load a new file?';
+                                            if (!window.confirm(msg)) return;
+                                            setFile(null); setRows([]); setHeaders([]); setManualMapping({}); setParseError(null);
+                                        }}
                                         style={{ fontSize: 11, color: '#6B7280', background: 'none', border: '1px solid #D1D5DB', borderRadius: 5, padding: '4px 10px', cursor: 'pointer' }}>
                                         {T.fileChange}
                                     </button>
@@ -1762,7 +1820,14 @@ export default function McAngebotsfeed() {
                                     <div style={{ fontSize: 11, color: '#9CA3AF', background: '#F3F4F6', borderRadius: 20, padding: '3px 12px' }}>
                                         {lang === 'de' ? 'CSV · UTF-8' : 'CSV · UTF-8'}
                                     </div>
-                                    <input ref={fileRef} type="file" accept=".csv,text/csv" style={{ display: 'none' }} onChange={(e) => parseFile(e.target.files?.[0] || null)} />
+                                    <input ref={fileRef} type="file" accept=".csv,text/csv" style={{ display: 'none' }} onChange={(e) => { setParseError(null); parseFile(e.target.files?.[0] || null); }} />
+                                </div>
+                            )}
+
+                            {parseError && (
+                                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 8, padding: '10px 12px' }}>
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 1 }}><circle cx="8" cy="8" r="7" stroke="#DC2626" strokeWidth="1.3"/><path d="M8 5v3.5M8 10.5v.5" stroke="#DC2626" strokeWidth="1.4" strokeLinecap="round"/></svg>
+                                    <span style={{ fontSize: 12, color: '#991B1B', lineHeight: 1.45 }}>{parseError}</span>
                                 </div>
                             )}
 
@@ -1821,7 +1886,7 @@ export default function McAngebotsfeed() {
                                 }}
                                     style={{ width: '100%', padding: '9px', background: '#FFF', color: '#374151', border: '1px dashed #D1D5DB', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
                                     <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.5 3.5L13 6l-2.5 2.5.5 3.5L8 10.5 5 12l.5-3.5L3 6l3.5-.5L8 2z" stroke="#9CA3AF" strokeWidth="1.3" strokeLinejoin="round"/></svg>
-                                    {lang === 'de' ? 'Beispiel-Feed laden (6 Artikel, inkl. Fehler)' : 'Load example feed (6 items, incl. errors)'}
+                                    {lang === 'de' ? 'Beispiel-Feed laden (12 Artikel, inkl. Fehler)' : 'Load example feed (12 items, incl. errors)'}
                                 </button>
                             )}
 
@@ -2340,7 +2405,7 @@ export default function McAngebotsfeed() {
                     </div>
                 );
 
-                const listablePct = Math.round((issues.livefaehigCount / issues.totalRows) * 100);
+                const listablePct = issues.totalRows > 0 ? Math.round((issues.livefaehigCount / issues.totalRows) * 100) : 0;
 
                 const score = issues.totalScore;
                 const scoreColor = score >= 85 ? '#16A34A' : score >= 60 ? '#D97706' : '#DC2626';
@@ -2350,7 +2415,7 @@ export default function McAngebotsfeed() {
                     <div style={{ width: '100%', maxWidth: 1100, display: 'flex', flexDirection: 'column', gap: 12 }}>
 
                         {/* 2-column: table | action panel */}
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 16, alignItems: 'start' }}>
+                        <div className="mc-two-col-320" style={{ alignItems: 'start' }}>
 
                         {/* Field analysis table */}
                         <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'auto', maxHeight: 'calc(100vh - 200px)' }}>
@@ -2399,32 +2464,25 @@ export default function McAngebotsfeed() {
                                 const exampleVals = !hasError && mappedCol
                                     ? [...new Set(rows.slice(0, 30).map(r => String(r[mappedCol] ?? '').trim()).filter(Boolean))].slice(0, 3)
                                     : [];
-                                // Per-field error samples: show real values from bad rows
-                                // (e.g. titles for `name`, prices for `price`, urls for `image_url`).
-                                // For the ean field we keep showing the EANs themselves.
+                                // Always show EAN identifiers for affected rows so users can find them.
+                                // For the ean field itself, show the bad EAN value; for all others show the EAN column value.
                                 const errorSamples3 = hasError ? (() => {
                                     const out = [];
                                     const seen = new Set();
-                                    if (key === 'ean' || !mappedCol) {
-                                        if (mcMapping.ean) {
-                                            for (const rn of fieldErrorRows[key]) {
-                                                const v = String(rows[rn - 1]?.[mcMapping.ean] ?? '').trim();
-                                                if (v && !seen.has(v)) { seen.add(v); out.push(v); }
-                                                if (out.length >= 3) break;
-                                            }
+                                    const eanCol = mcMapping.ean;
+                                    for (const rn of fieldErrorRows[key]) {
+                                        let v = '';
+                                        if (key === 'ean') {
+                                            v = String(rows[rn - 1]?.[mappedCol] ?? '').trim();
+                                        } else if (eanCol) {
+                                            v = String(rows[rn - 1]?.[eanCol] ?? '').trim();
                                         }
-                                    } else {
-                                        for (const rn of fieldErrorRows[key]) {
-                                            const v = String(rows[rn - 1]?.[mappedCol] ?? '').trim();
-                                            if (v && !seen.has(v)) { seen.add(v); out.push(v); }
-                                            if (out.length >= 3) break;
-                                        }
+                                        if (v && !seen.has(v)) { seen.add(v); out.push(v); }
+                                        if (out.length >= 5) break;
                                     }
                                     return out;
                                 })() : [];
-                                const sampleLabel3 = key === 'ean'
-                                    ? 'EAN:'
-                                    : (lang === 'de' ? 'Beispiel:' : 'Example:');
+                                const sampleLabel3 = 'EAN:';
                                 const totalErrCount = fieldErrorRows[key]?.size || 0;
                                 return (
                                     <div key={key} style={{ display: 'grid', gridTemplateColumns: '1fr 90px 120px', padding: '5px 16px', borderBottom: '1px solid #F9FAFB', alignItems: 'start', background: hasError ? (barColor === '#DC2626' ? '#FEF2F2' : '#FFFBF5') : 'transparent', borderLeft: hasError ? `3px solid ${barColor}` : '3px solid transparent' }}>
@@ -2472,7 +2530,7 @@ export default function McAngebotsfeed() {
                         </div>
 
                         {/* Right action panel */}
-                        <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'sticky', top: 20, alignSelf: 'flex-start' }}>
+                        <div className="mc-sticky-sidebar" style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
 
                             {/* Sidebar heading */}
                             <div style={{ padding: '14px 16px', borderBottom: '1px solid #F3F4F6' }}>
@@ -2636,7 +2694,7 @@ export default function McAngebotsfeed() {
                 const optHintsByField = {};
                 issues.optionalHints.forEach(({ field, ean }) => {
                     if (!optHintsByField[field]) optHintsByField[field] = [];
-                    if (ean && optHintsByField[field].length < 5 && !optHintsByField[field].includes(ean)) {
+                    if (ean && optHintsByField[field].length < 8 && !optHintsByField[field].includes(ean)) {
                         optHintsByField[field].push(ean);
                     }
                 });
@@ -2645,7 +2703,7 @@ export default function McAngebotsfeed() {
                     <div style={{ width: '100%', maxWidth: 1100, display: 'flex', flexDirection: 'column', gap: 12 }}>
 
                         {/* Two-column layout */}
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 16, alignItems: 'start' }}>
+                        <div className="mc-two-col-320" style={{ alignItems: 'start' }}>
 
                             {/* Left: optional fields table */}
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -2690,15 +2748,26 @@ export default function McAngebotsfeed() {
                                         const exampleVals = mappedCol
                                             ? [...new Set(rows.map(r => String(r[mappedCol] ?? '').trim()).filter(Boolean))].slice(0, 3)
                                             : [];
-                                        // EAN list for bad rows (kept compact; visible only when there is a missing-data error).
+                                        // EAN list for bad rows — shown directly in the table row.
                                         const errorEans4 = hasError ? (optHintsByField[f.field] || []) : [];
                                         return (
                                             <div key={f.field} style={{ display: 'grid', gridTemplateColumns: '1fr 90px 120px', padding: '5px 16px', borderBottom: '1px solid #F9FAFB', alignItems: 'start', background: hasError ? (barColor === '#DC2626' ? '#FEF2F2' : '#FFFBF5') : 'transparent', borderLeft: hasError ? `3px solid ${barColor}` : '3px solid transparent' }}>
-                                                <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0, paddingTop: 2, paddingBottom: exampleVals.length > 0 ? 4 : 0 }}>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0, paddingTop: 2, paddingBottom: (exampleVals.length > 0 || errorEans4.length > 0) ? 4 : 0 }}>
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                                                         <div style={{ fontSize: 11, color: hasError ? '#92400E' : '#374151', fontWeight: hasError ? 600 : 500, flexShrink: 0 }}>{label}</div>
                                                     </div>
-                                                    {exampleVals.length > 0 && (
+                                                    {errorEans4.length > 0 && (
+                                                        <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 3 }}>
+                                                            <span style={{ fontSize: 9, color: '#9CA3AF', fontWeight: 600 }}>EAN:</span>
+                                                            {errorEans4.slice(0, 5).map((v, i) => (
+                                                                <span key={i} style={{ fontSize: 9, color: '#374151', background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', fontFamily: 'monospace', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block', flexShrink: 0 }}>{v}</span>
+                                                            ))}
+                                                            {errs > errorEans4.slice(0, 5).length && (
+                                                                <span style={{ fontSize: 9, color: '#9CA3AF' }}>+{errs - errorEans4.slice(0, 5).length} {lang === 'de' ? 'weitere' : 'more'}</span>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                    {!hasError && exampleVals.length > 0 && (
                                                         <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 3 }}>
                                                             <span style={{ fontSize: 9, color: '#9CA3AF', fontWeight: 600 }}>{lang === 'de' ? 'Beispiel:' : 'Example:'}</span>
                                                             {exampleVals.map((v, i) => (
@@ -2862,7 +2931,7 @@ export default function McAngebotsfeed() {
                             </div>
 
                             {/* Right: score + nav (matches step 3 layout) */}
-                            <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'sticky', top: 20, alignSelf: 'flex-start' }}>
+                            <div className="mc-sticky-sidebar" style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
 
                                 {/* Sidebar heading */}
                                 <div style={{ padding: '14px 16px', borderBottom: '1px solid #F3F4F6' }}>
@@ -3148,7 +3217,7 @@ export default function McAngebotsfeed() {
                     <div style={{ width: '100%', maxWidth: 1100 }}>
 
                         {/* Two-column layout: recommendations left, download panel right */}
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 20, alignItems: 'start' }}>
+                        <div className="mc-two-col-320" style={{ alignItems: 'start' }}>
 
                             {/* Left: recommendations */}
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -3410,7 +3479,7 @@ export default function McAngebotsfeed() {
                             </div>
 
                             {/* Right: download + reset panel */}
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, position: 'sticky', top: 20, alignSelf: 'flex-start', maxHeight: 'calc(100vh - 120px)', overflowY: 'auto' }}>
+                            <div className="mc-sticky-sidebar" style={{ display: 'flex', flexDirection: 'column', gap: 12, maxHeight: 'calc(100vh - 120px)', overflowY: 'auto' }}>
 
                                 {/* Feed summary stats */}
                                 <div style={{ background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 12, overflow: 'hidden' }}>
@@ -3472,22 +3541,6 @@ export default function McAngebotsfeed() {
                                     })()}
                                 </div>
 
-                                {/* Download Fehlerbericht */}
-                                <div style={{ background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 12, overflow: 'hidden' }}>
-                                    <div style={{ padding: '10px 16px', borderBottom: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', gap: 8 }}>
-                                        <svg width="13" height="13" viewBox="0 0 18 18" fill="none"><path d="M9 2v10M6 9l3 3 3-3M2 15h14" stroke={MC_BLUE} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                        <span style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{T.recDownloadTitle}</span>
-                                    </div>
-                                    <div style={{ padding: '10px 16px' }}>
-                                        <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 10, lineHeight: 1.5 }}>{T.recDownloadDesc}</div>
-                                        <button type="button" onClick={csvOnClick}
-                                            style={{ width: '100%', padding: '9px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
-                                            <svg width="13" height="13" viewBox="0 0 15 15" fill="none"><path d="M7.5 2v8M5 7l2.5 2.5L10 7M2 13h11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                            {T.recDownloadBtn}
-                                        </button>
-                                    </div>
-                                </div>
-
                                 {/* Next steps workflow */}
                                 <div style={{ background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 12, overflow: 'hidden' }}>
                                     <div style={{ padding: '10px 16px', borderBottom: '1px solid #F3F4F6', fontSize: 10, fontWeight: 700, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
@@ -3519,6 +3572,22 @@ export default function McAngebotsfeed() {
                                                 </div>
                                             </div>
                                         ))}
+                                    </div>
+                                </div>
+
+                                {/* Download Fehlerbericht */}
+                                <div style={{ background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 12, overflow: 'hidden' }}>
+                                    <div style={{ padding: '10px 16px', borderBottom: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', gap: 8 }}>
+                                        <svg width="13" height="13" viewBox="0 0 18 18" fill="none"><path d="M9 2v10M6 9l3 3 3-3M2 15h14" stroke={MC_BLUE} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                        <span style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{T.recDownloadTitle}</span>
+                                    </div>
+                                    <div style={{ padding: '10px 16px' }}>
+                                        <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 10, lineHeight: 1.5 }}>{T.recDownloadDesc}</div>
+                                        <button type="button" onClick={csvOnClick}
+                                            style={{ width: '100%', padding: '9px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
+                                            <svg width="13" height="13" viewBox="0 0 15 15" fill="none"><path d="M7.5 2v8M5 7l2.5 2.5L10 7M2 13h11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                            {T.recDownloadBtn}
+                                        </button>
                                     </div>
                                 </div>
 
