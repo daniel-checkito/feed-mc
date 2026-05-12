@@ -2604,35 +2604,47 @@ export default function McAngebotsfeed() {
                                                     return next;
                                                 });
                                                 const entries = Object.entries(fieldErrorDetails[key]);
+                                                const chipBg = barColor === P_RED ? P_RED_BG : P_ORANGE_BG;
+                                                const chipText = barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT;
                                                 return (
-                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 4 }}>
                                                         <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 4 }}>
                                                             {entries.map(([type, { count }]) => (
                                                                 <span key={type} onClick={toggleExpand}
-                                                                    style={{ fontSize: 9, fontWeight: 700, background: barColor === P_RED ? P_RED_BG : P_ORANGE_BG, color: barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT, border: `1px solid ${barColor}`, borderRadius: 3, padding: '1px 5px', flexShrink: 0, whiteSpace: 'nowrap', cursor: 'pointer', userSelect: 'none', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                                                                    style={{ fontSize: 10, fontWeight: 600, background: chipBg, color: chipText, border: `1px solid ${barColor}`, borderRadius: 4, padding: '2px 7px', flexShrink: 0, whiteSpace: 'nowrap', cursor: 'pointer', userSelect: 'none', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
                                                                     {errTypeLabel(type)} · {count.toLocaleString(numLocale)}×
-                                                                    <svg width="8" height="8" viewBox="0 0 16 16" fill="none" style={{ transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }}>
+                                                                    <svg width="9" height="9" viewBox="0 0 16 16" fill="none" style={{ transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }}>
                                                                         <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                                                                     </svg>
                                                                 </span>
                                                             ))}
                                                         </div>
-                                                        {isExpanded && entries.map(([type, { count, samples }]) => (
-                                                            <div key={type} style={{ display: 'flex', alignItems: 'flex-start', flexWrap: 'wrap', gap: 3, paddingLeft: 4, borderLeft: `2px solid ${barColor === P_RED ? P_RED_BG : P_ORANGE_BG}` }}>
-                                                                {samples.map((s, i) => (
-                                                                    <span key={i} style={{ fontSize: 9, background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', color: '#374151', display: 'inline-flex', alignItems: 'center', gap: 2, maxWidth: 260, overflow: 'hidden', flexShrink: 0 }}>
-                                                                        {s.value && s.value !== s.ean && (
-                                                                            <span style={{ fontFamily: 'monospace', color: P_RED_TEXT, maxWidth: 90, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>"{s.value}"</span>
+                                                        {isExpanded && (
+                                                            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, paddingLeft: 2 }}>
+                                                                {entries.map(([type, { count, samples }]) => (
+                                                                    <div key={type} style={{ display: 'flex', flexDirection: 'column', gap: 2, paddingLeft: 8, borderLeft: `2px solid ${chipBg}` }}>
+                                                                        <div style={{ fontSize: 9, fontWeight: 700, color: chipText, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 2 }}>
+                                                                            {errTypeLabel(type)}
+                                                                        </div>
+                                                                        {samples.map((s, i) => (
+                                                                            <div key={i} style={{ display: 'flex', alignItems: 'baseline', gap: 8, fontSize: 10, lineHeight: 1.5 }}>
+                                                                                {s.value && s.value !== s.ean ? (
+                                                                                    <span style={{ fontFamily: 'monospace', color: P_RED_TEXT, flexShrink: 0, maxWidth: 130, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>"{s.value}"</span>
+                                                                                ) : s.ean ? (
+                                                                                    <span style={{ fontFamily: 'monospace', color: '#374151', flexShrink: 0 }}>{s.ean}</span>
+                                                                                ) : null}
+                                                                                {s.name && (
+                                                                                    <span style={{ color: '#6B7280', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>{s.name}</span>
+                                                                                )}
+                                                                            </div>
+                                                                        ))}
+                                                                        {count > samples.length && (
+                                                                            <div style={{ fontSize: 9, color: '#9CA3AF', marginTop: 1 }}>+{count - samples.length} {lang === 'de' ? 'weitere' : 'more'}</div>
                                                                         )}
-                                                                        {s.ean && <span style={{ fontFamily: 'monospace' }}>{s.ean}</span>}
-                                                                        {s.name && <span style={{ fontFamily: 'sans-serif', color: '#6B7280', marginLeft: 2, maxWidth: 110, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>· {s.name}</span>}
-                                                                    </span>
+                                                                    </div>
                                                                 ))}
-                                                                {count > samples.length && (
-                                                                    <span style={{ fontSize: 9, color: '#9CA3AF', paddingTop: 1 }}>+{count - samples.length} {lang === 'de' ? 'weitere' : 'more'}</span>
-                                                                )}
                                                             </div>
-                                                        ))}
+                                                        )}
                                                     </div>
                                                 );
                                             })()}
@@ -2890,29 +2902,33 @@ export default function McAngebotsfeed() {
                                                             if (next.has(fieldKey4)) next.delete(fieldKey4); else next.add(fieldKey4);
                                                             return next;
                                                         });
+                                                        const chipBg4 = barColor === P_RED ? P_RED_BG : P_ORANGE_BG;
+                                                        const chipText4 = barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT;
                                                         return (
-                                                            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                                                            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 4 }}>
                                                                 <div>
                                                                     <span onClick={toggleExpand4}
-                                                                        style={{ fontSize: 9, fontWeight: 700, background: barColor === P_RED ? P_RED_BG : P_ORANGE_BG, color: barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT, border: `1px solid ${barColor}`, borderRadius: 3, padding: '1px 5px', whiteSpace: 'nowrap', cursor: 'pointer', userSelect: 'none', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                                                                        style={{ fontSize: 10, fontWeight: 600, background: chipBg4, color: chipText4, border: `1px solid ${barColor}`, borderRadius: 4, padding: '2px 7px', whiteSpace: 'nowrap', cursor: 'pointer', userSelect: 'none', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
                                                                         {lang === 'de' ? 'Fehlend' : 'Missing'} · {errs.toLocaleString(numLocale)}×
-                                                                        <svg width="8" height="8" viewBox="0 0 16 16" fill="none" style={{ transform: isExpanded4 ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }}>
+                                                                        <svg width="9" height="9" viewBox="0 0 16 16" fill="none" style={{ transform: isExpanded4 ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }}>
                                                                             <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                                                                         </svg>
                                                                     </span>
                                                                 </div>
                                                                 {isExpanded4 && (
-                                                                    <div style={{ display: 'flex', alignItems: 'flex-start', flexWrap: 'wrap', gap: 3, paddingLeft: 4, borderLeft: `2px solid ${barColor === P_RED ? P_RED_BG : P_ORANGE_BG}` }}>
-                                                                        {errorEans4.map((item, i) => (
-                                                                            <span key={i} style={{ fontSize: 9, background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', color: '#374151', display: 'inline-flex', alignItems: 'center', gap: 2, maxWidth: 220, overflow: 'hidden' }}>
-                                                                                {typeof item === 'string' ? item : item.ean}
-                                                                                {typeof item !== 'string' && item.name && (
-                                                                                    <span style={{ fontFamily: 'sans-serif', color: '#6B7280', marginLeft: 3, maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>· {item.name}</span>
-                                                                                )}
-                                                                            </span>
-                                                                        ))}
+                                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 2, paddingLeft: 8, borderLeft: `2px solid ${chipBg4}` }}>
+                                                                        {errorEans4.map((item, i) => {
+                                                                            const ean = typeof item === 'string' ? item : item.ean;
+                                                                            const name = typeof item === 'string' ? '' : (item.name || '');
+                                                                            return (
+                                                                                <div key={i} style={{ display: 'flex', alignItems: 'baseline', gap: 8, fontSize: 10, lineHeight: 1.5 }}>
+                                                                                    <span style={{ fontFamily: 'monospace', color: '#374151', flexShrink: 0 }}>{ean}</span>
+                                                                                    {name && <span style={{ color: '#6B7280', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>{name}</span>}
+                                                                                </div>
+                                                                            );
+                                                                        })}
                                                                         {errs > errorEans4.length && (
-                                                                            <span style={{ fontSize: 9, color: '#9CA3AF', paddingTop: 1 }}>+{errs - errorEans4.length} {lang === 'de' ? 'weitere' : 'more'}</span>
+                                                                            <div style={{ fontSize: 9, color: '#9CA3AF', marginTop: 1 }}>+{errs - errorEans4.length} {lang === 'de' ? 'weitere' : 'more'}</div>
                                                                         )}
                                                                     </div>
                                                                 )}
