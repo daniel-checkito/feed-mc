@@ -2603,32 +2603,38 @@ export default function McAngebotsfeed() {
                                                     if (next.has(key)) next.delete(key); else next.add(key);
                                                     return next;
                                                 });
-                                                return Object.entries(fieldErrorDetails[key]).map(([type, { count, samples }]) => {
-                                                    const visibleSamples = isExpanded ? samples : samples.slice(0, 3);
-                                                    const hiddenCount = samples.length - visibleSamples.length;
-                                                    return (
-                                                        <div key={type} style={{ display: 'flex', alignItems: 'flex-start', flexWrap: 'wrap', gap: 3 }}>
-                                                            <span style={{ fontSize: 9, fontWeight: 700, background: barColor === P_RED ? P_RED_BG : P_ORANGE_BG, color: barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT, border: `1px solid ${barColor}`, borderRadius: 3, padding: '1px 5px', flexShrink: 0, whiteSpace: 'nowrap' }}>
-                                                                {errTypeLabel(type)} · {count.toLocaleString(numLocale)}×
-                                                            </span>
-                                                            {visibleSamples.map((s, i) => (
-                                                                <span key={i} style={{ fontSize: 9, background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', color: '#374151', display: 'inline-flex', alignItems: 'center', gap: 2, maxWidth: 260, overflow: 'hidden', flexShrink: 0 }}>
-                                                                    {s.value && s.value !== s.ean && (
-                                                                        <span style={{ fontFamily: 'monospace', color: P_RED_TEXT, maxWidth: 90, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>"{s.value}"</span>
-                                                                    )}
-                                                                    {s.ean && <span style={{ fontFamily: 'monospace' }}>{s.ean}</span>}
-                                                                    {s.name && <span style={{ fontFamily: 'sans-serif', color: '#6B7280', marginLeft: 2, maxWidth: 110, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>· {s.name}</span>}
+                                                const entries = Object.entries(fieldErrorDetails[key]);
+                                                return (
+                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                                                        <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 4 }}>
+                                                            {entries.map(([type, { count }]) => (
+                                                                <span key={type} onClick={toggleExpand}
+                                                                    style={{ fontSize: 9, fontWeight: 700, background: barColor === P_RED ? P_RED_BG : P_ORANGE_BG, color: barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT, border: `1px solid ${barColor}`, borderRadius: 3, padding: '1px 5px', flexShrink: 0, whiteSpace: 'nowrap', cursor: 'pointer', userSelect: 'none', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                                                                    {errTypeLabel(type)} · {count.toLocaleString(numLocale)}×
+                                                                    <svg width="8" height="8" viewBox="0 0 16 16" fill="none" style={{ transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }}>
+                                                                        <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                                                    </svg>
                                                                 </span>
                                                             ))}
-                                                            {hiddenCount > 0 && (
-                                                                <span onClick={toggleExpand} style={{ fontSize: 10, color: '#6B7280', cursor: 'pointer', textDecoration: 'underline', flexShrink: 0 }}>+{hiddenCount} {lang === 'de' ? 'weitere anzeigen' : 'more'}</span>
-                                                            )}
-                                                            {isExpanded && samples.length > 3 && (
-                                                                <span onClick={toggleExpand} style={{ fontSize: 10, color: '#6B7280', cursor: 'pointer', textDecoration: 'underline', flexShrink: 0 }}>{lang === 'de' ? 'Weniger anzeigen' : 'Show less'}</span>
-                                                            )}
                                                         </div>
-                                                    );
-                                                });
+                                                        {isExpanded && entries.map(([type, { count, samples }]) => (
+                                                            <div key={type} style={{ display: 'flex', alignItems: 'flex-start', flexWrap: 'wrap', gap: 3, paddingLeft: 4, borderLeft: `2px solid ${barColor === P_RED ? P_RED_BG : P_ORANGE_BG}` }}>
+                                                                {samples.map((s, i) => (
+                                                                    <span key={i} style={{ fontSize: 9, background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', color: '#374151', display: 'inline-flex', alignItems: 'center', gap: 2, maxWidth: 260, overflow: 'hidden', flexShrink: 0 }}>
+                                                                        {s.value && s.value !== s.ean && (
+                                                                            <span style={{ fontFamily: 'monospace', color: P_RED_TEXT, maxWidth: 90, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>"{s.value}"</span>
+                                                                        )}
+                                                                        {s.ean && <span style={{ fontFamily: 'monospace' }}>{s.ean}</span>}
+                                                                        {s.name && <span style={{ fontFamily: 'sans-serif', color: '#6B7280', marginLeft: 2, maxWidth: 110, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>· {s.name}</span>}
+                                                                    </span>
+                                                                ))}
+                                                                {count > samples.length && (
+                                                                    <span style={{ fontSize: 9, color: '#9CA3AF', paddingTop: 1 }}>+{count - samples.length} {lang === 'de' ? 'weitere' : 'more'}</span>
+                                                                )}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                );
                                             })()}
                                         </div>
                                         <div style={{ textAlign: 'right', fontSize: 10, fontWeight: 600, whiteSpace: 'nowrap', paddingTop: 2 }}>
@@ -2884,26 +2890,31 @@ export default function McAngebotsfeed() {
                                                             if (next.has(fieldKey4)) next.delete(fieldKey4); else next.add(fieldKey4);
                                                             return next;
                                                         });
-                                                        const visibleEans = isExpanded4 ? errorEans4 : errorEans4.slice(0, 3);
-                                                        const hiddenCount4 = errorEans4.length - visibleEans.length;
                                                         return (
-                                                            <div style={{ display: 'flex', alignItems: 'flex-start', flexWrap: 'wrap', gap: 3 }}>
-                                                                <span style={{ fontSize: 9, fontWeight: 700, background: barColor === P_RED ? P_RED_BG : P_ORANGE_BG, color: barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT, border: `1px solid ${barColor}`, borderRadius: 3, padding: '1px 5px', flexShrink: 0, whiteSpace: 'nowrap' }}>
-                                                                    {lang === 'de' ? 'Fehlend' : 'Missing'} · {errs.toLocaleString(numLocale)}×
-                                                                </span>
-                                                                {visibleEans.map((item, i) => (
-                                                                    <span key={i} style={{ fontSize: 9, background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', color: '#374151', display: 'inline-flex', alignItems: 'center', gap: 2, maxWidth: 220, overflow: 'hidden' }}>
-                                                                        {typeof item === 'string' ? item : item.ean}
-                                                                        {typeof item !== 'string' && item.name && (
-                                                                            <span style={{ fontFamily: 'sans-serif', color: '#6B7280', marginLeft: 3, maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>· {item.name}</span>
-                                                                        )}
+                                                            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                                                                <div>
+                                                                    <span onClick={toggleExpand4}
+                                                                        style={{ fontSize: 9, fontWeight: 700, background: barColor === P_RED ? P_RED_BG : P_ORANGE_BG, color: barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT, border: `1px solid ${barColor}`, borderRadius: 3, padding: '1px 5px', whiteSpace: 'nowrap', cursor: 'pointer', userSelect: 'none', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                                                                        {lang === 'de' ? 'Fehlend' : 'Missing'} · {errs.toLocaleString(numLocale)}×
+                                                                        <svg width="8" height="8" viewBox="0 0 16 16" fill="none" style={{ transform: isExpanded4 ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }}>
+                                                                            <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                                                        </svg>
                                                                     </span>
-                                                                ))}
-                                                                {hiddenCount4 > 0 && (
-                                                                    <span onClick={toggleExpand4} style={{ fontSize: 10, color: '#6B7280', cursor: 'pointer', textDecoration: 'underline', flexShrink: 0 }}>+{hiddenCount4} {lang === 'de' ? 'weitere anzeigen' : 'more'}</span>
-                                                                )}
-                                                                {isExpanded4 && errorEans4.length > 3 && (
-                                                                    <span onClick={toggleExpand4} style={{ fontSize: 10, color: '#6B7280', cursor: 'pointer', textDecoration: 'underline', flexShrink: 0 }}>{lang === 'de' ? 'Weniger anzeigen' : 'Show less'}</span>
+                                                                </div>
+                                                                {isExpanded4 && (
+                                                                    <div style={{ display: 'flex', alignItems: 'flex-start', flexWrap: 'wrap', gap: 3, paddingLeft: 4, borderLeft: `2px solid ${barColor === P_RED ? P_RED_BG : P_ORANGE_BG}` }}>
+                                                                        {errorEans4.map((item, i) => (
+                                                                            <span key={i} style={{ fontSize: 9, background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', color: '#374151', display: 'inline-flex', alignItems: 'center', gap: 2, maxWidth: 220, overflow: 'hidden' }}>
+                                                                                {typeof item === 'string' ? item : item.ean}
+                                                                                {typeof item !== 'string' && item.name && (
+                                                                                    <span style={{ fontFamily: 'sans-serif', color: '#6B7280', marginLeft: 3, maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>· {item.name}</span>
+                                                                                )}
+                                                                            </span>
+                                                                        ))}
+                                                                        {errs > errorEans4.length && (
+                                                                            <span style={{ fontSize: 9, color: '#9CA3AF', paddingTop: 1 }}>+{errs - errorEans4.length} {lang === 'de' ? 'weitere' : 'more'}</span>
+                                                                        )}
+                                                                    </div>
                                                                 )}
                                                             </div>
                                                         );
