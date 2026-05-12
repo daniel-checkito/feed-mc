@@ -109,7 +109,13 @@ const EXAMPLE_FEED_CSV = `EAN (GTIN14);offer_id;name;description;brand;price;del
 4045347299021;T88002-BG;SleepWell Boxspringbett Kunstleder beige, 160x200 cm;Elegantes Boxspringbett mit Kunstlederbezug in Beige. 7-Zonen-Taschenfederkernmatratze H3, Visco-Topper 5 cm. Maße: B 160 cm × H 118 cm × T 218 cm. Lieferung frei Haus, Aufbauservice buchbar.;SleepWell;1099.00;5-7 Werktage;Spedition;auf Lager;3;https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600;;;Beige;Kunstleder / Metall;Schlafzimmer > Betten > Boxspringbetten;1x Boxspringbett, Montagematerial;SleepWell GmbH;Schlafweg 12;70173;Stuttgart;Deutschland;info@sleepwell.de
 4045347299030;T77001-ES;FurniStyle Esszimmerstuhl Stoff grau, 4er Set;4 Esszimmerstühle im modernen Skandi-Design. Sitzfläche und Rückenlehne gepolstert mit Strukturstoff in Grau. Gestell aus Buchenholz natur. Maße je Stuhl: B 46 × H 83 × T 55 cm.;FurniStyle;299.00;3-5 Werktage;Paket;auf Lager;18;https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=600;https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600;https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=600;Grau / Natur;Stoff / Buchenholz;Esszimmer > Stühle > Esszimmerstühle;4x Stuhl, Montagematerial;FurniStyle KG;Designweg 8;40210;Düsseldorf;Deutschland;hello@furnistyle.de
 4045347299040;T66001-PL;LightUp Pendelleuchte Metall schwarz, E27, höhenverstellbar;Moderne Pendelleuchte aus gebürstetem Metall in Schwarz. Fassung E27, max. 60W. Kabel höhenverstellbar 40–120 cm. Inklusive Baldachin und Montagematerial. OHNE Leuchtmittel.;LightUp;89.00;2-3 Werktage;Paket;auf Lager;31;https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600;https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600;;Schwarz;Metall / Textilkabel;Wohnzimmer > Leuchten > Pendelleuchten;1x Pendelleuchte, 1x Baldachin, Montagematerial;LightUp GmbH;Lichtstr. 3;50679;Köln;Deutschland;info@lightup.de
-4045347299041;T66002-GO;LightUp Pendelleuchte Metall gold, E27, höhenverstellbar;Stilvolle Pendelleuchte aus gebürstetem Metall in Messing-Gold. Fassung E27, max. 60W. Kabel höhenverstellbar 40–120 cm. Passt zu modernen und klassischen Einrichtungsstilen.;LightUp;99.00;2-3 Werktage;Paket;auf Lager;14;https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600;;;Gold / Messing;Metall / Textilkabel;Wohnzimmer > Leuchten > Pendelleuchten;1x Pendelleuchte, 1x Baldachin, Montagematerial;LightUp GmbH;Lichtstr. 3;50679;Köln;Deutschland;info@lightup.de`;
+4045347299041;T66002-GO;LightUp Pendelleuchte Metall gold, E27, höhenverstellbar;Stilvolle Pendelleuchte aus gebürstetem Metall in Messing-Gold. Fassung E27, max. 60W. Kabel höhenverstellbar 40–120 cm. Passt zu modernen und klassischen Einrichtungsstilen.;LightUp;99.00;2-3 Werktage;Paket;auf Lager;14;https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600;;;Gold / Messing;Metall / Textilkabel;Wohnzimmer > Leuchten > Pendelleuchten;1x Pendelleuchte, 1x Baldachin, Montagematerial;LightUp GmbH;Lichtstr. 3;50679;Köln;Deutschland;info@lightup.de
+4045347299050;T90001-KS;WardrobeMax Kleiderschrank 3-türig weiß, 150x200 cm;Großer Kleiderschrank mit 3 Türen, Spiegeltür mittig. Inneneinteilung: 2 Kleiderstangen, 4 Fachböden. B 150 × H 200 × T 60 cm. Selbstmontage möglich.;WardrobeMax;349.00;1-2 Wochen;Spedition;auf Lager;6;https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600;https://images.unsplash.com/photo-1540574163026-643ea20ade25?w=600;https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=600;Weiß;MDF / Spanplatte;Schlafzimmer > Schränke > Kleiderschränke;1x Kleiderschrank, Montagematerial;WardrobeMax GmbH;Schrankstr. 7;30159;Hannover;Deutschland;info@wardrobemax.de
+4045347299051;T90002-SE;LoungeChair Sessel Echtleder cognac, Drehfunktion;Hochwertiger Sessel mit echtem Rindsleder in Cognac. 360° Drehfunktion. Holzfüße natur. Maße: B 70 × H 90 × T 75 cm. Entspanntes Sitzen mit Hochlehner.;LoungeChair;599.00;3-5 Werktage;Spedition;auf Lager;4;https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=600;https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600;;Cognac;Echtleder / Buchenholz;Wohnzimmer > Sessel > Lounge-Sessel;1x Sessel, 4x Füße;LoungeChair GmbH;Sesselweg 2;70173;Stuttgart;Deutschland;info@loungechair.de
+4045347299052;T90003-SD;DeskPro Schreibtisch höhenverstellbar elektrisch, 140x70 cm;Elektrisch höhenverstellbarer Schreibtisch. Höhe 63–128 cm, stufenlos. Tischplatte MDF weiß, Gestell Stahl schwarz. B 140 × T 70 cm. Memory-Funktion 3 Positionen.;DeskPro;699.00;5-7 Werktage;Spedition;auf Lager;9;https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600;;;Weiß / Schwarz;MDF / Stahl;Büro > Schreibtische > Steh-Sitz-Schreibtische;1x Schreibtisch, Montagematerial;DeskPro GmbH;Bürostr. 15;60329;Frankfurt;Deutschland;service@deskpro.de
+4045347299053;T90004-KO;;Kompakte Kommode mit 4 geräumigen Schubladen. Softclose-Funktion. Oberfläche matt lackiert. B 80 × H 90 × T 40 cm. Standsicher dank Anti-Kipp-Beschlag.;HomeStyle;229.00;2-4 Werktage;Paket;auf Lager;11;https://images.unsplash.com/photo-1616627781431-23b776aad6b2?w=600;https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600;;Weiß Matt;MDF lackiert;Wohnzimmer > Kommoden;1x Kommode, Montagematerial;HomeStyle KG;Hauptstr. 10;20095;Hamburg;Deutschland;info@homestyle.de
+4045347299054;T90005-GP;WoodDesign Garderobenpaneel Eiche massiv, 5 Haken, 100 cm;Massivholz-Garderobenpaneel aus Eiche, geölt. 5 Kleiderhaken aus Messing. Inkl. Ablage oben. B 100 × H 30 × T 20 cm.;WoodDesign;179.00;2-4 Werktage;Paket;sofort lieferbar;7;https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600;https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=600;https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=600;Eiche natur / Messing;Eiche massiv / Messing;Flur > Garderobe > Garderobenpaneele;1x Garderobenpaneel, 5x Haken, Montageset;WoodDesign AG;Holzallee 4;10117;Berlin;Deutschland;info@wooddesign.de
+4045347299055;T90006-OL;OutdoorPlus Lounge-Sofa Polyrattan grau, 3-Sitzer;Wetterfestes Lounge-Sofa aus Polyrattan in Grau. Gestell Aluminium pulverbeschichtet. Polster wasserabweisend, abziehbar. B 190 × H 75 × T 80 cm.;OutdoorPlus;799.00;1 Woche;Spedition;auf Lager;2;https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600;;; Grau;Polyrattan / Aluminium;Garten > Gartensofa > Loungesofa;1x Lounge-Sofa, Kissen;OutdoorPlus GmbH;Gartenweg 9;81243;München;Deutschland;outdoor@outdoorplus.de`;
 
 // Word lists for title structure analysis
 const COLOR_WORDS_DE = ['schwarz','weiß','weiss','grau','beige','braun','natur','naturfarben','silber','gold','rot','blau','grün','gelb','orange','türkis','creme','sand','anthrazit','cognac','cappuccino','taupe','dunkelgrau','hellgrau','dunkelbraun','elfenbein','bordeaux','petrol'];
@@ -835,6 +841,12 @@ const EN_T = {
 
 export default function McAngebotsfeed() {
     const showQualityScore = false; // not public yet - re-enable when ready
+
+    // Pastel color palette for status indicators
+    const P_RED    = '#FCA5A5'; const P_RED_BG    = '#FEF2F2'; const P_RED_TEXT    = '#991B1B';
+    const P_ORANGE = '#FCD34D'; const P_ORANGE_BG = '#FFFBEB'; const P_ORANGE_TEXT = '#92400E';
+    const P_GREEN  = '#86EFAC'; const P_GREEN_BG  = '#F0FDF4'; const P_GREEN_TEXT  = '#166534';
+    const P_BLUE   = '#93C5FD'; const P_BLUE_BG   = '#EFF6FF'; const P_BLUE_TEXT   = '#1E40AF';
 
     const [file, setFile] = useState(null);
     const [dragging, setDragging] = useState(false);
@@ -2257,12 +2269,14 @@ export default function McAngebotsfeed() {
 
                 // Build per-type error breakdown for sidebar
                 const eanCol3 = mcMapping.ean;
+                const nameCol3 = mcMapping.name;
                 const getEansFromRowSet = (rowNumSet, max = 5) => {
                     if (!eanCol3 || !rowNumSet) return [];
                     const result = [];
                     for (const rn of rowNumSet) {
                         const ean = String(rows[rn - 1]?.[eanCol3] ?? '').trim();
-                        if (ean && !result.includes(ean)) result.push(ean);
+                        const name = nameCol3 ? String(rows[rn - 1]?.[nameCol3] ?? '').trim() : '';
+                        if (ean && !result.find(r => r.ean === ean)) result.push({ ean, name });
                         if (result.length >= max) break;
                     }
                     return result;
@@ -2290,8 +2304,9 @@ export default function McAngebotsfeed() {
                     const key = `${e.field}::${e.type}`;
                     if (!errorsByType[key]) errorsByType[key] = { label, count: 0, sampleEans: [] };
                     errorsByType[key].count++;
-                    if (e.ean && errorsByType[key].sampleEans.length < 5 && !errorsByType[key].sampleEans.includes(e.ean)) {
-                        errorsByType[key].sampleEans.push(e.ean);
+                    if (e.ean && errorsByType[key].sampleEans.length < 5 && !errorsByType[key].sampleEans.find(s => s.ean === e.ean)) {
+                        const nameAtRow = nameCol3 ? String(rows[e.row - 1]?.[nameCol3] ?? '').trim() : '';
+                        errorsByType[key].sampleEans.push({ ean: e.ean, name: nameAtRow });
                     }
                 });
                 if (issues.eanDupRows.size > 0) errorsByType['ean::dup'] = { label: T.csvEanDup, count: issues.eanDupRows.size, sampleEans: getEansFromRowSet(issues.eanDupRows) };
@@ -2300,6 +2315,49 @@ export default function McAngebotsfeed() {
                 const detailedErrors = Object.values(errorsByType)
                     .sort((a, b) => b.count - a.count)
                     .slice(0, 7);
+
+                // Per-field, per-type breakdown used in the field table rows
+                const fieldErrorDetails = {};
+                issues.pflichtErrors.forEach((e) => {
+                    const k = e.field === 'stock_amount' ? 'availability' : e.field;
+                    if (!fieldErrorDetails[k]) fieldErrorDetails[k] = {};
+                    if (!fieldErrorDetails[k][e.type]) fieldErrorDetails[k][e.type] = { count: 0, samples: [] };
+                    fieldErrorDetails[k][e.type].count++;
+                    if (fieldErrorDetails[k][e.type].samples.length < 3) {
+                        const nm = nameCol3 ? String(rows[e.row - 1]?.[nameCol3] ?? '').trim() : '';
+                        fieldErrorDetails[k][e.type].samples.push({ ean: e.ean, value: e.value, name: nm });
+                    }
+                });
+                [
+                    ['ean', issues.eanDupRows, eanCol3],
+                    ['name', issues.nameDupRows, nameCol3],
+                    ['seller_offer_id', issues.offerIdDupRows, mcMapping.seller_offer_id],
+                ].forEach(([field, dupSet, col]) => {
+                    if (!dupSet?.size) return;
+                    if (!fieldErrorDetails[field]) fieldErrorDetails[field] = {};
+                    fieldErrorDetails[field].dup = { count: dupSet.size, samples: [] };
+                    for (const rn of dupSet) {
+                        if (fieldErrorDetails[field].dup.samples.length >= 3) break;
+                        const ean = eanCol3 ? String(rows[rn - 1]?.[eanCol3] ?? '').trim() : '';
+                        const val = col ? String(rows[rn - 1]?.[col] ?? '').trim() : '';
+                        const nm = nameCol3 ? String(rows[rn - 1]?.[nameCol3] ?? '').trim() : '';
+                        fieldErrorDetails[field].dup.samples.push({ ean, value: val, name: nm });
+                    }
+                });
+
+                const errTypeLabel = (type) => lang === 'de' ? ({
+                    missing: 'Fehlend', placeholder: 'Platzhalter', too_short: 'Zu kurz', one_word: 'Einwortig',
+                    bware: 'B-Ware', wrong_length: 'Ungültige Länge', invalid: 'Ungültiger Wert',
+                    scientific: 'Wiss. Notation', siehe_oben: 'Querverweis', external_link: 'Ext. Link',
+                    template: 'Mustertext', advertising: 'Werbetext', identical_to_title: '= Titel',
+                    dup: 'Doppelt', single: 'Nur 1 Bild', wrong_category: 'Falsche Kat.',
+                }[type] ?? type) : ({
+                    missing: 'Missing', placeholder: 'Placeholder', too_short: 'Too short', one_word: 'Single word',
+                    bware: 'B-grade', wrong_length: 'Invalid length', invalid: 'Invalid value',
+                    scientific: 'Sci. notation', siehe_oben: 'Cross-ref', external_link: 'Ext. link',
+                    template: 'Template', advertising: 'Ad text', identical_to_title: '= Title',
+                    dup: 'Duplicate', single: 'Only 1 image', wrong_category: 'Wrong cat.',
+                }[type] ?? type);
 
                 // Description length distribution
                 const descCol = mcMapping['description'];
@@ -2440,8 +2498,8 @@ export default function McAngebotsfeed() {
                 const listablePct = issues.totalRows > 0 ? Math.round((issues.livefaehigCount / issues.totalRows) * 100) : 0;
 
                 const score = issues.totalScore;
-                const scoreColor = score >= 85 ? '#16A34A' : score >= 60 ? '#D97706' : '#DC2626';
-                const scoreBg = score >= 85 ? '#DCFCE7' : score >= 60 ? '#FEF3C7' : '#FEE2E2';
+                const scoreColor = score >= 85 ? P_GREEN_TEXT : score >= 60 ? P_ORANGE_TEXT : P_RED_TEXT;
+                const scoreBg = score >= 85 ? P_GREEN_BG : score >= 60 ? P_ORANGE_BG : P_RED_BG;
 
                 return (
                     <div style={{ width: '100%', maxWidth: 1100, display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -2486,7 +2544,7 @@ export default function McAngebotsfeed() {
                                 const errs = (key === 'availability' && alwaysAvailable) ? 0 : (fieldErrorRows[key]?.size || 0);
                                 const pct = isMapped ? Math.max(0, Math.round((1 - errs / issues.totalRows) * 100)) : null;
                                 const hasError = pct !== null && errs > 0;
-                                const barColor = pct === null ? '#E5E7EB' : errs === 0 ? '#16A34A' : pct >= 70 ? '#D97706' : '#DC2626';
+                                const barColor = pct === null ? '#E5E7EB' : errs === 0 ? P_GREEN : pct >= 70 ? P_ORANGE : P_RED;
                                 const mappedCol = key === 'availability'
                                     ? (mcMapping.availability || mcMapping.stock_amount)
                                     : key === 'image_url' ? mcImageColumns[0]
@@ -2498,30 +2556,12 @@ export default function McAngebotsfeed() {
                                     : [];
                                 // Always show EAN identifiers for affected rows so users can find them.
                                 // For the ean field itself, show the bad EAN value; for all others show the EAN column value.
-                                const errorSamples3 = hasError ? (() => {
-                                    const out = [];
-                                    const seen = new Set();
-                                    const eanCol = mcMapping.ean;
-                                    for (const rn of fieldErrorRows[key]) {
-                                        let v = '';
-                                        if (key === 'ean') {
-                                            v = String(rows[rn - 1]?.[mappedCol] ?? '').trim();
-                                        } else if (eanCol) {
-                                            v = String(rows[rn - 1]?.[eanCol] ?? '').trim();
-                                        }
-                                        if (v && !seen.has(v)) { seen.add(v); out.push(v); }
-                                        if (out.length >= 5) break;
-                                    }
-                                    return out;
-                                })() : [];
-                                const sampleLabel3 = 'EAN:';
-                                const totalErrCount = fieldErrorRows[key]?.size || 0;
                                 return (
-                                    <div key={key} style={{ display: 'grid', gridTemplateColumns: '1fr 90px 120px', padding: '5px 16px', borderBottom: '1px solid #F9FAFB', alignItems: 'start', background: hasError ? (barColor === '#DC2626' ? '#FEF2F2' : '#FFFBF5') : 'transparent', borderLeft: hasError ? `3px solid ${barColor}` : '3px solid transparent' }}>
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0, paddingTop: 2, paddingBottom: hasError && errorSamples3.length > 0 ? 4 : 0 }}>
+                                    <div key={key} style={{ display: 'grid', gridTemplateColumns: '1fr 90px 120px', padding: '5px 16px', borderBottom: '1px solid #F9FAFB', alignItems: 'start', background: hasError ? (barColor === P_RED ? P_RED_BG : P_ORANGE_BG) : 'transparent', borderLeft: hasError ? `3px solid ${barColor}` : '3px solid transparent' }}>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0, paddingTop: 2, paddingBottom: hasError ? 6 : 0 }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                                <div style={{ fontSize: 11, color: hasError ? '#92400E' : '#374151', fontWeight: hasError ? 600 : 500, flexShrink: 0 }}>{label}</div>
-                                                {exampleVals.length > 0 && (
+                                                <div style={{ fontSize: 11, color: hasError ? (barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT) : '#374151', fontWeight: hasError ? 600 : 500, flexShrink: 0 }}>{label}</div>
+                                                {!hasError && exampleVals.length > 0 && (
                                                     <div style={{ display: 'flex', gap: 4, flexWrap: 'nowrap', overflow: 'hidden', maxWidth: 220 }}>
                                                         {exampleVals.slice(0, 2).map((v, i) => (
                                                             <span key={i} style={{ fontSize: 9, color: '#6B7280', background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block', flexShrink: 0 }}>{v}</span>
@@ -2529,22 +2569,27 @@ export default function McAngebotsfeed() {
                                                     </div>
                                                 )}
                                             </div>
-                                            {hasError && errorSamples3.length > 0 && (
-                                                <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 3 }}>
-                                                    <span style={{ fontSize: 9, color: '#9CA3AF', fontWeight: 600 }}>{sampleLabel3}</span>
-                                                    {errorSamples3.map((v, i) => (
-                                                        <span key={i} style={{ fontSize: 9, color: '#374151', background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', fontFamily: key === 'ean' ? 'monospace' : 'inherit', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block', flexShrink: 0 }}>{v}</span>
+                                            {hasError && fieldErrorDetails[key] && Object.entries(fieldErrorDetails[key]).map(([type, { count, samples }]) => (
+                                                <div key={type} style={{ display: 'flex', alignItems: 'flex-start', flexWrap: 'wrap', gap: 3 }}>
+                                                    <span style={{ fontSize: 9, fontWeight: 700, background: barColor === P_RED ? P_RED_BG : P_ORANGE_BG, color: barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT, border: `1px solid ${barColor}`, borderRadius: 3, padding: '1px 5px', flexShrink: 0, whiteSpace: 'nowrap' }}>
+                                                        {errTypeLabel(type)} · {count.toLocaleString(numLocale)}×
+                                                    </span>
+                                                    {samples.map((s, i) => (
+                                                        <span key={i} style={{ fontSize: 9, background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', color: '#374151', display: 'inline-flex', alignItems: 'center', gap: 2, maxWidth: 260, overflow: 'hidden', flexShrink: 0 }}>
+                                                            {s.value && s.value !== s.ean && (
+                                                                <span style={{ fontFamily: 'monospace', color: P_RED_TEXT, maxWidth: 90, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>"{s.value}"</span>
+                                                            )}
+                                                            {s.ean && <span style={{ fontFamily: 'monospace' }}>{s.ean}</span>}
+                                                            {s.name && <span style={{ fontFamily: 'sans-serif', color: '#6B7280', marginLeft: 2, maxWidth: 110, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>· {s.name}</span>}
+                                                        </span>
                                                     ))}
-                                                    {totalErrCount > errorSamples3.length && (
-                                                        <span style={{ fontSize: 9, color: '#9CA3AF' }}>+{totalErrCount - errorSamples3.length} {lang === 'de' ? 'weitere' : 'more'}</span>
-                                                    )}
                                                 </div>
-                                            )}
+                                            ))}
                                         </div>
                                         <div style={{ textAlign: 'right', fontSize: 10, fontWeight: 600, whiteSpace: 'nowrap', paddingTop: 2 }}>
                                             {pct === null ? <span style={{ color: '#9CA3AF' }}>{T.notInFeed}</span>
-                                                : errs === 0 ? <span style={{ color: '#16A34A' }}>{T.complete}</span>
-                                                : <span style={{ color: barColor }}>{T.missingCount(errs.toLocaleString(numLocale))}</span>}
+                                                : errs === 0 ? <span style={{ color: P_GREEN_TEXT }}>{T.complete}</span>
+                                                : <span style={{ color: barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT }}>{T.missingCount(errs.toLocaleString(numLocale))}</span>}
                                         </div>
                                         <div style={{ paddingLeft: 12, paddingTop: 2, display: 'flex', alignItems: 'center', gap: 5 }}>
                                             {pct !== null ? (
@@ -2577,7 +2622,7 @@ export default function McAngebotsfeed() {
                             {/* Score progress bar - Pflichtfelder */}
                             {(() => {
                                 const s = issues.pflichtScore;
-                                const c3 = s >= 90 ? '#16A34A' : s >= 60 ? '#D97706' : '#DC2626';
+                                const c3 = s >= 90 ? P_GREEN : s >= 60 ? P_ORANGE : P_RED;
                                 return (
                                     <ScoreBar
                                         title={lang === 'de' ? 'Pflichtfeldabdeckung' : 'Required field coverage'}
@@ -2635,7 +2680,7 @@ export default function McAngebotsfeed() {
                 const { optFieldStats } = issues;
                 const numLocale = lang === 'de' ? 'de-DE' : 'en-US';
                 const overallPct = issues.optionalScore;
-                const overallColor = overallPct >= 70 ? '#16A34A' : overallPct >= 40 ? '#D97706' : '#DC2626';
+                const overallColor = overallPct >= 70 ? P_GREEN : overallPct >= 40 ? P_ORANGE : P_RED;
 
                 // Image count distribution (moved from step 3)
                 const imgStats = mcImageColumns.length > 0 ? (() => {
@@ -2722,12 +2767,14 @@ export default function McAngebotsfeed() {
                 const completeOptionalFields = optFieldStats.fields.filter(f => !f.notMapped && f.pct === 100).length;
                 const errorOptionalFields = optFieldStats.fields.filter(f => !f.notMapped && f.pct < 100).length;
 
-                // Build EAN lookup per optional field from optionalHints
+                // Build EAN lookup per optional field from optionalHints (with product name)
                 const optHintsByField = {};
-                issues.optionalHints.forEach(({ field, ean }) => {
+                const nameColOpt = mcMapping.name;
+                issues.optionalHints.forEach(({ field, ean, row }) => {
                     if (!optHintsByField[field]) optHintsByField[field] = [];
-                    if (ean && optHintsByField[field].length < 8 && !optHintsByField[field].includes(ean)) {
-                        optHintsByField[field].push(ean);
+                    if (ean && optHintsByField[field].length < 8 && !optHintsByField[field].find(s => s.ean === ean)) {
+                        const nm = nameColOpt ? String(rows[row - 1]?.[nameColOpt] ?? '').trim() : '';
+                        optHintsByField[field].push({ ean, name: nm });
                     }
                 });
 
@@ -2774,7 +2821,7 @@ export default function McAngebotsfeed() {
                                         const pct = isMapped ? f.pct : null;
                                         const errs = isMapped ? Math.max(0, f.total - f.covered) : 0;
                                         const hasError = pct !== null && errs > 0;
-                                        const barColor = pct === null ? '#E5E7EB' : errs === 0 ? '#16A34A' : pct >= 70 ? '#D97706' : '#DC2626';
+                                        const barColor = pct === null ? '#E5E7EB' : errs === 0 ? P_GREEN : pct >= 70 ? P_ORANGE : P_RED;
                                         const mappedCol = mcMapping[f.field];
                                         // Real example values from filled rows of this field (always shown if available).
                                         const exampleVals = mappedCol
@@ -2783,7 +2830,7 @@ export default function McAngebotsfeed() {
                                         // EAN list for bad rows — shown directly in the table row.
                                         const errorEans4 = hasError ? (optHintsByField[f.field] || []) : [];
                                         return (
-                                            <div key={f.field} style={{ display: 'grid', gridTemplateColumns: '1fr 90px 120px', padding: '5px 16px', borderBottom: '1px solid #F9FAFB', alignItems: 'start', background: hasError ? (barColor === '#DC2626' ? '#FEF2F2' : '#FFFBF5') : 'transparent', borderLeft: hasError ? `3px solid ${barColor}` : '3px solid transparent' }}>
+                                            <div key={f.field} style={{ display: 'grid', gridTemplateColumns: '1fr 90px 120px', padding: '5px 16px', borderBottom: '1px solid #F9FAFB', alignItems: 'start', background: hasError ? (barColor === P_RED ? P_RED_BG : P_ORANGE_BG) : 'transparent', borderLeft: hasError ? `3px solid ${barColor}` : '3px solid transparent' }}>
                                                 <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0, paddingTop: 2, paddingBottom: (exampleVals.length > 0 || errorEans4.length > 0) ? 4 : 0 }}>
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                                                         <div style={{ fontSize: 11, color: hasError ? '#92400E' : '#374151', fontWeight: hasError ? 600 : 500, flexShrink: 0 }}>{label}</div>
@@ -2791,8 +2838,13 @@ export default function McAngebotsfeed() {
                                                     {errorEans4.length > 0 && (
                                                         <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 3 }}>
                                                             <span style={{ fontSize: 9, color: '#9CA3AF', fontWeight: 600 }}>EAN:</span>
-                                                            {errorEans4.slice(0, 5).map((v, i) => (
-                                                                <span key={i} style={{ fontSize: 9, color: '#374151', background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', fontFamily: 'monospace', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block', flexShrink: 0 }}>{v}</span>
+                                                            {errorEans4.slice(0, 5).map((item, i) => (
+                                                                <span key={i} style={{ fontFamily: 'monospace', fontSize: 9, background: '#F3F4F6', padding: '1px 5px', borderRadius: 3, color: '#374151', display: 'inline-flex', alignItems: 'center', gap: 2, maxWidth: 220, overflow: 'hidden' }}>
+                                                                    {typeof item === 'string' ? item : item.ean}
+                                                                    {typeof item !== 'string' && item.name && (
+                                                                        <span style={{ fontFamily: 'sans-serif', color: '#6B7280', marginLeft: 3, maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>· {item.name}</span>
+                                                                    )}
+                                                                </span>
                                                             ))}
                                                             {errs > errorEans4.slice(0, 5).length && (
                                                                 <span style={{ fontSize: 9, color: '#9CA3AF' }}>+{errs - errorEans4.slice(0, 5).length} {lang === 'de' ? 'weitere' : 'more'}</span>
@@ -2810,8 +2862,8 @@ export default function McAngebotsfeed() {
                                                 </div>
                                                 <div style={{ textAlign: 'right', fontSize: 10, fontWeight: 600, whiteSpace: 'nowrap', paddingTop: 2 }}>
                                                     {pct === null ? <span style={{ color: '#9CA3AF' }}>{T.notInFeed}</span>
-                                                        : errs === 0 ? <span style={{ color: '#16A34A' }}>{T.complete}</span>
-                                                        : <span style={{ color: barColor }}>{T.missingCount(errs.toLocaleString(numLocale))}</span>}
+                                                        : errs === 0 ? <span style={{ color: P_GREEN_TEXT }}>{T.complete}</span>
+                                                        : <span style={{ color: barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT }}>{T.missingCount(errs.toLocaleString(numLocale))}</span>}
                                                 </div>
                                                 <div style={{ paddingLeft: 12, paddingTop: 2, display: 'flex', alignItems: 'center', gap: 5 }}>
                                                     {pct !== null ? (
@@ -2831,7 +2883,7 @@ export default function McAngebotsfeed() {
                                 {imgDistribution && imgDistribution.totalRows > 0 && (
                                     <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'hidden' }}>
                                         <div style={{ padding: '12px 16px 10px', borderBottom: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', gap: 8 }}>
-                                            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#DC2626', flexShrink: 0 }} />
+                                            <span style={{ width: 8, height: 8, borderRadius: '50%', background: P_RED, flexShrink: 0 }} />
                                             <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{lang === 'de' ? 'Bilder' : 'Images'}</div>
                                             <div style={{ marginLeft: 'auto', fontSize: 10, color: '#16A34A', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 999, padding: '3px 10px', fontWeight: 600 }}>
                                                 {lang === 'de' ? `Bildspalten ${mcImageColumns.length}` : `Image columns ${mcImageColumns.length}`}
@@ -2845,9 +2897,9 @@ export default function McAngebotsfeed() {
                                                 .map(([cnt, n]) => {
                                                     const isOk = cnt >= 3;
                                                     const isWarn = cnt > 0 && cnt < 3;
-                                                    const color = isOk ? '#16A34A' : isWarn ? '#D97706' : '#DC2626';
-                                                    const bg = isOk ? '#F0FDF4' : isWarn ? '#FFFBEB' : '#FEF2F2';
-                                                    const border = isOk ? '#BBF7D0' : isWarn ? '#FDE68A' : '#FECACA';
+                                                    const color = isOk ? P_GREEN_TEXT : isWarn ? P_ORANGE_TEXT : P_RED_TEXT;
+                                                    const bg = isOk ? P_GREEN_BG : isWarn ? P_ORANGE_BG : P_RED_BG;
+                                                    const border = isOk ? P_GREEN : isWarn ? P_ORANGE : P_RED;
                                                     return (
                                                         <span key={cnt} style={{ fontSize: 11, fontWeight: 600, color, background: bg, border: `1px solid ${border}`, borderRadius: 6, padding: '4px 10px' }}>
                                                             {lang === 'de' ? `${cnt} ${cnt === 1 ? 'Bild' : 'Bilder'}` : `${cnt} ${cnt === 1 ? 'image' : 'images'}`}: {n}
@@ -2977,6 +3029,7 @@ export default function McAngebotsfeed() {
 
                                 {/* Score progress bar - Optionale Felder. Stats on the article level. */}
                                 {(() => {
+                                    const noOptMapped = optFieldStats.fields.filter(f => !f.notMapped).length === 0;
                                     const mappedFields = optFieldStats.fields.filter(f => !f.notMapped);
                                     let completeArticles = 0;
                                     if (mappedFields.length > 0) {
@@ -2997,22 +3050,31 @@ export default function McAngebotsfeed() {
                                                 ? `${completeArticles.toLocaleString(numLocale)} von ${issues.totalRows.toLocaleString(numLocale)} Artikeln vollständig.`
                                                 : `${completeArticles.toLocaleString(numLocale)} of ${issues.totalRows.toLocaleString(numLocale)} items complete.`);
                                     return (
-                                        <ScoreBar
-                                            title={lang === 'de' ? 'Optionale Feldabdeckung' : 'Optional field coverage'}
-                                            pct={overallPct}
-                                            color={overallColor}
-                                            complete={completeArticles}
-                                            incomplete={incompleteArticles}
-                                            total={issues.totalRows}
-                                            completeLabel={lang === 'de' ? 'vollständig' : 'complete'}
-                                            incompleteLabel={lang === 'de' ? 'unvollständig' : 'incomplete'}
-                                            totalLabel={lang === 'de' ? 'gesamt' : 'total'}
-                                            tipComplete={lang === 'de' ? 'Artikel mit allen optionalen Feldern befüllt' : 'Items with all optional fields filled'}
-                                            tipIncomplete={lang === 'de' ? 'Artikel mit mind. einer Lücke in den optionalen Feldern' : 'Items with at least one gap in the optional fields'}
-                                            tipTotal={lang === 'de' ? 'Gesamtzahl Artikel im Feed' : 'Total items in the feed'}
-                                            summary={summary}
-                                            numLocale={numLocale}
-                                        />
+                                        <>
+                                            <div style={{ opacity: noOptMapped ? 0.45 : 1, pointerEvents: noOptMapped ? 'none' : 'auto' }}>
+                                                <ScoreBar
+                                                    title={lang === 'de' ? 'Optionale Feldabdeckung' : 'Optional field coverage'}
+                                                    pct={overallPct}
+                                                    color={overallColor}
+                                                    complete={completeArticles}
+                                                    incomplete={incompleteArticles}
+                                                    total={issues.totalRows}
+                                                    completeLabel={lang === 'de' ? 'vollständig' : 'complete'}
+                                                    incompleteLabel={lang === 'de' ? 'unvollständig' : 'incomplete'}
+                                                    totalLabel={lang === 'de' ? 'gesamt' : 'total'}
+                                                    tipComplete={lang === 'de' ? 'Artikel mit allen optionalen Feldern befüllt' : 'Items with all optional fields filled'}
+                                                    tipIncomplete={lang === 'de' ? 'Artikel mit mind. einer Lücke in den optionalen Feldern' : 'Items with at least one gap in the optional fields'}
+                                                    tipTotal={lang === 'de' ? 'Gesamtzahl Artikel im Feed' : 'Total items in the feed'}
+                                                    summary={summary}
+                                                    numLocale={numLocale}
+                                                />
+                                            </div>
+                                            {noOptMapped && (
+                                                <div style={{ padding: '8px 12px', fontSize: 11, color: '#6B7280', textAlign: 'center', fontStyle: 'italic' }}>
+                                                    {lang === 'de' ? 'Keine optionalen Felder zugeordnet' : 'No optional fields mapped'}
+                                                </div>
+                                            )}
+                                        </>
                                     );
                                 })()}
 
@@ -3041,6 +3103,7 @@ export default function McAngebotsfeed() {
             ══════════════════════════════════════════ */}
             {step === 5 && issues && (() => {
                 const { optFieldStats } = issues;
+                const listablePct = issues.totalRows > 0 ? Math.round((issues.livefaehigCount / issues.totalRows) * 100) : 0;
                 // Build grouped recommendations from errors
                 const errorsByType = {};
                 issues.pflichtErrors.forEach((e) => {
@@ -3183,8 +3246,19 @@ export default function McAngebotsfeed() {
                 // Quality / advisory issue types - go into "Zusätzliche Hinweise" along with non-pflicht fields
                 const HINT_TYPES = new Set(['advertising', 'external_link', 'template', 'identical_to_title', 'single', 'siehe_oben', 'wrong_category']);
 
+                const SEVERITY_RANK = {
+                    'missing': 0, 'invalid': 1, 'wrong_length': 2, 'too_short': 3,
+                    'one_word': 4, 'placeholder': 5, 'bware': 6, 'dup': 7,
+                    'scientific': 8, 'advertising': 9, 'template': 10, 'external_link': 11,
+                    'identical_to_title': 12, 'siehe_oben': 13,
+                };
+                const getSeverity = (key) => {
+                    const type = key.split('::')[1] || '';
+                    return SEVERITY_RANK[type] ?? 99;
+                };
+
                 const allRecommendations = Object.entries(errorsByType)
-                    .sort((a, b) => b[1].count - a[1].count)
+                    .sort((a, b) => getSeverity(a[0]) - getSeverity(b[0]) || b[1].count - a[1].count)
                     .map(([key, { count, type, sampleEans, field }]) => ({ key, count, type, field: field || key.split('::')[0], sampleEans: sampleEans || [], rule: recRules[key] || null }))
                     .filter(({ rule }) => rule !== null);
 
@@ -3317,8 +3391,13 @@ export default function McAngebotsfeed() {
                                                         {sampleEans && sampleEans.length > 0 && (
                                                             <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 4, marginBottom: 6 }}>
                                                                 <span style={{ fontSize: 10, color: '#9CA3AF', fontWeight: 600, marginRight: 2 }}>EAN:</span>
-                                                                {sampleEans.map((ean) => (
-                                                                    <span key={ean} style={{ fontSize: 10, color: '#374151', background: '#F3F4F6', borderRadius: 4, padding: '1px 6px', fontFamily: 'monospace' }}>{ean}</span>
+                                                                {sampleEans.map((item, i) => (
+                                                                    <span key={i} style={{ fontFamily: 'monospace', fontSize: 10, background: '#F3F4F6', padding: '1px 5px', borderRadius: 3, color: '#374151', display: 'inline-flex', alignItems: 'center', gap: 2 }}>
+                                                                        {typeof item === 'string' ? item : item.ean}
+                                                                        {typeof item !== 'string' && item.name && (
+                                                                            <span style={{ fontFamily: 'sans-serif', color: '#6B7280', marginLeft: 3, maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>· {item.name}</span>
+                                                                        )}
+                                                                    </span>
                                                                 ))}
                                                                 {count > sampleEans.length && (
                                                                     <span style={{ fontSize: 10, color: '#9CA3AF' }}>+{count - sampleEans.length} {lang === 'de' ? 'weitere' : 'more'}</span>
@@ -3352,13 +3431,13 @@ export default function McAngebotsfeed() {
                                             <Section
                                                 title={lang === 'de' ? 'PFLICHTFELD' : 'REQUIRED FIELDS'}
                                                 subtitle={lang === 'de' ? 'verhindern das Listing' : 'block listing'}
-                                                color="#DC2626"
+                                                color={P_RED_TEXT}
                                                 items={pflichtRecs}
                                             />
                                             <Section
                                                 title={lang === 'de' ? 'OPTIONALE FELDER' : 'OPTIONAL FIELDS'}
                                                 subtitle={lang === 'de' ? 'verbessern Filter, Suche und Conversion' : 'boost filters, search and conversion'}
-                                                color="#D97706"
+                                                color={P_ORANGE_TEXT}
                                                 items={optionalRecs}
                                             />
                                             <Section
@@ -3462,37 +3541,37 @@ export default function McAngebotsfeed() {
                                                             {isOpen && (
                                                                 <div style={{ padding: '0 14px 12px 14px' }}>
                                                                     <div style={{ display: 'flex', flexDirection: 'column', gap: 5, marginBottom: 8 }}>
-                                                                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, padding: '6px 9px', background: '#FEF2F2', borderRadius: 6, borderLeft: '2px solid #DC2626' }}>
-                                                                            <span style={{ color: '#DC2626', fontSize: 11, fontWeight: 800, lineHeight: 1.2, flexShrink: 0 }}>✗</span>
-                                                                            <span style={{ fontSize: 11, color: '#7F1D1D', lineHeight: 1.4, fontStyle: 'italic' }}>{c.bad}</span>
+                                                                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, padding: '6px 9px', background: P_RED_BG, borderRadius: 6, borderLeft: `2px solid ${P_RED}` }}>
+                                                                            <span style={{ color: P_RED_TEXT, fontSize: 11, fontWeight: 800, lineHeight: 1.2, flexShrink: 0 }}>✗</span>
+                                                                            <span style={{ fontSize: 11, color: P_RED_TEXT, lineHeight: 1.4, fontStyle: 'italic' }}>{c.bad}</span>
                                                                         </div>
-                                                                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, padding: '6px 9px', background: '#F0FDF4', borderRadius: 6, borderLeft: '2px solid #16A34A' }}>
-                                                                            <span style={{ color: '#16A34A', fontSize: 11, fontWeight: 800, lineHeight: 1.2, flexShrink: 0 }}>✓</span>
-                                                                            <span style={{ fontSize: 11, color: '#166534', lineHeight: 1.4, fontStyle: 'italic' }}>{c.good}</span>
+                                                                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, padding: '6px 9px', background: P_GREEN_BG, borderRadius: 6, borderLeft: `2px solid ${P_GREEN}` }}>
+                                                                            <span style={{ color: P_GREEN_TEXT, fontSize: 11, fontWeight: 800, lineHeight: 1.2, flexShrink: 0 }}>✓</span>
+                                                                            <span style={{ fontSize: 11, color: P_GREEN_TEXT, lineHeight: 1.4, fontStyle: 'italic' }}>{c.good}</span>
                                                                         </div>
                                                                     </div>
                                                                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                                                                         <div>
-                                                                            <div style={{ fontSize: 9, fontWeight: 800, color: '#16A34A', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                                                                            <div style={{ fontSize: 9, fontWeight: 800, color: P_GREEN_TEXT, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                                                                                 {lang === 'de' ? 'So geht es' : 'Do'}
                                                                             </div>
                                                                             <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                                                                                 {c.dos.map((d, j) => (
                                                                                     <div key={j} style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
-                                                                                        <span style={{ color: '#16A34A', fontSize: 10, fontWeight: 800, flexShrink: 0 }}>+</span>
+                                                                                        <span style={{ color: P_GREEN_TEXT, fontSize: 10, fontWeight: 800, flexShrink: 0 }}>+</span>
                                                                                         <span style={{ fontSize: 10, color: '#374151', lineHeight: 1.4 }}>{d}</span>
                                                                                     </div>
                                                                                 ))}
                                                                             </div>
                                                                         </div>
                                                                         <div>
-                                                                            <div style={{ fontSize: 9, fontWeight: 800, color: '#DC2626', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                                                                            <div style={{ fontSize: 9, fontWeight: 800, color: P_RED_TEXT, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                                                                                 {lang === 'de' ? 'Vermeiden' : 'Avoid'}
                                                                             </div>
                                                                             <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                                                                                 {c.donts.map((d, j) => (
                                                                                     <div key={j} style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
-                                                                                        <span style={{ color: '#DC2626', fontSize: 10, fontWeight: 800, flexShrink: 0 }}>−</span>
+                                                                                        <span style={{ color: P_RED_TEXT, fontSize: 10, fontWeight: 800, flexShrink: 0 }}>−</span>
                                                                                         <span style={{ fontSize: 10, color: '#374151', lineHeight: 1.4 }}>{d}</span>
                                                                                     </div>
                                                                                 ))}
@@ -3520,9 +3599,9 @@ export default function McAngebotsfeed() {
                                     </div>
                                     {(() => {
                                         const s = issues.pflichtScore;
-                                        const sc = s >= 90 ? '#16A34A' : s >= 60 ? '#D97706' : '#DC2626';
+                                        const sc = s >= 90 ? P_GREEN : s >= 60 ? P_ORANGE : P_RED;
                                         const os = issues.optionalScore;
-                                        const oc = os >= 70 ? '#16A34A' : os >= 40 ? '#D97706' : '#DC2626';
+                                        const oc = os >= 70 ? P_GREEN : os >= 40 ? P_ORANGE : P_RED;
                                         const tc = issues.totalRows;
                                         // Compute optional complete articles for stats strip
                                         const optMappedFields = optFieldStats.fields.filter(f => !f.notMapped);
@@ -3573,6 +3652,16 @@ export default function McAngebotsfeed() {
                                     })()}
                                 </div>
 
+                                {/* Summary text box */}
+                                <div style={{ background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 12, padding: '12px 16px' }}>
+                                    <div style={{ fontSize: 11, color: '#374151', lineHeight: 1.65 }}>
+                                        {lang === 'de'
+                                            ? `Von ${issues.totalRows.toLocaleString(numLocale)} Artikeln im Feed sind ${issues.livefaehigCount.toLocaleString(numLocale)} listbar (${listablePct} %). ${issues.blockiertCount > 0 ? `${issues.blockiertCount.toLocaleString(numLocale)} Artikel weisen Fehler in den Pflichtfeldern auf. ` : ''}Mit den Handlungsempfehlungen können Sie die Abdeckung auf bis zu 100 % steigern.`
+                                            : `Of ${issues.totalRows.toLocaleString(numLocale)} items in the feed, ${issues.livefaehigCount.toLocaleString(numLocale)} are listable (${listablePct} %). ${issues.blockiertCount > 0 ? `${issues.blockiertCount.toLocaleString(numLocale)} items have errors in required fields. ` : ''}Use the recommendations below to reach up to 100 % coverage.`
+                                        }
+                                    </div>
+                                </div>
+
                                 {/* Next steps workflow */}
                                 <div style={{ background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 12, overflow: 'hidden' }}>
                                     <div style={{ padding: '10px 16px', borderBottom: '1px solid #F3F4F6', fontSize: 10, fontWeight: 700, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
@@ -3608,15 +3697,15 @@ export default function McAngebotsfeed() {
                                 </div>
 
                                 {/* Download Fehlerbericht */}
-                                <div style={{ background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 12, overflow: 'hidden' }}>
-                                    <div style={{ padding: '10px 16px', borderBottom: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', gap: 8 }}>
+                                <div style={{ background: P_BLUE_BG, border: `1px solid ${P_BLUE}`, borderLeft: '3px solid #2563EB', borderRadius: 12, overflow: 'hidden' }}>
+                                    <div style={{ padding: '10px 16px', borderBottom: `1px solid ${P_BLUE}`, display: 'flex', alignItems: 'center', gap: 8 }}>
                                         <svg width="13" height="13" viewBox="0 0 18 18" fill="none"><path d="M9 2v10M6 9l3 3 3-3M2 15h14" stroke={MC_BLUE} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/></svg>
                                         <span style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{T.recDownloadTitle}</span>
                                     </div>
                                     <div style={{ padding: '10px 16px' }}>
                                         <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 10, lineHeight: 1.5 }}>{T.recDownloadDesc}</div>
                                         <button type="button" onClick={csvOnClick}
-                                            style={{ width: '100%', padding: '9px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
+                                            style={{ width: '100%', padding: '9px', background: MC_BLUE, color: '#FFF', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, boxShadow: '0 2px 8px rgba(37,99,235,0.25)' }}>
                                             <svg width="13" height="13" viewBox="0 0 15 15" fill="none"><path d="M7.5 2v8M5 7l2.5 2.5L10 7M2 13h11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
                                             {T.recDownloadBtn}
                                         </button>
