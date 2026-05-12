@@ -414,7 +414,7 @@ const MC_OPTIONAL_ALIASES = {
 // ── Translations ──────────────────────────────────────────────────────────────
 const DE_T = {
     // Header
-    stepUpload: 'Hochladen', stepMapping: 'Zuordnung', stepResults: 'Pflichtfeldanalyse', stepOptional: 'Optionale Felder', stepRecommendations: 'Empfehlungen',
+    stepUpload: 'Hochladen', stepMapping: 'Zuordnung', stepResults: 'Pflichtfelder', stepOptional: 'Optionale Felder', stepRecommendations: 'Empfehlungen',
     helpContact: 'Hilfe & Kontakt',
     // Step 1
     s1Heading: 'Ihren Feed prüfen',
@@ -582,7 +582,7 @@ const DE_T = {
         { n: 1, title: 'Hochladen', desc: 'CSV-Datei per Drag & Drop hochladen.' },
         { n: 2, title: 'Zuordnung', desc: 'Spalten den passenden Feldern zuordnen.' },
         { n: 3, title: 'Pflichtfelder', desc: 'Alle Pflichtfelder werden geprüft.' },
-        { n: 4, title: 'Optionale Felder', desc: 'Empfohlene Felder für bessere Sichtbarkeit.' },
+        { n: 4, title: 'Optionale Felder', desc: 'Alle optionalen Felder werden geprüft.' },
         { n: 5, title: 'Empfehlungen', desc: 'Fehlerbericht als CSV herunterladen und korrigieren.' },
     ],
     warehouseDEsub: 'Kein HS-Code erforderlich',
@@ -628,7 +628,7 @@ const DE_T = {
 };
 
 const EN_T = {
-    stepUpload: 'Upload', stepMapping: 'Mapping', stepResults: 'Results', stepOptional: 'Optional Fields', stepRecommendations: 'Recommendations',
+    stepUpload: 'Upload', stepMapping: 'Mapping', stepResults: 'Required Fields', stepOptional: 'Optional Fields', stepRecommendations: 'Recommendations',
     helpContact: 'Help & Contact',
     s1Heading: 'Check Your Feed',
     s1Sub: 'Upload a CSV - we analyze required and optional fields and show which items are ready to list.',
@@ -824,7 +824,7 @@ const EN_T = {
         { n: 1, title: 'Upload', desc: 'Drag & drop your CSV file.' },
         { n: 2, title: 'Mapping', desc: 'Map columns to the matching feed fields.' },
         { n: 3, title: 'Required Fields', desc: 'All required fields are validated.' },
-        { n: 4, title: 'Optional Fields', desc: 'Recommended fields for better visibility.' },
+        { n: 4, title: 'Optional Fields', desc: 'All optional fields are checked.' },
         { n: 5, title: 'Recommendations', desc: 'Download the error report and fix in Excel.' },
     ],
     warehouseDEsub: 'No HS Code required',
@@ -849,6 +849,7 @@ export default function McAngebotsfeed() {
     const [expandedRecs, setExpandedRecs] = useState(() => new Set());
     const [lang, setLang] = useState('de');
     const [langOpen, setLangOpen] = useState(false);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [alwaysAvailable, setAlwaysAvailable] = useState(false);
     const [optionalExpanded, setOptionalExpanded] = useState(false);
     const [parseError, setParseError] = useState(null);
@@ -1507,9 +1508,13 @@ export default function McAngebotsfeed() {
                     .mc-two-col-320 { grid-template-columns: 1fr !important; }
                     .mc-sticky-sidebar { position: static !important; }
                 }
+                .mc-mobile-menu-btn { display: none !important; }
+                .mc-lang-label { display: inline; }
                 @media (max-width: 640px) {
                     .mc-header-guide-btn { display: none !important; }
                     .mc-header-sep { display: none !important; }
+                    .mc-mobile-menu-btn { display: flex !important; }
+                    .mc-lang-label { display: none !important; }
                 }
             `}</style>
             {/* ── HEADER ── */}
@@ -1539,7 +1544,7 @@ export default function McAngebotsfeed() {
                                     <path d="M9 0v13M0 6.5h18" stroke="#C8102E" strokeWidth="2"/>
                                 </svg>
                             )}
-                            <span>{lang === 'de' ? 'Deutsch' : 'English'}</span>
+                            <span className="mc-lang-label">{lang === 'de' ? 'Deutsch' : 'English'}</span>
                             <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style={{ opacity: 0.8, transform: langOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }}><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
                         </button>
                         {langOpen && (
@@ -1588,10 +1593,40 @@ export default function McAngebotsfeed() {
                     <a
                         href="mailto:contentmanagement.moebel@check24.de?subject=Feed%20Checker%20-%20Hilfe"
                         style={{ border: '1px solid rgba(255,255,255,0.25)', background: 'rgba(255,255,255,0.08)', color: '#FFFFFF', fontSize: 12, fontWeight: 600, padding: '6px 10px', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}
+                        className="mc-header-guide-btn"
                     >
                         <svg width="13" height="13" viewBox="0 0 13 13" fill="none" style={{ flexShrink: 0 }}><rect x="1" y="2.5" width="11" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.3"/><path d="M1 4l5.5 3.5L12 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>
                         <span className="mc-header-btn-label">{T.helpContact}</span>
                     </a>
+                    {/* Hamburger button — only visible at <640px */}
+                    <div style={{ position: 'relative' }}>
+                        <button type="button" className="mc-mobile-menu-btn" onClick={() => setMobileMenuOpen((v) => !v)}
+                            style={{ alignItems: 'center', justifyContent: 'center', gap: 5, background: mobileMenuOpen ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: 8, padding: '7px 10px', cursor: 'pointer', color: '#FFF' }}>
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/></svg>
+                        </button>
+                        {mobileMenuOpen && (
+                            <>
+                                <div style={{ position: 'fixed', inset: 0, zIndex: 1001 }} onClick={() => setMobileMenuOpen(false)} />
+                                <div style={{ position: 'absolute', top: '100%', right: 0, background: '#FFF', borderRadius: 8, boxShadow: '0 8px 24px rgba(0,0,0,0.18)', padding: 8, zIndex: 1002, minWidth: 180, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                                    <button type="button" onClick={() => { setShowLeitfaden(true); setMobileMenuOpen(false); }}
+                                        style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: 'transparent', border: 'none', cursor: 'pointer', borderRadius: 6, fontSize: 13, fontWeight: 600, color: '#374151', textAlign: 'left', width: '100%' }}>
+                                        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 1.5h8.5l3 3v10h-11.5v-13z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M11 1.5v3h3" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><path d="M5 8h6M5 10.5h6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                                        {T.feedGuide}
+                                    </button>
+                                    <button type="button" onClick={() => { setShowVorlage(true); setMobileMenuOpen(false); }}
+                                        style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: 'transparent', border: 'none', cursor: 'pointer', borderRadius: 6, fontSize: 13, fontWeight: 600, color: '#374151', textAlign: 'left', width: '100%' }}>
+                                        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M5 7l3 3 3-3M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                        {T.feedTemplate}
+                                    </button>
+                                    <a href="mailto:contentmanagement.moebel@check24.de?subject=Feed%20Checker%20-%20Hilfe"
+                                        style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: 'transparent', borderRadius: 6, fontSize: 13, fontWeight: 600, color: '#374151', textDecoration: 'none', width: '100%' }}>
+                                        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="2.5" width="11" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.3"/><path d="M1 4l5.5 3.5L12 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>
+                                        {T.helpContact}
+                                    </a>
+                                </div>
+                            </>
+                        )}
+                    </div>
                 </div>
             </header>
         {/* ── MAIN BODY ── */}
@@ -2560,10 +2595,10 @@ export default function McAngebotsfeed() {
                                         summary={
                                             issues.blockiertCount === 0
                                                 ? (lang === 'de'
-                                                    ? `Alle ${issues.totalRows.toLocaleString(numLocale)} Artikel sind listingfähig.`
+                                                    ? `Alle ${issues.totalRows.toLocaleString(numLocale)} Artikel sind listbar.`
                                                     : `All ${issues.totalRows.toLocaleString(numLocale)} items are ready to list.`)
                                                 : (lang === 'de'
-                                                    ? `${issues.livefaehigCount.toLocaleString(numLocale)} von ${issues.totalRows.toLocaleString(numLocale)} Artikeln listingfähig.`
+                                                    ? `${issues.livefaehigCount.toLocaleString(numLocale)} von ${issues.totalRows.toLocaleString(numLocale)} Artikeln listbar.`
                                                     : `${issues.livefaehigCount.toLocaleString(numLocale)} of ${issues.totalRows.toLocaleString(numLocale)} items listable.`)
                                         }
                                         numLocale={numLocale}
