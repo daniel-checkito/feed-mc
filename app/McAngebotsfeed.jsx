@@ -3063,6 +3063,34 @@ export default function McAngebotsfeed() {
                                                         );
                                                     })}
                                                 </div>
+                                                {/* Title tips */}
+                                                <div style={{ marginTop: 10, borderTop: '1px solid #F3F4F6', paddingTop: 10 }}>
+                                                    <div style={{ fontSize: 10, fontWeight: 700, color: '#6B7280', letterSpacing: '0.05em', marginBottom: 6, textTransform: 'uppercase' }}>
+                                                        {lang === 'de' ? 'Optimales Format' : 'Optimal format'}
+                                                    </div>
+                                                    <div style={{ fontSize: 10, color: '#374151', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 6, padding: '5px 8px', marginBottom: 6, lineHeight: 1.5 }}>
+                                                        {[
+                                                            lang === 'de' ? 'Marke' : 'Brand',
+                                                            lang === 'de' ? 'Produkttyp' : 'Product type',
+                                                            lang === 'de' ? 'Hauptattribut' : 'Key attribute',
+                                                            lang === 'de' ? 'Farbe' : 'Color',
+                                                            lang === 'de' ? 'Maße' : 'Dimensions',
+                                                        ].map((part, i, arr) => (
+                                                            <span key={i}>
+                                                                <span style={{ color: '#166534', fontWeight: 700 }}>{part}</span>
+                                                                {i < arr.length - 1 && <span style={{ color: '#9CA3AF' }}> + </span>}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                                                        <div style={{ fontSize: 10, color: '#991B1B', background: '#FEF2F2', borderRadius: 5, padding: '3px 7px', fontStyle: 'italic' }}>
+                                                            ✗ {lang === 'de' ? '"Sofa"' : '"Sofa"'}
+                                                        </div>
+                                                        <div style={{ fontSize: 10, color: '#166534', background: '#F0FDF4', borderRadius: 5, padding: '3px 7px', fontStyle: 'italic' }}>
+                                                            ✓ {lang === 'de' ? '"BRAND Ecksofa 3-Sitzer Kunstleder schwarz 200 cm"' : '"BRAND Corner Sofa 3-seater faux leather black 200 cm"'}
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         )}
                                         {/* Description length */}
@@ -3196,29 +3224,43 @@ export default function McAngebotsfeed() {
                 const { optFieldStats } = issues;
                 const listablePct = issues.totalRows > 0 ? Math.round((issues.livefaehigCount / issues.totalRows) * 100) : 0;
                 // Build grouped recommendations from errors
+                const nameCol5 = mcMapping['name'];
+                const eanCol5 = mcMapping['ean'];
+                const getNameAtRow5 = (row) => nameCol5 ? String(rows[row - 1]?.[nameCol5] ?? '').trim() : '';
+                const getEansFromRowSet5 = (rowNumSet, max = 5) => {
+                    if (!eanCol5 || !rowNumSet) return [];
+                    const result = [];
+                    for (const rn of rowNumSet) {
+                        const ean = String(rows[rn - 1]?.[eanCol5] ?? '').trim();
+                        const name = getNameAtRow5(rn);
+                        if (ean && !result.find(s => s.ean === ean)) result.push({ ean, name });
+                        if (result.length >= max) break;
+                    }
+                    return result;
+                };
                 const errorsByType = {};
                 issues.pflichtErrors.forEach((e) => {
                     const key = `${e.field}::${e.type}`;
                     if (!errorsByType[key]) errorsByType[key] = { field: e.field, type: e.type, count: 0, sampleEans: [] };
                     errorsByType[key].count++;
-                    if (e.ean && errorsByType[key].sampleEans.length < 5 && !errorsByType[key].sampleEans.includes(e.ean)) {
-                        errorsByType[key].sampleEans.push(e.ean);
+                    if (e.ean && errorsByType[key].sampleEans.length < 5 && !errorsByType[key].sampleEans.find(s => (typeof s === 'string' ? s : s.ean) === e.ean)) {
+                        errorsByType[key].sampleEans.push({ ean: e.ean, name: getNameAtRow5(e.row) });
                     }
                 });
-                if (issues.eanDupRows.size > 0) errorsByType['ean::dup'] = { field: 'ean', type: 'dup', count: issues.eanDupRows.size };
-                if (issues.nameDupRows.size > 0) errorsByType['name::dup'] = { field: 'name', type: 'dup', count: issues.nameDupRows.size };
-                if (issues.offerIdDupRows && issues.offerIdDupRows.size > 0) errorsByType['seller_offer_id::dup'] = { field: 'seller_offer_id', type: 'dup', count: issues.offerIdDupRows.size };
+                if (issues.eanDupRows.size > 0) errorsByType['ean::dup'] = { field: 'ean', type: 'dup', count: issues.eanDupRows.size, sampleEans: getEansFromRowSet5(issues.eanDupRows) };
+                if (issues.nameDupRows.size > 0) errorsByType['name::dup'] = { field: 'name', type: 'dup', count: issues.nameDupRows.size, sampleEans: getEansFromRowSet5(issues.nameDupRows) };
+                if (issues.offerIdDupRows && issues.offerIdDupRows.size > 0) errorsByType['seller_offer_id::dup'] = { field: 'seller_offer_id', type: 'dup', count: issues.offerIdDupRows.size, sampleEans: getEansFromRowSet5(issues.offerIdDupRows) };
 
                 // Track optional field hints (color, material, delivery_includes) in errorsByType
                 // so they appear under the "OPTIONALE FELDER" section in recommendations.
                 const OPTIONAL_HINT_FIELDS = new Set(['color', 'material', 'delivery_includes']);
-                issues.optionalHints.forEach(({ field, ean }) => {
+                issues.optionalHints.forEach(({ field, ean, row }) => {
                     if (!OPTIONAL_HINT_FIELDS.has(field)) return;
                     const key = `${field}::missing`;
                     if (!errorsByType[key]) errorsByType[key] = { field, type: 'missing', count: 0, sampleEans: [] };
                     errorsByType[key].count++;
-                    if (ean && errorsByType[key].sampleEans.length < 5 && !errorsByType[key].sampleEans.includes(ean)) {
-                        errorsByType[key].sampleEans.push(ean);
+                    if (ean && errorsByType[key].sampleEans.length < 5 && !errorsByType[key].sampleEans.find(s => (typeof s === 'string' ? s : s.ean) === ean)) {
+                        errorsByType[key].sampleEans.push({ ean, name: getNameAtRow5(row) });
                     }
                 });
 
@@ -3238,18 +3280,18 @@ export default function McAngebotsfeed() {
                     return <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={s}><circle cx="8" cy="8" r="6" stroke={color} strokeWidth="1.3"/><path d="M5 8a3 3 0 006 0" stroke={color} strokeWidth="1.2"/><path d="M2 8h12" stroke={color} strokeWidth="1.2"/></svg>;
                 };
                 const recRules = lang === 'de' ? {
-                    'name::missing':       { title: 'Artikelname fehlt',               shortDesc: 'Eindeutiger und aussagekräftiger Titel ist erforderlich',             action: 'Tragen Sie für jeden betroffenen Artikel einen vollständigen Namen ein. Format: Marke + Produkttyp + Hauptattribut, z. B. „BRAND Sofa 3-Sitzer grau 180 cm".',         tip: 'Mind. 2 Wörter und 10 Zeichen. Ein guter Name erhöht die Auffindbarkeit deutlich.' },
-                    'name::too_short':     { title: 'Artikelname zu kurz',              shortDesc: 'Artikelname enthält zu wenig Informationen',                          action: 'Verlängern Sie den Artikelnamen auf mindestens 10 Zeichen.',                     tip: 'Ergänzen Sie Produkttyp, Farbe oder Material für einen aussagekräftigen Namen.' },
-                    'name::one_word':      { title: 'Artikelname: nur ein Wort',        action: 'Der Name muss aus mindestens 2 Wörtern bestehen.',                              tip: 'Kombinieren Sie Marke + Produktname, z. B. „BRAND Tisch" oder „Hersteller Sofa grau".' },
+                    'name::missing':       { title: 'Artikelname fehlt',               shortDesc: 'Eindeutiger und aussagekräftiger Titel ist erforderlich',             action: 'Ergänzen Sie für jeden Artikel einen vollständigen Namen. Kunden sehen den Titel zuerst – er entscheidet über Klick oder Weitersuchen. Format: Marke + Produkttyp + Hauptattribut + Farbe + Maße, z. B. „BRAND Ecksofa 3-Sitzer Kunstleder schwarz 200 cm".',         tip: 'Mind. 2 Wörter und 10 Zeichen. Ohne Artikelname kann das Produkt nicht gelistet werden.' },
+                    'name::too_short':     { title: 'Artikelname zu kurz',              shortDesc: 'Artikelname enthält zu wenig Informationen',                          action: 'Verlängern Sie den Artikelnamen – ein kurzer Name liefert Kunden zu wenig Orientierung und senkt die Sichtbarkeit in der Suche. Ergänzen Sie Produkttyp, Farbe oder Maße.',                     tip: 'Ziel: mind. 30 Zeichen. Beispiel: statt „Sofa" → „BRAND Sofa grau 180 cm".' },
+                    'name::one_word':      { title: 'Artikelname: nur ein Wort',        action: 'Ein einzelnes Wort reicht als Produktname nicht aus. Ergänzen Sie Marke, Farbe oder Maße, damit Kunden das Produkt eindeutig identifizieren können.',                              tip: 'Beispiel: statt „Sofa" → „BRAND Sofa 3-Sitzer grau".' },
                     'name::placeholder':   { title: 'Artikelname: Platzhalterwert',     action: 'Ersetzen Sie Platzhalter wie „n/a" oder „test" durch echte Artikelnamen.',       tip: 'Verwenden Sie produktspezifische, eindeutige Namen.' },
                     'name::dup':           { title: 'Artikelname: Duplikate',           shortDesc: 'Doppelte Artikelnamen gefunden',                                       action: 'Jeder Artikel muss einen eindeutigen Namen haben. Korrigieren oder entfernen Sie Duplikate.', tip: 'Unterscheiden Sie Varianten durch Farbe, Größe oder Modellbezeichnung.' },
-                    'ean::missing':        { title: 'EAN fehlt',                        shortDesc: 'Gültige EAN zur eindeutigen Identifikation ist erforderlich',          action: 'Ergänzen Sie die EAN (GTIN14) für alle betroffenen Artikel.',                   tip: 'Verwenden Sie die offizielle GTIN aus der GS1-Datenbank.' },
-                    'ean::wrong_length':   { title: 'EAN: falsche Länge',               shortDesc: 'EAN entspricht nicht der erforderlichen Länge',                        action: 'Die EAN muss 13 oder 14 Stellen haben (EAN-13 oder GTIN-14).',                   tip: 'Beispiel: EAN-13 „4012345678901" (13-stellig) oder GTIN-14 „04012345678901" (14-stellig).' },
+                    'ean::missing':        { title: 'EAN fehlt',                        shortDesc: 'Gültige EAN zur eindeutigen Identifikation ist erforderlich',          action: 'Ergänzen Sie die EAN für alle betroffenen Artikel. Ohne EAN kann CHECK24 Ihr Produkt nicht eindeutig identifizieren und es wird nicht gelistet. Die EAN muss eine gültige GTIN-13 (13 Stellen) oder GTIN-14 (14 Stellen) sein.',                   tip: 'Die offizielle GTIN erhalten Sie über die GS1-Datenbank (gs1.de). Keine selbst erfundenen Nummern verwenden.' },
+                    'ean::wrong_length':   { title: 'EAN: falsche Länge',               shortDesc: 'EAN entspricht nicht der erforderlichen Länge',                        action: 'Die eingetragene EAN hat eine ungültige Länge. Erlaubt sind exakt 13 Stellen (EAN-13) oder 14 Stellen (GTIN-14). Prüfen Sie, ob in Excel führende Nullen abgeschnitten wurden – Excel formatiert numerische Spalten automatisch.',                   tip: 'Spalte in Excel als „Text" formatieren, bevor Sie speichern. Beispiel: EAN-13 „4012345678901" oder GTIN-14 „04012345678901".' },
                     'ean::invalid':        { title: 'EAN: ungültiger Wert',             action: 'Entfernen Sie Sonderzeichen, die EAN darf nur Ziffern enthalten.',              tip: 'Keine Buchstaben, Leerzeichen oder Bindestriche erlaubt.' },
                     'ean::placeholder':    { title: 'EAN: Platzhalterwert',             action: 'Ersetzen Sie Test-EANs durch gültige GTIN14-Nummern.',                          tip: 'Erfundene oder Test-EANs werden blockiert.' },
                     'ean::dup':            { title: 'EAN: Duplikate',                   shortDesc: 'Doppelte EANs gefunden',                                               action: 'Jede EAN darf nur einmal vorkommen. Korrigieren Sie die doppelten Einträge.',   tip: 'Prüfen Sie, ob Artikel versehentlich mehrfach exportiert wurden.' },
-                    'description::missing':    { title: 'Beschreibung fehlt',               shortDesc: 'Detaillierte Beschreibung des Artikels ist erforderlich',           action: 'Ergänzen Sie eine Produktbeschreibung für alle betroffenen Artikel.',           tip: 'Mindestens 20 Zeichen, empfohlen 100–500 Zeichen mit Material, Maßen und Features.' },
-                    'description::too_short':  { title: 'Beschreibung zu kurz',             shortDesc: 'Beschreibung enthält zu wenig Informationen',                       action: 'Verlängern Sie die Beschreibung auf mindestens 20 Zeichen.',                     tip: 'Nennen Sie Material, Farbe, Maße und besondere Produkteigenschaften.' },
+                    'description::missing':    { title: 'Beschreibung fehlt',               shortDesc: 'Detaillierte Beschreibung des Artikels ist erforderlich',           action: 'Ergänzen Sie eine Produktbeschreibung für alle betroffenen Artikel. Ohne Beschreibung können Kunden das Produkt nicht bewerten und der Artikel wird blockiert. Nennen Sie Material, Farbe, Maße und Besonderheiten.',           tip: 'Mind. 20 Zeichen Pflicht, empfohlen 100–500 Zeichen. Beispiel: „Elegantes 3-Sitzer-Sofa aus Kunstleder, Maße B 200 × H 80 × T 90 cm, abnehmbare Bezüge."' },
+                    'description::too_short':  { title: 'Beschreibung zu kurz',             shortDesc: 'Beschreibung enthält zu wenig Informationen',                       action: 'Verlängern Sie die Beschreibung – eine Kurzinfo wie „Schönes Produkt" hilft Kunden nicht bei der Kaufentscheidung. Ziel: 100–500 Zeichen mit konkreten Produktdetails.',                     tip: 'Nennen Sie mindestens: Material, Farbe, Maße und eine Besonderheit des Produkts.' },
                     'description::bware':      { title: 'Beschreibung: B-Ware-Hinweis',     action: 'Entfernen Sie die Kennzeichnung „B-Ware" aus der Beschreibung.',                tip: 'B-Ware-Artikel können nicht als Neuware gelistet werden.' },
                     'description::placeholder':{ title: 'Beschreibung: Platzhalterwert',    action: 'Ersetzen Sie Platzhalter durch echte Produktbeschreibungen.',                   tip: 'Beschreiben Sie Material, Farbe und Besonderheiten des Produkts.' },
                     'price::missing':      { title: 'Preis fehlt',                      action: 'Ergänzen Sie den Preis für alle betroffenen Artikel.',                          tip: 'Format: 19.99 (Punkt als Dezimaltrennzeichen, ohne €-Zeichen).' },
@@ -3284,13 +3326,13 @@ export default function McAngebotsfeed() {
                     'material::missing':      { title: 'Material fehlt',                   shortDesc: 'Materialangabe verbessert die Filterbarkeit',                         action: 'Ergänzen Sie das Material für alle betroffenen Artikel.',                          tip: 'Material ist ein wichtiges Filterkriterium – z. B. „Eiche", „Kunstleder", „Stoff".' },
                     'delivery_includes::missing': { title: 'Lieferumfang fehlt',           action: 'Geben Sie den Lieferumfang im Format „1x Tisch, 4x Stuhl" an.',                   tip: 'Ein vollständiger Lieferumfang reduziert Retouren und Kundenfragen.' },
                 } : {
-                    'name::missing':       { title: 'Item name missing',              shortDesc: 'A unique and descriptive title is required',                             action: 'Add a full product name for every affected item. Format: Brand + Product type + Key attribute, e.g. "BRAND Sofa 3-seater grey 180 cm".',                              tip: 'Min. 2 words and 10 characters. A descriptive name significantly improves search visibility.' },
-                    'name::too_short':     { title: 'Item name too short',            shortDesc: 'Item name does not contain enough information',                           action: 'Extend the item name to at least 10 characters.',                               tip: 'Add product type, color, or material to create a descriptive name.' },
-                    'name::one_word':      { title: 'Item name: single word only',   action: 'The name must consist of at least 2 words.',                                    tip: 'Combine brand + product name, e.g. "BRAND Table" or "Brand Sofa grey".' },
+                    'name::missing':       { title: 'Item name missing',              shortDesc: 'A unique and descriptive title is required',                             action: 'Add a full product name for every affected item. Customers see the title first — it determines whether they click or move on. Format: Brand + Product type + Key attribute + Color + Dimensions, e.g. "BRAND Corner Sofa 3-seater faux leather black 200 cm".',                              tip: 'Min. 2 words and 10 characters. Without a name, the item cannot be listed.' },
+                    'name::too_short':     { title: 'Item name too short',            shortDesc: 'Item name does not contain enough information',                           action: 'Extend the item name — a short name gives customers too little orientation and reduces search visibility. Add product type, color, or dimensions.',                               tip: 'Target: at least 30 characters. Example: instead of "Sofa" → "BRAND Sofa grey 180 cm".' },
+                    'name::one_word':      { title: 'Item name: single word only',   action: 'A single word is not enough as a product name. Add brand, color, or dimensions so customers can clearly identify the product.',                                    tip: 'Example: instead of "Sofa" → "BRAND Sofa 3-seater grey".' },
                     'name::placeholder':   { title: 'Item name: placeholder value',  action: 'Replace placeholders like "n/a" or "test" with real item names.',               tip: 'Use product-specific, unique names.' },
                     'name::dup':           { title: 'Item name: duplicates',         shortDesc: 'Duplicate item names found',                                              action: 'Every item must have a unique name. Fix or remove duplicates.',                  tip: 'Differentiate variants by color, size, or model designation.' },
-                    'ean::missing':        { title: 'EAN missing',                   shortDesc: 'Valid EAN required for unique identification',                            action: 'Add the EAN (GTIN14) for all affected items.',                                  tip: 'Use the official GTIN from the GS1 database.' },
-                    'ean::wrong_length':   { title: 'EAN: wrong length',             shortDesc: 'EAN does not match the required length',                                  action: 'EAN must be 13 or 14 digits (EAN-13 or GTIN-14).',                              tip: 'Example: EAN-13 "4012345678901" (13 digits) or GTIN-14 "04012345678901" (14 digits).' },
+                    'ean::missing':        { title: 'EAN missing',                   shortDesc: 'Valid EAN required for unique identification',                            action: 'Add the EAN for all affected items. Without an EAN, CHECK24 cannot uniquely identify your product and it will not be listed. The EAN must be a valid GTIN-13 (13 digits) or GTIN-14 (14 digits).',                                  tip: 'Get the official GTIN from the GS1 database (gs1.org). Do not use invented or placeholder numbers.' },
+                    'ean::wrong_length':   { title: 'EAN: wrong length',             shortDesc: 'EAN does not match the required length',                                  action: 'The entered EAN has an invalid length. Only exactly 13 digits (EAN-13) or 14 digits (GTIN-14) are accepted. Check whether Excel trimmed leading zeros — Excel automatically reformats numeric columns.',                              tip: 'Format the column as "Text" in Excel before saving. Example: EAN-13 "4012345678901" or GTIN-14 "04012345678901".' },
                     'ean::invalid':        { title: 'EAN: invalid value',            action: 'Remove special characters; EAN must contain digits only.',                     tip: 'No letters, spaces, or hyphens allowed.' },
                     'ean::placeholder':    { title: 'EAN: placeholder value',        action: 'Replace test EANs with valid GTIN14 numbers.',                                  tip: 'Invented or test EANs will be blocked.' },
                     'ean::dup':            { title: 'EAN: duplicates',               shortDesc: 'Duplicate EANs found',                                                    action: 'Each EAN may only appear once. Fix the duplicate entries.',                     tip: 'Check whether items were accidentally exported multiple times.' },
@@ -3417,10 +3459,10 @@ export default function McAngebotsfeed() {
                         <div className="mc-two-col-320" style={{ alignItems: 'start' }}>
 
                             {/* Left: recommendations */}
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                                 {/* Page header */}
                                 <div>
-                                    <div style={{ fontSize: 18, fontWeight: 800, color: '#111827', marginBottom: 4 }}>
+                                    <div style={{ fontSize: 16, fontWeight: 800, color: '#111827', marginBottom: 3 }}>
                                         {recommendations.length > 0
                                             ? (lang === 'de' ? 'Handlungsempfehlungen' : 'Recommendations')
                                             : T.recNoErrorsTitle}
