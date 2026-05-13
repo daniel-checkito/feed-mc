@@ -3734,7 +3734,7 @@ export default function McAngebotsfeed() {
                             </div>
 
                             {/* Right: download + reset panel */}
-                            <div className="mc-sticky-sidebar" style={{ display: 'flex', flexDirection: 'column', gap: 12, maxHeight: 'calc(100vh - 120px)', overflowY: 'auto' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
 
                                 {/* Card 1 — Feed-Übersicht */}
                                 <div style={{ background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 14, overflow: 'hidden' }}>
