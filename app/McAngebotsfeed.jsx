@@ -2677,9 +2677,9 @@ export default function McAngebotsfeed() {
                                                 {pct === null ? <span style={{ color: '#9CA3AF' }}>{T.notInFeed}</span>
                                                     : errs === 0 ? <span style={{ color: P_GREEN_TEXT }}>{T.complete}</span>
                                                     : (
-                                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
+                                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 1 }}>
                                                             {subgroupEntries.map(([type, { count }]) => (
-                                                                <span key={type} style={{ display: 'inline-block', fontSize: 10, fontWeight: 700, color: barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT, background: '#FFF', border: `1px solid ${barColor}`, borderRadius: 4, padding: '1px 6px', maxWidth: 196, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                                <span key={type} style={{ fontSize: 11, fontWeight: 600, color: barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT, maxWidth: 196, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                                                     {count.toLocaleString(numLocale)}× {errTypeLabel(type)}
                                                                 </span>
                                                             ))}
@@ -3021,7 +3021,7 @@ export default function McAngebotsfeed() {
                                                         {pct === null ? <span style={{ color: '#9CA3AF' }}>{T.notInFeed}</span>
                                                             : errs === 0 ? <span style={{ color: P_GREEN_TEXT }}>{T.complete}</span>
                                                             : (
-                                                                <span style={{ display: 'inline-block', fontSize: 10, fontWeight: 700, color: barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT, background: '#FFF', border: `1px solid ${barColor}`, borderRadius: 4, padding: '1px 6px', maxWidth: 196, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                                <span style={{ fontSize: 11, fontWeight: 600, color: barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT, maxWidth: 196, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                                                     {errs.toLocaleString(numLocale)}× {lang === 'de' ? 'Fehlend' : 'Missing'}
                                                                 </span>
                                                             )}
