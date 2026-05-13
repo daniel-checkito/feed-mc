@@ -2604,7 +2604,7 @@ export default function McAngebotsfeed() {
                                     {T.analysisSummary(totalPflichtFields, vollstaendigFields, totalPflichtFields - vollstaendigFields)}
                                 </div>
                             </div>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 90px 120px', padding: '5px 16px', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 200px 120px', padding: '5px 16px', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB' }}>
                                 <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.05em' }}>{T.colField}</div>
                                 <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.05em', textAlign: 'right' }}>{T.colStatus}</div>
                                 <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.05em', paddingLeft: 12 }}>{T.colCoverage}</div>
@@ -2657,7 +2657,7 @@ export default function McAngebotsfeed() {
                                     <div key={key} style={{ borderBottom: '1px solid #F9FAFB', background: hasError ? (barColor === P_RED ? P_RED_BG : P_ORANGE_BG) : 'transparent', borderLeft: hasError ? `3px solid ${barColor}` : '3px solid transparent' }}>
                                         <div
                                             onClick={toggleRow}
-                                            style={{ display: 'grid', gridTemplateColumns: '1fr 90px 120px', padding: '8px 16px', alignItems: 'center', cursor: hasError ? 'pointer' : 'default', userSelect: 'none' }}>
+                                            style={{ display: 'grid', gridTemplateColumns: '1fr 200px 120px', padding: '8px 16px', alignItems: 'center', cursor: hasError ? 'pointer' : 'default', userSelect: 'none' }}>
                                             <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                                                     <div style={{ fontSize: 12, color: hasError ? (barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT) : '#374151', fontWeight: hasError ? 700 : 500, flexShrink: 0 }}>{label}</div>
@@ -2673,10 +2673,18 @@ export default function McAngebotsfeed() {
                                                     {key === 'image_url' ? 'image · required' : `${key} · ${lang === 'de' ? 'Pflicht' : 'required'}`}
                                                 </div>
                                             </div>
-                                            <div style={{ textAlign: 'right', fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap' }}>
+                                            <div style={{ textAlign: 'right', fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap', minWidth: 0 }}>
                                                 {pct === null ? <span style={{ color: '#9CA3AF' }}>{T.notInFeed}</span>
                                                     : errs === 0 ? <span style={{ color: P_GREEN_TEXT }}>{T.complete}</span>
-                                                    : <span style={{ color: barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT }}>{T.missingCount(errs.toLocaleString(numLocale))}</span>}
+                                                    : (
+                                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
+                                                            {subgroupEntries.map(([type, { count }]) => (
+                                                                <span key={type} style={{ display: 'inline-block', fontSize: 10, fontWeight: 700, color: barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT, background: '#FFF', border: `1px solid ${barColor}`, borderRadius: 4, padding: '1px 6px', maxWidth: 196, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                                    {count.toLocaleString(numLocale)}× {errTypeLabel(type)}
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                    )}
                                             </div>
                                             <div style={{ paddingLeft: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
                                                 {pct !== null ? (
@@ -2942,7 +2950,7 @@ export default function McAngebotsfeed() {
                                             {T.analysisSummary(totalOptionalFields, completeOptionalFields, errorOptionalFields)}
                                         </div>
                                     </div>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 90px 120px', padding: '5px 16px', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB' }}>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 200px 120px', padding: '5px 16px', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB' }}>
                                         <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.05em' }}>{T.colField}</div>
                                         <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.05em', textAlign: 'right' }}>{T.colStatus}</div>
                                         <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.05em', paddingLeft: 12 }}>{T.colCoverage}</div>
@@ -2993,7 +3001,7 @@ export default function McAngebotsfeed() {
                                             <div key={f.field} style={{ borderBottom: '1px solid #F9FAFB', background: hasError ? (barColor === P_RED ? P_RED_BG : P_ORANGE_BG) : 'transparent', borderLeft: hasError ? `3px solid ${barColor}` : '3px solid transparent' }}>
                                                 <div
                                                     onClick={toggleRow}
-                                                    style={{ display: 'grid', gridTemplateColumns: '1fr 90px 120px', padding: '8px 16px', alignItems: 'center', cursor: hasError ? 'pointer' : 'default', userSelect: 'none' }}>
+                                                    style={{ display: 'grid', gridTemplateColumns: '1fr 200px 120px', padding: '8px 16px', alignItems: 'center', cursor: hasError ? 'pointer' : 'default', userSelect: 'none' }}>
                                                     <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
                                                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                                                             <div style={{ fontSize: 12, color: hasError ? (barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT) : '#374151', fontWeight: hasError ? 700 : 500, flexShrink: 0 }}>{label}</div>
@@ -3009,10 +3017,14 @@ export default function McAngebotsfeed() {
                                                             {f.field} · {lang === 'de' ? 'optional' : 'optional'}
                                                         </div>
                                                     </div>
-                                                    <div style={{ textAlign: 'right', fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap' }}>
+                                                    <div style={{ textAlign: 'right', fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap', minWidth: 0 }}>
                                                         {pct === null ? <span style={{ color: '#9CA3AF' }}>{T.notInFeed}</span>
                                                             : errs === 0 ? <span style={{ color: P_GREEN_TEXT }}>{T.complete}</span>
-                                                            : <span style={{ color: barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT }}>{T.missingCount(errs.toLocaleString(numLocale))}</span>}
+                                                            : (
+                                                                <span style={{ display: 'inline-block', fontSize: 10, fontWeight: 700, color: barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT, background: '#FFF', border: `1px solid ${barColor}`, borderRadius: 4, padding: '1px 6px', maxWidth: 196, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                                    {errs.toLocaleString(numLocale)}× {lang === 'de' ? 'Fehlend' : 'Missing'}
+                                                                </span>
+                                                            )}
                                                     </div>
                                                     <div style={{ paddingLeft: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
                                                         {pct !== null ? (
