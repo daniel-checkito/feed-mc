@@ -1824,29 +1824,39 @@ export default function McAngebotsfeed() {
                             </div>
                         </div>
 
-                        {/* Resources card */}
-                        <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E2E6EE', padding: '18px 24px' }}>
-                            <div style={{ fontSize: 14, fontWeight: 700, color: '#111827', marginBottom: 12 }}>{T.resourcesTitle}</div>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                        {/* Resources: two separate cards */}
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                                 {/* Feedleitfaden card */}
                                 <button type="button" onClick={() => setShowLeitfaden(true)}
-                                    style={{ display: 'flex', flexDirection: 'column', borderRadius: 8, border: '1px solid #E2E6EE', background: '#FAFAFA', cursor: 'pointer', textAlign: 'left', overflow: 'hidden', padding: 0 }}>
-                                    <div style={{ width: '100%', height: 110, overflow: 'hidden', borderBottom: '1px solid #E2E6EE', background: '#F9FAFB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    style={{ display: 'flex', flexDirection: 'column', borderRadius: 14, border: '1px solid #E2E6EE', background: '#FFF', cursor: 'pointer', textAlign: 'left', overflow: 'hidden', padding: 0, boxShadow: '0 1px 3px rgba(0,0,0,0.04)', transition: 'transform 0.15s, box-shadow 0.15s' }}
+                                    onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)'; }}
+                                    onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.04)'; }}>
+                                    <div style={{ width: '100%', height: 160, overflow: 'hidden', borderBottom: '1px solid #E5E7EB', background: '#F9FAFB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                         <img
                                             src="https://w9cedwr8emsi29qt.public.blob.vercel-storage.com/Bildschirmfoto%202026-05-04%20um%2014.43.56.png"
                                             alt="Checkliste Vorschau"
                                             style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top', display: 'block' }}
                                         />
                                     </div>
-                                    <div style={{ padding: '8px 12px' }}>
-                                        <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>{lang === 'de' ? 'Checkliste für gute Produktdaten' : 'Checklist for good product data'}</div>
-                                        <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2, lineHeight: 1.4 }}>{lang === 'de' ? 'Pflichtfelder, Bildvorgaben & Qualitätstipps · PDF' : 'Required fields, image specs & quality tips · PDF'}</div>
+                                    <div style={{ padding: '14px 16px 16px', display: 'flex', flexDirection: 'column', gap: 4 }}>
+                                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 9, fontWeight: 700, color: '#2563EB', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                                            <span style={{ background: '#EFF6FF', color: '#2563EB', padding: '2px 6px', borderRadius: 3 }}>PDF</span>
+                                            {lang === 'de' ? 'Leitfaden' : 'Guide'}
+                                        </div>
+                                        <div style={{ fontSize: 14, fontWeight: 700, color: '#111827', lineHeight: 1.35 }}>{lang === 'de' ? 'Checkliste für gute Produktdaten' : 'Checklist for good product data'}</div>
+                                        <div style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.45 }}>{lang === 'de' ? 'Pflichtfelder, Bildvorgaben & Qualitätstipps auf 24 Seiten.' : 'Required fields, image specs & quality tips, 24 pages.'}</div>
+                                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, color: '#2563EB', marginTop: 4 }}>
+                                            {lang === 'de' ? 'Vorschau & Download' : 'Preview & download'}
+                                            <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M5 3l4 5-4 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                        </div>
                                     </div>
                                 </button>
                                 {/* Feedvorlage card */}
                                 <button type="button" onClick={() => setShowVorlage(true)}
-                                    style={{ display: 'flex', flexDirection: 'column', borderRadius: 8, border: '1px solid #E2E6EE', background: '#FAFAFA', cursor: 'pointer', textAlign: 'left', overflow: 'hidden', padding: 0 }}>
-                                    <div style={{ width: '100%', height: 110, borderBottom: '1px solid #E2E6EE', overflow: 'hidden', background: '#F0FDF4', display: 'flex', alignItems: 'stretch' }}>
+                                    style={{ display: 'flex', flexDirection: 'column', borderRadius: 14, border: '1px solid #E2E6EE', background: '#FFF', cursor: 'pointer', textAlign: 'left', overflow: 'hidden', padding: 0, boxShadow: '0 1px 3px rgba(0,0,0,0.04)', transition: 'transform 0.15s, box-shadow 0.15s' }}
+                                    onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)'; }}
+                                    onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.04)'; }}>
+                                    <div style={{ width: '100%', height: 160, borderBottom: '1px solid #E5E7EB', overflow: 'hidden', background: '#F0FDF4', display: 'flex', alignItems: 'stretch' }}>
                                         <svg viewBox="0 0 260 110" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block' }}>
                                             {/* Background */}
                                             <rect width="260" height="110" fill="#F0FDF4"/>
@@ -1894,14 +1904,20 @@ export default function McAngebotsfeed() {
                                             <text x="8" y="108.5" fontFamily="Arial,sans-serif" fontSize="6.5" fontWeight="700" fill="#92400E">Pflichtangaben</text>
                                         </svg>
                                     </div>
-                                    <div style={{ padding: '8px 12px' }}>
-                                        <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>{lang === 'de' ? 'Feedvorlage herunterladen' : 'Download Feed Template'}</div>
-                                        <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2, lineHeight: 1.4 }}>{T.feedTemplateSub2}</div>
+                                    <div style={{ padding: '14px 16px 16px', display: 'flex', flexDirection: 'column', gap: 4 }}>
+                                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 9, fontWeight: 700, color: '#16A34A', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                                            <span style={{ background: '#F0FDF4', color: '#16A34A', padding: '2px 6px', borderRadius: 3 }}>XLSX</span>
+                                            {lang === 'de' ? 'Vorlage' : 'Template'}
+                                        </div>
+                                        <div style={{ fontSize: 14, fontWeight: 700, color: '#111827', lineHeight: 1.35 }}>{lang === 'de' ? 'Feedvorlage herunterladen' : 'Download Feed Template'}</div>
+                                        <div style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.45 }}>{T.feedTemplateSub2}</div>
+                                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, color: '#16A34A', marginTop: 4 }}>
+                                            {lang === 'de' ? 'Excel herunterladen' : 'Download Excel'}
+                                            <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M5 7l3 3 3-3M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                        </div>
                                     </div>
                                 </button>
-                            </div>
                         </div>
-
 
                     </div>
 
