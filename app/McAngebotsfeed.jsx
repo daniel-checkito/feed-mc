@@ -3421,9 +3421,9 @@ export default function McAngebotsfeed() {
                                                 <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8 }}>
                                                     <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{title}</div>
                                                     <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
-                                                        <div style={{ fontSize: 10, color: '#166534', fontWeight: 600 }}>{lang === 'de' ? `Ziel: ${target}` : `Target: ${target}`}</div>
+                                                        <div style={{ fontSize: 10, color: '#166534', fontWeight: 600 }}>{lang === 'de' ? `Ziel: ${target} Zeichen` : `Target: ${target} characters`}</div>
                                                         <div style={{ fontSize: 10, color: '#9CA3AF' }}>
-                                                            {lang === 'de' ? `Ø ${stats.avg.toLocaleString(numLocale)}` : `Avg. ${stats.avg.toLocaleString(numLocale)}`}
+                                                            {lang === 'de' ? `Ø ${stats.avg.toLocaleString(numLocale)} Zeichen` : `Avg. ${stats.avg.toLocaleString(numLocale)} characters`}
                                                         </div>
                                                     </div>
                                                 </div>
