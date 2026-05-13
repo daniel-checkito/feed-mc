@@ -898,6 +898,7 @@ export default function McAngebotsfeed() {
     const [titleBucket, setTitleBucket] = useState(null);
     const [descBucket, setDescBucket] = useState(null);
     const [recFilter, setRecFilter] = useState('all');
+    const [lengthChartTab, setLengthChartTab] = useState('title');
     const fileRef = useRef(null);
 
     function parseFile(f) {
@@ -3271,9 +3272,24 @@ export default function McAngebotsfeed() {
                                     {renderTips(fieldKey)}
                                 </div>
                             );
+                            const tabs = [
+                                { key: 'title', label: lang === 'de' ? 'Titellänge' : 'Title Length' },
+                                { key: 'desc',  label: lang === 'de' ? 'Beschreibungslänge' : 'Description Length' },
+                            ];
                             return (
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                                    {titleStats && titleStats.total > 0 && renderChart({
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                                    <div style={{ display: 'flex', gap: 8 }}>
+                                        {tabs.map((t) => {
+                                            const active = lengthChartTab === t.key;
+                                            return (
+                                                <button key={t.key} type="button" onClick={() => setLengthChartTab(t.key)}
+                                                    style={{ padding: '6px 14px', borderRadius: 999, border: `1px solid ${active ? '#2563EB' : '#E5E7EB'}`, background: active ? '#EFF6FF' : '#FFF', color: active ? '#2563EB' : '#374151', fontSize: 12, fontWeight: 700, cursor: 'pointer', transition: 'all 0.15s' }}>
+                                                    {t.label}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                    {lengthChartTab === 'title' && titleStats && titleStats.total > 0 && renderChart({
                                         title: lang === 'de' ? 'Titellänge' : 'Title Length',
                                         intro: lang === 'de'
                                             ? 'Aussagekräftige Titel mit Marke, Produktart und Schlüsselmerkmalen (Maße, Farbe, Material) werden besser gefunden und führen zu mehr Klicks.'
@@ -3281,7 +3297,7 @@ export default function McAngebotsfeed() {
                                         target: '80+', stats: titleStats, buckets: titleBuckets,
                                         selected: titleBucket, setBucket: setTitleBucket, labelWidth: 130, fieldKey: 'title',
                                     })}
-                                    {descStats && descStats.total > 0 && renderChart({
+                                    {lengthChartTab === 'desc' && descStats && descStats.total > 0 && renderChart({
                                         title: lang === 'de' ? 'Beschreibungslänge' : 'Description Length',
                                         intro: lang === 'de'
                                             ? 'Eine detaillierte Beschreibung beantwortet Kundenfragen vor dem Kauf, reduziert Retouren und stärkt das Vertrauen ins Produkt.'
