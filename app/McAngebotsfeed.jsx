@@ -3873,6 +3873,24 @@ export default function McAngebotsfeed() {
                                     const fieldGroupLabel = (field) => {
                                         if (field === '__size_missing') return lang === 'de' ? 'Maße' : 'Size attributes';
                                         if (field === '__lighting') return lang === 'de' ? 'Leuchtprodukte (Energie & EPREL)' : 'Lighting (energy & EPREL)';
+                                        const extras = lang === 'de' ? {
+                                            color: 'Farbe',
+                                            material: 'Material',
+                                            delivery_includes: 'Lieferumfang',
+                                            category_path: 'Kategoriepfad',
+                                            hs_code: 'HS-Code',
+                                            seller_offer_id: 'Eigene Artikel-ID',
+                                            image_url: 'Hauptbild',
+                                        } : {
+                                            color: 'Color',
+                                            material: 'Material',
+                                            delivery_includes: 'Delivery Includes',
+                                            category_path: 'Category Path',
+                                            hs_code: 'HS Code',
+                                            seller_offer_id: 'Own Item ID',
+                                            image_url: 'Main Image',
+                                        };
+                                        if (extras[field]) return extras[field];
                                         return (T.csvFieldLabels && T.csvFieldLabels[field]) || field;
                                     };
                                     const groupByField = (items) => {
