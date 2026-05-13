@@ -881,6 +881,7 @@ export default function McAngebotsfeed() {
     const [rows, setRows] = useState([]);
     const [headers, setHeaders] = useState([]);
     const [manualMapping, setManualMapping] = useState({});
+    const [groupOverrides, setGroupOverrides] = useState({ image: null, manufacturer: null, size: null });
     const [expandedRecs, setExpandedRecs] = useState(() => new Set());
     const [expandedFieldExamples, setExpandedFieldExamples] = useState(() => new Set());
     const [expandedFieldSubgroups, setExpandedFieldSubgroups] = useState(() => new Set());
@@ -995,7 +996,7 @@ export default function McAngebotsfeed() {
     );
 
     // Image columns (all headers that look like images)
-    const mcImageColumns = useMemo(
+    const autoImageColumns = useMemo(
         () =>
             headers.filter((h) => {
                 const n = h.toLowerCase();
@@ -1004,7 +1005,7 @@ export default function McAngebotsfeed() {
         [headers],
     );
 
-    const mcManufacturerColumns = useMemo(
+    const autoManufacturerColumns = useMemo(
         () =>
             headers.filter((h) => {
                 const n = h.toLowerCase();
@@ -1013,7 +1014,7 @@ export default function McAngebotsfeed() {
         [headers],
     );
 
-    const mcSizeColumns = useMemo(
+    const autoSizeColumns = useMemo(
         () =>
             headers.filter((h) => {
                 const n = h.toLowerCase();
@@ -1021,6 +1022,28 @@ export default function McAngebotsfeed() {
             }),
         [headers],
     );
+
+    // Reset manual overrides when a new file is loaded
+    useEffect(() => {
+        setGroupOverrides({ image: null, manufacturer: null, size: null });
+    }, [headers]);
+
+    const mcImageColumns = useMemo(
+        () => (groupOverrides.image ?? autoImageColumns).filter((h) => headers.includes(h)),
+        [autoImageColumns, groupOverrides.image, headers],
+    );
+    const mcManufacturerColumns = useMemo(
+        () => (groupOverrides.manufacturer ?? autoManufacturerColumns).filter((h) => headers.includes(h)),
+        [autoManufacturerColumns, groupOverrides.manufacturer, headers],
+    );
+    const mcSizeColumns = useMemo(
+        () => (groupOverrides.size ?? autoSizeColumns).filter((h) => headers.includes(h)),
+        [autoSizeColumns, groupOverrides.size, headers],
+    );
+
+    const setGroupColumns = (group, cols) => {
+        setGroupOverrides((prev) => ({ ...prev, [group]: cols.slice() }));
+    };
 
     // Reactive analysis - re-runs whenever mapping or rows change
     // Implements Zwei-Stufen-Modell: Stufe 1 (Hard Gate) + Stufe 2 (Soft Score)
@@ -2090,32 +2113,46 @@ export default function McAngebotsfeed() {
                     ...mcSizeColumns,
                 ]);
 
-                const MappingRow = ({ fieldKey, label, isPflicht, isImageRow, groupCols, groupLabel }) => {
-                    if (isImageRow) {
-                        return (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 0' }}>
-                                <Tooltip text={(langDE ? FIELD_TOOLTIPS_DE : FIELD_TOOLTIPS_EN)['image_url'] || null}>
-                                    <span style={{ fontSize: 11, color: '#374151', width: 120, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 3, cursor: 'help', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                        {T.mainImageLabel}<span style={{ color: '#991B1B', fontWeight: 700 }}>*</span>
-                                        <span style={{ fontSize: 9, color: '#9CA3AF', borderRadius: '50%', border: '1px solid #D1D5DB', width: 12, height: 12, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>?</span>
+                const renderGroupRow = ({ label, cols, groupKey, isPflicht }) => {
+                    const hasCols = cols.length > 0;
+                    const addable = headers.filter((h) => !cols.includes(h) && !usedCols.has(h));
+                    return (
+                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, padding: '5px 0' }}>
+                            <span style={{ fontSize: 11, color: '#374151', width: 120, flexShrink: 0, paddingTop: 4, display: 'flex', alignItems: 'center', gap: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                {label}{isPflicht && <span style={{ color: '#991B1B', fontWeight: 700 }}>*</span>}
+                            </span>
+                            <div style={{ flex: 1, minWidth: 0, padding: '3px 5px', borderRadius: 5, border: `1px solid ${hasCols ? '#D1FAE5' : isPflicht ? '#FCA5A5' : '#D1D5DB'}`, background: hasCols ? '#F0FDF4' : isPflicht ? '#FFF5F5' : '#FFF', display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center' }}>
+                                {cols.map((c) => (
+                                    <span key={c} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: '#FFF', border: '1px solid #BBF7D0', color: '#166534', borderRadius: 4, padding: '1px 4px 1px 6px', fontSize: 10, fontWeight: 600 }}>
+                                        {c}
+                                        <button type="button" title={langDE ? 'Entfernen' : 'Remove'}
+                                            onClick={() => setGroupColumns(groupKey, cols.filter((x) => x !== c))}
+                                            style={{ fontSize: 10, lineHeight: 1, padding: '0 3px', borderRadius: 3, border: 'none', background: 'transparent', color: '#6B7280', cursor: 'pointer' }}>×</button>
                                     </span>
-                                </Tooltip>
-                                <div style={{ flex: 1, minWidth: 0, fontSize: 11, padding: '4px 7px', borderRadius: 5, border: `1px solid ${mcImageColumns.length > 0 ? '#D1FAE5' : '#FCA5A5'}`, background: mcImageColumns.length > 0 ? '#F0FDF4' : '#FFF5F5', color: mcImageColumns.length > 0 ? '#166534' : '#991B1B', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                    {mcImageColumns.length > 0 ? mcImageColumns.join(', ') : T.notDetected}
-                                </div>
+                                ))}
+                                {!hasCols && <span style={{ fontSize: 11, color: isPflicht ? '#991B1B' : '#9CA3AF', fontWeight: isPflicht ? 600 : 400 }}>{T.notDetected}</span>}
+                                <select
+                                    value=""
+                                    onChange={(e) => {
+                                        if (!e.target.value) return;
+                                        setGroupColumns(groupKey, [...cols, e.target.value]);
+                                    }}
+                                    style={{ fontSize: 10, padding: '2px 4px', borderRadius: 4, border: '1px dashed #D1D5DB', background: '#FFF', color: '#6B7280', cursor: addable.length ? 'pointer' : 'not-allowed', minWidth: 90, maxWidth: 180 }}
+                                    disabled={addable.length === 0}
+                                >
+                                    <option value="">{langDE ? '+ Spalte hinzufügen' : '+ Add column'}</option>
+                                    {addable.map((h) => <option key={h} value={h}>{h}</option>)}
+                                </select>
                             </div>
-                        );
+                        </div>
+                    );
+                };
+                const MappingRow = ({ fieldKey, label, isPflicht, isImageRow, groupCols, groupLabel, groupKey }) => {
+                    if (isImageRow) {
+                        return renderGroupRow({ label: T.mainImageLabel, cols: mcImageColumns, groupKey: 'image', isPflicht: true });
                     }
-                    if (groupCols) {
-                        const hasCols = groupCols.length > 0;
-                        return (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 0' }}>
-                                <span style={{ fontSize: 11, color: '#374151', width: 120, flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{groupLabel}</span>
-                                <div title={groupCols.join(', ')} style={{ flex: 1, minWidth: 0, fontSize: 11, padding: '4px 7px', borderRadius: 5, border: `1px solid ${hasCols ? '#D1FAE5' : '#D1D5DB'}`, background: hasCols ? '#F0FDF4' : '#FFF', color: hasCols ? '#166534' : '#9CA3AF', fontWeight: hasCols ? 600 : 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                    {hasCols ? groupCols.join(', ') : T.notDetected}
-                                </div>
-                            </div>
-                        );
+                    if (groupCols !== undefined) {
+                        return renderGroupRow({ label: groupLabel, cols: groupCols, groupKey, isPflicht: false });
                     }
 
                     const isAvailability = fieldKey === 'availability';
@@ -2247,8 +2284,8 @@ export default function McAngebotsfeed() {
                                                     {optionalFieldsMid.map((f) => (
                                                         <MappingRow key={f} fieldKey={f} label={FIELD_LABELS[f] || f} isPflicht={false} />
                                                     ))}
-                                                    <MappingRow key="__size_group" groupCols={mcSizeColumns} groupLabel={langDE ? 'Maße' : 'Size'} />
-                                                    <MappingRow key="__manufacturer_group" groupCols={mcManufacturerColumns} groupLabel={langDE ? 'Hersteller' : 'Manufacturer'} />
+                                                    <MappingRow key="__size_group" groupCols={mcSizeColumns} groupLabel={langDE ? 'Maße' : 'Size'} groupKey="size" />
+                                                    <MappingRow key="__manufacturer_group" groupCols={mcManufacturerColumns} groupLabel={langDE ? 'Hersteller' : 'Manufacturer'} groupKey="manufacturer" />
                                                     {optionalExpanded && otherOptionalFields.map((f) => (
                                                         <MappingRow key={f} fieldKey={f} label={FIELD_LABELS[f] || f} isPflicht={false} />
                                                     ))}
