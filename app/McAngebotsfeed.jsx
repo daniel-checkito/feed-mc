@@ -2871,6 +2871,16 @@ export default function McAngebotsfeed() {
                 const overallPct = issues.optionalScore;
                 const overallColor = overallPct >= 70 ? P_GREEN : overallPct >= 40 ? P_ORANGE : P_RED;
 
+                const fieldHint = (field) => lang === 'de' ? ({
+                    color: 'Einige Artikel haben keine Farbangabe — wichtig für Filter & Suche',
+                    material: 'Einige Artikel haben keine Materialangabe — wichtig für Filterung',
+                    delivery_includes: 'Einige Artikel haben keinen Lieferumfang hinterlegt',
+                }[field] ?? '') : ({
+                    color: 'Some items have no color specified — important for filtering & search',
+                    material: 'Some items have no material — important for filtering',
+                    delivery_includes: 'Some items have no delivery scope set',
+                }[field] ?? '');
+
                 // Image count distribution (moved from step 3)
                 const imgStats = mcImageColumns.length > 0 ? (() => {
                     const buckets = { none: 0, one: 0, two: 0, good: 0 };
