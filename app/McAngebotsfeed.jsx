@@ -1564,7 +1564,7 @@ export default function McAngebotsfeed() {
                     {/* Language dropdown */}
                     <div style={{ position: 'relative', display: 'inline-block' }}>
                         <button type="button" onClick={() => setLangOpen((v) => !v)}
-                            style={{ display: 'flex', alignItems: 'center', gap: 7, background: langOpen ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: langOpen ? '8px 8px 0 0' : 8, padding: '6px 12px', cursor: 'pointer', color: '#FFF', fontSize: 13, fontWeight: 600, transition: 'background 0.15s' }}>
+                            style={{ display: 'flex', alignItems: 'center', gap: 7, background: langOpen ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: 8, padding: '6px 12px', cursor: 'pointer', color: '#FFF', fontSize: 13, fontWeight: 600, transition: 'background 0.15s' }}>
                             {lang === 'de' ? (
                                 <svg width="18" height="13" viewBox="0 0 18 13" style={{ borderRadius: 2, flexShrink: 0 }}>
                                     <rect width="18" height="4.33" y="0" fill="#000"/>
@@ -1586,7 +1586,7 @@ export default function McAngebotsfeed() {
                         {langOpen && (
                             <>
                                 <div style={{ position: 'fixed', inset: 0, zIndex: 1000 }} onClick={() => setLangOpen(false)} />
-                                <div style={{ position: 'absolute', top: '100%', right: 0, background: '#FFF', borderRadius: '0 0 8px 8px', border: '1px solid rgba(255,255,255,0.25)', boxShadow: '0 8px 24px rgba(0,0,0,0.18)', overflow: 'hidden', zIndex: 1001, minWidth: '100%' }}>
+                                <div style={{ position: 'absolute', top: 'calc(100% + 4px)', right: 0, background: '#FFF', borderRadius: 8, border: '1px solid rgba(0,0,0,0.08)', boxShadow: '0 8px 24px rgba(0,0,0,0.18)', overflow: 'hidden', zIndex: 1001, minWidth: '100%' }}>
                                     {[{ value: 'de', label: 'Deutsch' }, { value: 'en', label: 'English' }].map((opt) => (
                                         <button key={opt.value} type="button"
                                             onClick={() => { setLang(opt.value); setLangOpen(false); }}
