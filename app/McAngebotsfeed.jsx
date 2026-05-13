@@ -866,7 +866,7 @@ export default function McAngebotsfeed() {
     const showQualityScore = false; // not public yet - re-enable when ready
 
     // Pastel color palette for status indicators
-    const P_RED    = '#FCA5A5'; const P_RED_BG    = '#FEF2F2'; const P_RED_TEXT    = '#991B1B';
+    const P_RED    = '#FCA5A5'; const P_RED_BG    = '#FEF2F2'; const P_RED_TEXT    = '#DC2626';
     const P_ORANGE = '#FCD34D'; const P_ORANGE_BG = '#FFFBEB'; const P_ORANGE_TEXT = '#92400E';
     const P_GREEN  = '#86EFAC'; const P_GREEN_BG  = '#F0FDF4'; const P_GREEN_TEXT  = '#166534';
     const P_BLUE   = '#93C5FD'; const P_BLUE_BG   = '#EFF6FF'; const P_BLUE_TEXT   = '#1E40AF';
@@ -1644,7 +1644,7 @@ export default function McAngebotsfeed() {
                         <svg width="13" height="13" viewBox="0 0 13 13" fill="none" style={{ flexShrink: 0 }}><rect x="1" y="2.5" width="11" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.3"/><path d="M1 4l5.5 3.5L12 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>
                         <span className="mc-header-btn-label">{T.helpContact}</span>
                     </a>
-                    {/* Hamburger button — only visible at <640px */}
+                    {/* Hamburger button, only visible at <640px */}
                     <div style={{ position: 'relative' }}>
                         <button type="button" className="mc-mobile-menu-btn" onClick={() => setMobileMenuOpen((v) => !v)}
                             style={{ alignItems: 'center', justifyContent: 'center', gap: 5, background: mobileMenuOpen ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: 8, padding: '7px 10px', cursor: 'pointer', color: '#FFF' }}>
@@ -1712,7 +1712,7 @@ export default function McAngebotsfeed() {
                         </button>
                     );
                 })}
-                {/* Start over link — absolutely positioned so tabs stay centered */}
+                {/* Start over link, absolutely positioned so tabs stay centered */}
                 {rows.length > 0 && (
                     <button type="button" onClick={resetToStart}
                         style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', display: 'flex', alignItems: 'center', gap: 5, padding: '6px 12px', background: 'none', border: 'none', cursor: 'pointer', color: '#9CA3AF', fontSize: 11, fontWeight: 500, whiteSpace: 'nowrap' }}>
@@ -2479,8 +2479,8 @@ export default function McAngebotsfeed() {
                     seller_offer_id: 'Einige Artikel haben keine eindeutige interne Artikel-ID',
                     hs_code: 'Einige Artikel haben keinen HS-Code (Pflicht für EU-Lager)',
                     category_path: 'Einige Artikel haben eine ungültige Kategorie zugeordnet',
-                    color: 'Einige Artikel haben keine Farbangabe — wichtig für Filter & Suche',
-                    material: 'Einige Artikel haben keine Materialangabe — wichtig für Filterung',
+                    color: 'Einige Artikel haben keine Farbangabe, wichtig für Filter & Suche',
+                    material: 'Einige Artikel haben keine Materialangabe, wichtig für Filterung',
                     delivery_includes: 'Einige Artikel haben keinen Lieferumfang hinterlegt',
                 }[field] ?? '') : ({
                     name: 'Some items have incomplete or too short titles',
@@ -2496,8 +2496,8 @@ export default function McAngebotsfeed() {
                     seller_offer_id: 'Some items have no unique internal item ID',
                     hs_code: 'Some items have no HS code (required for EU warehouses)',
                     category_path: 'Some items have an invalid category assignment',
-                    color: 'Some items have no color specified — important for filtering & search',
-                    material: 'Some items have no material — important for filtering',
+                    color: 'Some items have no color specified, important for filtering & search',
+                    material: 'Some items have no material, important for filtering',
                     delivery_includes: 'Some items have no delivery scope set',
                 }[field] ?? '');
 
@@ -2809,7 +2809,7 @@ export default function McAngebotsfeed() {
                                                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 8 }}>
                                                                     {samples.map((s, i) => (
                                                                         <div key={i} title={s.value || s.name || s.ean} style={{ background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 6, padding: '8px 10px', minWidth: 0 }}>
-                                                                            <div style={{ fontFamily: 'monospace', fontSize: 10, color: '#6B7280', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.ean || '—'}</div>
+                                                                            <div style={{ fontFamily: 'monospace', fontSize: 10, color: '#6B7280', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.ean || '-'}</div>
                                                                             <div style={{ fontSize: 12, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: 1 }}>
                                                                                 {s.name || (s.value ? <span style={{ fontFamily: 'monospace', color: P_RED_TEXT }}>"{s.value}"</span> : <span style={{ color: '#9CA3AF', fontStyle: 'italic' }}>{lang === 'de' ? '(kein Name)' : '(no name)'}</span>)}
                                                                             </div>
@@ -2837,15 +2837,15 @@ export default function McAngebotsfeed() {
                             const eanCol = mcMapping['ean'];
                             const titleBuckets = [
                                 { key: 'none',  label: lang === 'de' ? 'Leer' : 'Empty',     sub: lang === 'de' ? 'Pflichtfeld nicht befüllt' : 'Required field empty',         color: '#EF4444', match: (l) => l === 0 },
-                                { key: 'short', label: lang === 'de' ? 'Zu kurz' : 'Too short', sub: lang === 'de' ? 'unter 30 Zeichen — kaum auffindbar' : 'under 30 characters — hard to find', color: '#F59E0B', match: (l) => l > 0 && l < 30 },
-                                { key: 'ok',    label: lang === 'de' ? 'Akzeptabel' : 'Acceptable',  sub: lang === 'de' ? '30–79 Zeichen — geht, aber kürzer als ideal' : '30–79 characters — okay, but shorter than ideal',  color: '#60A5FA', match: (l) => l >= 30 && l < 80 },
-                                { key: 'good',  label: lang === 'de' ? 'Optimal' : 'Optimal',   sub: lang === 'de' ? '80+ Zeichen — gute Auffindbarkeit' : '80+ characters — good searchability',   color: '#166534', match: (l) => l >= 80 },
+                                { key: 'short', label: lang === 'de' ? 'Zu kurz' : 'Too short', sub: lang === 'de' ? 'unter 30 Zeichen, kaum auffindbar' : 'under 30 characters, hard to find', color: '#F59E0B', match: (l) => l > 0 && l < 30 },
+                                { key: 'ok',    label: lang === 'de' ? 'Akzeptabel' : 'Acceptable',  sub: lang === 'de' ? '30–79 Zeichen, geht, aber kürzer als ideal' : '30–79 characters, okay, but shorter than ideal',  color: '#60A5FA', match: (l) => l >= 30 && l < 80 },
+                                { key: 'good',  label: lang === 'de' ? 'Optimal' : 'Optimal',   sub: lang === 'de' ? '80+ Zeichen, gute Auffindbarkeit' : '80+ characters, good searchability',   color: '#166534', match: (l) => l >= 80 },
                             ];
                             const descBuckets = [
                                 { key: 'none',  label: lang === 'de' ? 'Leer' : 'Empty',         sub: lang === 'de' ? 'Pflichtfeld nicht befüllt' : 'Required field empty',          color: '#EF4444', match: (l) => l === 0 },
-                                { key: 'short', label: lang === 'de' ? 'Zu kurz' : 'Too short',   sub: lang === 'de' ? 'unter 100 Zeichen — zu wenig Produktinfos' : 'under 100 characters — too little product info',   color: '#F59E0B', match: (l) => l > 0 && l < 100 },
-                                { key: 'ok',    label: lang === 'de' ? 'Akzeptabel' : 'Acceptable',  sub: lang === 'de' ? '100–299 Zeichen — geht, mehr Details wären besser' : '100–299 characters — okay, more detail would help',  color: '#60A5FA', match: (l) => l >= 100 && l < 300 },
-                                { key: 'good',  label: lang === 'de' ? 'Optimal' : 'Optimal',     sub: lang === 'de' ? '300+ Zeichen — gute Conversion-Basis' : '300+ characters — strong conversion baseline',     color: '#166534', match: (l) => l >= 300 },
+                                { key: 'short', label: lang === 'de' ? 'Zu kurz' : 'Too short',   sub: lang === 'de' ? 'unter 100 Zeichen, zu wenig Produktinfos' : 'under 100 characters, too little product info',   color: '#F59E0B', match: (l) => l > 0 && l < 100 },
+                                { key: 'ok',    label: lang === 'de' ? 'Akzeptabel' : 'Acceptable',  sub: lang === 'de' ? '100–299 Zeichen, geht, mehr Details wären besser' : '100–299 characters, okay, more detail would help',  color: '#60A5FA', match: (l) => l >= 100 && l < 300 },
+                                { key: 'good',  label: lang === 'de' ? 'Optimal' : 'Optimal',     sub: lang === 'de' ? '300+ Zeichen, gute Conversion-Basis' : '300+ characters, strong conversion baseline',     color: '#166534', match: (l) => l >= 300 },
                             ];
                             const buildMatches = (col, buckets, selected) => {
                                 if (!col || !selected) return null;
@@ -2892,7 +2892,7 @@ export default function McAngebotsfeed() {
                                                         title={item.value}
                                                         style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px', borderBottom: i < Math.min(list.length, 200) - 1 ? '1px solid #F3F4F6' : 'none', fontSize: 11 }}>
                                                         <div style={{ fontFamily: 'monospace', color: '#6B7280', fontSize: 10, width: 110, flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                                            {item.ean || '—'}
+                                                            {item.ean || '-'}
                                                         </div>
                                                         <div style={{ flex: 1, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                                             {item.name || <span style={{ color: '#9CA3AF', fontStyle: 'italic' }}>{lang === 'de' ? '(kein Name)' : '(no name)'}</span>}
@@ -3127,7 +3127,7 @@ export default function McAngebotsfeed() {
                                         ) : filteredSamples.map((s, i) => (
                                             <div key={i} style={{ border: '1px solid #F3F4F6', borderRadius: 10, padding: '8px 10px', display: 'flex', alignItems: 'center', gap: 10 }}>
                                                 <div style={{ minWidth: 0, flex: 1 }}>
-                                                    <div style={{ fontSize: 11, fontWeight: 700, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name || '—'}</div>
+                                                    <div style={{ fontSize: 11, fontWeight: 700, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name || '-'}</div>
                                                     {s.ean && <div style={{ fontSize: 10, color: '#9CA3AF', fontFamily: 'monospace', marginTop: 1 }}>{s.ean}</div>}
                                                     <div style={{ fontSize: 10, color: '#6B7280', marginTop: 1 }}>{lang === 'de' ? `${s.total} Bilder` : `${s.total} images`}</div>
                                                 </div>
@@ -3234,12 +3234,12 @@ export default function McAngebotsfeed() {
                 const overallColor = overallPct >= 70 ? P_GREEN : overallPct >= 40 ? P_ORANGE : P_RED;
 
                 const fieldHint = (field) => lang === 'de' ? ({
-                    color: 'Einige Artikel haben keine Farbangabe — wichtig für Filter & Suche',
-                    material: 'Einige Artikel haben keine Materialangabe — wichtig für Filterung',
+                    color: 'Einige Artikel haben keine Farbangabe, wichtig für Filter & Suche',
+                    material: 'Einige Artikel haben keine Materialangabe, wichtig für Filterung',
                     delivery_includes: 'Einige Artikel haben keinen Lieferumfang hinterlegt',
                 }[field] ?? '') : ({
-                    color: 'Some items have no color specified — important for filtering & search',
-                    material: 'Some items have no material — important for filtering',
+                    color: 'Some items have no color specified, important for filtering & search',
+                    material: 'Some items have no material, important for filtering',
                     delivery_includes: 'Some items have no delivery scope set',
                 }[field] ?? '');
 
@@ -3384,7 +3384,7 @@ export default function McAngebotsfeed() {
                                         const exampleVals = mappedCol
                                             ? [...new Set(rows.map(r => String(r[mappedCol] ?? '').trim()).filter(Boolean))].slice(0, 3)
                                             : [];
-                                        // EAN list for bad rows — shown directly in the table row.
+                                        // EAN list for bad rows, shown directly in the table row.
                                         const errorEans4 = hasError ? (optHintsByField[f.field] || []) : [];
                                         const rowKey = `opt::${f.field}`;
                                         const isRowExpanded = hasError && expandedFieldExamples.has(rowKey);
@@ -3463,7 +3463,7 @@ export default function McAngebotsfeed() {
                                                                 {lang === 'de' ? 'Fehlend' : 'Missing'} · {errs.toLocaleString(numLocale)}×
                                                             </span>
                                                             <span style={{ fontSize: 11, color: '#374151', flex: 1, minWidth: 0 }}>
-                                                                {lang === 'de' ? `${label} ist nicht befüllt — optionales Feld leer` : `${label} is empty — optional field not filled`}
+                                                                {lang === 'de' ? `${label} ist nicht befüllt, optionales Feld leer` : `${label} is empty, optional field not filled`}
                                                             </span>
                                                             <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, fontWeight: 700, color: '#6B7280', letterSpacing: '0.04em', flexShrink: 0 }}>
                                                                 {errs.toLocaleString(numLocale)} {lang === 'de' ? 'ANZEIGEN' : 'SHOW'}
@@ -3479,7 +3479,7 @@ export default function McAngebotsfeed() {
                                                                     const name = typeof item === 'string' ? '' : (item.name || '');
                                                                     return (
                                                                         <div key={i} title={name || ean} style={{ background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 6, padding: '8px 10px', minWidth: 0 }}>
-                                                                            <div style={{ fontFamily: 'monospace', fontSize: 10, color: '#6B7280', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ean || '—'}</div>
+                                                                            <div style={{ fontFamily: 'monospace', fontSize: 10, color: '#6B7280', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ean || '-'}</div>
                                                                             <div style={{ fontSize: 12, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: 1 }}>
                                                                                 {name || <span style={{ color: '#9CA3AF', fontStyle: 'italic' }}>{lang === 'de' ? '(kein Name)' : '(no name)'}</span>}
                                                                             </div>
@@ -3621,17 +3621,23 @@ export default function McAngebotsfeed() {
                 const fieldIcon = (field, iconColor) => {
                     const color = iconColor || '#6B7280';
                     const s = { flexShrink: 0 };
-                    if (field === 'name') return <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={s}><path d="M3 12V4l5-2 5 2v8l-5 2-5-2z" stroke={color} strokeWidth="1.3" strokeLinejoin="round"/><path d="M8 2v12" stroke={color} strokeWidth="1.3"/></svg>;
-                    if (field === 'ean') return <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={s}><rect x="2" y="3" width="1.5" height="10" fill={color}/><rect x="5" y="3" width="1" height="10" fill={color}/><rect x="7.5" y="3" width="2" height="10" fill={color}/><rect x="11" y="3" width="1" height="10" fill={color}/><rect x="13" y="3" width="1" height="10" fill={color}/></svg>;
-                    if (field === 'description') return <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={s}><rect x="2" y="1.5" width="12" height="13" rx="1.5" stroke={color} strokeWidth="1.3"/><path d="M5 5.5h6M5 8h6M5 10.5h4" stroke={color} strokeWidth="1.3" strokeLinecap="round"/></svg>;
-                    if (field === 'price') return <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={s}><circle cx="8" cy="8" r="6" stroke={color} strokeWidth="1.3"/><path d="M8 4.5v7M6 6.5c0-.8.9-1.5 2-1.5s2 .7 2 1.5-1 1.3-2 1.5-2 .7-2 1.5.9 1.5 2 1.5 2-.7 2-1.5" stroke={color} strokeWidth="1.2" strokeLinecap="round"/></svg>;
-                    if (field === 'shipping_mode') return <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={s}><path d="M1 9h9V3H1v6zM10 5h2.5l2 3v1H10V5z" stroke={color} strokeWidth="1.3" strokeLinejoin="round"/><circle cx="3.5" cy="11.5" r="1.5" stroke={color} strokeWidth="1.3"/><circle cx="12" cy="11.5" r="1.5" stroke={color} strokeWidth="1.3"/></svg>;
-                    if (field === 'image_url') return <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={s}><rect x="1.5" y="2" width="13" height="12" rx="1.5" stroke={color} strokeWidth="1.3"/><circle cx="5.5" cy="6" r="1.5" stroke={color} strokeWidth="1.2"/><path d="M1.5 11l3.5-3 3 3 2-2 3.5 3" stroke={color} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>;
-                    if (field === 'availability' || field === 'stock_amount') return <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={s}><path d="M8 1L1.5 4.5v3L8 11l6.5-3.5v-3L8 1z" stroke={color} strokeWidth="1.3" strokeLinejoin="round"/><path d="M1.5 7.5L8 11l6.5-3.5" stroke={color} strokeWidth="1.3"/><path d="M8 11v4" stroke={color} strokeWidth="1.3"/></svg>;
-                    if (field === 'brand') return <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={s}><path d="M8 2l1.5 3.5L13 6l-2.5 2.5.5 3.5L8 10.5 5 12l.5-3.5L3 6l3.5-.5L8 2z" stroke={color} strokeWidth="1.3" strokeLinejoin="round"/></svg>;
-                    if (field === 'delivery_time') return <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={s}><circle cx="8" cy="8" r="6" stroke={color} strokeWidth="1.3"/><path d="M8 5v3.5L10.5 10" stroke={color} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>;
-                    if (field === 'seller_offer_id') return <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={s}><rect x="1.5" y="3" width="13" height="10" rx="1.5" stroke={color} strokeWidth="1.3"/><path d="M5 8h6M5 10.5h3" stroke={color} strokeWidth="1.2" strokeLinecap="round"/><circle cx="4" cy="6" r="1" fill={color}/></svg>;
-                    return <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={s}><circle cx="8" cy="8" r="6" stroke={color} strokeWidth="1.3"/><path d="M5 8a3 3 0 006 0" stroke={color} strokeWidth="1.2"/><path d="M2 8h12" stroke={color} strokeWidth="1.2"/></svg>;
+                    if (field === 'name') return <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={s}><path d="M3 4h10M8 4v9" stroke={color} strokeWidth="1.6" strokeLinecap="round"/></svg>;
+                    if (field === 'ean') return <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={s}><rect x="2" y="3" width="1" height="10" fill={color}/><rect x="4" y="3" width="2" height="10" fill={color}/><rect x="7" y="3" width="1" height="10" fill={color}/><rect x="9" y="3" width="2" height="10" fill={color}/><rect x="12" y="3" width="1" height="10" fill={color}/><rect x="14" y="3" width="0.6" height="10" fill={color}/></svg>;
+                    if (field === 'description') return <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={s}><path d="M2 4h12M2 8h12M2 12h8" stroke={color} strokeWidth="1.4" strokeLinecap="round"/></svg>;
+                    if (field === 'price') return <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={s}><circle cx="8" cy="8" r="6" stroke={color} strokeWidth="1.3"/><path d="M9.5 5.8c-.4-.5-1-.8-1.7-.8-1.1 0-2 .7-2 1.6 0 .8.7 1.2 1.7 1.4 1.2.2 1.9.6 1.9 1.5 0 .9-.9 1.7-2 1.7-.8 0-1.5-.4-1.9-.9M8 4.2v.8M8 11v.8" stroke={color} strokeWidth="1.2" strokeLinecap="round"/></svg>;
+                    if (field === 'shipping_mode') return <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={s}><path d="M1 4h9v7H1zM10 6h3l2 2.5V11h-5z" stroke={color} strokeWidth="1.3" strokeLinejoin="round"/><circle cx="4" cy="12.5" r="1.3" fill="#FFF" stroke={color} strokeWidth="1.3"/><circle cx="12" cy="12.5" r="1.3" fill="#FFF" stroke={color} strokeWidth="1.3"/></svg>;
+                    if (field === 'image_url') return <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={s}><rect x="1.5" y="2.5" width="13" height="11" rx="1.5" stroke={color} strokeWidth="1.3"/><circle cx="5.5" cy="6.5" r="1.2" stroke={color} strokeWidth="1.2"/><path d="M2 12l3.5-3.5 2.5 2.5L11 8l3 3" stroke={color} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+                    if (field === 'availability' || field === 'stock_amount') return <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={s}><path d="M2.5 5L8 2.5 13.5 5v6L8 13.5 2.5 11V5z" stroke={color} strokeWidth="1.3" strokeLinejoin="round"/><path d="M2.5 5L8 7.5 13.5 5M8 7.5v6" stroke={color} strokeWidth="1.3" strokeLinejoin="round"/></svg>;
+                    if (field === 'brand') return <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={s}><path d="M8 2L13.5 7.5l-6 6L2 8V2.5h5.5L8 2z" stroke={color} strokeWidth="1.3" strokeLinejoin="round"/><circle cx="5.5" cy="5.5" r="0.9" fill={color}/></svg>;
+                    if (field === 'delivery_time') return <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={s}><circle cx="8" cy="8" r="6" stroke={color} strokeWidth="1.3"/><path d="M8 4.5V8l2.5 1.5" stroke={color} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+                    if (field === 'seller_offer_id') return <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={s}><rect x="1.5" y="3" width="13" height="10" rx="1.5" stroke={color} strokeWidth="1.3"/><circle cx="5" cy="7" r="1.6" stroke={color} strokeWidth="1.2"/><path d="M9 7h4M9 10h3" stroke={color} strokeWidth="1.2" strokeLinecap="round"/></svg>;
+                    if (field === 'color') return <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={s}><path d="M8 1.5C4.4 1.5 1.5 4.2 1.5 7.8c0 2.8 2 4.7 4.5 4.7.5 0 .8-.3.8-.8 0-.2-.1-.4-.2-.5-.3-.4-.2-1 .3-1.2.2 0 .3-.1.5-.1H8c3 0 6.5-1.9 6.5-5.1C14.5 3.5 11.5 1.5 8 1.5z" stroke={color} strokeWidth="1.2" strokeLinejoin="round"/><circle cx="4.8" cy="6.2" r="0.8" fill={color}/><circle cx="7.5" cy="4" r="0.8" fill={color}/><circle cx="10.7" cy="5.5" r="0.8" fill={color}/></svg>;
+                    if (field === 'material') return <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={s}><path d="M8 2L2 5l6 3 6-3-6-3z" stroke={color} strokeWidth="1.3" strokeLinejoin="round"/><path d="M2 8l6 3 6-3M2 11l6 3 6-3" stroke={color} strokeWidth="1.3" strokeLinejoin="round"/></svg>;
+                    if (field === 'delivery_includes') return <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={s}><path d="M2 5l6-3 6 3-6 3-6-3zM2 5v6l6 3M8 8v6m6-9v6l-6 3" stroke={color} strokeWidth="1.2" strokeLinejoin="round"/></svg>;
+                    if (field === 'category_path') return <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={s}><path d="M3 4h10M5 8h8M7 12h6" stroke={color} strokeWidth="1.4" strokeLinecap="round"/><circle cx="2" cy="4" r="0.8" fill={color}/><circle cx="4" cy="8" r="0.8" fill={color}/><circle cx="6" cy="12" r="0.8" fill={color}/></svg>;
+                    if (field === '__size_missing') return <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={s}><rect x="1.5" y="5.5" width="13" height="5" rx="0.8" stroke={color} strokeWidth="1.3"/><path d="M4 5.5v2M6.5 5.5v3M9 5.5v2M11.5 5.5v3" stroke={color} strokeWidth="1.2" strokeLinecap="round"/></svg>;
+                    if (field === '__lighting') return <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={s}><path d="M8 1.8a4.5 4.5 0 00-2.8 8v1.7c0 .4.3.7.7.7h4.2c.4 0 .7-.3.7-.7v-1.7A4.5 4.5 0 008 1.8z" stroke={color} strokeWidth="1.3" strokeLinejoin="round"/><path d="M6.5 14h3" stroke={color} strokeWidth="1.4" strokeLinecap="round"/></svg>;
+                    return <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={s}><circle cx="8" cy="8" r="6.5" stroke={color} strokeWidth="1.3"/><path d="M8 5v3.5" stroke={color} strokeWidth="1.5" strokeLinecap="round"/><circle cx="8" cy="11" r="0.8" fill={color}/></svg>;
                 };
                 const recRules = lang === 'de' ? {
                     'name::missing':       { title: 'Artikelname fehlt',               shortDesc: 'Eindeutiger und aussagekräftiger Titel ist erforderlich',             action: 'Tragen Sie für jeden betroffenen Artikel einen vollständigen Namen ein. Format: Marke + Produkttyp + Hauptattribut, z. B. „BRAND Sofa 3-Sitzer grau 180 cm".',         tip: 'Mind. 2 Wörter und 10 Zeichen. Ein guter Name erhöht die Auffindbarkeit deutlich.' },
@@ -3698,14 +3704,14 @@ export default function McAngebotsfeed() {
                     'price::invalid':      { title: 'Price: invalid format',          action: 'Correct the price format to 19.99.',                                            tip: 'Only positive numbers with dot as decimal separator, e.g. 29.99.' },
                     'price::placeholder':  { title: 'Price: placeholder value',       action: 'Replace placeholder values with the correct item price.',                       tip: 'The price must be a positive number greater than 0.' },
                     'shipping_mode::missing':  { title: 'Shipping mode missing',      shortDesc: 'Shipping mode and cost must be specified',                                action: 'Set the shipping mode to "paket" (parcel delivery) or "spedition" (freight delivery) for every affected item.',                                 tip: 'Heavy or bulky furniture typically qualifies as "spedition".' },
-                    'shipping_mode::invalid':  { title: 'Shipping mode: invalid value', action: 'Replace the value with "paket" or "spedition" — these are the only accepted options.',                           tip: 'Check for extra spaces, capitalisation, or typos.' },
+                    'shipping_mode::invalid':  { title: 'Shipping mode: invalid value', action: 'Replace the value with "paket" or "spedition", these are the only accepted options.',                           tip: 'Check for extra spaces, capitalisation, or typos.' },
                     'shipping_mode::placeholder':{ title: 'Shipping mode: placeholder', action: 'Replace placeholder values with "paket" (parcel) or "spedition" (freight delivery).',                          tip: 'Choose based on weight and size: items up to ~30 kg → "paket", larger/heavier → "spedition".' },
                     'image_url::missing':  { title: 'Image URL missing',             shortDesc: 'At least one product image is required',                                  action: 'Add a publicly accessible image URL for every item.',                           tip: 'Cut-out on white background, min. 600×600 px, no login required.' },
                     'image_url::invalid':  { title: 'Image URL: invalid value',      action: 'Check that the image URL is correct and publicly accessible.',                  tip: 'URL must start with http:// or https:// and point directly to an image file.' },
                     'availability::missing':   { title: 'Stock / Availability missing', shortDesc: 'Stock or availability must be set',                                     action: 'Provide stock count or availability status for every item.',                   tip: 'Either a numeric stock count (e.g. 10) or an availability status.' },
                     'stock_amount::missing':   { title: 'Stock missing',              action: 'Add the numeric stock count.',                                                  tip: 'Enter the current stock as a number, e.g. 5 or 100.' },
                     'brand::missing':      { title: 'Brand missing',                 shortDesc: 'Specifying the brand is required',                                        action: 'Add the brand name for all affected items.',                                   tip: 'Use the official brand name, min. 2 characters.' },
-                    'brand::too_short':    { title: 'Brand: too short',              action: 'Enter the full brand name (at least 2 characters).',                                    tip: 'Avoid abbreviations — use the official name, e.g. "Müller Möbel" instead of "MM".' },
+                    'brand::too_short':    { title: 'Brand: too short',              action: 'Enter the full brand name (at least 2 characters).',                                    tip: 'Avoid abbreviations, use the official name, e.g. "Müller Möbel" instead of "MM".' },
                     'brand::placeholder':  { title: 'Brand: placeholder value',      action: 'Replace placeholders with the real brand name.',                               tip: 'Brand name must be filled in for every item.' },
                     'delivery_time::missing':  { title: 'Delivery time missing',     shortDesc: 'Delivery time must be specified for all items',                           action: 'Enter the delivery time, e.g. "3-5 working days" or "2 days". Customers check this before purchasing.',                                 tip: 'Format: number + unit. Working-day ranges (e.g. "3-5 working days") are preferred.' },
                     'delivery_time::invalid':  { title: 'Delivery time: invalid format', action: 'Write the delivery time as "number + unit", e.g. "3-5 working days", "1 week", or "2 days".',                                              tip: 'The unit (days / working days / week) must be present. A number alone without a unit will be rejected.' },
@@ -3718,12 +3724,12 @@ export default function McAngebotsfeed() {
                     'description::external_link': { title: 'Description: external URL', shortDesc: 'Check and remove external links in description',                       action: 'Remove all external links from the product description.',                      tip: 'www. or http(s) links are not allowed in the description.' },
                     'description::template': { title: 'Description: template text',    action: 'Replace template text (Lorem Ipsum etc.) with real product descriptions.',       tip: 'Every product needs a unique, informative description.' },
                     'description::advertising': { title: 'Description: advertising phrases', shortDesc: 'Avoid promotional language in descriptions',                       action: 'Remove advertising phrases like "Buy now" or "Discount" from the description.', tip: 'Descriptions should present product features, not advertising copy.' },
-                    'description::identical_to_title': { title: 'Description = Item name', action: 'Write a proper description covering material, dimensions, and features — do not just copy the item name.',      tip: 'Example: instead of "BRAND Sofa grey" → "Upholstered 3-seater sofa in structured fabric, 230 cm wide, cold-foam padding, removable covers."' },
+                    'description::identical_to_title': { title: 'Description = Item name', action: 'Write a proper description covering material, dimensions, and features, do not just copy the item name.',      tip: 'Example: instead of "BRAND Sofa grey" → "Upholstered 3-seater sofa in structured fabric, 230 cm wide, cold-foam padding, removable covers."' },
                     'image_url::single':   { title: 'Only 1 product image',            shortDesc: 'Additional product images can increase conversion',                      action: 'Add at least 3 images per item (main image + 2 additional images).',            tip: 'More images significantly increase click-through rate and conversion.' },
                     'seller_offer_id::dup':{ title: 'Own item ID: duplicates',         action: 'Each seller_offer_id must be unique. Fix the duplicate entries.',               tip: 'Use your internal SKU or a unique order number.' },
                     'category_path::wrong_category': { title: 'Category path: wrong category', shortDesc: 'Review and correct the category assignment',                    action: 'Replace the category with a valid furniture category, e.g. "Sofa", "Boxspringbett", "Esstisch", or "Kleiderschrank".', tip: 'CHECK24 Furniture only accepts categories from the furniture assortment. Generic categories like "Household" or "Other" will be rejected.' },
                     'color::missing':         { title: 'Color missing',                    shortDesc: 'Color specification increases discoverability',                          action: 'Add the color for all affected items.',                                            tip: 'Clear color values significantly improve filterability and discoverability.' },
-                    'material::missing':      { title: 'Material missing',                 shortDesc: 'Material specification improves filterability',                           action: 'Add the material for all affected items.',                                        tip: 'Material is an important filter criterion — e.g. "Oak", "Faux Leather", "Fabric".' },
+                    'material::missing':      { title: 'Material missing',                 shortDesc: 'Material specification improves filterability',                           action: 'Add the material for all affected items.',                                        tip: 'Material is an important filter criterion, e.g. "Oak", "Faux Leather", "Fabric".' },
                     'delivery_includes::missing': { title: 'Delivery includes missing',    action: 'Enter the delivery contents in the format "1x table, 4x chair".',                tip: 'A complete delivery scope reduces returns and customer queries.' },
                 };
 
@@ -3938,7 +3944,7 @@ export default function McAngebotsfeed() {
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
                                                         <div style={{ textAlign: 'right' }}>
                                                             <div style={{ fontSize: 16, fontWeight: 800, color: accentText || accent || '#374151', lineHeight: 1 }}>{group.count.toLocaleString(numLocale)}</div>
-                                                            <div style={{ fontSize: 10, color: '#9CA3AF' }}>{lang === 'de' ? 'Vorkommen' : 'occurrences'}</div>
+                                                            <div style={{ fontSize: 10, color: '#9CA3AF' }}>{lang === 'de' ? 'Fehler' : 'errors'}</div>
                                                         </div>
                                                         <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: '#9CA3AF', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }}>
                                                             <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
@@ -3995,14 +4001,14 @@ export default function McAngebotsfeed() {
                                             <div>
                                                 <div
                                                     onClick={toggleSec}
-                                                    style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: sOpen ? 8 : 0, cursor: 'pointer', userSelect: 'none', padding: '6px 0' }}
+                                                    style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: sOpen ? 10 : 0, cursor: 'pointer', userSelect: 'none', padding: '10px 14px', background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 10, boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}
                                                 >
-                                                    <div style={{ width: 20, height: 20, borderRadius: '50%', background: accentBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                                        <svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M8 3v6M8 12v1" stroke={accentText} strokeWidth="2" strokeLinecap="round"/></svg>
+                                                    <div style={{ width: 22, height: 22, borderRadius: '50%', background: accentBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                                        <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M8 3v6M8 12v1" stroke={accentText} strokeWidth="2" strokeLinecap="round"/></svg>
                                                     </div>
-                                                    <span style={{ fontSize: 11, fontWeight: 700, color: accentText, letterSpacing: '0.04em', textTransform: 'uppercase' }}>{title}</span>
-                                                    <span style={{ fontSize: 10, background: accentBg, color: accentText, borderRadius: 10, padding: '1px 7px', fontWeight: 700 }}>{items.length}</span>
-                                                    <span style={{ fontSize: 10, color: '#6B7280', marginLeft: 2 }}>{subtitle}</span>
+                                                    <span style={{ fontSize: 12, fontWeight: 700, color: accentText, letterSpacing: '0.04em', textTransform: 'uppercase' }}>{title}</span>
+                                                    <span style={{ fontSize: 10, background: accentBg, color: accentText, borderRadius: 10, padding: '2px 8px', fontWeight: 700 }}>{items.length}</span>
+                                                    <span style={{ fontSize: 11, color: '#6B7280', marginLeft: 2 }}>{subtitle}</span>
                                                     <svg width="11" height="11" viewBox="0 0 16 16" fill="none" style={{ marginLeft: 'auto', flexShrink: 0, color: '#9CA3AF', transform: sOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }}>
                                                         <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
                                                     </svg>
@@ -4054,7 +4060,7 @@ export default function McAngebotsfeed() {
                             {/* Right: download + reset panel */}
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
 
-                                {/* Card 1 — Feed-Übersicht */}
+                                {/* Card 1, Feed-Übersicht */}
                                 <div style={{ background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 14, overflow: 'hidden' }}>
                                     <div style={{ padding: '10px 16px', borderBottom: '1px solid #F3F4F6' }}>
                                         <span style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
@@ -4115,7 +4121,7 @@ export default function McAngebotsfeed() {
                                     })()}
                                 </div>
 
-                                {/* Card 2 — Summary */}
+                                {/* Card 2, Summary */}
                                 <div style={{ background: '#EFF6FF', borderRadius: 14, border: '1px solid #DBEAFE', padding: '14px 16px', display: 'flex', gap: 12, alignItems: 'flex-start' }}>
                                     <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#DBEAFE', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2 }}>
                                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 12L8 4l6 8H2z" stroke="#1E40AF" strokeWidth="1.4" strokeLinejoin="round"/><path d="M8 4v8" stroke="#1E40AF" strokeWidth="1.2"/></svg>
@@ -4129,7 +4135,7 @@ export default function McAngebotsfeed() {
                                     </div>
                                 </div>
 
-                                {/* Card 3 — So geht es weiter / Next Steps */}
+                                {/* Card 3, So geht es weiter / Next Steps */}
                                 <div style={{ background: '#FFF', borderRadius: 14, border: '1px solid #E5E7EB', overflow: 'hidden' }}>
                                     <div style={{ padding: '10px 14px 8px', borderBottom: '1px solid #F3F4F6' }}>
                                         <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.06em' }}>
@@ -4155,7 +4161,7 @@ export default function McAngebotsfeed() {
                                     ))}
                                 </div>
 
-                                {/* Card 4 — Fehlerbericht als CSV (prominent download) */}
+                                {/* Card 4, Fehlerbericht als CSV (prominent download) */}
                                 <div style={{ background: '#EFF6FF', borderRadius: 14, border: '1px solid #BFDBFE', boxShadow: '0 2px 8px rgba(37,99,235,0.08)', overflow: 'hidden' }}>
                                     <div style={{ padding: '12px 14px', display: 'flex', alignItems: 'flex-start', gap: 12 }}>
                                         <div style={{ flex: 1 }}>
