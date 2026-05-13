@@ -2916,7 +2916,7 @@ export default function McAngebotsfeed() {
                 const nameColOpt = mcMapping.name;
                 issues.optionalHints.forEach(({ field, ean, row }) => {
                     if (!optHintsByField[field]) optHintsByField[field] = [];
-                    if (ean && optHintsByField[field].length < 8 && !optHintsByField[field].find(s => s.ean === ean)) {
+                    if (ean && optHintsByField[field].length < 200 && !optHintsByField[field].find(s => s.ean === ean)) {
                         const nm = nameColOpt ? String(rows[row - 1]?.[nameColOpt] ?? '').trim() : '';
                         optHintsByField[field].push({ ean, name: nm });
                     }
@@ -2969,68 +2969,106 @@ export default function McAngebotsfeed() {
                                             : [];
                                         // EAN list for bad rows — shown directly in the table row.
                                         const errorEans4 = hasError ? (optHintsByField[f.field] || []) : [];
+                                        const rowKey = `opt::${f.field}`;
+                                        const isRowExpanded = hasError && expandedFieldExamples.has(rowKey);
+                                        const toggleRow = () => {
+                                            if (!hasError) return;
+                                            setExpandedFieldExamples((prev) => {
+                                                const next = new Set(prev);
+                                                if (next.has(rowKey)) next.delete(rowKey); else next.add(rowKey);
+                                                return next;
+                                            });
+                                        };
+                                        const sgKey = `${rowKey}::missing`;
+                                        const sgOpen = expandedFieldSubgroups.has(sgKey);
+                                        const toggleSg = (e) => {
+                                            e.stopPropagation();
+                                            setExpandedFieldSubgroups((prev) => {
+                                                const next = new Set(prev);
+                                                if (next.has(sgKey)) next.delete(sgKey); else next.add(sgKey);
+                                                return next;
+                                            });
+                                        };
                                         return (
-                                            <div key={f.field} style={{ display: 'grid', gridTemplateColumns: '1fr 90px 120px', padding: '5px 16px', borderBottom: '1px solid #F9FAFB', alignItems: 'start', background: hasError ? (barColor === P_RED ? P_RED_BG : P_ORANGE_BG) : 'transparent', borderLeft: hasError ? `3px solid ${barColor}` : '3px solid transparent' }}>
-                                                <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0, paddingTop: 2, paddingBottom: (exampleVals.length > 0 || errorEans4.length > 0) ? 4 : 0 }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                                        <div style={{ fontSize: 11, color: hasError ? '#92400E' : '#374151', fontWeight: hasError ? 600 : 500, flexShrink: 0 }}>{label}</div>
-                                                    </div>
-                                                    {errorEans4.length > 0 && (() => {
-                                                        const fieldKey4 = `opt::${f.field}`;
-                                                        const isExpanded4 = expandedFieldExamples.has(fieldKey4);
-                                                        const toggleExpand4 = () => setExpandedFieldExamples(prev => {
-                                                            const next = new Set(prev);
-                                                            if (next.has(fieldKey4)) next.delete(fieldKey4); else next.add(fieldKey4);
-                                                            return next;
-                                                        });
-                                                        const visibleEans = isExpanded4 ? errorEans4 : errorEans4.slice(0, 3);
-                                                        const hiddenCount4 = errorEans4.length - visibleEans.length;
-                                                        return (
-                                                            <div style={{ display: 'flex', alignItems: 'flex-start', flexWrap: 'wrap', gap: 3 }}>
-                                                                <span style={{ fontSize: 9, fontWeight: 700, background: barColor === P_RED ? P_RED_BG : P_ORANGE_BG, color: barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT, border: `1px solid ${barColor}`, borderRadius: 3, padding: '1px 5px', flexShrink: 0, whiteSpace: 'nowrap' }}>
-                                                                    {lang === 'de' ? 'Fehlend' : 'Missing'} · {errs.toLocaleString(numLocale)}×
-                                                                </span>
-                                                                {visibleEans.map((item, i) => (
-                                                                    <span key={i} style={{ fontSize: 9, background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', color: '#374151', display: 'inline-flex', alignItems: 'center', gap: 2, maxWidth: 220, overflow: 'hidden' }}>
-                                                                        {typeof item === 'string' ? item : item.ean}
-                                                                        {typeof item !== 'string' && item.name && (
-                                                                            <span style={{ fontFamily: 'sans-serif', color: '#6B7280', marginLeft: 3, maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>· {item.name}</span>
-                                                                        )}
-                                                                    </span>
-                                                                ))}
-                                                                {hiddenCount4 > 0 && (
-                                                                    <span onClick={toggleExpand4} style={{ fontSize: 10, color: '#6B7280', cursor: 'pointer', textDecoration: 'underline', flexShrink: 0 }}>+{hiddenCount4} {lang === 'de' ? 'weitere anzeigen' : 'more'}</span>
-                                                                )}
-                                                                {isExpanded4 && errorEans4.length > 3 && (
-                                                                    <span onClick={toggleExpand4} style={{ fontSize: 10, color: '#6B7280', cursor: 'pointer', textDecoration: 'underline', flexShrink: 0 }}>{lang === 'de' ? 'Weniger anzeigen' : 'Show less'}</span>
-                                                                )}
-                                                            </div>
-                                                        );
-                                                    })()}
-                                                    {!hasError && exampleVals.length > 0 && (
-                                                        <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 3 }}>
-                                                            <span style={{ fontSize: 9, color: '#9CA3AF', fontWeight: 600 }}>{lang === 'de' ? 'Beispiel:' : 'Example:'}</span>
-                                                            {exampleVals.map((v, i) => (
-                                                                <span key={i} style={{ fontSize: 9, color: '#374151', background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block', flexShrink: 0 }}>{v}</span>
-                                                            ))}
+                                            <div key={f.field} style={{ borderBottom: '1px solid #F9FAFB', background: hasError ? (barColor === P_RED ? P_RED_BG : P_ORANGE_BG) : 'transparent', borderLeft: hasError ? `3px solid ${barColor}` : '3px solid transparent' }}>
+                                                <div
+                                                    onClick={toggleRow}
+                                                    style={{ display: 'grid', gridTemplateColumns: '1fr 90px 120px', padding: '8px 16px', alignItems: 'center', cursor: hasError ? 'pointer' : 'default', userSelect: 'none' }}>
+                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                                            <div style={{ fontSize: 12, color: hasError ? (barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT) : '#374151', fontWeight: hasError ? 700 : 500, flexShrink: 0 }}>{label}</div>
+                                                            {!hasError && exampleVals.length > 0 && (
+                                                                <div style={{ display: 'flex', gap: 4, flexWrap: 'nowrap', overflow: 'hidden', maxWidth: 220 }}>
+                                                                    {exampleVals.slice(0, 2).map((v, i) => (
+                                                                        <span key={i} style={{ fontSize: 9, color: '#6B7280', background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block', flexShrink: 0 }}>{v}</span>
+                                                                    ))}
+                                                                </div>
+                                                            )}
                                                         </div>
-                                                    )}
+                                                        <div style={{ fontSize: 10, color: '#9CA3AF' }}>
+                                                            {f.field} · {lang === 'de' ? 'optional' : 'optional'}
+                                                        </div>
+                                                    </div>
+                                                    <div style={{ textAlign: 'right', fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap' }}>
+                                                        {pct === null ? <span style={{ color: '#9CA3AF' }}>{T.notInFeed}</span>
+                                                            : errs === 0 ? <span style={{ color: P_GREEN_TEXT }}>{T.complete}</span>
+                                                            : <span style={{ color: barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT }}>{T.missingCount(errs.toLocaleString(numLocale))}</span>}
+                                                    </div>
+                                                    <div style={{ paddingLeft: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+                                                        {pct !== null ? (
+                                                            <>
+                                                                <div style={{ flex: 1, height: 5, background: '#F3F4F6', borderRadius: 3, overflow: 'hidden' }}>
+                                                                    <div style={{ height: '100%', width: `${errs > 0 ? Math.min(99, pct) : pct}%`, background: barColor, borderRadius: 3, transition: 'width 0.4s' }} />
+                                                                </div>
+                                                                <span style={{ fontSize: 10, color: '#6B7280', width: 28, textAlign: 'right', flexShrink: 0 }}>{errs > 0 ? Math.min(99, pct) : pct}%</span>
+                                                            </>
+                                                        ) : <span style={{ fontSize: 9, color: '#D1D5DB', flex: 1 }}>-</span>}
+                                                        {hasError ? (
+                                                            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: '#9CA3AF', transform: isRowExpanded ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }}>
+                                                                <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                                                            </svg>
+                                                        ) : <span style={{ width: 12, flexShrink: 0 }} />}
+                                                    </div>
                                                 </div>
-                                                <div style={{ textAlign: 'right', fontSize: 10, fontWeight: 600, whiteSpace: 'nowrap', paddingTop: 2 }}>
-                                                    {pct === null ? <span style={{ color: '#9CA3AF' }}>{T.notInFeed}</span>
-                                                        : errs === 0 ? <span style={{ color: P_GREEN_TEXT }}>{T.complete}</span>
-                                                        : <span style={{ color: barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT }}>{T.missingCount(errs.toLocaleString(numLocale))}</span>}
-                                                </div>
-                                                <div style={{ paddingLeft: 12, paddingTop: 2, display: 'flex', alignItems: 'center', gap: 5 }}>
-                                                    {pct !== null ? (
-                                                        <>
-                                                            <div style={{ flex: 1, height: 4, background: '#F3F4F6', borderRadius: 2, overflow: 'hidden' }}>
-                                                                <div style={{ height: '100%', width: `${errs > 0 ? Math.min(99, pct) : pct}%`, background: barColor, borderRadius: 2, transition: 'width 0.4s' }} />
+                                                {isRowExpanded && errorEans4.length > 0 && (
+                                                    <div style={{ padding: '4px 16px 14px 16px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                                                        <div onClick={toggleSg} style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', userSelect: 'none' }}>
+                                                            <span style={{ fontSize: 10, fontWeight: 700, background: '#FFF', color: barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT, border: `1px solid ${barColor}`, borderRadius: 4, padding: '2px 8px', flexShrink: 0, whiteSpace: 'nowrap' }}>
+                                                                {lang === 'de' ? 'Fehlend' : 'Missing'} · {errs.toLocaleString(numLocale)}×
+                                                            </span>
+                                                            <span style={{ fontSize: 11, color: '#374151', flex: 1, minWidth: 0 }}>
+                                                                {lang === 'de' ? `${label} ist nicht befüllt — optionales Feld leer` : `${label} is empty — optional field not filled`}
+                                                            </span>
+                                                            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, fontWeight: 700, color: '#6B7280', letterSpacing: '0.04em', flexShrink: 0 }}>
+                                                                {errs.toLocaleString(numLocale)} {lang === 'de' ? 'ANZEIGEN' : 'SHOW'}
+                                                                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style={{ color: '#9CA3AF', transform: sgOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }}>
+                                                                    <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                                                                </svg>
+                                                            </span>
+                                                        </div>
+                                                        {sgOpen && (
+                                                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 8 }}>
+                                                                {errorEans4.map((item, i) => {
+                                                                    const ean = typeof item === 'string' ? item : item.ean;
+                                                                    const name = typeof item === 'string' ? '' : (item.name || '');
+                                                                    return (
+                                                                        <div key={i} title={name || ean} style={{ background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 6, padding: '8px 10px', minWidth: 0 }}>
+                                                                            <div style={{ fontFamily: 'monospace', fontSize: 10, color: '#6B7280', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ean || '—'}</div>
+                                                                            <div style={{ fontSize: 12, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: 1 }}>
+                                                                                {name || <span style={{ color: '#9CA3AF', fontStyle: 'italic' }}>{lang === 'de' ? '(kein Name)' : '(no name)'}</span>}
+                                                                            </div>
+                                                                        </div>
+                                                                    );
+                                                                })}
+                                                                {errs > errorEans4.length && (
+                                                                    <div style={{ background: '#FFF', border: '1px dashed #E5E7EB', borderRadius: 6, padding: '8px 10px', fontSize: 11, color: '#9CA3AF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                                        {lang === 'de' ? `… und ${(errs - errorEans4.length).toLocaleString(numLocale)} weitere` : `… and ${(errs - errorEans4.length).toLocaleString(numLocale)} more`}
+                                                                    </div>
+                                                                )}
                                                             </div>
-                                                            <span style={{ fontSize: 9, color: '#9CA3AF', width: 26, textAlign: 'right', flexShrink: 0 }}>{errs > 0 ? Math.min(99, pct) : pct}%</span>
-                                                        </>
-                                                    ) : <span style={{ fontSize: 9, color: '#D1D5DB' }}>-</span>}
-                                                </div>
+                                                        )}
+                                                    </div>
+                                                )}
                                             </div>
                                         );
                                     })}
