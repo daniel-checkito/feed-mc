@@ -4159,7 +4159,7 @@ export default function McAngebotsfeed() {
                                 {/* Card 2, Summary */}
                                 <div style={{ background: '#EFF6FF', borderRadius: 14, border: '1px solid #DBEAFE', padding: '14px 16px', display: 'flex', gap: 12, alignItems: 'flex-start' }}>
                                     <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#DBEAFE', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2 }}>
-                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 12L8 4l6 8H2z" stroke="#1E40AF" strokeWidth="1.4" strokeLinejoin="round"/><path d="M8 4v8" stroke="#1E40AF" strokeWidth="1.2"/></svg>
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E40AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 18h18"/><path d="M4 15l5-5 4 3 7-7"/><path d="M15 6h5v5"/></svg>
                                     </div>
                                     <div style={{ fontSize: 12, color: '#1E3A8A', lineHeight: 1.6 }}>
                                         {lang === 'de' ? (
