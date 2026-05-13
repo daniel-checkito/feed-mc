@@ -889,6 +889,8 @@ export default function McAngebotsfeed() {
     const [alwaysAvailable, setAlwaysAvailable] = useState(false);
     const [optionalExpanded, setOptionalExpanded] = useState(false);
     const [parseError, setParseError] = useState(null);
+    const [titleBucket, setTitleBucket] = useState(null);
+    const [descBucket, setDescBucket] = useState(null);
     const fileRef = useRef(null);
 
     function parseFile(f) {
@@ -3024,82 +3026,136 @@ export default function McAngebotsfeed() {
                                 })()}
 
                                 {/* Title and description length charts side by side */}
-                                {(titleStats?.total > 0 || descStats?.total > 0) && (
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                                        {/* Title length */}
-                                        {titleStats && titleStats.total > 0 && (
-                                            <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '14px 16px' }}>
-                                                <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 12 }}>
-                                                    <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>
-                                                        {lang === 'de' ? 'Titellänge' : 'Title Length'}
+                                {(titleStats?.total > 0 || descStats?.total > 0) && (() => {
+                                    const eanCol = mcMapping['ean'];
+                                    const titleBuckets = [
+                                        { key: 'none',  label: lang === 'de' ? 'Leer (0)' : 'Empty (0)',     color: '#EF4444', match: (l) => l === 0 },
+                                        { key: 'short', label: lang === 'de' ? 'Kurz (<30)' : 'Short (<30)', color: '#F59E0B', match: (l) => l > 0 && l < 30 },
+                                        { key: 'ok',    label: lang === 'de' ? 'OK (30–79)' : 'OK (30–79)',  color: '#60A5FA', match: (l) => l >= 30 && l < 80 },
+                                        { key: 'good',  label: lang === 'de' ? 'Gut (80+)' : 'Good (80+)',   color: '#166534', match: (l) => l >= 80 },
+                                    ];
+                                    const descBuckets = [
+                                        { key: 'none',  label: lang === 'de' ? 'Leer (0)' : 'Empty (0)',         color: '#EF4444', match: (l) => l === 0 },
+                                        { key: 'short', label: lang === 'de' ? 'Kurz (<100)' : 'Short (<100)',   color: '#F59E0B', match: (l) => l > 0 && l < 100 },
+                                        { key: 'ok',    label: lang === 'de' ? 'OK (100–299)' : 'OK (100–299)',  color: '#60A5FA', match: (l) => l >= 100 && l < 300 },
+                                        { key: 'good',  label: lang === 'de' ? 'Gut (300+)' : 'Good (300+)',     color: '#166534', match: (l) => l >= 300 },
+                                    ];
+                                    const buildMatches = (col, buckets, selected) => {
+                                        if (!col || !selected) return null;
+                                        const bucket = buckets.find((b) => b.key === selected);
+                                        if (!bucket) return null;
+                                        const list = [];
+                                        rows.forEach((r) => {
+                                            const value = String(r[col] ?? '');
+                                            const len = value.trim().length;
+                                            if (bucket.match(len)) {
+                                                list.push({
+                                                    ean: eanCol ? String(r[eanCol] ?? '').trim() : '',
+                                                    name: mcMapping['name'] ? String(r[mcMapping['name']] ?? '').trim() : '',
+                                                    value,
+                                                    len,
+                                                });
+                                            }
+                                        });
+                                        return { bucket, list };
+                                    };
+                                    const titleSel = buildMatches(nameCol, titleBuckets, titleBucket);
+                                    const descSel = buildMatches(descCol, descBuckets, descBucket);
+                                    const renderList = (sel, setBucket, fieldLabel) => {
+                                        if (!sel) return null;
+                                        const { bucket, list } = sel;
+                                        return (
+                                            <div style={{ marginTop: 12, borderTop: '1px solid #F3F4F6', paddingTop: 10 }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 600, color: '#111827' }}>
+                                                        <span style={{ width: 8, height: 8, borderRadius: 2, background: bucket.color, display: 'inline-block' }} />
+                                                        {bucket.label} · {list.length.toLocaleString(numLocale)} {lang === 'de' ? 'Artikel' : 'items'}
                                                     </div>
-                                                    <div style={{ display: 'flex', gap: 8 }}>
-                                                        <div style={{ fontSize: 10, color: '#166534', fontWeight: 600 }}>{lang === 'de' ? 'Ziel: 80+' : 'Target: 80+'}</div>
-                                                        <div style={{ fontSize: 10, color: '#9CA3AF' }}>
-                                                            {lang === 'de' ? `Ø ${titleStats.avg.toLocaleString(numLocale)}` : `Avg. ${titleStats.avg.toLocaleString(numLocale)}`}
-                                                        </div>
-                                                    </div>
+                                                    <button type="button" onClick={() => setBucket(null)}
+                                                        style={{ fontSize: 10, color: '#6B7280', background: 'none', border: '1px solid #E5E7EB', borderRadius: 5, padding: '2px 7px', cursor: 'pointer' }}>
+                                                        {lang === 'de' ? 'Schließen' : 'Close'}
+                                                    </button>
                                                 </div>
-                                                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                                                    {[
-                                                        { key: 'none',  label: lang === 'de' ? 'Leer (0)' : 'Empty (0)',     color: '#EF4444' },
-                                                        { key: 'short', label: lang === 'de' ? 'Kurz (<30)' : 'Short (<30)', color: '#F59E0B' },
-                                                        { key: 'ok',    label: lang === 'de' ? 'OK (30–79)' : 'OK (30–79)',  color: '#60A5FA' },
-                                                        { key: 'good',  label: lang === 'de' ? 'Gut (80+)' : 'Good (80+)',   color: '#166534' },
-                                                    ].map(({ key, label, color }) => {
-                                                        const cnt = titleStats.buckets[key];
-                                                        const pct = titleStats.total ? Math.round((cnt / titleStats.total) * 100) : 0;
-                                                        return (
-                                                            <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-                                                                <div style={{ width: 68, fontSize: 10, color: '#374151', fontWeight: 500, textAlign: 'right', flexShrink: 0 }}>{label}</div>
-                                                                <div style={{ flex: 1, height: 10, background: '#F3F4F6', borderRadius: 5, overflow: 'hidden' }}>
-                                                                    <div style={{ height: '100%', width: `${pct}%`, background: color, borderRadius: 5, transition: 'width 0.4s' }} />
+                                                {list.length === 0 ? (
+                                                    <div style={{ fontSize: 11, color: '#9CA3AF', padding: '8px 0' }}>{lang === 'de' ? 'Keine Artikel in dieser Kategorie.' : 'No items in this category.'}</div>
+                                                ) : (
+                                                    <div style={{ maxHeight: 220, overflowY: 'auto', border: '1px solid #F3F4F6', borderRadius: 6 }}>
+                                                        {list.slice(0, 200).map((item, i) => (
+                                                            <div key={i}
+                                                                title={item.value}
+                                                                style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px', borderBottom: i < Math.min(list.length, 200) - 1 ? '1px solid #F3F4F6' : 'none', fontSize: 11 }}>
+                                                                <div style={{ fontFamily: 'monospace', color: '#6B7280', fontSize: 10, width: 110, flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                                    {item.ean || '—'}
                                                                 </div>
-                                                                <div style={{ width: 30, fontSize: 10, fontWeight: 700, color, textAlign: 'left', flexShrink: 0 }}>{pct}%</div>
+                                                                <div style={{ flex: 1, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                                    {item.name || <span style={{ color: '#9CA3AF', fontStyle: 'italic' }}>{lang === 'de' ? '(kein Name)' : '(no name)'}</span>}
+                                                                </div>
+                                                                <div style={{ fontSize: 10, color: '#9CA3AF', flexShrink: 0 }}>
+                                                                    {item.len} {lang === 'de' ? 'Z.' : 'ch.'}
+                                                                </div>
                                                             </div>
-                                                        );
-                                                    })}
+                                                        ))}
+                                                        {list.length > 200 && (
+                                                            <div style={{ padding: '6px 10px', fontSize: 10, color: '#9CA3AF', textAlign: 'center', background: '#FAFAFA' }}>
+                                                                {lang === 'de' ? `… und ${(list.length - 200).toLocaleString(numLocale)} weitere` : `… and ${(list.length - 200).toLocaleString(numLocale)} more`}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    };
+                                    const renderChart = ({ title, target, stats, buckets, selected, setBucket, labelWidth, fieldKey }) => (
+                                        <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '14px 16px' }}>
+                                            <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 12 }}>
+                                                <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{title}</div>
+                                                <div style={{ display: 'flex', gap: 8 }}>
+                                                    <div style={{ fontSize: 10, color: '#166534', fontWeight: 600 }}>{lang === 'de' ? `Ziel: ${target}` : `Target: ${target}`}</div>
+                                                    <div style={{ fontSize: 10, color: '#9CA3AF' }}>
+                                                        {lang === 'de' ? `Ø ${stats.avg.toLocaleString(numLocale)}` : `Avg. ${stats.avg.toLocaleString(numLocale)}`}
+                                                    </div>
                                                 </div>
                                             </div>
-                                        )}
-                                        {/* Description length */}
-                                        {descStats && descStats.total > 0 && (
-                                            <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '14px 16px' }}>
-                                                <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 12 }}>
-                                                    <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>
-                                                        {lang === 'de' ? 'Beschreibungslänge' : 'Description Length'}
-                                                    </div>
-                                                    <div style={{ display: 'flex', gap: 8 }}>
-                                                        <div style={{ fontSize: 10, color: '#166534', fontWeight: 600 }}>{lang === 'de' ? 'Ziel: 300+' : 'Target: 300+'}</div>
-                                                        <div style={{ fontSize: 10, color: '#9CA3AF' }}>
-                                                            {lang === 'de' ? `Ø ${descStats.avg.toLocaleString(numLocale)}` : `Avg. ${descStats.avg.toLocaleString(numLocale)}`}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                                                    {[
-                                                        { key: 'none',  label: lang === 'de' ? 'Leer (0)' : 'Empty (0)',         color: '#EF4444' },
-                                                        { key: 'short', label: lang === 'de' ? 'Kurz (<100)' : 'Short (<100)',   color: '#F59E0B' },
-                                                        { key: 'ok',    label: lang === 'de' ? 'OK (100–299)' : 'OK (100–299)',  color: '#60A5FA' },
-                                                        { key: 'good',  label: lang === 'de' ? 'Gut (300+)' : 'Good (300+)',     color: '#166534' },
-                                                    ].map(({ key, label, color }) => {
-                                                        const cnt = descStats.buckets[key];
-                                                        const pct = descStats.total ? Math.round((cnt / descStats.total) * 100) : 0;
-                                                        return (
-                                                            <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-                                                                <div style={{ width: 78, fontSize: 10, color: '#374151', fontWeight: 500, textAlign: 'right', flexShrink: 0 }}>{label}</div>
-                                                                <div style={{ flex: 1, height: 10, background: '#F3F4F6', borderRadius: 5, overflow: 'hidden' }}>
-                                                                    <div style={{ height: '100%', width: `${pct}%`, background: color, borderRadius: 5, transition: 'width 0.4s' }} />
-                                                                </div>
-                                                                <div style={{ width: 30, fontSize: 10, fontWeight: 700, color, textAlign: 'left', flexShrink: 0 }}>{pct}%</div>
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                                                {buckets.map(({ key, label, color }) => {
+                                                    const cnt = stats.buckets[key];
+                                                    const pct = stats.total ? Math.round((cnt / stats.total) * 100) : 0;
+                                                    const isSel = selected === key;
+                                                    return (
+                                                        <div key={key}
+                                                            onClick={() => setBucket(isSel ? null : key)}
+                                                            style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '3px 6px', borderRadius: 5, cursor: 'pointer', background: isSel ? '#EEF4FF' : 'transparent', transition: 'background 0.15s' }}>
+                                                            <div style={{ width: labelWidth, fontSize: 10, color: '#374151', fontWeight: isSel ? 700 : 500, textAlign: 'right', flexShrink: 0 }}>{label}</div>
+                                                            <div style={{ flex: 1, height: 10, background: '#F3F4F6', borderRadius: 5, overflow: 'hidden' }}>
+                                                                <div style={{ height: '100%', width: `${pct}%`, background: color, borderRadius: 5, transition: 'width 0.4s' }} />
                                                             </div>
-                                                        );
-                                                    })}
-                                                </div>
+                                                            <div style={{ width: 40, fontSize: 10, fontWeight: 700, color, textAlign: 'right', flexShrink: 0 }}>
+                                                                {cnt.toLocaleString(numLocale)}
+                                                            </div>
+                                                            <div style={{ width: 30, fontSize: 10, fontWeight: 700, color, textAlign: 'left', flexShrink: 0 }}>{pct}%</div>
+                                                        </div>
+                                                    );
+                                                })}
                                             </div>
-                                        )}
-                                    </div>
-                                )}
+                                            {fieldKey === 'title' && renderList(titleSel, setTitleBucket, title)}
+                                            {fieldKey === 'desc' && renderList(descSel, setDescBucket, title)}
+                                        </div>
+                                    );
+                                    return (
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                                            {titleStats && titleStats.total > 0 && renderChart({
+                                                title: lang === 'de' ? 'Titellänge' : 'Title Length',
+                                                target: '80+', stats: titleStats, buckets: titleBuckets,
+                                                selected: titleBucket, setBucket: setTitleBucket, labelWidth: 68, fieldKey: 'title',
+                                            })}
+                                            {descStats && descStats.total > 0 && renderChart({
+                                                title: lang === 'de' ? 'Beschreibungslänge' : 'Description Length',
+                                                target: '300+', stats: descStats, buckets: descBuckets,
+                                                selected: descBucket, setBucket: setDescBucket, labelWidth: 78, fieldKey: 'desc',
+                                            })}
+                                        </div>
+                                    );
+                                })()}
                             </div>
 
                             {/* Right: score + nav (matches step 3 layout) */}
