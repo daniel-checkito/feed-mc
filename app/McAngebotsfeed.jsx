@@ -1360,12 +1360,20 @@ export default function McAngebotsfeed() {
         // Size: at least one size field filled
         const SIZE_FIELDS = ['size', 'size_height', 'size_depth', 'size_width', 'size_lying_surface', 'size_seat_height', 'size_seat_depth', 'size_diameter'];
         let sizeMissingCount = 0;
+        const sizeMissingEans = [];
+        const eanColForHints = mcMapping.ean;
         rows.forEach((row) => {
             const hasAnySize = SIZE_FIELDS.some((sf) => {
                 const col = mcMapping[sf];
                 return col && String(row[col] ?? '').trim();
             });
-            if (!hasAnySize) sizeMissingCount++;
+            if (!hasAnySize) {
+                sizeMissingCount++;
+                if (eanColForHints && sizeMissingEans.length < 200) {
+                    const ean = String(row[eanColForHints] ?? '').trim();
+                    if (ean && !sizeMissingEans.includes(ean)) sizeMissingEans.push(ean);
+                }
+            }
         });
 
         // Lighting products: name contains leuchte/lampe/led
@@ -1378,17 +1386,24 @@ export default function McAngebotsfeed() {
         const energyCol = mcMapping['energy_efficiency_category'];
         const nameColOpt = mcMapping['name'];
         let lightingCount = 0, lightingEnergyMissing = 0, lightingEprelMissing = 0;
+        const lightingEans = [];
         if (nameColOpt) {
             rows.forEach((row) => {
                 const nm = String(row[nameColOpt] ?? '').trim();
                 if (!LIGHTING_OPT_RE.test(nm)) return;
                 lightingCount++;
-                if (!energyCol || !String(row[energyCol] ?? '').trim()) lightingEnergyMissing++;
-                if (!eprelCol || !String(row[eprelCol] ?? '').trim()) lightingEprelMissing++;
+                const missEnergy = !energyCol || !String(row[energyCol] ?? '').trim();
+                const missEprel = !eprelCol || !String(row[eprelCol] ?? '').trim();
+                if (missEnergy) lightingEnergyMissing++;
+                if (missEprel) lightingEprelMissing++;
+                if ((missEnergy || missEprel) && eanColForHints && lightingEans.length < 200) {
+                    const ean = String(row[eanColForHints] ?? '').trim();
+                    if (ean && !lightingEans.includes(ean)) lightingEans.push(ean);
+                }
             });
         }
 
-        const optFieldStats = { fields: optFields, sizeMissingCount, lightingCount, lightingEnergyMissing, lightingEprelMissing };
+        const optFieldStats = { fields: optFields, sizeMissingCount, sizeMissingEans, lightingCount, lightingEnergyMissing, lightingEprelMissing, lightingEans };
 
         return {
             totalRows: rows.length,
@@ -3564,13 +3579,24 @@ export default function McAngebotsfeed() {
                     const key = `${e.field}::${e.type}`;
                     if (!errorsByType[key]) errorsByType[key] = { field: e.field, type: e.type, count: 0, sampleEans: [] };
                     errorsByType[key].count++;
-                    if (e.ean && errorsByType[key].sampleEans.length < 5 && !errorsByType[key].sampleEans.includes(e.ean)) {
+                    if (e.ean && errorsByType[key].sampleEans.length < 200 && !errorsByType[key].sampleEans.includes(e.ean)) {
                         errorsByType[key].sampleEans.push(e.ean);
                     }
                 });
-                if (issues.eanDupRows.size > 0) errorsByType['ean::dup'] = { field: 'ean', type: 'dup', count: issues.eanDupRows.size };
-                if (issues.nameDupRows.size > 0) errorsByType['name::dup'] = { field: 'name', type: 'dup', count: issues.nameDupRows.size };
-                if (issues.offerIdDupRows && issues.offerIdDupRows.size > 0) errorsByType['seller_offer_id::dup'] = { field: 'seller_offer_id', type: 'dup', count: issues.offerIdDupRows.size };
+                const collectDupEans = (rowSet) => {
+                    const eCol = mcMapping.ean;
+                    if (!rowSet || !eCol) return [];
+                    const list = [];
+                    for (const rn of rowSet) {
+                        if (list.length >= 200) break;
+                        const ean = String(rows[rn - 1]?.[eCol] ?? '').trim();
+                        if (ean && !list.includes(ean)) list.push(ean);
+                    }
+                    return list;
+                };
+                if (issues.eanDupRows.size > 0) errorsByType['ean::dup'] = { field: 'ean', type: 'dup', count: issues.eanDupRows.size, sampleEans: collectDupEans(issues.eanDupRows) };
+                if (issues.nameDupRows.size > 0) errorsByType['name::dup'] = { field: 'name', type: 'dup', count: issues.nameDupRows.size, sampleEans: collectDupEans(issues.nameDupRows) };
+                if (issues.offerIdDupRows && issues.offerIdDupRows.size > 0) errorsByType['seller_offer_id::dup'] = { field: 'seller_offer_id', type: 'dup', count: issues.offerIdDupRows.size, sampleEans: collectDupEans(issues.offerIdDupRows) };
 
                 // Track optional field hints (color, material, delivery_includes) in errorsByType
                 // so they appear under the "OPTIONALE FELDER" section in recommendations.
@@ -3740,7 +3766,7 @@ export default function McAngebotsfeed() {
                         count: optFieldStats.sizeMissingCount,
                         type: 'missing',
                         field: '__size_missing',
-                        sampleEans: [],
+                        sampleEans: optFieldStats.sizeMissingEans || [],
                         rule: {
                             title: T.sizeHintTitle,
                             shortDesc: T.sizeHintDesc(optFieldStats.sizeMissingCount.toLocaleString(numLocale)),
@@ -3761,7 +3787,7 @@ export default function McAngebotsfeed() {
                         count: optFieldStats.lightingCount,
                         type: 'missing',
                         field: '__lighting',
-                        sampleEans: [],
+                        sampleEans: optFieldStats.lightingEans || [],
                         rule: {
                             title: T.lightingHintTitle,
                             shortDesc: T.lightingHintDesc(optFieldStats.lightingCount, optFieldStats.lightingEnergyMissing, optFieldStats.lightingEprelMissing),
