@@ -3969,20 +3969,20 @@ export default function McAngebotsfeed() {
                                             <div>
                                                 <div
                                                     onClick={toggleSec}
-                                                    style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: sOpen ? 10 : 0, cursor: 'pointer', userSelect: 'none', padding: '10px 14px', background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 10, boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}
+                                                    style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: sOpen ? 10 : 0, cursor: 'pointer', userSelect: 'none', padding: '10px 14px', background: accentBg, border: `1px solid ${accent}`, borderRadius: 10, boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}
                                                 >
-                                                    <div style={{ width: 22, height: 22, borderRadius: '50%', background: accentBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                                    <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                                                         <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M8 3v6M8 12v1" stroke={accentText} strokeWidth="2" strokeLinecap="round"/></svg>
                                                     </div>
                                                     <span style={{ fontSize: 12, fontWeight: 700, color: accentText, letterSpacing: '0.04em', textTransform: 'uppercase' }}>{title}</span>
-                                                    <span style={{ fontSize: 10, background: accentBg, color: accentText, borderRadius: 10, padding: '2px 8px', fontWeight: 700 }}>{items.length}</span>
-                                                    <span style={{ fontSize: 11, color: '#6B7280', marginLeft: 2 }}>{subtitle}</span>
-                                                    <svg width="11" height="11" viewBox="0 0 16 16" fill="none" style={{ marginLeft: 'auto', flexShrink: 0, color: '#9CA3AF', transform: sOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }}>
+                                                    <span style={{ fontSize: 10, background: '#FFF', color: accentText, borderRadius: 10, padding: '2px 8px', fontWeight: 700 }}>{items.length}</span>
+                                                    <span style={{ fontSize: 11, color: accentText, opacity: 0.85, marginLeft: 2 }}>{subtitle}</span>
+                                                    <svg width="11" height="11" viewBox="0 0 16 16" fill="none" style={{ marginLeft: 'auto', flexShrink: 0, color: accentText, transform: sOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }}>
                                                         <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
                                                     </svg>
                                                 </div>
                                                 {sOpen && (
-                                                    <div style={{ display: 'grid', gap: 6 }}>
+                                                    <div style={{ display: 'grid', gap: 6, paddingLeft: 20 }}>
                                                         {groupByField(items).map((g) => renderCard(g, accent, accentBg, accentText))}
                                                     </div>
                                                 )}
