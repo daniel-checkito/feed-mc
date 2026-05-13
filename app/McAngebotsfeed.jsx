@@ -2709,17 +2709,18 @@ export default function McAngebotsfeed() {
                                                     {hasError ? fieldHint(key) : (lang === 'de' ? 'Alle Artikel erfüllen die Anforderungen' : 'All items meet the requirements')}
                                                 </div>
                                             </div>
-                                            <div style={{ textAlign: 'right', fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap', minWidth: 0 }}>
-                                                {pct === null ? <span style={{ color: '#9CA3AF' }}>{T.notInFeed}</span>
-                                                    : errs === 0 ? <span style={{ color: P_GREEN_TEXT }}>{T.complete}</span>
+                                            <div style={{ textAlign: 'right', minWidth: 0 }}>
+                                                {pct === null ? <span style={{ fontSize: 11, fontWeight: 600, color: '#9CA3AF' }}>{T.notInFeed}</span>
+                                                    : errs === 0 ? <span style={{ fontSize: 11, fontWeight: 600, color: P_GREEN_TEXT }}>{T.complete}</span>
                                                     : (
-                                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 1 }}>
-                                                            {subgroupEntries.map(([type, { count }]) => (
-                                                                <span key={type} style={{ fontSize: 11, fontWeight: 600, color: barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT, maxWidth: 196, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                                                    {count.toLocaleString(numLocale)}× {errTypeLabel(type)}
-                                                                </span>
-                                                            ))}
-                                                        </div>
+                                                        <>
+                                                            <div style={{ fontSize: 12, fontWeight: 700, color: barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT }}>
+                                                                {T.missingCount(errs.toLocaleString(numLocale))}
+                                                            </div>
+                                                            <div style={{ fontSize: 10, color: '#6B7280', lineHeight: 1.35, marginTop: 1 }}>
+                                                                {subgroupEntries.map(([type, { count }]) => `${count.toLocaleString(numLocale)}× ${errTypeLabel(type)}`).join(' · ')}
+                                                            </div>
+                                                        </>
                                                     )}
                                             </div>
                                             <div style={{ paddingLeft: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -3053,13 +3054,18 @@ export default function McAngebotsfeed() {
                                                             {hasError ? fieldHint(f.field) : (lang === 'de' ? 'Alle Artikel haben dieses Feld befüllt' : 'All items have this field filled')}
                                                         </div>
                                                     </div>
-                                                    <div style={{ textAlign: 'right', fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap', minWidth: 0 }}>
-                                                        {pct === null ? <span style={{ color: '#9CA3AF' }}>{T.notInFeed}</span>
-                                                            : errs === 0 ? <span style={{ color: P_GREEN_TEXT }}>{T.complete}</span>
+                                                    <div style={{ textAlign: 'right', minWidth: 0 }}>
+                                                        {pct === null ? <span style={{ fontSize: 11, fontWeight: 600, color: '#9CA3AF' }}>{T.notInFeed}</span>
+                                                            : errs === 0 ? <span style={{ fontSize: 11, fontWeight: 600, color: P_GREEN_TEXT }}>{T.complete}</span>
                                                             : (
-                                                                <span style={{ fontSize: 11, fontWeight: 600, color: barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT, maxWidth: 196, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                                                    {errs.toLocaleString(numLocale)}× {lang === 'de' ? 'Fehlend' : 'Missing'}
-                                                                </span>
+                                                                <>
+                                                                    <div style={{ fontSize: 12, fontWeight: 700, color: barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT }}>
+                                                                        {T.missingCount(errs.toLocaleString(numLocale))}
+                                                                    </div>
+                                                                    <div style={{ fontSize: 10, color: '#6B7280', lineHeight: 1.35, marginTop: 1 }}>
+                                                                        {errs.toLocaleString(numLocale)}× {lang === 'de' ? 'Fehlend' : 'Missing'}
+                                                                    </div>
+                                                                </>
                                                             )}
                                                     </div>
                                                     <div style={{ paddingLeft: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
