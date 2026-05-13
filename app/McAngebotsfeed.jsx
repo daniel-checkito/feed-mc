@@ -2131,7 +2131,33 @@ export default function McAngebotsfeed() {
 
                 const renderGroupRow = ({ label, cols, groupKey, isPflicht }) => {
                     const hasCols = cols.length > 0;
-                    const addable = headers.filter((h) => !cols.includes(h) && !usedCols.has(h));
+                    const addable = headers.filter((h) => !cols.includes(h));
+                    const isUsedElsewhere = (h) => {
+                        if (cols.includes(h)) return false;
+                        if (usedCols.has(h)) return true;
+                        return false;
+                    };
+                    const addColumn = (val) => {
+                        if (!val) return;
+                        // Free the header from other groups / manual mapping
+                        setGroupOverrides((prev) => {
+                            const next = { ...prev };
+                            ['image', 'manufacturer', 'size'].forEach((g) => {
+                                if (g === groupKey) return;
+                                const current = next[g] ?? (g === 'image' ? autoImageColumns : g === 'manufacturer' ? autoManufacturerColumns : autoSizeColumns);
+                                if (current.includes(val)) {
+                                    next[g] = current.filter((x) => x !== val);
+                                }
+                            });
+                            next[groupKey] = [...cols, val];
+                            return next;
+                        });
+                        setManualMapping((prev) => {
+                            const next = { ...prev };
+                            for (const k of Object.keys(next)) if (next[k] === val) delete next[k];
+                            return next;
+                        });
+                    };
                     return (
                         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, padding: '5px 0' }}>
                             <span style={{ fontSize: 11, color: '#374151', width: 120, flexShrink: 0, paddingTop: 4, display: 'flex', alignItems: 'center', gap: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -2149,15 +2175,16 @@ export default function McAngebotsfeed() {
                                 {!hasCols && <span style={{ fontSize: 11, color: isPflicht ? '#991B1B' : '#9CA3AF', fontWeight: isPflicht ? 600 : 400 }}>{T.notDetected}</span>}
                                 <select
                                     value=""
-                                    onChange={(e) => {
-                                        if (!e.target.value) return;
-                                        setGroupColumns(groupKey, [...cols, e.target.value]);
-                                    }}
+                                    onChange={(e) => addColumn(e.target.value)}
                                     style={{ fontSize: 10, padding: '2px 4px', borderRadius: 4, border: '1px dashed #D1D5DB', background: '#FFF', color: '#6B7280', cursor: addable.length ? 'pointer' : 'not-allowed', minWidth: 90, maxWidth: 180 }}
                                     disabled={addable.length === 0}
                                 >
                                     <option value="">{langDE ? '+ Spalte hinzufügen' : '+ Add column'}</option>
-                                    {addable.map((h) => <option key={h} value={h}>{h}</option>)}
+                                    {addable.map((h) => (
+                                        <option key={h} value={h}>
+                                            {h}{isUsedElsewhere(h) ? (langDE ? ' (zugeordnet)' : ' (assigned)') : ''}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
                         </div>
