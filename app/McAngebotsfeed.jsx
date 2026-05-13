@@ -4206,29 +4206,29 @@ export default function McAngebotsfeed() {
                                     <div style={{ minWidth: 0 }}>
                                         {lang === 'de' ? (
                                             <>
-                                                <div style={{ fontSize: 13, fontWeight: 700, color: '#1a2238', lineHeight: 1.45 }}>
+                                                <div style={{ fontSize: 12, fontWeight: 700, color: '#1a2238', lineHeight: 1.5 }}>
                                                     Von <strong>{issues.totalRows.toLocaleString(numLocale)}</strong> Artikeln im Feed sind <strong style={{ color: '#16A34A' }}>{issues.livefaehigCount.toLocaleString(numLocale)}</strong> listbar (<strong>{listablePct}%</strong>).
                                                 </div>
                                                 {issues.blockiertCount > 0 && (
-                                                    <div style={{ fontSize: 12, color: '#1a2238', lineHeight: 1.5, marginTop: 6 }}>
+                                                    <div style={{ fontSize: 11, color: '#374151', lineHeight: 1.5, marginTop: 4 }}>
                                                         <strong style={{ color: '#DC2626' }}>{issues.blockiertCount.toLocaleString(numLocale)}</strong> Artikel weisen Fehler in den Pflichtfeldern auf.
                                                     </div>
                                                 )}
-                                                <div style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.5, marginTop: 6 }}>
+                                                <div style={{ fontSize: 10, color: '#6B7280', lineHeight: 1.5, marginTop: 4 }}>
                                                     Mit den Handlungsempfehlungen können Sie die Abdeckung auf bis zu 100 % steigern.
                                                 </div>
                                             </>
                                         ) : (
                                             <>
-                                                <div style={{ fontSize: 13, fontWeight: 700, color: '#1a2238', lineHeight: 1.45 }}>
+                                                <div style={{ fontSize: 12, fontWeight: 700, color: '#1a2238', lineHeight: 1.5 }}>
                                                     Of <strong>{issues.totalRows.toLocaleString(numLocale)}</strong> items in the feed, <strong style={{ color: '#16A34A' }}>{issues.livefaehigCount.toLocaleString(numLocale)}</strong> are listable (<strong>{listablePct}%</strong>).
                                                 </div>
                                                 {issues.blockiertCount > 0 && (
-                                                    <div style={{ fontSize: 12, color: '#1a2238', lineHeight: 1.5, marginTop: 6 }}>
+                                                    <div style={{ fontSize: 11, color: '#374151', lineHeight: 1.5, marginTop: 4 }}>
                                                         <strong style={{ color: '#DC2626' }}>{issues.blockiertCount.toLocaleString(numLocale)}</strong> items have errors in required fields.
                                                     </div>
                                                 )}
-                                                <div style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.5, marginTop: 6 }}>
+                                                <div style={{ fontSize: 10, color: '#6B7280', lineHeight: 1.5, marginTop: 4 }}>
                                                     Use the recommendations to lift coverage up to 100%.
                                                 </div>
                                             </>
