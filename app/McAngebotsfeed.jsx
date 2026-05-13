@@ -3999,7 +3999,7 @@ export default function McAngebotsfeed() {
                                                     </svg>
                                                 </div>
                                                 {sOpen && (
-                                                    <div style={{ display: 'grid', gap: 6, paddingLeft: 20 }}>
+                                                    <div style={{ display: 'grid', gap: 6, paddingLeft: 40 }}>
                                                         {groupByField(items).map((g) => renderCard(g, accent, accentBg, accentText))}
                                                     </div>
                                                 )}
