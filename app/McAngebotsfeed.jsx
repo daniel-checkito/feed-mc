@@ -483,7 +483,7 @@ const DE_T = {
     analysisSummary: (t, v, e) => `${t} Felder · ${v} vollständig · ${e} fehlerhaft`,
     colField: 'FELD', colStatus: 'STATUS', colCoverage: 'ABDECKUNG',
     notInFeed: 'Nicht im Feed', complete: '✓ Vollständig',
-    missingCount: (n) => `${n} fehlend`,
+    missingCount: (n) => `${n} Fehler`,
     statComplete: 'Vollständig', statErrors: 'Fehler', statTotal: 'Gesamt',
     tipComplete: 'Artikel ohne Fehler in Pflichtfeldern',
     tipErrors: 'Artikel mit mindestens einem Pflichtfeld-Fehler',
@@ -694,7 +694,7 @@ const EN_T = {
     analysisSummary: (t, v, e) => `${t} fields · ${v} complete · ${e} with errors`,
     colField: 'FIELD', colStatus: 'STATUS', colCoverage: 'COVERAGE',
     notInFeed: 'Not in feed', complete: '✓ Complete',
-    missingCount: (n) => `${n} missing`,
+    missingCount: (n) => `${n} errors`,
     statComplete: 'Complete', statErrors: 'Errors', statTotal: 'Total',
     tipComplete: 'Items with no errors in required fields',
     tipErrors: 'Items with at least one required field error',
@@ -1541,9 +1541,9 @@ export default function McAngebotsfeed() {
                 .mc-header-btn-label { display: inline; }
                 .mc-header-guide-btn { display: flex !important; }
                 .mc-header-sep { display: block !important; }
-                .mc-step1-grid { display: grid; grid-template-columns: 1fr 360px; gap: 20px; align-items: start; }
-                .mc-two-col-320 { display: grid; grid-template-columns: 1fr 360px; gap: 20px; align-items: start; }
-                .mc-two-col-400 { display: grid; grid-template-columns: 1fr 360px; gap: 20px; align-items: start; }
+                .mc-step1-grid { display: grid; grid-template-columns: 1fr 400px; gap: 24px; align-items: start; }
+                .mc-two-col-320 { display: grid; grid-template-columns: 1fr 400px; gap: 24px; align-items: start; }
+                .mc-two-col-400 { display: grid; grid-template-columns: 1fr 400px; gap: 24px; align-items: start; }
                 .mc-tab-bar { overflow-x: auto; scrollbar-width: none; }
                 .mc-tab-bar::-webkit-scrollbar { display: none; }
                 .mc-sticky-sidebar { position: sticky; top: 20px; align-self: flex-start; }
@@ -1726,13 +1726,13 @@ export default function McAngebotsfeed() {
             <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
 
             {/* Step content */}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '24px 32px', boxSizing: 'border-box' }}>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '24px 20px', boxSizing: 'border-box' }}>
 
             {/* ══════════════════════════════════════════
                 STEP 1 - Upload
             ══════════════════════════════════════════ */}
             {step === 1 && (
-                <div className="mc-step1-grid" style={{ width: '100%', maxWidth: 1100, alignItems: 'start' }}>
+                <div className="mc-step1-grid" style={{ width: '100%', maxWidth: 1320, alignItems: 'start' }}>
 
                     {/* Left column: How-it-works + Resources */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -2124,7 +2124,7 @@ export default function McAngebotsfeed() {
                 };
 
                 return (
-                    <div style={{ width: '100%', maxWidth: 1100, overflowX: 'hidden' }}>
+                    <div style={{ width: '100%', maxWidth: 1320, overflowX: 'hidden' }}>
                         {mcIsWrongFile ? (
                             <div style={{ padding: '20px', borderRadius: 12, border: '1px solid #FECACA', background: '#FEF2F2', display: 'flex', gap: 12 }}>
                                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ flexShrink: 0, color: '#991B1B' }}><path d="M10 3L2 17h16L10 3z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/><path d="M10 9v3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/><circle cx="10" cy="14.5" r="0.75" fill="currentColor"/></svg>
@@ -2644,7 +2644,7 @@ export default function McAngebotsfeed() {
                 const scoreBg = score >= 85 ? P_GREEN_BG : score >= 60 ? P_ORANGE_BG : P_RED_BG;
 
                 return (
-                    <div style={{ width: '100%', maxWidth: 1100, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    <div style={{ width: '100%', maxWidth: 1320, display: 'flex', flexDirection: 'column', gap: 12 }}>
 
                         {/* 2-column: table | action panel */}
                         <div className="mc-two-col-320" style={{ alignItems: 'start' }}>
@@ -3087,7 +3087,7 @@ export default function McAngebotsfeed() {
                 });
 
                 return (
-                    <div style={{ width: '100%', maxWidth: 1100, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    <div style={{ width: '100%', maxWidth: 1320, display: 'flex', flexDirection: 'column', gap: 12 }}>
 
                         {/* Two-column layout */}
                         <div className="mc-two-col-320" style={{ alignItems: 'start' }}>
@@ -3791,7 +3791,7 @@ export default function McAngebotsfeed() {
                 };
 
                 return (
-                    <div style={{ width: '100%', maxWidth: 1100 }}>
+                    <div style={{ width: '100%', maxWidth: 1320 }}>
 
                         {/* Two-column layout: recommendations left, download panel right */}
                         <div className="mc-two-col-320" style={{ alignItems: 'start' }}>
@@ -4102,9 +4102,9 @@ export default function McAngebotsfeed() {
                                     </div>
                                     <div style={{ fontSize: 12, color: '#1E3A8A', lineHeight: 1.6 }}>
                                         {lang === 'de' ? (
-                                            <span>Von <strong>{issues.totalRows.toLocaleString(numLocale)}</strong> Artikeln im Feed sind <strong style={{ color: '#166534' }}>{issues.livefaehigCount.toLocaleString(numLocale)}</strong> listbar (<strong>{listablePct}%</strong>).{issues.blockiertCount > 0 && <> <strong style={{ color: '#991B1B' }}>{issues.blockiertCount.toLocaleString(numLocale)}</strong> Artikel weisen Fehler in den Pflichtfeldern auf.</>} Mit den Handlungsempfehlungen können Sie die Abdeckung auf bis zu 100 % steigern.</span>
+                                            <span>Von <strong>{issues.totalRows.toLocaleString(numLocale)}</strong> Artikeln im Feed sind <strong style={{ color: '#166534' }}>{issues.livefaehigCount.toLocaleString(numLocale)}</strong> listbar (<strong>{listablePct}%</strong>).{issues.blockiertCount > 0 && <> <strong style={{ color: '#991B1B' }}>{issues.blockiertCount.toLocaleString(numLocale)}</strong> Artikel weisen Fehler in den Pflichtfeldern auf.</>}</span>
                                         ) : (
-                                            <span>Of <strong>{issues.totalRows.toLocaleString(numLocale)}</strong> items in the feed, <strong style={{ color: '#166534' }}>{issues.livefaehigCount.toLocaleString(numLocale)}</strong> are listable (<strong>{listablePct}%</strong>).{issues.blockiertCount > 0 && <> <strong style={{ color: '#991B1B' }}>{issues.blockiertCount.toLocaleString(numLocale)}</strong> items have errors in required fields.</>} Use the recommendations to improve coverage to up to 100%.</span>
+                                            <span>Of <strong>{issues.totalRows.toLocaleString(numLocale)}</strong> items in the feed, <strong style={{ color: '#166534' }}>{issues.livefaehigCount.toLocaleString(numLocale)}</strong> are listable (<strong>{listablePct}%</strong>).{issues.blockiertCount > 0 && <> <strong style={{ color: '#991B1B' }}>{issues.blockiertCount.toLocaleString(numLocale)}</strong> items have errors in required fields.</>}</span>
                                         )}
                                     </div>
                                 </div>
