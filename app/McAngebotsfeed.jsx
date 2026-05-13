@@ -1905,8 +1905,32 @@ export default function McAngebotsfeed() {
                                 </div>
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                                     {[
-                                        { value: 'germany', label: lang === 'de' ? 'Innerhalb von Deutschland' : 'Inside Germany' },
-                                        { value: 'outside_germany', label: lang === 'de' ? 'In einem EU-Land (außerhalb Deutschland)' : 'In an EU country (outside Germany)' },
+                                        {
+                                            value: 'germany',
+                                            label: lang === 'de' ? 'Innerhalb von Deutschland' : 'Inside Germany',
+                                            flag: (
+                                                <svg width="22" height="16" viewBox="0 0 22 16" style={{ borderRadius: 2, flexShrink: 0, boxShadow: '0 0 0 1px rgba(0,0,0,0.06)' }}>
+                                                    <rect width="22" height="5.33" y="0" fill="#000"/>
+                                                    <rect width="22" height="5.33" y="5.33" fill="#D00"/>
+                                                    <rect width="22" height="5.34" y="10.66" fill="#FFCE00"/>
+                                                </svg>
+                                            ),
+                                        },
+                                        {
+                                            value: 'outside_germany',
+                                            label: lang === 'de' ? 'In einem EU-Land (außerhalb Deutschland)' : 'In an EU country (outside Germany)',
+                                            flag: (
+                                                <svg width="22" height="16" viewBox="0 0 22 16" style={{ borderRadius: 2, flexShrink: 0, boxShadow: '0 0 0 1px rgba(0,0,0,0.06)' }}>
+                                                    <rect width="22" height="16" fill="#003399"/>
+                                                    {Array.from({ length: 12 }).map((_, i) => {
+                                                        const angle = (i * 30 - 90) * (Math.PI / 180);
+                                                        const cx = 11 + Math.cos(angle) * 5;
+                                                        const cy = 8 + Math.sin(angle) * 5;
+                                                        return <circle key={i} cx={cx} cy={cy} r="0.85" fill="#FFCC00"/>;
+                                                    })}
+                                                </svg>
+                                            ),
+                                        },
                                     ].map((opt) => {
                                         const active = storeLocation === opt.value;
                                         return (
@@ -1918,12 +1942,16 @@ export default function McAngebotsfeed() {
                                                     padding: '10px 12px',
                                                     border: `1px solid ${active ? MC_BLUE : '#D1D5DB'}`,
                                                     background: active ? '#EEF4FF' : '#FFF',
-                                                    borderRadius: 6,
+                                                    borderRadius: 8,
                                                     cursor: 'pointer',
                                                     textAlign: 'left',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: 10,
                                                 }}
                                             >
-                                                <span style={{ fontSize: 12, fontWeight: 600, color: active ? MC_BLUE : '#111827' }}>{opt.label}</span>
+                                                {opt.flag}
+                                                <span style={{ fontSize: 12, fontWeight: 600, color: active ? MC_BLUE : '#111827', lineHeight: 1.3 }}>{opt.label}</span>
                                             </button>
                                         );
                                     })}
