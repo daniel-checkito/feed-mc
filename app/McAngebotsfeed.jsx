@@ -4215,9 +4215,13 @@ export default function McAngebotsfeed() {
                                                 {lang === 'de' ? 'Pro Artikel werden alle Fehler in einer Spalte aufgelistet – direkt in Excel korrigierbar.' : 'All errors per item listed in one column – ready to fix in Excel.'}
                                             </div>
                                         </div>
-                                        <div style={{ background: '#FFF', borderRadius: 8, padding: '8px 10px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-                                            <svg width="20" height="24" viewBox="0 0 20 24" fill="none"><rect width="20" height="24" rx="3" fill="#EFF6FF" stroke="#BFDBFE" strokeWidth="1"/><path d="M4 14h12M4 17h8" stroke="#2563EB" strokeWidth="1.2" strokeLinecap="round"/><rect x="4" y="6" width="7" height="5" rx="1" fill="#DBEAFE"/></svg>
-                                            <span style={{ fontSize: 8, fontWeight: 700, color: '#2563EB' }}>CSV</span>
+                                        <div style={{ width: 48, height: 48, borderRadius: '50%', background: '#E8F0FE', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                            <svg width="28" height="28" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M10 4 H30 L40 14 V44 H10 Z" fill="#FFF" stroke="#2563EB" strokeWidth="2.5" strokeLinejoin="round"/>
+                                                <path d="M30 4 V14 H40" fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinejoin="round"/>
+                                                <rect x="6" y="26" width="36" height="14" rx="1.5" fill="#2563EB"/>
+                                                <text x="24" y="36.5" fontFamily="-apple-system, Arial, sans-serif" fontSize="9" fontWeight="800" fill="#FFF" textAnchor="middle" letterSpacing="0.5">CSV</text>
+                                            </svg>
                                         </div>
                                     </div>
                                     <div style={{ padding: '0 14px 12px' }}>
