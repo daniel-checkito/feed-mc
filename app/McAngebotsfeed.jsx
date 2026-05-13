@@ -1004,6 +1004,24 @@ export default function McAngebotsfeed() {
         [headers],
     );
 
+    const mcManufacturerColumns = useMemo(
+        () =>
+            headers.filter((h) => {
+                const n = h.toLowerCase();
+                return n.includes('manufacturer') || n.includes('hersteller');
+            }),
+        [headers],
+    );
+
+    const mcSizeColumns = useMemo(
+        () =>
+            headers.filter((h) => {
+                const n = h.toLowerCase();
+                return /^(size|maße|masse|abmessung|maß)\b/.test(n) || n.startsWith('size_') || n === 'maße' || n === 'masse' || n === 'abmessungen' || n.includes('breite') || n.includes('höhe') || n.includes('hoehe') || n.includes('tiefe') || n.includes('durchmesser') || n.includes('liegefläche') || n.includes('liegeflaeche');
+            }),
+        [headers],
+    );
+
     // Reactive analysis - re-runs whenever mapping or rows change
     // Implements Zwei-Stufen-Modell: Stufe 1 (Hard Gate) + Stufe 2 (Soft Score)
     const issues = useMemo(() => {
@@ -2052,16 +2070,27 @@ export default function McAngebotsfeed() {
                 // of MC_OPTIONAL_COLS go into the collapsible "show more" group.
                 const checkedOptionalFields = ['color', 'material', 'delivery_includes'];
                 const optionalFieldsMid = checkedOptionalFields;
-                const otherOptionalFields = MC_OPTIONAL_COLS.filter((f) => !checkedOptionalFields.includes(f));
-
-                // Compute used columns for dedup (across all fields including image)
-                const usedCols = new Set(
-                    Object.entries(mcMapping)
-                        .filter(([, v]) => v)
-                        .map(([, v]) => v)
+                // Fields to hide entirely from the mapping list
+                const HIDDEN_OPTIONAL = new Set(['illuminant_included', 'incl_mattress', 'incl_slatted_frame', 'socket', 'removable_cover', 'model', 'size_seat_height', 'style']);
+                // Fields handled by the grouped manufacturer / size rows
+                const MANUFACTURER_FIELDS = new Set(['manufacturer_name', 'manufacturer_street', 'manufacturer_postcode', 'manufacturer_city', 'manufacturer_country', 'manufacturer_email', 'manufacturer_phone_number']);
+                const SIZE_FIELDS = new Set(['size', 'size_height', 'size_depth', 'size_width', 'size_diameter', 'size_lying_surface', 'size_seat_height', 'size_seat_depth', 'size_seat_width']);
+                const otherOptionalFields = MC_OPTIONAL_COLS.filter((f) =>
+                    !checkedOptionalFields.includes(f)
+                    && !HIDDEN_OPTIONAL.has(f)
+                    && !MANUFACTURER_FIELDS.has(f)
+                    && !SIZE_FIELDS.has(f)
                 );
 
-                const MappingRow = ({ fieldKey, label, isPflicht, isImageRow }) => {
+                // Compute used columns for dedup (across all fields including grouped image/manufacturer/size)
+                const usedCols = new Set([
+                    ...Object.entries(mcMapping).filter(([, v]) => v).map(([, v]) => v),
+                    ...mcImageColumns,
+                    ...mcManufacturerColumns,
+                    ...mcSizeColumns,
+                ]);
+
+                const MappingRow = ({ fieldKey, label, isPflicht, isImageRow, groupCols, groupLabel }) => {
                     if (isImageRow) {
                         return (
                             <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 0' }}>
@@ -2073,6 +2102,17 @@ export default function McAngebotsfeed() {
                                 </Tooltip>
                                 <div style={{ flex: 1, minWidth: 0, fontSize: 11, padding: '4px 7px', borderRadius: 5, border: `1px solid ${mcImageColumns.length > 0 ? '#D1FAE5' : '#FCA5A5'}`, background: mcImageColumns.length > 0 ? '#F0FDF4' : '#FFF5F5', color: mcImageColumns.length > 0 ? '#166534' : '#991B1B', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                     {mcImageColumns.length > 0 ? mcImageColumns.join(', ') : T.notDetected}
+                                </div>
+                            </div>
+                        );
+                    }
+                    if (groupCols) {
+                        const hasCols = groupCols.length > 0;
+                        return (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 0' }}>
+                                <span style={{ fontSize: 11, color: '#374151', width: 120, flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{groupLabel}</span>
+                                <div title={groupCols.join(', ')} style={{ flex: 1, minWidth: 0, fontSize: 11, padding: '4px 7px', borderRadius: 5, border: `1px solid ${hasCols ? '#D1FAE5' : '#D1D5DB'}`, background: hasCols ? '#F0FDF4' : '#FFF', color: hasCols ? '#166534' : '#9CA3AF', fontWeight: hasCols ? 600 : 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                    {hasCols ? groupCols.join(', ') : T.notDetected}
                                 </div>
                             </div>
                         );
@@ -2207,6 +2247,8 @@ export default function McAngebotsfeed() {
                                                     {optionalFieldsMid.map((f) => (
                                                         <MappingRow key={f} fieldKey={f} label={FIELD_LABELS[f] || f} isPflicht={false} />
                                                     ))}
+                                                    <MappingRow key="__size_group" groupCols={mcSizeColumns} groupLabel={langDE ? 'Maße' : 'Size'} />
+                                                    <MappingRow key="__manufacturer_group" groupCols={mcManufacturerColumns} groupLabel={langDE ? 'Hersteller' : 'Manufacturer'} />
                                                     {optionalExpanded && otherOptionalFields.map((f) => (
                                                         <MappingRow key={f} fieldKey={f} label={FIELD_LABELS[f] || f} isPflicht={false} />
                                                     ))}
