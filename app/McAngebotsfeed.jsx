@@ -3858,17 +3858,15 @@ export default function McAngebotsfeed() {
 
                             {/* Left: recommendations */}
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                                {/* Page header */}
-                                <div>
-                                    <div style={{ fontSize: 18, fontWeight: 800, color: '#111827', marginBottom: 4 }}>
-                                        {recommendations.length > 0
-                                            ? (lang === 'de' ? 'Handlungsempfehlungen' : 'Recommendations')
-                                            : T.recNoErrorsTitle}
-                                    </div>
-                                    {recommendations.length === 0 && (
+                                {/* Page header (white card wraps title + filter tabs for recs > 0) */}
+                                {recommendations.length === 0 && (
+                                    <div>
+                                        <div style={{ fontSize: 18, fontWeight: 800, color: '#111827', marginBottom: 4 }}>
+                                            {T.recNoErrorsTitle}
+                                        </div>
                                         <div style={{ fontSize: 13, color: '#6B7280' }}>{T.recNoErrorsSub}</div>
-                                    )}
-                                </div>
+                                    </div>
+                                )}
                                 {/* No-errors state */}
                                 {recommendations.length === 0 && (
                                     <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 12, padding: '20px 24px', display: 'flex', alignItems: 'center', gap: 14 }}>
@@ -4036,17 +4034,22 @@ export default function McAngebotsfeed() {
                                                     { key: 'hints',    label: lang === 'de' ? 'Hinweise'          : 'Hints',           count: hintRecs.length,                                             color: P_BLUE_TEXT, bg: P_BLUE_BG },
                                                 ];
                                                 return (
-                                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                                                        {tabs.map((t) => {
-                                                            const active = recFilter === t.key;
-                                                            return (
-                                                                <button key={t.key} type="button" onClick={() => setRecFilter(t.key)}
-                                                                    style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 999, border: `1px solid ${active ? t.color : '#E5E7EB'}`, background: active ? t.bg : '#FFF', color: active ? t.color : '#374151', fontSize: 12, fontWeight: 700, cursor: 'pointer', transition: 'all 0.15s' }}>
-                                                                    {t.label}
-                                                                    <span style={{ fontSize: 10, fontWeight: 700, background: active ? '#FFF' : '#F3F4F6', color: active ? t.color : '#6B7280', borderRadius: 999, padding: '1px 7px' }}>{t.count}</span>
-                                                                </button>
-                                                            );
-                                                        })}
+                                                    <div style={{ background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 12, padding: '16px 18px', boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>
+                                                        <div style={{ fontSize: 18, fontWeight: 800, color: '#111827', marginBottom: 12 }}>
+                                                            {lang === 'de' ? 'Handlungsempfehlungen' : 'Recommendations'}
+                                                        </div>
+                                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                                                            {tabs.map((t) => {
+                                                                const active = recFilter === t.key;
+                                                                return (
+                                                                    <button key={t.key} type="button" onClick={() => setRecFilter(t.key)}
+                                                                        style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 999, border: `1px solid ${active ? t.color : '#E5E7EB'}`, background: active ? t.bg : '#FFF', color: active ? t.color : '#374151', fontSize: 12, fontWeight: 700, cursor: 'pointer', transition: 'all 0.15s' }}>
+                                                                        {t.label}
+                                                                        <span style={{ fontSize: 10, fontWeight: 700, background: active ? '#FFF' : '#F3F4F6', color: active ? t.color : '#6B7280', borderRadius: 999, padding: '1px 7px' }}>{t.count}</span>
+                                                                    </button>
+                                                                );
+                                                            })}
+                                                        </div>
                                                     </div>
                                                 );
                                             })()}
