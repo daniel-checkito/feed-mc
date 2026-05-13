@@ -3909,10 +3909,9 @@ export default function McAngebotsfeed() {
                                                                 : group.issues.map((it) => it.rule.title).join(' · ')}
                                                         </div>
                                                     </div>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-                                                        <div style={{ textAlign: 'right' }}>
-                                                            <div style={{ fontSize: 16, fontWeight: 800, color: accentText || accent || '#374151', lineHeight: 1 }}>{group.count.toLocaleString(numLocale)}</div>
-                                                            <div style={{ fontSize: 10, color: '#9CA3AF' }}>{lang === 'de' ? 'Fehler' : 'errors'}</div>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+                                                        <div style={{ fontSize: 14, fontWeight: 800, color: accentText || accent || '#374151', whiteSpace: 'nowrap' }}>
+                                                            {group.count.toLocaleString(numLocale)} {lang === 'de' ? 'Fehler' : 'errors'}
                                                         </div>
                                                         <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: '#9CA3AF', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }}>
                                                             <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
