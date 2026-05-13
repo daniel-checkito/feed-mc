@@ -4177,23 +4177,31 @@ export default function McAngebotsfeed() {
                                             {lang === 'de' ? 'SO GEHT ES WEITER' : 'NEXT STEPS'}
                                         </div>
                                     </div>
-                                    {[
-                                        { n: 1, title: lang === 'de' ? 'Fehlerbericht herunterladen' : 'Download error report', sub: lang === 'de' ? 'CSV-Datei mit allen Fehlern je Zeile für Excel' : 'CSV file with all errors per row for Excel',
-                                          icon: <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M5 7l3 3 3-3M2 13h12" stroke="#2563EB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> },
-                                        { n: 2, title: lang === 'de' ? 'Fehler in Excel korrigieren' : 'Fix errors in Excel', sub: lang === 'de' ? 'Betroffene Artikel anhand der Fehlerspalte bearbeiten' : 'Edit affected items using the error column',
-                                          icon: <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M11 2l3 3-8 8H3v-3L11 2z" stroke="#2563EB" strokeWidth="1.4" strokeLinejoin="round"/></svg> },
-                                        { n: 3, title: lang === 'de' ? 'Korrigierten Feed hochladen' : 'Upload corrected feed', sub: lang === 'de' ? 'Direkt im Händlerportal unter Einstellungen → Feed' : 'In the merchant portal under Settings → Feed',
-                                          icon: <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 10V2M5 5l3-3 3 3" stroke="#2563EB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 13h12" stroke="#2563EB" strokeWidth="1.5" strokeLinecap="round"/></svg> },
-                                    ].map((step, i) => (
-                                        <div key={step.n} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderBottom: i < 2 ? '1px solid #F3F4F6' : 'none' }}>
-                                            <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#2563EB', color: '#FFF', fontSize: 11, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{step.n}</div>
-                                            <div style={{ flex: 1, minWidth: 0 }}>
-                                                <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>{step.title}</div>
-                                                <div style={{ fontSize: 10, color: '#6B7280', marginTop: 1 }}>{step.sub}</div>
+                                    {(() => {
+                                        const steps = [
+                                            { n: 1, title: lang === 'de' ? 'Fehlerbericht herunterladen' : 'Download error report', sub: lang === 'de' ? 'CSV-Datei mit allen Fehlern je Zeile für Excel' : 'CSV file with all errors per row for Excel',
+                                              icon: <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M5 7l3 3 3-3M2 13h12" stroke="#2563EB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+                                            { n: 2, title: lang === 'de' ? 'Fehler in Excel korrigieren' : 'Fix errors in Excel', sub: lang === 'de' ? 'Betroffene Artikel anhand der Fehlerspalte bearbeiten' : 'Edit affected items using the error column',
+                                              icon: <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M11 2l3 3-8 8H3v-3L11 2z" stroke="#2563EB" strokeWidth="1.4" strokeLinejoin="round"/></svg> },
+                                            { n: 3, title: lang === 'de' ? 'Korrigierten Feed hochladen' : 'Upload corrected feed', sub: lang === 'de' ? 'Direkt im Händlerportal unter Einstellungen → Feed' : 'In the merchant portal under Settings → Feed',
+                                              icon: <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 10V2M5 5l3-3 3 3" stroke="#2563EB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 13h12" stroke="#2563EB" strokeWidth="1.5" strokeLinecap="round"/></svg> },
+                                        ];
+                                        return (
+                                            <div style={{ position: 'relative' }}>
+                                                <div style={{ position: 'absolute', left: 14 + 12 - 1, top: 22, bottom: 22, width: 2, background: '#E5E7EB', zIndex: 0 }} />
+                                                {steps.map((step) => (
+                                                    <div key={step.n} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', position: 'relative' }}>
+                                                        <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#2563EB', color: '#FFF', fontSize: 11, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative', zIndex: 1 }}>{step.n}</div>
+                                                        <div style={{ flex: 1, minWidth: 0 }}>
+                                                            <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>{step.title}</div>
+                                                            <div style={{ fontSize: 10, color: '#6B7280', marginTop: 1 }}>{step.sub}</div>
+                                                        </div>
+                                                        <div style={{ width: 28, height: 28, borderRadius: 6, background: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{step.icon}</div>
+                                                    </div>
+                                                ))}
                                             </div>
-                                            <div style={{ width: 28, height: 28, borderRadius: 6, background: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{step.icon}</div>
-                                        </div>
-                                    ))}
+                                        );
+                                    })()}
                                 </div>
 
                                 {/* Card 4, Fehlerbericht als CSV (prominent download) */}
