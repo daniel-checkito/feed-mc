@@ -2445,6 +2445,42 @@ export default function McAngebotsfeed() {
                     wrong_category: 'Category path is not part of the furniture assortment',
                 }[type] ?? '');
 
+                const fieldHint = (field) => lang === 'de' ? ({
+                    name: 'Einige Artikel haben unvollständige oder zu kurze Titel',
+                    ean: 'Einige Artikel haben fehlende oder ungültige EANs',
+                    description: 'Einige Beschreibungen sind zu kurz oder enthalten unzulässige Inhalte',
+                    brand: 'Einige Artikel haben keine eindeutige Markenangabe',
+                    price: 'Einige Artikel haben einen ungültigen oder fehlenden Preis',
+                    shipping_mode: 'Einige Artikel haben keine gültige Versandart',
+                    image_url: 'Einige Produkte haben nicht genug oder kein Hauptbild',
+                    availability: 'Einige Artikel haben keinen Bestand oder Verfügbarkeitsstatus',
+                    stock_amount: 'Einige Artikel haben keinen gültigen Lagerbestand',
+                    delivery_time: 'Einige Artikel haben keine oder eine ungültige Lieferzeit',
+                    seller_offer_id: 'Einige Artikel haben keine eindeutige interne Artikel-ID',
+                    hs_code: 'Einige Artikel haben keinen HS-Code (Pflicht für EU-Lager)',
+                    category_path: 'Einige Artikel haben eine ungültige Kategorie zugeordnet',
+                    color: 'Einige Artikel haben keine Farbangabe — wichtig für Filter & Suche',
+                    material: 'Einige Artikel haben keine Materialangabe — wichtig für Filterung',
+                    delivery_includes: 'Einige Artikel haben keinen Lieferumfang hinterlegt',
+                }[field] ?? '') : ({
+                    name: 'Some items have incomplete or too short titles',
+                    ean: 'Some items are missing or have invalid EANs',
+                    description: 'Some descriptions are too short or contain disallowed content',
+                    brand: 'Some items have no clear brand value',
+                    price: 'Some items have an invalid or missing price',
+                    shipping_mode: 'Some items have no valid shipping mode',
+                    image_url: 'Some products do not have enough images or no main image',
+                    availability: 'Some items have no stock or availability status',
+                    stock_amount: 'Some items have no valid stock count',
+                    delivery_time: 'Some items have no or an invalid delivery time',
+                    seller_offer_id: 'Some items have no unique internal item ID',
+                    hs_code: 'Some items have no HS code (required for EU warehouses)',
+                    category_path: 'Some items have an invalid category assignment',
+                    color: 'Some items have no color specified — important for filtering & search',
+                    material: 'Some items have no material — important for filtering',
+                    delivery_includes: 'Some items have no delivery scope set',
+                }[field] ?? '');
+
                 // Description length distribution
                 const descCol = mcMapping['description'];
                 const descStats = descCol ? (() => {
@@ -2669,8 +2705,8 @@ export default function McAngebotsfeed() {
                                                         </div>
                                                     )}
                                                 </div>
-                                                <div style={{ fontSize: 10, color: '#9CA3AF' }}>
-                                                    {key === 'image_url' ? 'image · required' : `${key} · ${lang === 'de' ? 'Pflicht' : 'required'}`}
+                                                <div style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.35 }}>
+                                                    {hasError ? fieldHint(key) : (lang === 'de' ? 'Alle Artikel erfüllen die Anforderungen' : 'All items meet the requirements')}
                                                 </div>
                                             </div>
                                             <div style={{ textAlign: 'right', fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap', minWidth: 0 }}>
@@ -3013,8 +3049,8 @@ export default function McAngebotsfeed() {
                                                                 </div>
                                                             )}
                                                         </div>
-                                                        <div style={{ fontSize: 10, color: '#9CA3AF' }}>
-                                                            {f.field} · {lang === 'de' ? 'optional' : 'optional'}
+                                                        <div style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.35 }}>
+                                                            {hasError ? fieldHint(f.field) : (lang === 'de' ? 'Alle Artikel haben dieses Feld befüllt' : 'All items have this field filled')}
                                                         </div>
                                                     </div>
                                                     <div style={{ textAlign: 'right', fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap', minWidth: 0 }}>
