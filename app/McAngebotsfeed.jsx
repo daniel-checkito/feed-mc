@@ -450,7 +450,7 @@ const DE_T = {
     dropHeading: 'CSV-Datei auswählen',
     dropSub: 'Hierher ziehen oder klicken',
     warehouseLabel: 'Lagerstandort des Händlers',
-    warehouseDE: 'Deutschland', warehouseNonDE: 'In einem EU-Land (außerhalb Deutschland)',
+    warehouseDE: 'Deutschland', warehouseNonDE: 'In einem anderen EU-Land',
     hsNote: 'HS-Code wird als Pflichtfeld geprüft.',
     continueBtn: (n) => `Weiter · ${n} Artikel geladen →`,
     uploadPrompt: 'Bitte Datei hochladen',
@@ -663,7 +663,7 @@ const EN_T = {
     dropHeading: 'Select CSV file',
     dropSub: 'Drag here or click',
     warehouseLabel: 'Warehouse Location',
-    warehouseDE: 'Germany', warehouseNonDE: 'In an EU country (outside Germany)',
+    warehouseDE: 'Germany', warehouseNonDE: 'In another EU country',
     hsNote: 'HS Code will be validated as a required field.',
     continueBtn: (n) => `Continue · ${n} items loaded →`,
     uploadPrompt: 'Please upload a file',
@@ -1918,7 +1918,7 @@ export default function McAngebotsfeed() {
                                         },
                                         {
                                             value: 'outside_germany',
-                                            label: lang === 'de' ? 'In einem EU-Land (außerhalb Deutschland)' : 'In an EU country (outside Germany)',
+                                            label: lang === 'de' ? 'In einem anderen EU-Land' : 'In another EU country',
                                             flag: (
                                                 <svg width="22" height="16" viewBox="0 0 22 16" style={{ borderRadius: 2, flexShrink: 0, boxShadow: '0 0 0 1px rgba(0,0,0,0.06)' }}>
                                                     <rect width="22" height="16" fill="#003399"/>
