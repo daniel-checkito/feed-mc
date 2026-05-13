@@ -3743,6 +3743,50 @@ export default function McAngebotsfeed() {
                     OPTIONAL_CHECK_FIELDS_SET.has(field));
                 const hintRecs = allRecommendations.filter((r) =>
                     !pflichtRecs.includes(r) && !optionalRecs.includes(r));
+
+                if (optFieldStats?.sizeMissingCount > 0) {
+                    const extra = {
+                        key: '__size_missing::missing',
+                        count: optFieldStats.sizeMissingCount,
+                        type: 'missing',
+                        field: '__size_missing',
+                        sampleEans: [],
+                        rule: {
+                            title: T.sizeHintTitle,
+                            shortDesc: T.sizeHintDesc(optFieldStats.sizeMissingCount.toLocaleString(numLocale)),
+                            action: lang === 'de'
+                                ? 'Ergänzen Sie mindestens eines der Maß-Felder (size, size_height, size_depth, size_width, Liegefläche, …) für jeden betroffenen Artikel.'
+                                : 'Fill at least one of the size fields (size, size_height, size_depth, size_width, lying surface, …) for every affected item.',
+                            tip: lang === 'de'
+                                ? 'Maße sind ein wichtiges Filterkriterium für Möbelkunden und reduzieren Retouren deutlich.'
+                                : 'Dimensions are a key filter criterion for furniture buyers and significantly reduce returns.',
+                        },
+                    };
+                    hintRecs.push(extra);
+                    allRecommendations.push(extra);
+                }
+                if (optFieldStats?.lightingCount > 0) {
+                    const extra = {
+                        key: '__lighting::missing',
+                        count: optFieldStats.lightingCount,
+                        type: 'missing',
+                        field: '__lighting',
+                        sampleEans: [],
+                        rule: {
+                            title: T.lightingHintTitle,
+                            shortDesc: T.lightingHintDesc(optFieldStats.lightingCount, optFieldStats.lightingEnergyMissing, optFieldStats.lightingEprelMissing),
+                            action: lang === 'de'
+                                ? 'Für Leuchtprodukte sind Energieeffizienzklasse und EPREL-Registriernummer Pflicht. Tragen Sie energy_efficiency_label und EPREL_registration_number für alle betroffenen Artikel ein.'
+                                : 'For lighting products the energy-efficiency class and EPREL registration number are mandatory. Fill energy_efficiency_label and EPREL_registration_number for every affected item.',
+                            tip: lang === 'de'
+                                ? 'Die EPREL-Nummer finden Sie in der EU-Produktdatenbank unter eprel.ec.europa.eu.'
+                                : 'Look up the EPREL number in the EU product database at eprel.ec.europa.eu.',
+                        },
+                    };
+                    hintRecs.push(extra);
+                    allRecommendations.push(extra);
+                }
+
                 const recommendations = allRecommendations;
 
                 const csvOnClick = () => {
@@ -3836,7 +3880,11 @@ export default function McAngebotsfeed() {
                                         if (next.has(key)) next.delete(key); else next.add(key);
                                         return next;
                                     });
-                                    const fieldGroupLabel = (field) => (T.csvFieldLabels && T.csvFieldLabels[field]) || field;
+                                    const fieldGroupLabel = (field) => {
+                                        if (field === '__size_missing') return lang === 'de' ? 'Maße' : 'Size attributes';
+                                        if (field === '__lighting') return lang === 'de' ? 'Leuchtprodukte (Energie & EPREL)' : 'Lighting (energy & EPREL)';
+                                        return (T.csvFieldLabels && T.csvFieldLabels[field]) || field;
+                                    };
                                     const groupByField = (items) => {
                                         const groups = new Map();
                                         items.forEach((it) => {
@@ -3981,50 +4029,6 @@ export default function McAngebotsfeed() {
                                                 accentText={P_BLUE_TEXT}
                                                 items={hintRecs}
                                             />
-
-                                            {/* Maß / size hint - collapsible */}
-                                            {optFieldStats?.sizeMissingCount > 0 && (() => {
-                                                const hintKey = 'hint::size_missing';
-                                                const isOpen = expandedRecs.has(hintKey);
-                                                return (
-                                                    <div style={{ background: '#FFF', border: '1px solid #E5E7EB', borderLeft: '3px solid #64748B', borderRadius: 10 }}>
-                                                        <div onClick={() => toggleRec(hintKey)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, padding: '8px 14px', cursor: 'pointer', userSelect: 'none' }}>
-                                                            <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flex: 1 }}>
-                                                                <span style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{T.sizeHintTitle}</span>
-                                                                <span style={{ fontSize: 11, color: '#64748B', fontWeight: 600, whiteSpace: 'nowrap' }}>{T.recAffected(optFieldStats.sizeMissingCount.toLocaleString(numLocale))}</span>
-                                                            </div>
-                                                            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: '#9CA3AF', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }}><path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                                        </div>
-                                                        {isOpen && (
-                                                            <div style={{ padding: '0 14px 10px 14px' }}>
-                                                                <div style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.5, background: '#F9FAFB', borderRadius: 6, padding: '6px 10px' }}>{T.sizeHintDesc(optFieldStats.sizeMissingCount.toLocaleString(numLocale))}</div>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                );
-                                            })()}
-
-                                            {/* Lighting hint - collapsible */}
-                                            {optFieldStats?.lightingCount > 0 && (() => {
-                                                const hintKey = 'hint::lighting';
-                                                const isOpen = expandedRecs.has(hintKey);
-                                                return (
-                                                    <div style={{ background: '#FFF', border: '1px solid #E5E7EB', borderLeft: '3px solid #64748B', borderRadius: 10 }}>
-                                                        <div onClick={() => toggleRec(hintKey)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, padding: '8px 14px', cursor: 'pointer', userSelect: 'none' }}>
-                                                            <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flex: 1 }}>
-                                                                <span style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{T.lightingHintTitle}</span>
-                                                                <span style={{ fontSize: 11, color: '#64748B', fontWeight: 600, whiteSpace: 'nowrap' }}>{T.recAffected(optFieldStats.lightingCount.toLocaleString(numLocale))}</span>
-                                                            </div>
-                                                            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: '#9CA3AF', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }}><path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                                        </div>
-                                                        {isOpen && (
-                                                            <div style={{ padding: '0 14px 10px 14px' }}>
-                                                                <div style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.5, background: '#F9FAFB', borderRadius: 6, padding: '6px 10px' }}>{T.lightingHintDesc(optFieldStats.lightingCount, optFieldStats.lightingEnergyMissing, optFieldStats.lightingEprelMissing)}</div>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                );
-                                            })()}
 
                                         </div>
                                     );
