@@ -879,6 +879,7 @@ export default function McAngebotsfeed() {
     const [manualMapping, setManualMapping] = useState({});
     const [expandedRecs, setExpandedRecs] = useState(() => new Set());
     const [expandedFieldExamples, setExpandedFieldExamples] = useState(() => new Set());
+    const [expandedFieldSubgroups, setExpandedFieldSubgroups] = useState(() => new Set());
     const [collapsedSections, setCollapsedSections] = useState(() => new Set());
     const [lang, setLang] = useState('de');
     const [langOpen, setLangOpen] = useState(false);
@@ -2372,7 +2373,7 @@ export default function McAngebotsfeed() {
                     if (!fieldErrorDetails[k]) fieldErrorDetails[k] = {};
                     if (!fieldErrorDetails[k][e.type]) fieldErrorDetails[k][e.type] = { count: 0, samples: [] };
                     fieldErrorDetails[k][e.type].count++;
-                    if (fieldErrorDetails[k][e.type].samples.length < 3) {
+                    if (fieldErrorDetails[k][e.type].samples.length < 200) {
                         const nm = nameCol3 ? String(rows[e.row - 1]?.[nameCol3] ?? '').trim() : '';
                         fieldErrorDetails[k][e.type].samples.push({ ean: e.ean, value: e.value, name: nm });
                     }
@@ -2386,7 +2387,7 @@ export default function McAngebotsfeed() {
                     if (!fieldErrorDetails[field]) fieldErrorDetails[field] = {};
                     fieldErrorDetails[field].dup = { count: dupSet.size, samples: [] };
                     for (const rn of dupSet) {
-                        if (fieldErrorDetails[field].dup.samples.length >= 3) break;
+                        if (fieldErrorDetails[field].dup.samples.length >= 200) break;
                         const ean = eanCol3 ? String(rows[rn - 1]?.[eanCol3] ?? '').trim() : '';
                         const val = col ? String(rows[rn - 1]?.[col] ?? '').trim() : '';
                         const nm = nameCol3 ? String(rows[rn - 1]?.[nameCol3] ?? '').trim() : '';
@@ -2407,6 +2408,42 @@ export default function McAngebotsfeed() {
                     template: 'Template', advertising: 'Ad text', identical_to_title: '= Title',
                     dup: 'Duplicate', single: 'Only 1 image', wrong_category: 'Wrong cat.',
                 }[type] ?? type);
+
+                const errTypeDesc = (type) => lang === 'de' ? ({
+                    missing: 'Pflichtfeld nicht befüllt',
+                    placeholder: 'Platzhalterwert hinterlegt (z. B. "n/a", "test")',
+                    too_short: 'Wert enthält zu wenig Informationen',
+                    one_word: 'Nur ein einzelnes Wort erfasst',
+                    bware: '"B-Ware"-Kennzeichnung erkannt',
+                    wrong_length: 'Wert entspricht nicht der erforderlichen Länge',
+                    invalid: 'Wert hat ein ungültiges Format',
+                    scientific: 'EAN in wissenschaftlicher Notation',
+                    siehe_oben: '"siehe oben" als Artikelname verwendet',
+                    external_link: 'Externe URL in der Beschreibung gefunden',
+                    template: 'Mustertext (Lorem Ipsum o. Ä.) erkannt',
+                    advertising: 'Werbephrasen in der Beschreibung',
+                    identical_to_title: 'Beschreibung identisch zum Titel',
+                    dup: 'Doppelte Einträge erkannt',
+                    single: 'Artikel haben nur ein einziges Hauptbild statt der empfohlenen Mehrfachansicht',
+                    wrong_category: 'Kategoriepfad gehört nicht zum Möbel-Sortiment',
+                }[type] ?? '') : ({
+                    missing: 'Required field is empty',
+                    placeholder: 'Placeholder value used (e.g. "n/a", "test")',
+                    too_short: 'Value contains too little information',
+                    one_word: 'Only a single word entered',
+                    bware: '"B-grade" marker detected',
+                    wrong_length: 'Value does not match the required length',
+                    invalid: 'Value has an invalid format',
+                    scientific: 'EAN in scientific notation',
+                    siehe_oben: '"see above" used as item name',
+                    external_link: 'External URL found in the description',
+                    template: 'Template text (Lorem Ipsum etc.) detected',
+                    advertising: 'Advertising phrases in the description',
+                    identical_to_title: 'Description identical to title',
+                    dup: 'Duplicate entries detected',
+                    single: 'Items only have a single main image instead of the recommended multi-view',
+                    wrong_category: 'Category path is not part of the furniture assortment',
+                }[type] ?? '');
 
                 // Description length distribution
                 const descCol = mcMapping['description'];
@@ -2606,69 +2643,108 @@ export default function McAngebotsfeed() {
                                     : [];
                                 // Always show EAN identifiers for affected rows so users can find them.
                                 // For the ean field itself, show the bad EAN value; for all others show the EAN column value.
+                                const isRowExpanded = hasError && expandedFieldExamples.has(key);
+                                const toggleRow = () => {
+                                    if (!hasError) return;
+                                    setExpandedFieldExamples((prev) => {
+                                        const next = new Set(prev);
+                                        if (next.has(key)) next.delete(key); else next.add(key);
+                                        return next;
+                                    });
+                                };
+                                const subgroupEntries = hasError && fieldErrorDetails[key] ? Object.entries(fieldErrorDetails[key]) : [];
                                 return (
-                                    <div key={key} style={{ display: 'grid', gridTemplateColumns: '1fr 90px 120px', padding: '5px 16px', borderBottom: '1px solid #F9FAFB', alignItems: 'start', background: hasError ? (barColor === P_RED ? P_RED_BG : P_ORANGE_BG) : 'transparent', borderLeft: hasError ? `3px solid ${barColor}` : '3px solid transparent' }}>
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0, paddingTop: 2, paddingBottom: hasError ? 6 : 0 }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                                <div style={{ fontSize: 11, color: hasError ? (barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT) : '#374151', fontWeight: hasError ? 600 : 500, flexShrink: 0 }}>{label}</div>
-                                                {!hasError && exampleVals.length > 0 && (
-                                                    <div style={{ display: 'flex', gap: 4, flexWrap: 'nowrap', overflow: 'hidden', maxWidth: 220 }}>
-                                                        {exampleVals.slice(0, 2).map((v, i) => (
-                                                            <span key={i} style={{ fontSize: 9, color: '#6B7280', background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block', flexShrink: 0 }}>{v}</span>
-                                                        ))}
-                                                    </div>
-                                                )}
-                                            </div>
-                                            {hasError && fieldErrorDetails[key] && (() => {
-                                                const isExpanded = expandedFieldExamples.has(key);
-                                                const toggleExpand = () => setExpandedFieldExamples(prev => {
-                                                    const next = new Set(prev);
-                                                    if (next.has(key)) next.delete(key); else next.add(key);
-                                                    return next;
-                                                });
-                                                return Object.entries(fieldErrorDetails[key]).map(([type, { count, samples }]) => {
-                                                    const visibleSamples = isExpanded ? samples : samples.slice(0, 3);
-                                                    const hiddenCount = samples.length - visibleSamples.length;
-                                                    return (
-                                                        <div key={type} style={{ display: 'flex', alignItems: 'flex-start', flexWrap: 'wrap', gap: 3 }}>
-                                                            <span style={{ fontSize: 9, fontWeight: 700, background: barColor === P_RED ? P_RED_BG : P_ORANGE_BG, color: barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT, border: `1px solid ${barColor}`, borderRadius: 3, padding: '1px 5px', flexShrink: 0, whiteSpace: 'nowrap' }}>
-                                                                {errTypeLabel(type)} · {count.toLocaleString(numLocale)}×
-                                                            </span>
-                                                            {visibleSamples.map((s, i) => (
-                                                                <span key={i} style={{ fontSize: 9, background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', color: '#374151', display: 'inline-flex', alignItems: 'center', gap: 2, maxWidth: 260, overflow: 'hidden', flexShrink: 0 }}>
-                                                                    {s.value && s.value !== s.ean && (
-                                                                        <span style={{ fontFamily: 'monospace', color: P_RED_TEXT, maxWidth: 90, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>"{s.value}"</span>
-                                                                    )}
-                                                                    {s.ean && <span style={{ fontFamily: 'monospace' }}>{s.ean}</span>}
-                                                                    {s.name && <span style={{ fontFamily: 'sans-serif', color: '#6B7280', marginLeft: 2, maxWidth: 110, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>· {s.name}</span>}
-                                                                </span>
+                                    <div key={key} style={{ borderBottom: '1px solid #F9FAFB', background: hasError ? (barColor === P_RED ? P_RED_BG : P_ORANGE_BG) : 'transparent', borderLeft: hasError ? `3px solid ${barColor}` : '3px solid transparent' }}>
+                                        <div
+                                            onClick={toggleRow}
+                                            style={{ display: 'grid', gridTemplateColumns: '1fr 90px 120px', padding: '8px 16px', alignItems: 'center', cursor: hasError ? 'pointer' : 'default', userSelect: 'none' }}>
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                                    <div style={{ fontSize: 12, color: hasError ? (barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT) : '#374151', fontWeight: hasError ? 700 : 500, flexShrink: 0 }}>{label}</div>
+                                                    {!hasError && exampleVals.length > 0 && (
+                                                        <div style={{ display: 'flex', gap: 4, flexWrap: 'nowrap', overflow: 'hidden', maxWidth: 220 }}>
+                                                            {exampleVals.slice(0, 2).map((v, i) => (
+                                                                <span key={i} style={{ fontSize: 9, color: '#6B7280', background: '#F3F4F6', borderRadius: 3, padding: '1px 5px', maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block', flexShrink: 0 }}>{v}</span>
                                                             ))}
-                                                            {hiddenCount > 0 && (
-                                                                <span onClick={toggleExpand} style={{ fontSize: 10, color: '#6B7280', cursor: 'pointer', textDecoration: 'underline', flexShrink: 0 }}>+{hiddenCount} {lang === 'de' ? 'weitere anzeigen' : 'more'}</span>
-                                                            )}
-                                                            {isExpanded && samples.length > 3 && (
-                                                                <span onClick={toggleExpand} style={{ fontSize: 10, color: '#6B7280', cursor: 'pointer', textDecoration: 'underline', flexShrink: 0 }}>{lang === 'de' ? 'Weniger anzeigen' : 'Show less'}</span>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div style={{ fontSize: 10, color: '#9CA3AF' }}>
+                                                    {key === 'image_url' ? 'image · required' : `${key} · ${lang === 'de' ? 'Pflicht' : 'required'}`}
+                                                </div>
+                                            </div>
+                                            <div style={{ textAlign: 'right', fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap' }}>
+                                                {pct === null ? <span style={{ color: '#9CA3AF' }}>{T.notInFeed}</span>
+                                                    : errs === 0 ? <span style={{ color: P_GREEN_TEXT }}>{T.complete}</span>
+                                                    : <span style={{ color: barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT }}>{T.missingCount(errs.toLocaleString(numLocale))}</span>}
+                                            </div>
+                                            <div style={{ paddingLeft: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+                                                {pct !== null ? (
+                                                    <>
+                                                        <div style={{ flex: 1, height: 5, background: '#F3F4F6', borderRadius: 3, overflow: 'hidden' }}>
+                                                            <div style={{ height: '100%', width: `${errs > 0 ? Math.min(99, pct) : pct}%`, background: barColor, borderRadius: 3, transition: 'width 0.4s' }} />
+                                                        </div>
+                                                        <span style={{ fontSize: 10, color: '#6B7280', width: 28, textAlign: 'right', flexShrink: 0 }}>{errs > 0 ? Math.min(99, pct) : pct}%</span>
+                                                    </>
+                                                ) : <span style={{ fontSize: 9, color: '#D1D5DB', flex: 1 }}>-</span>}
+                                                {hasError ? (
+                                                    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: '#9CA3AF', transform: isRowExpanded ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }}>
+                                                        <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                                                    </svg>
+                                                ) : <span style={{ width: 12, flexShrink: 0 }} />}
+                                            </div>
+                                        </div>
+                                        {isRowExpanded && subgroupEntries.length > 0 && (
+                                            <div style={{ padding: '4px 16px 14px 16px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+                                                {subgroupEntries.map(([type, { count, samples }], idx) => {
+                                                    const sgKey = `${key}::${type}`;
+                                                    const sgOpen = expandedFieldSubgroups.has(sgKey);
+                                                    const toggleSg = (e) => {
+                                                        e.stopPropagation();
+                                                        setExpandedFieldSubgroups((prev) => {
+                                                            const next = new Set(prev);
+                                                            if (next.has(sgKey)) next.delete(sgKey); else next.add(sgKey);
+                                                            return next;
+                                                        });
+                                                    };
+                                                    return (
+                                                        <div key={type} style={{ display: 'flex', flexDirection: 'column', gap: 8, paddingTop: idx === 0 ? 0 : 8, borderTop: idx === 0 ? 'none' : '1px dashed #E5E7EB' }}>
+                                                            <div onClick={toggleSg} style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', userSelect: 'none' }}>
+                                                                <span style={{ fontSize: 10, fontWeight: 700, background: '#FFF', color: barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT, border: `1px solid ${barColor}`, borderRadius: 4, padding: '2px 8px', flexShrink: 0, whiteSpace: 'nowrap' }}>
+                                                                    {errTypeLabel(type)} · {count.toLocaleString(numLocale)}×
+                                                                </span>
+                                                                <span style={{ fontSize: 11, color: '#374151', flex: 1, minWidth: 0 }}>
+                                                                    {errTypeDesc(type) || (lang === 'de' ? `${count.toLocaleString(numLocale)} betroffene Artikel` : `${count.toLocaleString(numLocale)} affected items`)}
+                                                                </span>
+                                                                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, fontWeight: 700, color: '#6B7280', letterSpacing: '0.04em', flexShrink: 0 }}>
+                                                                    {count.toLocaleString(numLocale)} {lang === 'de' ? 'ANZEIGEN' : 'SHOW'}
+                                                                    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style={{ color: '#9CA3AF', transform: sgOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }}>
+                                                                        <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                                                                    </svg>
+                                                                </span>
+                                                            </div>
+                                                            {sgOpen && samples.length > 0 && (
+                                                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 8 }}>
+                                                                    {samples.map((s, i) => (
+                                                                        <div key={i} title={s.value || s.name || s.ean} style={{ background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 6, padding: '8px 10px', minWidth: 0 }}>
+                                                                            <div style={{ fontFamily: 'monospace', fontSize: 10, color: '#6B7280', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.ean || '—'}</div>
+                                                                            <div style={{ fontSize: 12, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: 1 }}>
+                                                                                {s.name || (s.value ? <span style={{ fontFamily: 'monospace', color: P_RED_TEXT }}>"{s.value}"</span> : <span style={{ color: '#9CA3AF', fontStyle: 'italic' }}>{lang === 'de' ? '(kein Name)' : '(no name)'}</span>)}
+                                                                            </div>
+                                                                        </div>
+                                                                    ))}
+                                                                    {count > samples.length && (
+                                                                        <div style={{ background: '#FFF', border: '1px dashed #E5E7EB', borderRadius: 6, padding: '8px 10px', fontSize: 11, color: '#9CA3AF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                                            {lang === 'de' ? `… und ${(count - samples.length).toLocaleString(numLocale)} weitere` : `… and ${(count - samples.length).toLocaleString(numLocale)} more`}
+                                                                        </div>
+                                                                    )}
+                                                                </div>
                                                             )}
                                                         </div>
                                                     );
-                                                });
-                                            })()}
-                                        </div>
-                                        <div style={{ textAlign: 'right', fontSize: 10, fontWeight: 600, whiteSpace: 'nowrap', paddingTop: 2 }}>
-                                            {pct === null ? <span style={{ color: '#9CA3AF' }}>{T.notInFeed}</span>
-                                                : errs === 0 ? <span style={{ color: P_GREEN_TEXT }}>{T.complete}</span>
-                                                : <span style={{ color: barColor === P_RED ? P_RED_TEXT : P_ORANGE_TEXT }}>{T.missingCount(errs.toLocaleString(numLocale))}</span>}
-                                        </div>
-                                        <div style={{ paddingLeft: 12, paddingTop: 2, display: 'flex', alignItems: 'center', gap: 5 }}>
-                                            {pct !== null ? (
-                                                <>
-                                                    <div style={{ flex: 1, height: 4, background: '#F3F4F6', borderRadius: 2, overflow: 'hidden' }}>
-                                                        <div style={{ height: '100%', width: `${errs > 0 ? Math.min(99, pct) : pct}%`, background: barColor, borderRadius: 2, transition: 'width 0.4s' }} />
-                                                    </div>
-                                                    <span style={{ fontSize: 9, color: '#9CA3AF', width: 26, textAlign: 'right', flexShrink: 0 }}>{errs > 0 ? Math.min(99, pct) : pct}%</span>
-                                                </>
-                                            ) : <span style={{ fontSize: 9, color: '#D1D5DB' }}>-</span>}
-                                        </div>
+                                                })}
+                                            </div>
+                                        )}
                                     </div>
                                 );
                             })}
