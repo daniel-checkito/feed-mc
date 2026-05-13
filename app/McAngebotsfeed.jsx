@@ -3174,7 +3174,7 @@ export default function McAngebotsfeed() {
                             {/* Score progress bar - Pflichtfelder */}
                             {(() => {
                                 const s = issues.pflichtScore;
-                                const c3 = s >= 90 ? P_GREEN : s >= 60 ? P_ORANGE : P_RED;
+                                const c3 = s >= 90 ? '#16A34A' : s >= 60 ? '#F59E0B' : '#DC2626';
                                 return (
                                     <ScoreBar
                                         title={lang === 'de' ? 'Pflichtfeldabdeckung' : 'Required field coverage'}
@@ -3232,7 +3232,7 @@ export default function McAngebotsfeed() {
                 const { optFieldStats } = issues;
                 const numLocale = lang === 'de' ? 'de-DE' : 'en-US';
                 const overallPct = issues.optionalScore;
-                const overallColor = overallPct >= 70 ? P_GREEN : overallPct >= 40 ? P_ORANGE : P_RED;
+                const overallColor = overallPct >= 70 ? '#16A34A' : overallPct >= 40 ? '#F59E0B' : '#DC2626';
 
                 const fieldHint = (field) => lang === 'de' ? ({
                     color: 'Einige Artikel haben keine Farbangabe, wichtig für Filter & Suche',
@@ -4064,9 +4064,9 @@ export default function McAngebotsfeed() {
                                     </div>
                                     {(() => {
                                         const s = issues.pflichtScore;
-                                        const sc = s >= 90 ? P_GREEN : s >= 60 ? P_ORANGE : P_RED;
+                                        const sc = s >= 90 ? '#16A34A' : s >= 60 ? '#F59E0B' : '#DC2626';
                                         const os = issues.optionalScore;
-                                        const oc = os >= 70 ? P_GREEN : os >= 40 ? P_ORANGE : P_RED;
+                                        const oc = os >= 70 ? '#16A34A' : os >= 40 ? '#F59E0B' : '#DC2626';
                                         const tc = issues.totalRows;
                                         const optMappedFields = optFieldStats.fields.filter(f => !f.notMapped);
                                         let optCompleteArticles = 0;
