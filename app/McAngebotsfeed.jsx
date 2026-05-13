@@ -1541,9 +1541,9 @@ export default function McAngebotsfeed() {
                 .mc-header-btn-label { display: inline; }
                 .mc-header-guide-btn { display: flex !important; }
                 .mc-header-sep { display: block !important; }
-                .mc-step1-grid { display: grid; grid-template-columns: 1fr 420px; gap: 20px; align-items: start; }
-                .mc-two-col-320 { display: grid; grid-template-columns: 1fr 420px; gap: 20px; align-items: start; }
-                .mc-two-col-400 { display: grid; grid-template-columns: 1fr 420px; gap: 20px; align-items: start; }
+                .mc-step1-grid { display: grid; grid-template-columns: 1fr 360px; gap: 20px; align-items: start; }
+                .mc-two-col-320 { display: grid; grid-template-columns: 1fr 360px; gap: 20px; align-items: start; }
+                .mc-two-col-400 { display: grid; grid-template-columns: 1fr 360px; gap: 20px; align-items: start; }
                 .mc-tab-bar { overflow-x: auto; scrollbar-width: none; }
                 .mc-tab-bar::-webkit-scrollbar { display: none; }
                 .mc-sticky-sidebar { position: sticky; top: 20px; align-self: flex-start; }
