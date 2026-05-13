@@ -4157,15 +4157,39 @@ export default function McAngebotsfeed() {
                                 </div>
 
                                 {/* Card 2, Summary */}
-                                <div style={{ background: '#EFF6FF', borderRadius: 14, border: '1px solid #DBEAFE', padding: '14px 16px', display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-                                    <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#DBEAFE', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2 }}>
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E40AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 18h18"/><path d="M4 15l5-5 4 3 7-7"/><path d="M15 6h5v5"/></svg>
+                                <div style={{ background: '#FFF', borderRadius: 16, border: '1px solid #E5E7EB', padding: '20px 22px', display: 'flex', gap: 18, alignItems: 'center', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+                                    <div style={{ width: 56, height: 56, borderRadius: '50%', background: '#E8F0FE', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 18h18"/><path d="M4 15l5-5 4 3 7-7"/><path d="M15 6h5v5"/></svg>
                                     </div>
-                                    <div style={{ fontSize: 12, color: '#1E3A8A', lineHeight: 1.6 }}>
+                                    <div style={{ minWidth: 0 }}>
                                         {lang === 'de' ? (
-                                            <span>Von <strong>{issues.totalRows.toLocaleString(numLocale)}</strong> Artikeln im Feed sind <strong style={{ color: '#166534' }}>{issues.livefaehigCount.toLocaleString(numLocale)}</strong> listbar (<strong>{listablePct}%</strong>).{issues.blockiertCount > 0 && <> <strong style={{ color: '#991B1B' }}>{issues.blockiertCount.toLocaleString(numLocale)}</strong> Artikel weisen Fehler in den Pflichtfeldern auf.</>}</span>
+                                            <>
+                                                <div style={{ fontSize: 13, fontWeight: 700, color: '#1a2238', lineHeight: 1.45 }}>
+                                                    Von <strong>{issues.totalRows.toLocaleString(numLocale)}</strong> Artikeln im Feed sind <strong style={{ color: '#16A34A' }}>{issues.livefaehigCount.toLocaleString(numLocale)}</strong> listbar (<strong>{listablePct}%</strong>).
+                                                </div>
+                                                {issues.blockiertCount > 0 && (
+                                                    <div style={{ fontSize: 12, color: '#1a2238', lineHeight: 1.5, marginTop: 6 }}>
+                                                        <strong style={{ color: '#DC2626' }}>{issues.blockiertCount.toLocaleString(numLocale)}</strong> Artikel weisen Fehler in den Pflichtfeldern auf.
+                                                    </div>
+                                                )}
+                                                <div style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.5, marginTop: 6 }}>
+                                                    Mit den Handlungsempfehlungen können Sie die Abdeckung auf bis zu 100 % steigern.
+                                                </div>
+                                            </>
                                         ) : (
-                                            <span>Of <strong>{issues.totalRows.toLocaleString(numLocale)}</strong> items in the feed, <strong style={{ color: '#166534' }}>{issues.livefaehigCount.toLocaleString(numLocale)}</strong> are listable (<strong>{listablePct}%</strong>).{issues.blockiertCount > 0 && <> <strong style={{ color: '#991B1B' }}>{issues.blockiertCount.toLocaleString(numLocale)}</strong> items have errors in required fields.</>}</span>
+                                            <>
+                                                <div style={{ fontSize: 13, fontWeight: 700, color: '#1a2238', lineHeight: 1.45 }}>
+                                                    Of <strong>{issues.totalRows.toLocaleString(numLocale)}</strong> items in the feed, <strong style={{ color: '#16A34A' }}>{issues.livefaehigCount.toLocaleString(numLocale)}</strong> are listable (<strong>{listablePct}%</strong>).
+                                                </div>
+                                                {issues.blockiertCount > 0 && (
+                                                    <div style={{ fontSize: 12, color: '#1a2238', lineHeight: 1.5, marginTop: 6 }}>
+                                                        <strong style={{ color: '#DC2626' }}>{issues.blockiertCount.toLocaleString(numLocale)}</strong> items have errors in required fields.
+                                                    </div>
+                                                )}
+                                                <div style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.5, marginTop: 6 }}>
+                                                    Use the recommendations to lift coverage up to 100%.
+                                                </div>
+                                            </>
                                         )}
                                     </div>
                                 </div>
