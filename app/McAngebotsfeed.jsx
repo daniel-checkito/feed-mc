@@ -2324,6 +2324,19 @@ export default function McAngebotsfeed() {
                     return isMapped && (fieldErrorRows[key]?.size || 0) === 0;
                 }).length;
 
+                const imgDistribution = mcImageColumns.length > 0 ? (() => {
+                    const dist = {};
+                    let totalRows = 0;
+                    rows.forEach((r) => {
+                        totalRows++;
+                        const cnt = mcImageColumns.reduce((s, col) => s + (String(r[col] ?? '').trim() ? 1 : 0), 0);
+                        dist[cnt] = (dist[cnt] || 0) + 1;
+                    });
+                    return { dist, totalRows };
+                })() : null;
+                const eanColImg = mcMapping.ean;
+                const nameColImg = mcMapping.name;
+
                 // Build per-type error breakdown for sidebar
                 const eanCol3 = mcMapping.ean;
                 const nameCol3 = mcMapping.name;
@@ -2636,6 +2649,8 @@ export default function McAngebotsfeed() {
                         {/* 2-column: table | action panel */}
                         <div className="mc-two-col-320" style={{ alignItems: 'start' }}>
 
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+
                         {/* Field analysis table */}
                         <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'hidden' }}>
                             <div style={{ padding: '12px 16px 10px', borderBottom: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'sticky', top: 0, background: '#FFF', zIndex: 1, gap: 12 }}>
@@ -2800,6 +2815,93 @@ export default function McAngebotsfeed() {
                                     </div>
                                 );
                             })}
+                        </div>
+
+                        {/* Bilder analysis */}
+                        {imgDistribution && imgDistribution.totalRows > 0 && (() => {
+                            const allImgSamples = mcImageColumns.length > 0 ? rows.map((r) => ({
+                                name: nameColImg ? String(r[nameColImg] ?? '').trim() : '',
+                                ean: eanColImg ? String(r[eanColImg] ?? '').trim() : '',
+                                urls: mcImageColumns.map((c) => String(r[c] ?? '').trim()).filter(Boolean),
+                                total: mcImageColumns.reduce((s, c) => s + (String(r[c] ?? '').trim() ? 1 : 0), 0),
+                            })) : [];
+
+                            const searchTerm = eanSearchImg.trim().toLowerCase();
+                            const filteredSamples = allImgSamples
+                                .filter((s) => selectedImgCount === null || s.total === selectedImgCount)
+                                .filter((s) => !searchTerm || s.ean.toLowerCase().includes(searchTerm) || s.name.toLowerCase().includes(searchTerm))
+                                .slice(0, 5);
+
+                            return (
+                                <div style={{ background: '#FFF', borderRadius: 14, boxShadow: '0 1px 4px rgba(0,0,0,0.06)', border: '1px solid #E5E7EB', overflow: 'hidden' }}>
+                                    <div style={{ padding: '12px 16px 10px', borderBottom: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', gap: 8 }}>
+                                        <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{lang === 'de' ? 'Bilder' : 'Images'}</div>
+                                        <div style={{ marginLeft: 'auto', fontSize: 10, color: P_GREEN_TEXT, background: P_GREEN_BG, border: `1px solid ${P_GREEN}`, borderRadius: 999, padding: '3px 10px', fontWeight: 600 }}>
+                                            {lang === 'de' ? `${mcImageColumns.length} Bildspalten` : `${mcImageColumns.length} image columns`}
+                                        </div>
+                                    </div>
+                                    <div style={{ padding: '10px 16px 10px', display: 'flex', flexWrap: 'wrap', gap: 6, borderBottom: '1px solid #F3F4F6' }}>
+                                        {[{ cnt: null, label: lang === 'de' ? 'Alle' : 'All', n: imgDistribution.totalRows }]
+                                            .concat(Object.entries(imgDistribution.dist).map(([k, v]) => ({ cnt: parseInt(k, 10), label: null, n: v })).sort((a, b) => a.cnt - b.cnt))
+                                            .map(({ cnt, label, n }) => {
+                                                const isActive = selectedImgCount === cnt;
+                                                const isOk = cnt === null || cnt >= 3;
+                                                const isWarn = cnt !== null && cnt > 0 && cnt < 3;
+                                                const color = isActive ? '#FFF' : isOk ? P_GREEN_TEXT : isWarn ? P_ORANGE_TEXT : P_RED_TEXT;
+                                                const bg = isActive ? (isOk ? P_GREEN_TEXT : isWarn ? P_ORANGE_TEXT : P_RED_TEXT) : isOk ? P_GREEN_BG : isWarn ? P_ORANGE_BG : P_RED_BG;
+                                                const border = isOk ? P_GREEN : isWarn ? P_ORANGE : P_RED;
+                                                const chipLabel = label ?? (lang === 'de' ? `${cnt} ${cnt === 1 ? 'Bild' : 'Bilder'}` : `${cnt} ${cnt === 1 ? 'image' : 'images'}`);
+                                                return (
+                                                    <button key={String(cnt)} type="button"
+                                                        onClick={() => setSelectedImgCount(isActive ? null : cnt)}
+                                                        style={{ fontSize: 11, fontWeight: 600, color, background: bg, border: `1px solid ${border}`, borderRadius: 6, padding: '4px 10px', cursor: 'pointer' }}>
+                                                        {chipLabel}: {n}
+                                                    </button>
+                                                );
+                                            })}
+                                    </div>
+                                    <div style={{ padding: '8px 16px', borderBottom: '1px solid #F3F4F6', position: 'relative' }}>
+                                        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ position: 'absolute', left: 24, top: '50%', transform: 'translateY(-50%)', color: '#9CA3AF', pointerEvents: 'none' }}><circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" strokeWidth="1.3"/><path d="M10 10l3 3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>
+                                        <input type="text" value={eanSearchImg} onChange={(e) => setEanSearchImg(e.target.value)}
+                                            placeholder={lang === 'de' ? 'EAN oder Produktname suchen…' : 'Search EAN or product name…'}
+                                            style={{ width: '100%', boxSizing: 'border-box', paddingLeft: 28, paddingRight: 10, paddingTop: 5, paddingBottom: 5, border: '1px solid #E5E7EB', borderRadius: 6, fontSize: 11, outline: 'none', background: '#F9FAFB' }} />
+                                    </div>
+                                    <div style={{ padding: '8px 16px 12px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+                                        {filteredSamples.length === 0 ? (
+                                            <div style={{ fontSize: 11, color: '#9CA3AF', textAlign: 'center', padding: '12px 0' }}>
+                                                {lang === 'de' ? 'Keine Produkte gefunden.' : 'No products found.'}
+                                            </div>
+                                        ) : filteredSamples.map((s, i) => (
+                                            <div key={i} style={{ border: '1px solid #F3F4F6', borderRadius: 10, padding: '8px 10px', display: 'flex', alignItems: 'center', gap: 10 }}>
+                                                <div style={{ minWidth: 0, flex: 1 }}>
+                                                    <div style={{ fontSize: 11, fontWeight: 700, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name || '—'}</div>
+                                                    {s.ean && <div style={{ fontSize: 10, color: '#9CA3AF', fontFamily: 'monospace', marginTop: 1 }}>{s.ean}</div>}
+                                                    <div style={{ fontSize: 10, color: '#6B7280', marginTop: 1 }}>{lang === 'de' ? `${s.total} Bilder` : `${s.total} images`}</div>
+                                                </div>
+                                                <div style={{ display: 'flex', gap: 4, flexShrink: 0, marginLeft: 'auto' }}>
+                                                    {s.urls.slice(0, 4).map((u, ui) => (
+                                                        <img key={ui}
+                                                            src={`/api/image-proxy?url=${encodeURIComponent(u)}`}
+                                                            alt=""
+                                                            onClick={() => setImgModal({ open: true, urls: s.urls, idx: ui })}
+                                                            onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                                                            style={{ width: 44, height: 44, objectFit: 'cover', borderRadius: 6, border: '1px solid #E5E7EB', background: '#F9FAFB', cursor: 'zoom-in' }}
+                                                        />
+                                                    ))}
+                                                    {s.urls.length > 4 && (
+                                                        <div onClick={() => setImgModal({ open: true, urls: s.urls, idx: 4 })}
+                                                            style={{ width: 44, height: 44, borderRadius: 6, border: '1px solid #E5E7EB', background: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: '#6B7280', cursor: 'zoom-in', flexShrink: 0 }}>
+                                                            +{s.urls.length - 4}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            );
+                        })()}
+
                         </div>
 
                         {/* Right action panel */}
@@ -3144,96 +3246,6 @@ export default function McAngebotsfeed() {
                                         );
                                     })}
                                 </div>
-                                {/* Bilder analysis */}
-                                {imgDistribution && imgDistribution.totalRows > 0 && (() => {
-                                    // All products with at least one image (for EAN search + chip filter)
-                                    const allImgSamples = mcImageColumns.length > 0 ? rows.map((r) => ({
-                                        name: nameColImg ? String(r[nameColImg] ?? '').trim() : '',
-                                        ean: eanColImg ? String(r[eanColImg] ?? '').trim() : '',
-                                        urls: mcImageColumns.map((c) => String(r[c] ?? '').trim()).filter(Boolean),
-                                        total: mcImageColumns.reduce((s, c) => s + (String(r[c] ?? '').trim() ? 1 : 0), 0),
-                                    })) : [];
-
-                                    const searchTerm = eanSearchImg.trim().toLowerCase();
-                                    const filteredSamples = allImgSamples
-                                        .filter((s) => selectedImgCount === null || s.total === selectedImgCount)
-                                        .filter((s) => !searchTerm || s.ean.toLowerCase().includes(searchTerm) || s.name.toLowerCase().includes(searchTerm))
-                                        .slice(0, 5);
-
-                                    return (
-                                        <div style={{ background: '#FFF', borderRadius: 14, boxShadow: '0 1px 4px rgba(0,0,0,0.06)', border: '1px solid #E5E7EB', overflow: 'hidden' }}>
-                                            {/* Header */}
-                                            <div style={{ padding: '12px 16px 10px', borderBottom: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', gap: 8 }}>
-                                                <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{lang === 'de' ? 'Bilder' : 'Images'}</div>
-                                                <div style={{ marginLeft: 'auto', fontSize: 10, color: P_GREEN_TEXT, background: P_GREEN_BG, border: `1px solid ${P_GREEN}`, borderRadius: 999, padding: '3px 10px', fontWeight: 600 }}>
-                                                    {lang === 'de' ? `${mcImageColumns.length} Bildspalten` : `${mcImageColumns.length} image columns`}
-                                                </div>
-                                            </div>
-                                            {/* Clickable distribution chips */}
-                                            <div style={{ padding: '10px 16px 10px', display: 'flex', flexWrap: 'wrap', gap: 6, borderBottom: '1px solid #F3F4F6' }}>
-                                                {[{ cnt: null, label: lang === 'de' ? 'Alle' : 'All', n: imgDistribution.totalRows }]
-                                                    .concat(Object.entries(imgDistribution.dist).map(([k, v]) => ({ cnt: parseInt(k, 10), label: null, n: v })).sort((a, b) => a.cnt - b.cnt))
-                                                    .map(({ cnt, label, n }) => {
-                                                        const isActive = selectedImgCount === cnt;
-                                                        const isOk = cnt === null || cnt >= 3;
-                                                        const isWarn = cnt !== null && cnt > 0 && cnt < 3;
-                                                        const color = isActive ? '#FFF' : isOk ? P_GREEN_TEXT : isWarn ? P_ORANGE_TEXT : P_RED_TEXT;
-                                                        const bg = isActive ? (isOk ? P_GREEN_TEXT : isWarn ? P_ORANGE_TEXT : P_RED_TEXT) : isOk ? P_GREEN_BG : isWarn ? P_ORANGE_BG : P_RED_BG;
-                                                        const border = isOk ? P_GREEN : isWarn ? P_ORANGE : P_RED;
-                                                        const chipLabel = label ?? (lang === 'de' ? `${cnt} ${cnt === 1 ? 'Bild' : 'Bilder'}` : `${cnt} ${cnt === 1 ? 'image' : 'images'}`);
-                                                        return (
-                                                            <button key={String(cnt)} type="button"
-                                                                onClick={() => setSelectedImgCount(isActive ? null : cnt)}
-                                                                style={{ fontSize: 11, fontWeight: 600, color, background: bg, border: `1px solid ${border}`, borderRadius: 6, padding: '4px 10px', cursor: 'pointer' }}>
-                                                                {chipLabel}: {n}
-                                                            </button>
-                                                        );
-                                                    })}
-                                            </div>
-                                            {/* EAN / name search */}
-                                            <div style={{ padding: '8px 16px', borderBottom: '1px solid #F3F4F6', position: 'relative' }}>
-                                                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ position: 'absolute', left: 24, top: '50%', transform: 'translateY(-50%)', color: '#9CA3AF', pointerEvents: 'none' }}><circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" strokeWidth="1.3"/><path d="M10 10l3 3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>
-                                                <input type="text" value={eanSearchImg} onChange={(e) => setEanSearchImg(e.target.value)}
-                                                    placeholder={lang === 'de' ? 'EAN oder Produktname suchen…' : 'Search EAN or product name…'}
-                                                    style={{ width: '100%', boxSizing: 'border-box', paddingLeft: 28, paddingRight: 10, paddingTop: 5, paddingBottom: 5, border: '1px solid #E5E7EB', borderRadius: 6, fontSize: 11, outline: 'none', background: '#F9FAFB' }} />
-                                            </div>
-                                            {/* Product sample cards */}
-                                            <div style={{ padding: '8px 16px 12px', display: 'flex', flexDirection: 'column', gap: 6 }}>
-                                                {filteredSamples.length === 0 ? (
-                                                    <div style={{ fontSize: 11, color: '#9CA3AF', textAlign: 'center', padding: '12px 0' }}>
-                                                        {lang === 'de' ? 'Keine Produkte gefunden.' : 'No products found.'}
-                                                    </div>
-                                                ) : filteredSamples.map((s, i) => (
-                                                    <div key={i} style={{ border: '1px solid #F3F4F6', borderRadius: 10, padding: '8px 10px', display: 'flex', alignItems: 'center', gap: 10 }}>
-                                                        <div style={{ minWidth: 0, flex: 1 }}>
-                                                            <div style={{ fontSize: 11, fontWeight: 700, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name || '—'}</div>
-                                                            {s.ean && <div style={{ fontSize: 10, color: '#9CA3AF', fontFamily: 'monospace', marginTop: 1 }}>{s.ean}</div>}
-                                                            <div style={{ fontSize: 10, color: '#6B7280', marginTop: 1 }}>{lang === 'de' ? `${s.total} Bilder` : `${s.total} images`}</div>
-                                                        </div>
-                                                        <div style={{ display: 'flex', gap: 4, flexShrink: 0, marginLeft: 'auto' }}>
-                                                            {s.urls.slice(0, 4).map((u, ui) => (
-                                                                <img key={ui}
-                                                                    src={`/api/image-proxy?url=${encodeURIComponent(u)}`}
-                                                                    alt=""
-                                                                    onClick={() => setImgModal({ open: true, urls: s.urls, idx: ui })}
-                                                                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                                                                    style={{ width: 44, height: 44, objectFit: 'cover', borderRadius: 6, border: '1px solid #E5E7EB', background: '#F9FAFB', cursor: 'zoom-in' }}
-                                                                />
-                                                            ))}
-                                                            {s.urls.length > 4 && (
-                                                                <div onClick={() => setImgModal({ open: true, urls: s.urls, idx: 4 })}
-                                                                    style={{ width: 44, height: 44, borderRadius: 6, border: '1px solid #E5E7EB', background: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: '#6B7280', cursor: 'zoom-in', flexShrink: 0 }}>
-                                                                    +{s.urls.length - 4}
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    );
-                                })()}
-
                                 {/* Title and description length charts side by side */}
                                 {(titleStats?.total > 0 || descStats?.total > 0) && (() => {
                                     const eanCol = mcMapping['ean'];
