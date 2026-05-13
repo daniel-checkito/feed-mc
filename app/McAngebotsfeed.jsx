@@ -1905,8 +1905,8 @@ export default function McAngebotsfeed() {
                                 </div>
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                                     {[
-                                        { value: 'germany', label: lang === 'de' ? 'Deutschland' : 'Germany', sub: lang === 'de' ? 'Kein HS-Code nötig' : 'No HS code needed' },
-                                        { value: 'outside_germany', label: lang === 'de' ? 'In einem EU-Land (außerhalb Deutschland)' : 'In an EU country (outside Germany)', sub: lang === 'de' ? 'HS-Code wird geprüft' : 'HS code required' },
+                                        { value: 'germany', label: lang === 'de' ? 'Innerhalb von Deutschland' : 'Inside Germany' },
+                                        { value: 'outside_germany', label: lang === 'de' ? 'In einem EU-Land (außerhalb Deutschland)' : 'In an EU country (outside Germany)' },
                                     ].map((opt) => {
                                         const active = storeLocation === opt.value;
                                         return (
@@ -1915,19 +1915,15 @@ export default function McAngebotsfeed() {
                                                 type="button"
                                                 onClick={() => setStoreLocation(opt.value)}
                                                 style={{
-                                                    padding: '8px 10px',
+                                                    padding: '10px 12px',
                                                     border: `1px solid ${active ? MC_BLUE : '#D1D5DB'}`,
                                                     background: active ? '#EEF4FF' : '#FFF',
                                                     borderRadius: 6,
                                                     cursor: 'pointer',
                                                     textAlign: 'left',
-                                                    display: 'flex',
-                                                    flexDirection: 'column',
-                                                    gap: 2,
                                                 }}
                                             >
                                                 <span style={{ fontSize: 12, fontWeight: 600, color: active ? MC_BLUE : '#111827' }}>{opt.label}</span>
-                                                <span style={{ fontSize: 10, color: active ? MC_BLUE : '#9CA3AF' }}>{opt.sub}</span>
                                             </button>
                                         );
                                     })}
