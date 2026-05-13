@@ -2712,7 +2712,7 @@ export default function McAngebotsfeed() {
                                 };
                                 const subgroupEntries = hasError && fieldErrorDetails[key] ? Object.entries(fieldErrorDetails[key]) : [];
                                 return (
-                                    <div key={key} style={{ borderBottom: '1px solid #F9FAFB', background: hasError ? (barColor === P_RED ? P_RED_BG : P_ORANGE_BG) : 'transparent', borderLeft: hasError ? `3px solid ${barColor}` : '3px solid transparent' }}>
+                                    <div key={key} style={{ borderBottom: '3px solid #FFFFFF', background: hasError ? (barColor === P_RED ? P_RED_BG : P_ORANGE_BG) : 'transparent', borderLeft: hasError ? `3px solid ${barColor}` : '3px solid transparent' }}>
                                         <div
                                             onClick={toggleRow}
                                             style={{ display: 'grid', gridTemplateColumns: '1fr 200px 120px', padding: '8px 16px', alignItems: 'center', cursor: hasError ? 'pointer' : 'default', userSelect: 'none' }}>
@@ -3154,7 +3154,7 @@ export default function McAngebotsfeed() {
                                             });
                                         };
                                         return (
-                                            <div key={f.field} style={{ borderBottom: '1px solid #F9FAFB', background: hasError ? (barColor === P_RED ? P_RED_BG : P_ORANGE_BG) : 'transparent', borderLeft: hasError ? `3px solid ${barColor}` : '3px solid transparent' }}>
+                                            <div key={f.field} style={{ borderBottom: '3px solid #FFFFFF', background: hasError ? (barColor === P_RED ? P_RED_BG : P_ORANGE_BG) : 'transparent', borderLeft: hasError ? `3px solid ${barColor}` : '3px solid transparent' }}>
                                                 <div
                                                     onClick={toggleRow}
                                                     style={{ display: 'grid', gridTemplateColumns: '1fr 200px 120px', padding: '8px 16px', alignItems: 'center', cursor: hasError ? 'pointer' : 'default', userSelect: 'none' }}>
