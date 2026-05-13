@@ -3130,7 +3130,7 @@ export default function McAngebotsfeed() {
                                         );
                                     };
                                     const renderChart = ({ title, target, stats, buckets, selected, setBucket, labelWidth, fieldKey }) => (
-                                        <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '14px 16px' }}>
+                                        <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '14px 16px', minWidth: 0, alignSelf: 'start' }}>
                                             <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 12 }}>
                                                 <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{title}</div>
                                                 <div style={{ display: 'flex', gap: 8 }}>
