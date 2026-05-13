@@ -3129,6 +3129,95 @@ export default function McAngebotsfeed() {
                                             </div>
                                         );
                                     };
+                                    const tipsByField = {
+                                        title: {
+                                            heading: lang === 'de' ? 'Tipps für bessere Titel' : 'Tips for better titles',
+                                            bad: '"Sofa schwarz"',
+                                            good: lang === 'de' ? '"Dreammöbel Ecksofa 3-Sitzer, Kunstleder schwarz, 180 × 90 cm"' : '"Dreammöbel Corner Sofa 3-seater, faux leather black, 180 × 90 cm"',
+                                            dos: lang === 'de'
+                                                ? ['Marke voranstellen', 'Produktart + Farbe + Maße', 'Mind. 2 Wörter', 'Ziel: 80+ Zeichen']
+                                                : ['Brand first', 'Product type + Color + Dimensions', 'Min. 2 words', 'Aim for 80+ characters'],
+                                            donts: lang === 'de'
+                                                ? ['"B-Ware" / "gebraucht"', 'Nur ein Wort', 'Werbephrasen', 'Platzhalter wie "n/a"']
+                                                : ['"used" / "B-stock"', 'Single word only', 'Advertising phrases', 'Placeholders like "n/a"'],
+                                        },
+                                        desc: {
+                                            heading: lang === 'de' ? 'Tipps für bessere Beschreibungen' : 'Tips for better descriptions',
+                                            bad: '"Schönes Sofa."',
+                                            good: lang === 'de' ? '"Elegantes Ecksofa aus Kunstleder in Schwarz. Maße: 200 × 80 × 120 cm. Kaltschaum-Polsterung, abnehmbarer Bezug."' : '"Elegant corner sofa made of faux leather in black. Dimensions: 200 × 80 × 120 cm. Cold-foam padding, removable cover."',
+                                            dos: lang === 'de'
+                                                ? ['Material, Farbe, Maße nennen', 'Konkrete Produktdetails', 'Mind. 100, idealerweise 300+ Zeichen', 'Pflege- und Aufbauhinweise']
+                                                : ['State material, color, dimensions', 'Concrete product details', 'Min. 100, ideally 300+ characters', 'Care and assembly notes'],
+                                            donts: lang === 'de'
+                                                ? ['"günstig", "Top-Qualität"', 'Externe Links / URLs', 'Identisch zum Titel', 'Lorem-Ipsum-Platzhalter']
+                                                : ['"cheap", "top quality"', 'External links / URLs', 'Identical to title', 'Lorem-Ipsum placeholders'],
+                                        },
+                                    };
+                                    const renderTips = (fieldKey) => {
+                                        const tip = tipsByField[fieldKey];
+                                        if (!tip) return null;
+                                        const key = `chart_tips_${fieldKey}`;
+                                        const isOpen = expandedRecs.has(key);
+                                        const toggle = () => setExpandedRecs((prev) => {
+                                            const next = new Set(prev);
+                                            if (next.has(key)) next.delete(key); else next.add(key);
+                                            return next;
+                                        });
+                                        return (
+                                            <div style={{ marginTop: 12, borderTop: '1px solid #F3F4F6', paddingTop: 8 }}>
+                                                <div onClick={toggle}
+                                                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, cursor: 'pointer', userSelect: 'none', padding: '4px 2px' }}>
+                                                    <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 700, color: '#111827' }}>
+                                                        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M8 1.5a5 5 0 00-3 9v1.5h6V10.5a5 5 0 00-3-9z" stroke="#F59E0B" strokeWidth="1.3" strokeLinejoin="round"/><path d="M6.5 14h3" stroke="#F59E0B" strokeWidth="1.3" strokeLinecap="round"/></svg>
+                                                        {tip.heading}
+                                                    </span>
+                                                    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style={{ color: '#9CA3AF', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }}><path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                                </div>
+                                                {isOpen && (
+                                                    <div style={{ marginTop: 6 }}>
+                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 5, marginBottom: 8 }}>
+                                                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, padding: '6px 9px', background: P_RED_BG, borderRadius: 6, borderLeft: `2px solid ${P_RED}` }}>
+                                                                <span style={{ color: P_RED_TEXT, fontSize: 11, fontWeight: 800, lineHeight: 1.2, flexShrink: 0 }}>✗</span>
+                                                                <span style={{ fontSize: 10, color: P_RED_TEXT, lineHeight: 1.4, fontStyle: 'italic' }}>{tip.bad}</span>
+                                                            </div>
+                                                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, padding: '6px 9px', background: P_GREEN_BG, borderRadius: 6, borderLeft: `2px solid ${P_GREEN}` }}>
+                                                                <span style={{ color: P_GREEN_TEXT, fontSize: 11, fontWeight: 800, lineHeight: 1.2, flexShrink: 0 }}>✓</span>
+                                                                <span style={{ fontSize: 10, color: P_GREEN_TEXT, lineHeight: 1.4, fontStyle: 'italic' }}>{tip.good}</span>
+                                                            </div>
+                                                        </div>
+                                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                                                            <div>
+                                                                <div style={{ fontSize: 9, fontWeight: 800, color: P_GREEN_TEXT, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                                                                    {lang === 'de' ? 'So geht es' : 'Do'}
+                                                                </div>
+                                                                <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                                                                    {tip.dos.map((d, j) => (
+                                                                        <div key={j} style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
+                                                                            <span style={{ color: P_GREEN_TEXT, fontSize: 10, fontWeight: 800, flexShrink: 0 }}>+</span>
+                                                                            <span style={{ fontSize: 10, color: '#374151', lineHeight: 1.4 }}>{d}</span>
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                            <div>
+                                                                <div style={{ fontSize: 9, fontWeight: 800, color: P_RED_TEXT, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                                                                    {lang === 'de' ? 'Vermeiden' : 'Avoid'}
+                                                                </div>
+                                                                <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                                                                    {tip.donts.map((d, j) => (
+                                                                        <div key={j} style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
+                                                                            <span style={{ color: P_RED_TEXT, fontSize: 10, fontWeight: 800, flexShrink: 0 }}>−</span>
+                                                                            <span style={{ fontSize: 10, color: '#374151', lineHeight: 1.4 }}>{d}</span>
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    };
                                     const renderChart = ({ title, target, stats, buckets, selected, setBucket, labelWidth, fieldKey }) => (
                                         <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '14px 16px', minWidth: 0, alignSelf: 'start' }}>
                                             <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 12 }}>
@@ -3163,6 +3252,7 @@ export default function McAngebotsfeed() {
                                             </div>
                                             {fieldKey === 'title' && renderList(titleSel, setTitleBucket, title)}
                                             {fieldKey === 'desc' && renderList(descSel, setDescBucket, title)}
+                                            {renderTips(fieldKey)}
                                         </div>
                                     );
                                     return (
