@@ -3824,59 +3824,83 @@ export default function McAngebotsfeed() {
                                         if (next.has(key)) next.delete(key); else next.add(key);
                                         return next;
                                     });
-                                    const renderCard = ({ key, count, rule, sampleEans, field }, accent, accentBg, accentText) => {
-                                        const isOpen = expandedRecs.has(key);
+                                    const fieldGroupLabel = (field) => (T.csvFieldLabels && T.csvFieldLabels[field]) || field;
+                                    const groupByField = (items) => {
+                                        const groups = new Map();
+                                        items.forEach((it) => {
+                                            const f = it.field;
+                                            if (!groups.has(f)) groups.set(f, { field: f, label: fieldGroupLabel(f), count: 0, issues: [] });
+                                            const g = groups.get(f);
+                                            g.count += it.count;
+                                            g.issues.push(it);
+                                        });
+                                        return [...groups.values()].sort((a, b) => b.count - a.count);
+                                    };
+                                    const renderCard = (group, accent, accentBg, accentText) => {
+                                        const groupKey = `group::${group.field}`;
+                                        const isOpen = expandedRecs.has(groupKey);
+                                        const issueCount = group.issues.length;
                                         return (
-                                            <div key={key}
+                                            <div key={groupKey}
                                                 style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', boxShadow: isOpen ? '0 2px 8px rgba(0,0,0,0.10)' : '0 1px 3px rgba(0,0,0,0.06)', overflow: 'hidden' }}
                                             >
                                                 <div
-                                                    onClick={() => toggleRec(key)}
+                                                    onClick={() => toggleRec(groupKey)}
                                                     style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', cursor: 'pointer', userSelect: 'none' }}
                                                 >
-                                                    {/* Icon tile */}
                                                     <div style={{ width: 32, height: 32, borderRadius: '50%', background: accentBg || '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                                        {fieldIcon(field || key.split('::')[0], accentText || '#6B7280')}
+                                                        {fieldIcon(group.field, accentText || '#6B7280')}
                                                     </div>
-                                                    {/* Text */}
                                                     <div style={{ flex: 1, minWidth: 0 }}>
-                                                        <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', lineHeight: 1.3 }}>{rule.title}</div>
-                                                        {rule.shortDesc && <div style={{ fontSize: 11, color: '#6B7280', marginTop: 1 }}>{rule.shortDesc}</div>}
+                                                        <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', lineHeight: 1.3 }}>{group.label}</div>
+                                                        <div style={{ fontSize: 11, color: '#6B7280', marginTop: 1 }}>
+                                                            {issueCount === 1
+                                                                ? group.issues[0].rule.title
+                                                                : (lang === 'de' ? `${issueCount} Problemtypen` : `${issueCount} issue types`)}
+                                                        </div>
                                                     </div>
-                                                    {/* Count + chevron */}
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-                                                        {count > 0 && (
-                                                            <div style={{ textAlign: 'right' }}>
-                                                                <div style={{ fontSize: 16, fontWeight: 800, color: accentText || accent || '#374151', lineHeight: 1 }}>{count.toLocaleString(numLocale)}</div>
-                                                                <div style={{ fontSize: 10, color: '#9CA3AF' }}>{lang === 'de' ? 'Artikel betroffen' : 'items affected'}</div>
-                                                            </div>
-                                                        )}
-                                                        {count === 0 && <span style={{ fontSize: 11, color: '#9CA3AF', background: '#F3F4F6', borderRadius: 4, padding: '2px 7px' }}>–</span>}
+                                                        <div style={{ textAlign: 'right' }}>
+                                                            <div style={{ fontSize: 16, fontWeight: 800, color: accentText || accent || '#374151', lineHeight: 1 }}>{group.count.toLocaleString(numLocale)}</div>
+                                                            <div style={{ fontSize: 10, color: '#9CA3AF' }}>{lang === 'de' ? 'Vorkommen' : 'occurrences'}</div>
+                                                        </div>
                                                         <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: '#9CA3AF', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }}>
                                                             <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
                                                         </svg>
                                                     </div>
                                                 </div>
                                                 {isOpen && (
-                                                    <div style={{ padding: '0 14px 12px 14px', borderTop: '1px solid #F3F4F6' }}>
-                                                        <div style={{ fontSize: 12, color: '#374151', lineHeight: 1.55, marginBottom: 6, paddingTop: 8 }}>{rule.action}</div>
-                                                        {sampleEans && sampleEans.length > 0 && (
-                                                            <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 4, marginBottom: 6 }}>
-                                                                <span style={{ fontSize: 10, color: '#9CA3AF', fontWeight: 600, marginRight: 2 }}>EAN:</span>
-                                                                {sampleEans.map((item, i) => (
-                                                                    <span key={i} style={{ fontFamily: 'monospace', fontSize: 10, background: '#F3F4F6', padding: '1px 5px', borderRadius: 3, color: '#374151', display: 'inline-flex', alignItems: 'center', gap: 2 }}>
-                                                                        {typeof item === 'string' ? item : item.ean}
-                                                                        {typeof item !== 'string' && item.name && (
-                                                                            <span style={{ fontFamily: 'sans-serif', color: '#6B7280', marginLeft: 3, maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>· {item.name}</span>
-                                                                        )}
+                                                    <div style={{ padding: '0 14px 12px 14px', borderTop: '1px solid #F3F4F6', display: 'flex', flexDirection: 'column', gap: 10, paddingTop: 10 }}>
+                                                        {group.issues.map(({ key, count, rule, sampleEans }, idx) => (
+                                                            <div key={key} style={{ paddingTop: idx === 0 ? 0 : 10, borderTop: idx === 0 ? 'none' : '1px dashed #E5E7EB' }}>
+                                                                <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 4 }}>
+                                                                    <div style={{ fontSize: 12, fontWeight: 700, color: accentText || '#111827', flex: 1, minWidth: 0 }}>{rule.title}</div>
+                                                                    <span style={{ fontSize: 11, fontWeight: 700, color: accentText || accent || '#374151', flexShrink: 0 }}>
+                                                                        {count.toLocaleString(numLocale)}×
                                                                     </span>
-                                                                ))}
-                                                                {count > sampleEans.length && (
-                                                                    <span style={{ fontSize: 10, color: '#9CA3AF' }}>+{count - sampleEans.length} {lang === 'de' ? 'weitere' : 'more'}</span>
+                                                                </div>
+                                                                <div style={{ fontSize: 12, color: '#374151', lineHeight: 1.5, marginBottom: 6 }}>{rule.action}</div>
+                                                                {sampleEans && sampleEans.length > 0 && (
+                                                                    <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 4, marginBottom: 6 }}>
+                                                                        <span style={{ fontSize: 10, color: '#9CA3AF', fontWeight: 600, marginRight: 2 }}>EAN:</span>
+                                                                        {sampleEans.map((item, i) => (
+                                                                            <span key={i} style={{ fontFamily: 'monospace', fontSize: 10, background: '#F3F4F6', padding: '1px 5px', borderRadius: 3, color: '#374151', display: 'inline-flex', alignItems: 'center', gap: 2 }}>
+                                                                                {typeof item === 'string' ? item : item.ean}
+                                                                                {typeof item !== 'string' && item.name && (
+                                                                                    <span style={{ fontFamily: 'sans-serif', color: '#6B7280', marginLeft: 3, maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>· {item.name}</span>
+                                                                                )}
+                                                                            </span>
+                                                                        ))}
+                                                                        {count > sampleEans.length && (
+                                                                            <span style={{ fontSize: 10, color: '#9CA3AF' }}>+{count - sampleEans.length} {lang === 'de' ? 'weitere' : 'more'}</span>
+                                                                        )}
+                                                                    </div>
+                                                                )}
+                                                                {rule.tip && (
+                                                                    <div style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.5, background: '#F9FAFB', borderRadius: 6, padding: '6px 10px' }}>{rule.tip}</div>
                                                                 )}
                                                             </div>
-                                                        )}
-                                                        <div style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.5, background: '#F9FAFB', borderRadius: 6, padding: '6px 10px' }}>{rule.tip}</div>
+                                                        ))}
                                                     </div>
                                                 )}
                                             </div>
@@ -3909,7 +3933,7 @@ export default function McAngebotsfeed() {
                                                 </div>
                                                 {sOpen && (
                                                     <div style={{ display: 'grid', gap: 6 }}>
-                                                        {items.map((r) => renderCard(r, accent, accentBg, accentText))}
+                                                        {groupByField(items).map((g) => renderCard(g, accent, accentBg, accentText))}
                                                     </div>
                                                 )}
                                             </div>
