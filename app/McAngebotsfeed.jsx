@@ -146,10 +146,14 @@ const DELIVERY_INCLUDES_RE = /\d+\s*[xX×]\s*\S+/;
 const NON_FURNITURE_CAT_RE = /\b(auto|kfz|spielzeug|elektronik|mode|kleidung|fashion|computer|handy|smartphone|sport|bücher|buch|lebensmittel|büro)\b/i;
 const LIGHTING_TITLE_RE = /lampe|leuchte|licht\b|beleuchtung\b|\bled\b/i;
 const LIGHTING_NO_RE = /ohne beleuchtung|nicht beleuchtet/i;
-const SHIPPING_MODE_ALIASES = { package: 'paket', parcel: 'paket', freight: 'spedition', delivery: 'paket', express: 'paket' };
+const SHIPPING_MODE_ALIASES = {
+    package: 'paket', pakete: 'paket', parcel: 'paket', pkg: 'paket', karton: 'paket',
+    shipment: 'spedition', spedition_ware: 'spedition', speditionsware: 'spedition', freight: 'spedition', forwarding: 'spedition',
+};
 const TEMPLATE_DESC_RE = /beispieltext|musterbeschreibung|lorem ipsum/i;
 const ADVERTISING_RE = /jetzt kaufen|rabatt\b|angebot\b/i;
 const EXTERNAL_LINK_RE = /www\.|https?:\/\//i;
+const DELIVERY_TIME_RE = /^\d+(-\d+)?\s*(tage|werktage|arbeitstage|wochen|woche|wk|wt|d|days)?$/i;
 
 function normalizeKey(input) {
     const s = String(input ?? '');
@@ -1114,7 +1118,10 @@ export default function McAngebotsfeed() {
                     if (TEMPLATE_DESC_RE.test(val)) {
                         pflichtErrors.push({ row: rn, ean, field: 'description', type: 'template', value: val });
                         pflichtOk = false;
-                    } else if (val.length < 50 || val.trim().split(/\s+/).length <= 3) {
+                    } else if (val.trim().split(/\s+/).length <= 3) {
+                        pflichtErrors.push({ row: rn, ean, field: 'description', type: 'template', value: val });
+                        pflichtOk = false;
+                    } else if (val.length < 50) {
                         pflichtErrors.push({ row: rn, ean, field: 'description', type: 'too_short', value: val });
                         pflichtOk = false;
                     } else if (/b-?ware/i.test(val)) {
@@ -1147,7 +1154,7 @@ export default function McAngebotsfeed() {
                         pflichtOk = false;
                     }
                 }
-                if (key === 'delivery_time' && !/\d/.test(val)) {
+                if (key === 'delivery_time' && !DELIVERY_TIME_RE.test(val.trim())) {
                     pflichtErrors.push({ row: rn, ean, field: key, type: 'invalid', value: val });
                     pflichtOk = false;
                 }
