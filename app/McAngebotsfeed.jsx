@@ -3841,21 +3841,8 @@ export default function McAngebotsfeed() {
                                         );
                                     };
 
-                                    const allSectionKeys = ['pflicht', 'optional', 'hints'];
-                                    const allCollapsed = allSectionKeys.every(k => collapsedSections.has(k));
-
                                     return (
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                                            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                                                <button type="button"
-                                                    onClick={() => setCollapsedSections(allCollapsed ? new Set() : new Set(allSectionKeys))}
-                                                    style={{ fontSize: 11, color: '#6B7280', background: 'none', border: '1px solid #E5E7EB', borderRadius: 6, padding: '3px 10px', cursor: 'pointer' }}
-                                                >
-                                                    {allCollapsed
-                                                        ? (lang === 'de' ? 'Alle aufklappen' : 'Expand all')
-                                                        : (lang === 'de' ? 'Alle einklappen' : 'Collapse all')}
-                                                </button>
-                                            </div>
                                             <Section
                                                 sectionKey="pflicht"
                                                 title={lang === 'de' ? 'Pflichtfelder' : 'Required Fields'}
@@ -3928,99 +3915,6 @@ export default function McAngebotsfeed() {
                                                 );
                                             })()}
 
-                                            {/* Quality tips for title and description - separate, independently collapsible cards (same look as Handlungsempfehlungen) */}
-                                            {(() => {
-                                                const tips = [
-                                                    {
-                                                        key: 'quality::name',
-                                                        title: lang === 'de' ? 'Qualitätstipps · Titel' : 'Quality tips · Title',
-                                                        bad: '"Sofa schwarz"',
-                                                        good: lang === 'de' ? '"Dreammöbel Ecksofa 3-Sitzer, Kunstleder schwarz, 180 × 90 cm"' : '"Dreammöbel Corner Sofa 3-seater, faux leather black, 180 × 90 cm"',
-                                                        dos: lang === 'de'
-                                                            ? ['Marke voranstellen', 'Produktart + Farbe + Maße', 'Mind. 2 Wörter']
-                                                            : ['Brand first', 'Product type + Color + Dimensions', 'Min. 2 words'],
-                                                        donts: lang === 'de'
-                                                            ? ['"B-Ware" / "gebraucht"', 'Nur ein Wort', 'Werbephrasen']
-                                                            : ['"used" / "B-stock"', 'Single word only', 'Advertising phrases'],
-                                                    },
-                                                    {
-                                                        key: 'quality::description',
-                                                        title: lang === 'de' ? 'Qualitätstipps · Beschreibung' : 'Quality tips · Description',
-                                                        bad: '"Schönes Sofa."',
-                                                        good: lang === 'de' ? '"Elegantes Ecksofa aus Kunstleder in Schwarz. Maße: 200 × 80 × 120 cm."' : '"Elegant corner sofa made of faux leather in black. Dimensions: 200 × 80 × 120 cm."',
-                                                        dos: lang === 'de'
-                                                            ? ['100-500 Zeichen', 'Material, Farbe, Maße', 'Konkrete Produktdetails']
-                                                            : ['100-500 characters', 'Material, color, dimensions', 'Concrete product details'],
-                                                        donts: lang === 'de'
-                                                            ? ['"günstig", "Top-Qualität"', 'Externe Links', 'Identisch zum Titel']
-                                                            : ['"cheap", "top quality"', 'External links', 'Identical to title'],
-                                                    },
-                                                ];
-                                                const accent = '#64748B';
-                                                const toggle = (key) => setExpandedRecs((prev) => {
-                                                    const next = new Set(prev);
-                                                    if (next.has(key)) next.delete(key); else next.add(key);
-                                                    return next;
-                                                });
-                                                return tips.map((c) => {
-                                                    const isOpen = expandedRecs.has(c.key);
-                                                    return (
-                                                        <div key={c.key} style={{ background: '#FFF', border: '1px solid #E5E7EB', borderLeft: `3px solid ${accent}`, borderRadius: 10 }}>
-                                                            <div
-                                                                onClick={() => toggle(c.key)}
-                                                                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, padding: '8px 14px', cursor: 'pointer', userSelect: 'none' }}
-                                                            >
-                                                                <span style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{c.title}</span>
-                                                                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: '#9CA3AF', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }}>
-                                                                    <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-                                                                </svg>
-                                                            </div>
-                                                            {isOpen && (
-                                                                <div style={{ padding: '0 14px 12px 14px' }}>
-                                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 5, marginBottom: 8 }}>
-                                                                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, padding: '6px 9px', background: P_RED_BG, borderRadius: 6, borderLeft: `2px solid ${P_RED}` }}>
-                                                                            <span style={{ color: P_RED_TEXT, fontSize: 11, fontWeight: 800, lineHeight: 1.2, flexShrink: 0 }}>✗</span>
-                                                                            <span style={{ fontSize: 11, color: P_RED_TEXT, lineHeight: 1.4, fontStyle: 'italic' }}>{c.bad}</span>
-                                                                        </div>
-                                                                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, padding: '6px 9px', background: P_GREEN_BG, borderRadius: 6, borderLeft: `2px solid ${P_GREEN}` }}>
-                                                                            <span style={{ color: P_GREEN_TEXT, fontSize: 11, fontWeight: 800, lineHeight: 1.2, flexShrink: 0 }}>✓</span>
-                                                                            <span style={{ fontSize: 11, color: P_GREEN_TEXT, lineHeight: 1.4, fontStyle: 'italic' }}>{c.good}</span>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                                                                        <div>
-                                                                            <div style={{ fontSize: 9, fontWeight: 800, color: P_GREEN_TEXT, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                                                                                {lang === 'de' ? 'So geht es' : 'Do'}
-                                                                            </div>
-                                                                            <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                                                                                {c.dos.map((d, j) => (
-                                                                                    <div key={j} style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
-                                                                                        <span style={{ color: P_GREEN_TEXT, fontSize: 10, fontWeight: 800, flexShrink: 0 }}>+</span>
-                                                                                        <span style={{ fontSize: 10, color: '#374151', lineHeight: 1.4 }}>{d}</span>
-                                                                                    </div>
-                                                                                ))}
-                                                                            </div>
-                                                                        </div>
-                                                                        <div>
-                                                                            <div style={{ fontSize: 9, fontWeight: 800, color: P_RED_TEXT, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                                                                                {lang === 'de' ? 'Vermeiden' : 'Avoid'}
-                                                                            </div>
-                                                                            <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                                                                                {c.donts.map((d, j) => (
-                                                                                    <div key={j} style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
-                                                                                        <span style={{ color: P_RED_TEXT, fontSize: 10, fontWeight: 800, flexShrink: 0 }}>−</span>
-                                                                                        <span style={{ fontSize: 10, color: '#374151', lineHeight: 1.4 }}>{d}</span>
-                                                                                    </div>
-                                                                                ))}
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                    );
-                                                });
-                                            })()}
                                         </div>
                                     );
                                 })()}
@@ -4031,14 +3925,10 @@ export default function McAngebotsfeed() {
 
                                 {/* Card 1 — Feed-Übersicht */}
                                 <div style={{ background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 14, overflow: 'hidden' }}>
-                                    <div style={{ padding: '10px 16px', borderBottom: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                    <div style={{ padding: '10px 16px', borderBottom: '1px solid #F3F4F6' }}>
                                         <span style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
                                             {lang === 'de' ? 'FEED-ÜBERSICHT' : 'FEED OVERVIEW'}
                                         </span>
-                                        <button type="button" onClick={() => setStep(3)}
-                                            style={{ fontSize: 10, color: MC_BLUE, background: 'none', border: '1px solid #DBEAFE', borderRadius: 5, padding: '2px 8px', cursor: 'pointer', fontWeight: 600 }}>
-                                            {lang === 'de' ? 'Details ansehen ›' : 'View details ›'}
-                                        </button>
                                     </div>
                                     {(() => {
                                         const s = issues.pflichtScore;
