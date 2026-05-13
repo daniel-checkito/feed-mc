@@ -4170,24 +4170,64 @@ export default function McAngebotsfeed() {
                                                     { key: 'optional', label: lang === 'de' ? 'Optionale Felder'  : 'Optional',        count: optionalRecs.length,                                         color: '#9A3412',  bg: '#FFF7ED' },
                                                     { key: 'hints',    label: lang === 'de' ? 'Hinweise'          : 'Hints',           count: hintRecs.length,                                             color: P_BLUE_TEXT, bg: P_BLUE_BG },
                                                 ];
+                                                const coveragePct = issues.pflichtScore;
                                                 return (
-                                                    <div style={{ background: '#FFF', border: '1px solid #E5E7EB', borderRadius: 12, padding: '16px 18px', boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>
-                                                        <div style={{ fontSize: 18, fontWeight: 800, color: '#111827', marginBottom: 12 }}>
-                                                            {lang === 'de' ? 'Handlungsempfehlungen' : 'Recommendations'}
+                                                    <>
+                                                        {/* Hero header */}
+                                                        <div style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(135deg, #1E40AF 0%, #2563EB 60%, #1D4ED8 100%)', borderRadius: 20, padding: '28px 32px', color: '#FFF', display: 'flex', alignItems: 'center', gap: 28, flexWrap: 'wrap', boxShadow: '0 6px 20px rgba(30,64,175,0.18)' }}>
+                                                            <svg viewBox="0 0 600 200" preserveAspectRatio="none" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.25, pointerEvents: 'none' }}>
+                                                                <path d="M0 160 Q150 110 300 150 T600 130 L600 200 L0 200 Z" fill="rgba(255,255,255,0.08)"/>
+                                                                <path d="M0 130 Q150 90 300 120 T600 100 L600 200 L0 200 Z" fill="rgba(255,255,255,0.05)"/>
+                                                            </svg>
+                                                            <div style={{ flex: 1, minWidth: 260, position: 'relative', zIndex: 1 }}>
+                                                                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 999, padding: '4px 12px 4px 6px', fontSize: 12, fontWeight: 600, marginBottom: 14 }}>
+                                                                    <span style={{ width: 18, height: 18, borderRadius: '50%', background: '#22C55E', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                                        <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#FFF" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                                                    </span>
+                                                                    {lang === 'de' ? 'Feed-Analyse abgeschlossen' : 'Feed analysis complete'}
+                                                                </div>
+                                                                <div style={{ fontSize: 26, fontWeight: 800, lineHeight: 1.2, marginBottom: 10 }}>
+                                                                    {lang === 'de' ? 'Empfehlungen für bessere Datenqualität' : 'Recommendations for better data quality'}
+                                                                </div>
+                                                                <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.85)', lineHeight: 1.5 }}>
+                                                                    {lang === 'de'
+                                                                        ? `Wir haben ${issues.totalRows.toLocaleString(numLocale)} Artikel geprüft und ${issues.blockiertCount.toLocaleString(numLocale)} Fehler in Pflichtfeldern gefunden.`
+                                                                        : `We checked ${issues.totalRows.toLocaleString(numLocale)} items and found ${issues.blockiertCount.toLocaleString(numLocale)} errors in required fields.`}
+                                                                </div>
+                                                                <button type="button" onClick={csvOnClick}
+                                                                    style={{ marginTop: 18, display: 'inline-flex', alignItems: 'center', gap: 8, background: '#FFF', color: '#1E40AF', border: 'none', borderRadius: 10, padding: '10px 18px', fontSize: 13, fontWeight: 700, cursor: 'pointer', boxShadow: '0 2px 6px rgba(0,0,0,0.12)' }}>
+                                                                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M5 7l3 3 3-3M2 13h12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                                                    {lang === 'de' ? 'Fehlerbericht (CSV)' : 'Error report (CSV)'}
+                                                                </button>
+                                                            </div>
+                                                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(120px, 1fr))', gap: 12, position: 'relative', zIndex: 1 }}>
+                                                                {[
+                                                                    { icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 18h18"/><path d="M4 15l5-5 4 3 7-7"/><path d="M15 6h5v5"/></svg>, bg: '#EFF6FF', value: issues.totalRows.toLocaleString(numLocale), color: '#2563EB', label: lang === 'de' ? 'Artikel geprüft' : 'Items checked' },
+                                                                    { icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#DC2626" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v6"/><circle cx="12" cy="16.5" r="0.6" fill="#DC2626"/></svg>, bg: '#FEF2F2', value: issues.blockiertCount.toLocaleString(numLocale), color: '#DC2626', label: lang === 'de' ? 'Pflichtfeld-Fehler' : 'Required-field errors' },
+                                                                    { icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16A34A" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3l8 4v6c0 4.5-3.5 7.5-8 8-4.5-.5-8-3.5-8-8V7l8-4z"/><path d="M9 12l2 2 4-4"/></svg>, bg: '#F0FDF4', value: `${coveragePct}%`, color: '#16A34A', label: lang === 'de' ? 'Pflichtfeldabdeckung' : 'Required coverage' },
+                                                                ].map((m, i) => (
+                                                                    <div key={i} style={{ background: '#FFF', borderRadius: 14, padding: '14px 14px 12px', minWidth: 130, textAlign: 'center', color: '#111827', boxShadow: '0 4px 14px rgba(0,0,0,0.10)' }}>
+                                                                        <div style={{ width: 38, height: 38, borderRadius: '50%', background: m.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 8px' }}>{m.icon}</div>
+                                                                        <div style={{ fontSize: 24, fontWeight: 800, color: m.color, lineHeight: 1 }}>{m.value}</div>
+                                                                        <div style={{ fontSize: 11, color: '#6B7280', marginTop: 4 }}>{m.label}</div>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
                                                         </div>
+                                                        {/* Filter tabs below */}
                                                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                                                             {tabs.map((t) => {
                                                                 const active = recFilter === t.key;
                                                                 return (
                                                                     <button key={t.key} type="button" onClick={() => setRecFilter(t.key)}
-                                                                        style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 999, border: `1px solid ${active ? t.color : '#E5E7EB'}`, background: active ? t.bg : '#FFF', color: active ? t.color : '#374151', fontSize: 12, fontWeight: 700, cursor: 'pointer', transition: 'all 0.15s' }}>
+                                                                        style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 14px', borderRadius: 999, border: `1px solid ${active ? t.color : '#E5E7EB'}`, background: active ? t.bg : '#FFF', color: active ? t.color : '#374151', fontSize: 12, fontWeight: 700, cursor: 'pointer', transition: 'all 0.15s' }}>
                                                                         {t.label}
                                                                         <span style={{ fontSize: 10, fontWeight: 700, background: active ? '#FFF' : '#F3F4F6', color: active ? t.color : '#6B7280', borderRadius: 999, padding: '1px 7px' }}>{t.count}</span>
                                                                     </button>
                                                                 );
                                                             })}
                                                         </div>
-                                                    </div>
+                                                    </>
                                                 );
                                             })()}
                                             {(recFilter === 'all' || recFilter === 'pflicht') && (
