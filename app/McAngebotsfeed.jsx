@@ -896,6 +896,7 @@ export default function McAngebotsfeed() {
     const [parseError, setParseError] = useState(null);
     const [titleBucket, setTitleBucket] = useState(null);
     const [descBucket, setDescBucket] = useState(null);
+    const [recFilter, setRecFilter] = useState('all');
     const fileRef = useRef(null);
 
     function parseFile(f) {
@@ -3990,6 +3991,29 @@ export default function McAngebotsfeed() {
 
                                     return (
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                                            {(() => {
+                                                const tabs = [
+                                                    { key: 'all',      label: lang === 'de' ? 'Alle'              : 'All',             count: pflichtRecs.length + optionalRecs.length + hintRecs.length, color: '#111827', bg: '#F3F4F6' },
+                                                    { key: 'pflicht',  label: lang === 'de' ? 'Pflichtfelder'     : 'Required',        count: pflichtRecs.length,                                          color: P_RED_TEXT, bg: P_RED_BG },
+                                                    { key: 'optional', label: lang === 'de' ? 'Optionale Felder'  : 'Optional',        count: optionalRecs.length,                                         color: '#9A3412',  bg: '#FFF7ED' },
+                                                    { key: 'hints',    label: lang === 'de' ? 'Hinweise'          : 'Hints',           count: hintRecs.length,                                             color: P_BLUE_TEXT, bg: P_BLUE_BG },
+                                                ];
+                                                return (
+                                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                                                        {tabs.map((t) => {
+                                                            const active = recFilter === t.key;
+                                                            return (
+                                                                <button key={t.key} type="button" onClick={() => setRecFilter(t.key)}
+                                                                    style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 999, border: `1px solid ${active ? t.color : '#E5E7EB'}`, background: active ? t.bg : '#FFF', color: active ? t.color : '#374151', fontSize: 12, fontWeight: 700, cursor: 'pointer', transition: 'all 0.15s' }}>
+                                                                    {t.label}
+                                                                    <span style={{ fontSize: 10, fontWeight: 700, background: active ? '#FFF' : '#F3F4F6', color: active ? t.color : '#6B7280', borderRadius: 999, padding: '1px 7px' }}>{t.count}</span>
+                                                                </button>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                );
+                                            })()}
+                                            {(recFilter === 'all' || recFilter === 'pflicht') && (
                                             <Section
                                                 sectionKey="pflicht"
                                                 title={lang === 'de' ? 'Pflichtfelder' : 'Required Fields'}
@@ -3999,6 +4023,8 @@ export default function McAngebotsfeed() {
                                                 accentText={P_RED_TEXT}
                                                 items={pflichtRecs}
                                             />
+                                            )}
+                                            {(recFilter === 'all' || recFilter === 'optional') && (
                                             <Section
                                                 sectionKey="optional"
                                                 title={lang === 'de' ? 'Optionale Felder' : 'Optional Fields'}
@@ -4008,6 +4034,8 @@ export default function McAngebotsfeed() {
                                                 accentText='#9A3412'
                                                 items={optionalRecs}
                                             />
+                                            )}
+                                            {(recFilter === 'all' || recFilter === 'hints') && (
                                             <Section
                                                 sectionKey="hints"
                                                 title={lang === 'de' ? 'Hinweise' : 'Hints'}
@@ -4017,6 +4045,7 @@ export default function McAngebotsfeed() {
                                                 accentText={P_BLUE_TEXT}
                                                 items={hintRecs}
                                             />
+                                            )}
 
                                         </div>
                                     );
