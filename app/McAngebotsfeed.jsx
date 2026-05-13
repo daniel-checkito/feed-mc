@@ -1873,20 +1873,17 @@ export default function McAngebotsfeed() {
                                     onDragLeave={() => setDragging(false)}
                                     onDrop={(e) => { e.preventDefault(); setDragging(false); const f = e.dataTransfer.files?.[0]; if (f) parseFile(f); }}
                                     onClick={() => fileRef.current?.click()}
-                                    style={{ border: `2px dashed ${dragging ? MC_BLUE : '#D1D5DB'}`, background: dragging ? '#EEF4FF' : '#F9FAFB', borderRadius: 10, padding: '32px 20px', cursor: 'pointer', transition: 'all 0.15s', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}
+                                    style={{ border: `2px dashed ${dragging ? MC_BLUE : '#D1D5DB'}`, background: dragging ? '#EEF4FF' : '#F9FAFB', borderRadius: 10, padding: '16px 20px', cursor: 'pointer', transition: 'all 0.15s', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 12 }}
                                 >
-                                    <div style={{ width: 44, height: 44, borderRadius: '50%', background: '#EEF3FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" style={{ color: MC_BLUE }}>
+                                    <div style={{ width: 34, height: 34, borderRadius: '50%', background: '#EEF3FF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ color: MC_BLUE }}>
                                             <path d="M7 17A4.5 4.5 0 017 8h.1A6.5 6.5 0 0120 9.5a4 4 0 010 8H7z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
                                             <path d="M12 17v-6m0 0l-2 2m2-2l2 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                                         </svg>
                                     </div>
-                                    <div style={{ textAlign: 'center' }}>
-                                        <div style={{ fontSize: 14, fontWeight: 600, color: '#111827', marginBottom: 3 }}>{T.dropHeading}</div>
-                                        <div style={{ fontSize: 12, color: '#9CA3AF' }}>{lang === 'de' ? 'Hierher ziehen oder klicken' : 'Drag here or click'}</div>
-                                    </div>
-                                    <div style={{ fontSize: 11, color: '#9CA3AF', background: '#F3F4F6', borderRadius: 20, padding: '3px 12px' }}>
-                                        {lang === 'de' ? 'CSV · UTF-8' : 'CSV · UTF-8'}
+                                    <div style={{ textAlign: 'left' }}>
+                                        <div style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{T.dropHeading}</div>
+                                        <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 1 }}>{lang === 'de' ? 'Hierher ziehen oder klicken · CSV · UTF-8' : 'Drag here or click · CSV · UTF-8'}</div>
                                     </div>
                                     <input ref={fileRef} type="file" accept=".csv,text/csv" style={{ display: 'none' }} onChange={(e) => { setParseError(null); parseFile(e.target.files?.[0] || null); }} />
                                 </div>
