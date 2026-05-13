@@ -3865,13 +3865,6 @@ export default function McAngebotsfeed() {
                                             ? (lang === 'de' ? 'Handlungsempfehlungen' : 'Recommendations')
                                             : T.recNoErrorsTitle}
                                     </div>
-                                    {recommendations.length > 0 && (
-                                        <div style={{ fontSize: 12, color: '#6B7280' }}>
-                                            {lang === 'de'
-                                                ? `${pflichtRecs.length} Pflichtfeld · ${optionalRecs.length} optionale Felder · ${hintRecs.length} Hinweise`
-                                                : `${pflichtRecs.length} required · ${optionalRecs.length} optional · ${hintRecs.length} hints`}
-                                        </div>
-                                    )}
                                     {recommendations.length === 0 && (
                                         <div style={{ fontSize: 13, color: '#6B7280' }}>{T.recNoErrorsSub}</div>
                                     )}
