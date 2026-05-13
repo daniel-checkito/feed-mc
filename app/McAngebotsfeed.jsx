@@ -3221,16 +3221,16 @@ export default function McAngebotsfeed() {
                                 {(titleStats?.total > 0 || descStats?.total > 0) && (() => {
                                     const eanCol = mcMapping['ean'];
                                     const titleBuckets = [
-                                        { key: 'none',  label: lang === 'de' ? 'Leer (0)' : 'Empty (0)',     color: '#EF4444', match: (l) => l === 0 },
-                                        { key: 'short', label: lang === 'de' ? 'Kurz (<30)' : 'Short (<30)', color: '#F59E0B', match: (l) => l > 0 && l < 30 },
-                                        { key: 'ok',    label: lang === 'de' ? 'OK (30–79)' : 'OK (30–79)',  color: '#60A5FA', match: (l) => l >= 30 && l < 80 },
-                                        { key: 'good',  label: lang === 'de' ? 'Gut (80+)' : 'Good (80+)',   color: '#166534', match: (l) => l >= 80 },
+                                        { key: 'none',  label: lang === 'de' ? 'Leer' : 'Empty',     sub: lang === 'de' ? 'Pflichtfeld nicht befüllt' : 'Required field empty',         color: '#EF4444', match: (l) => l === 0 },
+                                        { key: 'short', label: lang === 'de' ? 'Zu kurz' : 'Too short', sub: lang === 'de' ? 'unter 30 Zeichen — kaum auffindbar' : 'under 30 characters — hard to find', color: '#F59E0B', match: (l) => l > 0 && l < 30 },
+                                        { key: 'ok',    label: lang === 'de' ? 'Akzeptabel' : 'Acceptable',  sub: lang === 'de' ? '30–79 Zeichen — geht, aber kürzer als ideal' : '30–79 characters — okay, but shorter than ideal',  color: '#60A5FA', match: (l) => l >= 30 && l < 80 },
+                                        { key: 'good',  label: lang === 'de' ? 'Optimal' : 'Optimal',   sub: lang === 'de' ? '80+ Zeichen — gute Auffindbarkeit' : '80+ characters — good searchability',   color: '#166534', match: (l) => l >= 80 },
                                     ];
                                     const descBuckets = [
-                                        { key: 'none',  label: lang === 'de' ? 'Leer (0)' : 'Empty (0)',         color: '#EF4444', match: (l) => l === 0 },
-                                        { key: 'short', label: lang === 'de' ? 'Kurz (<100)' : 'Short (<100)',   color: '#F59E0B', match: (l) => l > 0 && l < 100 },
-                                        { key: 'ok',    label: lang === 'de' ? 'OK (100–299)' : 'OK (100–299)',  color: '#60A5FA', match: (l) => l >= 100 && l < 300 },
-                                        { key: 'good',  label: lang === 'de' ? 'Gut (300+)' : 'Good (300+)',     color: '#166534', match: (l) => l >= 300 },
+                                        { key: 'none',  label: lang === 'de' ? 'Leer' : 'Empty',         sub: lang === 'de' ? 'Pflichtfeld nicht befüllt' : 'Required field empty',          color: '#EF4444', match: (l) => l === 0 },
+                                        { key: 'short', label: lang === 'de' ? 'Zu kurz' : 'Too short',   sub: lang === 'de' ? 'unter 100 Zeichen — zu wenig Produktinfos' : 'under 100 characters — too little product info',   color: '#F59E0B', match: (l) => l > 0 && l < 100 },
+                                        { key: 'ok',    label: lang === 'de' ? 'Akzeptabel' : 'Acceptable',  sub: lang === 'de' ? '100–299 Zeichen — geht, mehr Details wären besser' : '100–299 characters — okay, more detail would help',  color: '#60A5FA', match: (l) => l >= 100 && l < 300 },
+                                        { key: 'good',  label: lang === 'de' ? 'Optimal' : 'Optimal',     sub: lang === 'de' ? '300+ Zeichen — gute Conversion-Basis' : '300+ characters — strong conversion baseline',     color: '#166534', match: (l) => l >= 300 },
                                     ];
                                     const buildMatches = (col, buckets, selected) => {
                                         if (!col || !selected) return null;
@@ -3386,34 +3386,44 @@ export default function McAngebotsfeed() {
                                             </div>
                                         );
                                     };
-                                    const renderChart = ({ title, target, stats, buckets, selected, setBucket, labelWidth, fieldKey }) => (
+                                    const renderChart = ({ title, intro, target, stats, buckets, selected, setBucket, labelWidth, fieldKey }) => (
                                         <div style={{ background: '#FFF', borderRadius: 12, border: '1px solid #E5E7EB', padding: '14px 16px', minWidth: 0, alignSelf: 'start' }}>
-                                            <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 12 }}>
-                                                <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{title}</div>
-                                                <div style={{ display: 'flex', gap: 8 }}>
-                                                    <div style={{ fontSize: 10, color: '#166534', fontWeight: 600 }}>{lang === 'de' ? `Ziel: ${target}` : `Target: ${target}`}</div>
-                                                    <div style={{ fontSize: 10, color: '#9CA3AF' }}>
-                                                        {lang === 'de' ? `Ø ${stats.avg.toLocaleString(numLocale)}` : `Avg. ${stats.avg.toLocaleString(numLocale)}`}
+                                            <div style={{ marginBottom: 10 }}>
+                                                <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8 }}>
+                                                    <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{title}</div>
+                                                    <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+                                                        <div style={{ fontSize: 10, color: '#166534', fontWeight: 600 }}>{lang === 'de' ? `Ziel: ${target}` : `Target: ${target}`}</div>
+                                                        <div style={{ fontSize: 10, color: '#9CA3AF' }}>
+                                                            {lang === 'de' ? `Ø ${stats.avg.toLocaleString(numLocale)}` : `Avg. ${stats.avg.toLocaleString(numLocale)}`}
+                                                        </div>
                                                     </div>
                                                 </div>
+                                                {intro && (
+                                                    <div style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.45, marginTop: 4 }}>{intro}</div>
+                                                )}
                                             </div>
-                                            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                                                {buckets.map(({ key, label, color }) => {
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                                                {buckets.map(({ key, label, sub, color }) => {
                                                     const cnt = stats.buckets[key];
                                                     const pct = stats.total ? Math.round((cnt / stats.total) * 100) : 0;
                                                     const isSel = selected === key;
                                                     return (
                                                         <div key={key}
                                                             onClick={() => setBucket(isSel ? null : key)}
-                                                            style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '3px 6px', borderRadius: 5, cursor: 'pointer', background: isSel ? '#EEF4FF' : 'transparent', transition: 'background 0.15s' }}>
-                                                            <div style={{ width: labelWidth, fontSize: 10, color: '#374151', fontWeight: isSel ? 700 : 500, textAlign: 'right', flexShrink: 0 }}>{label}</div>
-                                                            <div style={{ flex: 1, height: 10, background: '#F3F4F6', borderRadius: 5, overflow: 'hidden' }}>
-                                                                <div style={{ height: '100%', width: `${pct}%`, background: color, borderRadius: 5, transition: 'width 0.4s' }} />
+                                                            style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '5px 6px', borderRadius: 6, cursor: 'pointer', background: isSel ? '#EEF4FF' : 'transparent', transition: 'background 0.15s' }}>
+                                                            <div style={{ width: labelWidth, flexShrink: 0, textAlign: 'right' }}>
+                                                                <div style={{ fontSize: 11, color: '#111827', fontWeight: isSel ? 700 : 600 }}>{label}</div>
+                                                                {sub && <div style={{ fontSize: 9, color: '#9CA3AF', lineHeight: 1.3, marginTop: 1 }}>{sub}</div>}
                                                             </div>
-                                                            <div style={{ width: 40, fontSize: 10, fontWeight: 700, color, textAlign: 'right', flexShrink: 0 }}>
-                                                                {cnt.toLocaleString(numLocale)}
+                                                            <div style={{ flex: 1, minWidth: 0, paddingTop: 4 }}>
+                                                                <div style={{ height: 10, background: '#F3F4F6', borderRadius: 5, overflow: 'hidden' }}>
+                                                                    <div style={{ height: '100%', width: `${pct}%`, background: color, borderRadius: 5, transition: 'width 0.4s' }} />
+                                                                </div>
                                                             </div>
-                                                            <div style={{ width: 30, fontSize: 10, fontWeight: 700, color, textAlign: 'left', flexShrink: 0 }}>{pct}%</div>
+                                                            <div style={{ width: 70, paddingTop: 2, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                                                                <div style={{ fontSize: 11, fontWeight: 700, color }}>{cnt.toLocaleString(numLocale)}</div>
+                                                                <div style={{ fontSize: 9, color: '#9CA3AF' }}>{pct}%</div>
+                                                            </div>
                                                         </div>
                                                     );
                                                 })}
@@ -3427,13 +3437,19 @@ export default function McAngebotsfeed() {
                                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                                             {titleStats && titleStats.total > 0 && renderChart({
                                                 title: lang === 'de' ? 'Titellänge' : 'Title Length',
+                                                intro: lang === 'de'
+                                                    ? 'Aussagekräftige Titel mit Marke, Produktart und Schlüsselmerkmalen (Maße, Farbe, Material) werden besser gefunden und führen zu mehr Klicks.'
+                                                    : 'Descriptive titles that combine brand, product type and key attributes (dimensions, color, material) rank better and drive more clicks.',
                                                 target: '80+', stats: titleStats, buckets: titleBuckets,
-                                                selected: titleBucket, setBucket: setTitleBucket, labelWidth: 68, fieldKey: 'title',
+                                                selected: titleBucket, setBucket: setTitleBucket, labelWidth: 130, fieldKey: 'title',
                                             })}
                                             {descStats && descStats.total > 0 && renderChart({
                                                 title: lang === 'de' ? 'Beschreibungslänge' : 'Description Length',
+                                                intro: lang === 'de'
+                                                    ? 'Eine detaillierte Beschreibung beantwortet Kundenfragen vor dem Kauf, reduziert Retouren und stärkt das Vertrauen ins Produkt.'
+                                                    : 'A detailed description answers buyer questions up front, lowers returns, and builds trust in the product.',
                                                 target: '300+', stats: descStats, buckets: descBuckets,
-                                                selected: descBucket, setBucket: setDescBucket, labelWidth: 78, fieldKey: 'desc',
+                                                selected: descBucket, setBucket: setDescBucket, labelWidth: 140, fieldKey: 'desc',
                                             })}
                                         </div>
                                     );
