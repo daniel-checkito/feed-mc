@@ -1586,11 +1586,11 @@ export default function McAngebotsfeed() {
                         {langOpen && (
                             <>
                                 <div style={{ position: 'fixed', inset: 0, zIndex: 1000 }} onClick={() => setLangOpen(false)} />
-                                <div style={{ position: 'absolute', top: 'calc(100% + 4px)', right: 0, background: '#FFF', borderRadius: 8, border: '1px solid rgba(0,0,0,0.08)', boxShadow: '0 8px 24px rgba(0,0,0,0.18)', overflow: 'hidden', zIndex: 1001, minWidth: '100%' }}>
+                                <div style={{ position: 'absolute', top: 'calc(100% + 4px)', right: 0, background: '#FFF', borderRadius: 8, border: '1px solid rgba(0,0,0,0.08)', boxShadow: '0 8px 24px rgba(0,0,0,0.18)', overflow: 'hidden', zIndex: 1001, width: '100%' }}>
                                     {[{ value: 'de', label: 'Deutsch' }, { value: 'en', label: 'English' }].map((opt) => (
                                         <button key={opt.value} type="button"
                                             onClick={() => { setLang(opt.value); setLangOpen(false); }}
-                                            style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8, padding: '9px 14px', background: lang === opt.value ? '#EEF4FF' : '#FFF', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: lang === opt.value ? 700 : 400, color: lang === opt.value ? MC_BLUE : '#374151', whiteSpace: 'nowrap' }}>
+                                            style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 7, padding: '8px 12px', background: lang === opt.value ? '#EEF4FF' : '#FFF', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: lang === opt.value ? 700 : 400, color: lang === opt.value ? MC_BLUE : '#374151', whiteSpace: 'nowrap' }}>
                                             {opt.value === 'de' ? (
                                                 <svg width="18" height="13" viewBox="0 0 18 13" style={{ borderRadius: 2, flexShrink: 0 }}>
                                                     <rect width="18" height="4.33" y="0" fill="#000"/>
