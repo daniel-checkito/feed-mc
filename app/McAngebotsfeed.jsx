@@ -2503,12 +2503,12 @@ export default function McAngebotsfeed() {
 
                 // Description length distribution
                 const descCol = mcMapping['description'];
-                const descStats = descCol ? (() => {
+                const descStats = rows.length > 0 ? (() => {
                     const buckets = { none: 0, short: 0, ok: 0, good: 0 };
                     let total = 0, totalChars = 0;
                     rows.forEach((r) => {
                         total++;
-                        const len = String(r[descCol] ?? '').trim().length;
+                        const len = descCol ? String(r[descCol] ?? '').trim().length : 0;
                         totalChars += len;
                         if (len === 0) buckets.none++;
                         else if (len < 100) buckets.short++;
@@ -2520,12 +2520,12 @@ export default function McAngebotsfeed() {
 
                 // Title length distribution
                 const nameCol = mcMapping['name'];
-                const titleStats = nameCol ? (() => {
+                const titleStats = rows.length > 0 ? (() => {
                     const buckets = { none: 0, short: 0, ok: 0, good: 0 };
                     let total = 0, totalChars = 0;
                     rows.forEach((r) => {
                         total++;
-                        const len = String(r[nameCol] ?? '').trim().length;
+                        const len = nameCol ? String(r[nameCol] ?? '').trim().length : 0;
                         totalChars += len;
                         if (len === 0) buckets.none++;
                         else if (len < 30) buckets.short++;
@@ -3257,40 +3257,6 @@ export default function McAngebotsfeed() {
                         else buckets.good++;
                     });
                     return { total, avg: total ? +(totalImgs / total).toFixed(1) : 0, buckets };
-                })() : null;
-
-                // Description length distribution
-                const descCol = mcMapping['description'];
-                const descStats = descCol ? (() => {
-                    const buckets = { none: 0, short: 0, ok: 0, good: 0 };
-                    let total = 0, totalChars = 0;
-                    rows.forEach((r) => {
-                        total++;
-                        const len = String(r[descCol] ?? '').trim().length;
-                        totalChars += len;
-                        if (len === 0) buckets.none++;
-                        else if (len < 100) buckets.short++;
-                        else if (len < 300) buckets.ok++;
-                        else buckets.good++;
-                    });
-                    return { total, avg: total ? Math.round(totalChars / total) : 0, buckets };
-                })() : null;
-
-                // Title length distribution
-                const nameCol = mcMapping['name'];
-                const titleStats = nameCol ? (() => {
-                    const buckets = { none: 0, short: 0, ok: 0, good: 0 };
-                    let total = 0, totalChars = 0;
-                    rows.forEach((r) => {
-                        total++;
-                        const len = String(r[nameCol] ?? '').trim().length;
-                        totalChars += len;
-                        if (len === 0) buckets.none++;
-                        else if (len < 30) buckets.short++;
-                        else if (len < 80) buckets.ok++;
-                        else buckets.good++;
-                    });
-                    return { total, avg: total ? Math.round(totalChars / total) : 0, buckets };
                 })() : null;
 
                 // Image distribution per product (granular - per integer count)
