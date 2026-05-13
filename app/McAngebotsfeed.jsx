@@ -3902,10 +3902,10 @@ export default function McAngebotsfeed() {
                                                     </div>
                                                     <div style={{ flex: 1, minWidth: 0 }}>
                                                         <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', lineHeight: 1.3 }}>{group.label}</div>
-                                                        <div style={{ fontSize: 11, color: '#6B7280', marginTop: 1 }}>
+                                                        <div style={{ fontSize: 11, color: '#6B7280', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                                             {issueCount === 1
                                                                 ? group.issues[0].rule.title
-                                                                : (lang === 'de' ? `${issueCount} Problemtypen` : `${issueCount} issue types`)}
+                                                                : group.issues.map((it) => it.rule.title).join(' · ')}
                                                         </div>
                                                     </div>
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
@@ -4017,7 +4017,7 @@ export default function McAngebotsfeed() {
                                             <Section
                                                 sectionKey="pflicht"
                                                 title={lang === 'de' ? 'Pflichtfelder' : 'Required Fields'}
-                                                subtitle={lang === 'de' ? 'verhindern das Listing' : 'block listing'}
+                                                subtitle={lang === 'de' ? 'Diese Fehler blockieren das Listing. Artikel werden ohne diese Angaben nicht ausgespielt.' : 'These errors block the listing. Items cannot be shown without them.'}
                                                 accent={P_RED}
                                                 accentBg={P_RED_BG}
                                                 accentText={P_RED_TEXT}
@@ -4028,7 +4028,7 @@ export default function McAngebotsfeed() {
                                             <Section
                                                 sectionKey="optional"
                                                 title={lang === 'de' ? 'Optionale Felder' : 'Optional Fields'}
-                                                subtitle={lang === 'de' ? 'verbessern Filter, Suche und Conversion' : 'boost filters, search and conversion'}
+                                                subtitle={lang === 'de' ? 'Nicht zwingend, aber stark empfohlen: bessere Filterbarkeit, Suchergebnisse und Conversion.' : 'Not required, but strongly recommended: better filtering, search ranking, and conversion.'}
                                                 accent='#FDBA74'
                                                 accentBg='#FFF7ED'
                                                 accentText='#9A3412'
@@ -4039,7 +4039,7 @@ export default function McAngebotsfeed() {
                                             <Section
                                                 sectionKey="hints"
                                                 title={lang === 'de' ? 'Hinweise' : 'Hints'}
-                                                subtitle={lang === 'de' ? 'Qualitätsverbesserungen, optional' : 'quality improvements, optional'}
+                                                subtitle={lang === 'de' ? 'Feinschliff für mehr Klicks und weniger Retouren. Diese Punkte verbessern die Feed-Qualität.' : 'Polish for more clicks and fewer returns. These tweaks improve overall feed quality.'}
                                                 accent={P_BLUE}
                                                 accentBg={P_BLUE_BG}
                                                 accentText={P_BLUE_TEXT}
